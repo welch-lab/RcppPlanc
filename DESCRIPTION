@@ -1,0 +1,16 @@
+Package: RcppPlanc
+Type: Package
+Title: Fast multithreaded factorization
+Version: 0.8.0.9000
+Date: 2023-04-03
+Author: Ramakrishnan Kannan, Andrew Robbins
+Maintainer: Andrew Robbins <robbiand@med.umich.edu>
+Description: Rcpp bindings for planc, a highly parallel
+              and extensible NMF/NTF library.
+Imports: 
+    Rcpp
+Suggests:
+    Matrix
+LinkingTo: Rcpp, RcppArmadillo
+License: GPL (>= 2)
+RoxygenNote: 7.2.3
