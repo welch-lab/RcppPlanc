@@ -1,0 +1,7 @@
+{
+    "r.rpath.windows": "C:\\Program Files\\R\\R-4.2.3\\bin\\x64\\R.exe",
+    "files.associations": {
+        "NAMESPACE": "r",
+        "armadillo": "cpp"
+    }
+}

@@ -12,20 +12,21 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // rcppplanc_bppnmf
-Rcpp::List rcppplanc_bppnmf(const arma::sp_mat& x, int& k);
-RcppExport SEXP _RcppPlanc_rcppplanc_bppnmf(SEXP xSEXP, SEXP kSEXP) {
+Rcpp::List rcppplanc_bppnmf(const arma::sp_mat& x, const int& k, const int& niter);
+RcppExport SEXP _RcppPlanc_rcppplanc_bppnmf(SEXP xSEXP, SEXP kSEXP, SEXP niterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::sp_mat& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< int& >::type k(kSEXP);
-    rcpp_result_gen = Rcpp::wrap(rcppplanc_bppnmf(x, k));
+    Rcpp::traits::input_parameter< const int& >::type k(kSEXP);
+    Rcpp::traits::input_parameter< const int& >::type niter(niterSEXP);
+    rcpp_result_gen = Rcpp::wrap(rcppplanc_bppnmf(x, k, niter));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_RcppPlanc_rcppplanc_bppnmf", (DL_FUNC) &_RcppPlanc_rcppplanc_bppnmf, 2},
+    {"_RcppPlanc_rcppplanc_bppnmf", (DL_FUNC) &_RcppPlanc_rcppplanc_bppnmf, 3},
     {NULL, NULL, 0}
 };
 

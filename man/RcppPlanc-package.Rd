@@ -30,6 +30,6 @@ Maintainer: \packageMaintainer{RcppPlanc}
 \examples{
   if (require("Matrix")) {
   x <- Matrix(runif(n=20, min=0, max=2), 4,5, sparse = TRUE)
-  rcppplanc_bppnmf(x, 10)
+  rcppplanc_bppnmf(t(x), 10, 10)
   }
 }
