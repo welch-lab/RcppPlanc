@@ -16,8 +16,10 @@
 #ifdef MKL_FOUND
 #include <mkl.h>
 #else
-#ifdef __MINGW32__
+#if defined(__MINGW32__)
 #include "openblas/cblas.h"
+#elif defined(__APPLE__)
+#include "vecLib/cblas.h"
 #else
 #include "cblas.h"
 #endif
