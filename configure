@@ -6671,11 +6671,11 @@ fi
 
 fi
 
-# BLAS in Apple vecLib library?
+# BLAS in Apple Accelerate library?
 if test $ax_blas_ok = no; then
-	save_LIBS="$LIBS"; LIBS="-framework vecLib $LIBS"
-	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $sgemm in -framework vecLib" >&5
-printf %s "checking for $sgemm in -framework vecLib... " >&6; }
+	save_LIBS="$LIBS"; LIBS="-framework Accelerate $LIBS"
+	{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $sgemm in -framework Accelerate" >&5
+printf %s "checking for $sgemm in -framework Accelerate... " >&6; }
 	cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -6700,7 +6700,7 @@ return conftest::$sgemm ();
 _ACEOF
 if ac_fn_cxx_try_link "$LINENO"
 then :
-  ax_blas_ok=yes;BLAS_LIBS="-framework vecLib"
+  ax_blas_ok=yes;BLAS_LIBS="-framework Accelerate"
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.beam \
     conftest$ac_exeext conftest.$ac_ext
