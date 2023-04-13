@@ -12,11 +12,11 @@
         "${workspaceFolder}/src\\nmf",
         "${workspaceFolder}/src\\nnls",
         "${workspaceFolder}/src\\common",
-        "C:\\msys64\\x86_64-w64-mingw32.static.posix/include",
+        "C:\\Rtools42\\x86_64-w64-mingw32.static.posix/include",
         "C:/Users/andrew/AppData/Local/R/win-library/4.2/Rcpp/include",
         "C:/Users/andrew/AppData/Local/R/win-library/4.2/RcppArmadillo/include"
       ],
-      "compilerPath": "C:\\msys64\\X86_64~1.POS\\bin\\g++.exe",
+      "compilerPath": "C:\\Rtools42\\X86_64~1.POS\\bin\\g++.exe",
       "cStandard": "gnu99",
       "cppStandard": "gnu++14",
       "intelliSenseMode": "windows-gcc-x64"

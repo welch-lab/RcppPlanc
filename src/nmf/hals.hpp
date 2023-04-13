@@ -49,7 +49,9 @@ class HALSNMF : public NMF<T> {
   }
   void computeNMF() {
     unsigned int currentIteration = 0;
+    #ifdef _VERBOSE
     INFO << "computed transpose At=" << PRINTMATINFO(this->At) << std::endl;
+    #endif
     while (currentIteration < this->num_iterations()) {
       tic();
       // update H
@@ -57,9 +59,11 @@ class HALSNMF : public NMF<T> {
       WtA = this->W.t() * this->A;
       WtW = this->W.t() * this->W;
       this->applyReg(this->regH(), &this->WtW);
+      #ifdef _VERBOSE
       INFO << "starting H Prereq for "
            << " took=" << toc() << PRINTMATINFO(WtW) << PRINTMATINFO(WtA)
            << std::endl;
+      #endif
       // to avoid divide by zero error.
       tic();
       double normConst;
@@ -73,17 +77,21 @@ class HALSNMF : public NMF<T> {
           this->H.col(x) = Hx;
         }
       }
+      #ifdef _VERBOSE
       INFO << "Completed H (" << currentIteration << "/"
            << this->num_iterations() << ")"
            << " time =" << toc() << std::endl;
+      #endif
       // update W;
       tic();
       AH = this->A * this->H;
       HtH = this->H.t() * this->H;
       this->applyReg(this->regW(), &this->HtH);
+      #ifdef _VERBOSE
       INFO << "starting W Prereq for "
            << " took=" << toc() << PRINTMATINFO(HtH) << PRINTMATINFO(AH)
            << std::endl;
+      #endif
       tic();
       VEC Wx;
       for (unsigned int x = 0; x < this->k; x++) {
@@ -101,18 +109,21 @@ class HALSNMF : public NMF<T> {
         }
       }
       this->normalize_by_W();
-
+#ifdef _VERBOSE
       INFO << "Completed W (" << currentIteration << "/"
            << this->num_iterations() << ")"
            << " time =" << toc() << std::endl;
 
       INFO << "Completed It (" << currentIteration << "/"
            << this->num_iterations() << ")"
-           << " time =" << toc() << std::endl;
+           << " time =" << toc() << std::endl
+#endif
       this->computeObjectiveError();
+#ifdef _VERBOSE
       INFO << "Completed it = " << currentIteration
            << " HALSERR=" << sqrt(this->objective_err) / this->normA
            << std::endl;
+#endif
       currentIteration++;
     }
   }
