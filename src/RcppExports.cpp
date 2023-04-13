@@ -24,9 +24,22 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rcppplanc_bppnnls
+arma::mat rcppplanc_bppnnls(const arma::sp_mat& A, const arma::mat& B);
+RcppExport SEXP _RcppPlanc_rcppplanc_bppnnls(SEXP ASEXP, SEXP BSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::sp_mat& >::type A(ASEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type B(BSEXP);
+    rcpp_result_gen = Rcpp::wrap(rcppplanc_bppnnls(A, B));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_RcppPlanc_rcppplanc_bppnmf", (DL_FUNC) &_RcppPlanc_rcppplanc_bppnmf, 3},
+    {"_RcppPlanc_rcppplanc_bppnnls", (DL_FUNC) &_RcppPlanc_rcppplanc_bppnnls, 2},
     {NULL, NULL, 0}
 };
 

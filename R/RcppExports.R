@@ -5,3 +5,7 @@ rcppplanc_bppnmf <- function(x, k, niter) {
     .Call(`_RcppPlanc_rcppplanc_bppnmf`, x, k, niter)
 }
 
+rcppplanc_bppnnls <- function(A, B) {
+    .Call(`_RcppPlanc_rcppplanc_bppnnls`, A, B)
+}
+
