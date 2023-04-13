@@ -164,7 +164,17 @@ class NMF {
 
   NMF(const T &input, const AMAT &leftlowrankfactor,
       const AMAT &rightlowrankfactor): A(input) {
-    assert(leftlowrankfactor.n_cols == rightlowrankfactor.n_cols);
+    try
+    {
+      if (!(leftlowrankfactor.n_cols == rightlowrankfactor.n_cols))
+      {
+        throw std::logic_error("received factor matrices with uneven shape");
+      };
+    }
+    catch(const std::logic_error& e)
+    {
+      throw;
+    }
     // this->A = input;
     this->W = leftlowrankfactor;
     this->H = rightlowrankfactor;
@@ -346,7 +356,7 @@ class NMF {
     double err_time = toc();
 #ifdef _VERBOSE
     INFO << "err compute time::" << err_time << std::endl;
-#endif    
+#endif
     this->objective_err = arma::sum(splitErr);
   }
 
