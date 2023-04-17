@@ -1,7 +1,6 @@
+#pragma once
 /* Copyright 2016 Ramakrishnan Kannan */
 
-#ifndef NMF_BPPNMF_HPP_
-#define NMF_BPPNMF_HPP_
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -21,24 +20,24 @@ template <class T>
 class BPPNMF : public NMF<T> {
  private:
   T At;
-  AMAT giventGiven;
+  arma::mat giventGiven;
   // designed as if W is given and H is found.
   // The transpose is the other problem.
-  void updateOtherGivenOneMultipleRHS(const T &input, const AMAT &given,
-                                      char worh, AMAT *othermat, FVEC reg) {
+  void updateOtherGivenOneMultipleRHS(const T &input, const arma::mat &given,
+                                      char worh, arma::mat *othermat, arma::fvec reg) {
     double t2;
-    UINT numChunks = input.n_cols / ONE_THREAD_MATRIX_SIZE;
+    unsigned int numChunks = input.n_cols / ONE_THREAD_MATRIX_SIZE;
     if (numChunks * ONE_THREAD_MATRIX_SIZE < input.n_cols) numChunks++;
 
     tic();
-    AMAT giventInput(this->k, input.n_cols);
+    arma::mat giventInput(this->k, input.n_cols);
     // This is WtW
     giventGiven = given.t() * given;
     this->applyReg(reg, &giventGiven);
     // This is WtA
     giventInput = given.t() * input;
     if (this->symm_reg() > 0) {
-      AMAT fac = given.t();
+      arma::mat fac = given.t();
       this->applySymmetricReg(this->symm_reg(), &giventGiven, &fac,
                               &giventInput);
     }
@@ -54,15 +53,15 @@ class BPPNMF : public NMF<T> {
     tic();
 
 // #pragma omp parallel for schedule(dynamic)
-    for (UINT i = 0; i < numChunks; i++) {
-      UINT spanStart = i * ONE_THREAD_MATRIX_SIZE;
-      UINT spanEnd = (i + 1) * ONE_THREAD_MATRIX_SIZE - 1;
+    for (unsigned int i = 0; i < numChunks; i++) {
+      unsigned int spanStart = i * ONE_THREAD_MATRIX_SIZE;
+      unsigned int spanEnd = (i + 1) * ONE_THREAD_MATRIX_SIZE - 1;
       if (spanEnd > input.n_cols - 1) {
         spanEnd = input.n_cols - 1;
       }
 
-      BPPNNLS<AMAT, VEC> subProblem(giventGiven,
-                              (AMAT)giventInput.cols(spanStart, spanEnd), true);
+      BPPNNLS<arma::mat, arma::vec> subProblem(giventGiven,
+                              (arma::mat)giventInput.cols(spanStart, spanEnd), true);
 #ifdef _VERBOSE
       // #pragma omp critical
       {
@@ -73,7 +72,7 @@ class BPPNMF : public NMF<T> {
              << "LHS ::" << std::endl
              << giventGiven << std::endl
              << "RHS ::" << std::endl
-             << (AMAT)giventInput.cols(spanStart, spanEnd) << std::endl;
+             << (arma::mat)giventInput.cols(spanStart, spanEnd) << std::endl;
       }
 #endif
 
@@ -97,10 +96,10 @@ class BPPNMF : public NMF<T> {
 
  public:
   BPPNMF(const T &A, int lowrank) : NMF<T>(A, lowrank) {
-    giventGiven = arma::zeros<AMAT>(lowrank, lowrank);
+    giventGiven = arma::zeros<arma::mat>(lowrank, lowrank);
     this->At = A.t();
   }
-  BPPNMF(const T &A, const AMAT &llf, const AMAT &rlf) : NMF<T>(A, llf, rlf) {
+  BPPNMF(const T &A, const arma::mat &llf, const arma::mat &rlf) : NMF<T>(A, llf, rlf) {
     this->At = A.t();
   }
   void computeNMFSingleRHS() {
@@ -113,16 +112,16 @@ class BPPNMF : public NMF<T> {
       this->collectStats(currentIteration);
 #endif
       // solve for H given W;
-      AMAT Wt = this->W.t();
-      AMAT WtW = Wt * this->W;
+      arma::mat Wt = this->W.t();
+      arma::mat WtW = Wt * this->W;
       this->applyReg(this->regH(), &this->WtW);
-      AMAT WtA = Wt * this->A;
+      arma::mat WtA = Wt * this->A;
       Wt.clear();
       {
 // #pragma omp parallel for
-        for (UINT i = 0; i < this->n; i++) {
-          BPPNNLS<AMAT, VEC> *subProblemforH =
-              new BPPNNLS<AMAT, VEC>(WtW, (VEC)WtA.col(i), true);
+        for (unsigned int i = 0; i < this->n; i++) {
+          BPPNNLS<arma::mat, arma::vec> *subProblemforH =
+              new BPPNNLS<arma::mat, arma::vec>(WtW, (arma::vec)WtA.col(i), true);
 #ifdef _VERBOSE
           INFO << "Initialized subproblem and calling solveNNLS for "
                << "H(" << i << "/" << this->n << ")";
@@ -147,16 +146,16 @@ class BPPNMF : public NMF<T> {
         // clear previous allocations.
         WtW.clear();
         WtA.clear();
-        AMAT Ht = this->H.t();
-        AMAT HtH = Ht * this->H;
+        arma::mat Ht = this->H.t();
+        arma::mat HtH = Ht * this->H;
         this->applyReg(this->regW(), &this->HtH);
-        AMAT HtAt = Ht * At;
+        arma::mat HtAt = Ht * At;
         Ht.clear();
 // solve for W given H;
 // #pragma omp parallel for
-        for (UINT i = 0; i < this->m; i++) {
-          BPPNNLS<AMAT, VEC> *subProblemforW =
-              new BPPNNLS<AMAT, VEC>(HtH, (VEC)HtAt.col(i), true);
+        for (unsigned int i = 0; i < this->m; i++) {
+          BPPNNLS<arma::mat, arma::vec> *subProblemforW =
+              new BPPNNLS<arma::mat, arma::vec>(HtH, (arma::vec)HtAt.col(i), true);
 #ifdef _VERBOSE
           INFO << "Initialized subproblem and calling solveNNLS for "
                << "W(" << i << "/" << this->m << ")";
@@ -259,7 +258,7 @@ class BPPNMF : public NMF<T> {
    * in BPPNNLS.hpp. It will take some time to refactor this.
    * Given, A and W, solve for H.
    */
-  AMAT solveScalableNNLS() {
+  arma::mat solveScalableNNLS() {
     updateOtherGivenOneMultipleRHS(this->A, this->W, 'H', &(this->H));
     return this->H;
   }
@@ -267,7 +266,3 @@ class BPPNMF : public NMF<T> {
 };  // class BPPNMF
 
 }  // namespace planc
-
-#endif
-  // NMF_BPPNMF_HPP_
- 

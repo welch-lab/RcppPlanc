@@ -1,7 +1,5 @@
+#pragma once
 /* Copyright 2016 Ramakrishnan Kannan */
-
-#ifndef NMF_MU_HPP_
-#define NMF_MU_HPP_
 
 #include "nmf.hpp"
 
@@ -13,20 +11,20 @@ class MUNMF : public NMF<T> {
   // Not happy with this design. However to avoid computing At again and again
   // making this as private variable.
   T At;
-  AMAT WtW;
-  AMAT HtH;
-  AMAT AtW;
-  AMAT AH;
+  arma::mat WtW;
+  arma::mat HtH;
+  arma::mat AtW;
+  arma::mat AH;
 
   /*
    * Collected statistics are
    * iteration Htime Wtime totaltime normH normW densityH densityW relError
    */
   void allocateMatrices() {
-    WtW = arma::zeros<AMAT>(this->k, this->k);
-    HtH = arma::zeros<AMAT>(this->k, this->k);
-    AtW = arma::zeros<AMAT>(this->n, this->k);
-    AH = arma::zeros<AMAT>(this->m, this->k);
+    WtW = arma::zeros<arma::mat>(this->k, this->k);
+    HtH = arma::zeros<arma::mat>(this->k, this->k);
+    AtW = arma::zeros<arma::mat>(this->n, this->k);
+    AH = arma::zeros<arma::mat>(this->m, this->k);
   }
   void freeMatrices() {
     this->At.clear();
@@ -41,7 +39,7 @@ class MUNMF : public NMF<T> {
     allocateMatrices();
     this->At = this->A.t();
   }
-  MUNMF(const T &A, const AMAT &llf, const AMAT &rlf) : NMF<T>(A, llf, rlf) {
+  MUNMF(const T &A, const arma::mat &llf, const arma::mat &rlf) : NMF<T>(A, llf, rlf) {
     allocateMatrices();
     this->At = this->A.t();
   }
@@ -94,5 +92,3 @@ class MUNMF : public NMF<T> {
 };
 
 }  // namespace planc
-
-#endif  // NMF_MU_HPP_

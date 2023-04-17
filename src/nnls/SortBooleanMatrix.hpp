@@ -1,7 +1,6 @@
+#pragma once
 /* Copyright 2016 Ramakrishnan Kannan */
 
-#ifndef NNLS_SORTBOOLEANMATRIX_HPP_
-#define NNLS_SORTBOOLEANMATRIX_HPP_
 #include <armadillo>
 #include <vector>
 #include <algorithm>
@@ -16,7 +15,7 @@ class BooleanArrayComparator {
     * if idxi < idxj return true;
     * if idxi >= idxj return false;
     */
-    bool operator() (UWORD idxi, UWORD idxj) {
+    bool operator() (arma::uword idxi, arma::uword idxj) {
         for (unsigned int i = 0; i < X.n_rows; i++) {
             if (this->X(i, idxi) < this->X(i, idxj))
                 return true;
@@ -30,17 +29,16 @@ class BooleanArrayComparator {
 template <class T>
 class SortBooleanMatrix {
     const T &X;
-    std::vector<UWORD> idxs;
+    std::vector<arma::uword> idxs;
  public:
     explicit SortBooleanMatrix(const T &input) : X(input), idxs(X.n_cols) {
         for (unsigned int i = 0; i < X.n_cols; i++) {
             idxs[i] = i;
         }
     }
-    std::vector<UWORD> sortIndex() {
+    std::vector<arma::uword> sortIndex() {
         std::sort(this->idxs.begin(), this->idxs.end(),
              BooleanArrayComparator<T>(this->X));
         return this->idxs;
     }
 };
-#endif  // NNLS_SORTBOOLEANMATRIX_HPP_

@@ -1,7 +1,7 @@
+#pragma once
 /* Copyright 2016 Ramakrishnan Kannan */
 // utility functions
-#ifndef COMMON_UTILS_HPP_
-#define COMMON_UTILS_HPP_
+
 #include <assert.h>
 #ifdef _OPENMP
 #include <omp.h>
@@ -131,7 +131,7 @@ int random_sieve(const int nthprime) {
 
 template <class T>
 void absmat(T *X) {
-  UVEC negativeIdx = find((*X) < 0);
+  arma::uvec negativeIdx = find((*X) < 0);
   (*X)(negativeIdx) = (*X)(negativeIdx) * -1;
 }
 
@@ -148,18 +148,18 @@ void makeSparse(const double sparsity, T(*X)) {
 }
 
 template <class T>
-void randNMF(const UWORD m, const UWORD n, const UWORD k, const double sparsity,
+void randNMF(const arma::uword m, const arma::uword n, const arma::uword k, const double sparsity,
              T *A) {
 #ifdef BUILD_SPARSE
   T temp = arma::sprandu<T>(m, n, sparsity);
   A = &temp;
 #else
   srand(RAND_SEED);
-  AMAT W = 10 * arma::randu<AMAT>(m, k);
-  AMAT H = 10 * arma::randu<AMAT>(n, k);
+  arma::mat W = 10 * arma::randu<arma::mat>(m, k);
+  arma::mat H = 10 * arma::randu<arma::mat>(n, k);
   if (sparsity < 1) {
-    makeSparse<AMAT>(sparsity, &W);
-    makeSparse<AMAT>(sparsity, &H);
+    makeSparse<arma::mat>(sparsity, &W);
+    makeSparse<arma::mat>(sparsity, &H);
   }
   T temp = ceil(W * trans(H));
   A = &temp;
@@ -202,9 +202,9 @@ double computeObjectiveError(const INPUTTYPE &A, const LRTYPE &W,
   // 4. use sgemm to compute RL
   // 5. use slange to compute ||RL||_F^2
   // 6. return nnzsse+nnzwh-||RL||_F^2
-  UWORD k = W.n_cols;
-  UWORD m = A.n_rows;
-  UWORD n = A.n_cols;
+  arma::uword k = W.n_cols;
+  arma::uword m = A.n_rows;
+  arma::uword n = A.n_cols;
   tic();
   double nnzsse = 0;
   double nnzwh = 0;
@@ -214,16 +214,16 @@ double computeObjectiveError(const INPUTTYPE &A, const LRTYPE &W,
   LRTYPE Qh(n, k);
   LRTYPE RwRh(k, k);
 #pragma omp parallel for reduction(+ : nnzsse, nnzwh)
-  for (UWORD jj = 1; jj <= A.n_cols; jj++) {
-    UWORD startIdx = A.col_ptrs[jj - 1];
-    UWORD endIdx = A.col_ptrs[jj];
-    UWORD col = jj - 1;
+  for (arma::uword jj = 1; jj <= A.n_cols; jj++) {
+    arma::uword startIdx = A.col_ptrs[jj - 1];
+    arma::uword endIdx = A.col_ptrs[jj];
+    arma::uword col = jj - 1;
     double nnzssecol = 0;
     double nnzwhcol = 0;
-    for (UWORD ii = startIdx; ii < endIdx; ii++) {
-      UWORD row = A.row_indices[ii];
+    for (arma::uword ii = startIdx; ii < endIdx; ii++) {
+      arma::uword row = A.row_indices[ii];
       double tempsum = 0;
-      for (UWORD kk = 0; kk < k; kk++) {
+      for (arma::uword kk = 0; kk < k; kk++) {
         tempsum += (W(row, kk) * H(col, kk));
       }
       nnzwhcol += tempsum * tempsum;
@@ -256,13 +256,13 @@ double computeObjectiveError(const INPUTTYPE &A, const LRTYPE &W,
  * Once you receive Ct, transpose again to print
  * C using arma
  */
-void ARMAMKLSCSCMM(const SP_MAT &mklMat, char transa, const AMAT &Bt,
+void ARMAMKLSCSCMM(const arma::sp_mat &mklMat, char transa, const arma::mat &Bt,
                    double *Ct) {
   MKL_INT m, k, n, nnz;
   m = static_cast<MKL_INT>(mklMat.n_rows);
   k = static_cast<MKL_INT>(mklMat.n_cols);
   n = static_cast<MKL_INT>(Bt.n_rows);
-  // AMAT B = B.t();
+  // arma::mat B = B.t();
   // C = alpha * A * B + beta * C;
   // mkl_?cscmm - https://software.MKL_INTel.com/en-us/node/468598
   // char transa = 'N';
@@ -284,14 +284,12 @@ void ARMAMKLSCSCMM(const SP_MAT &mklMat, char transa, const AMAT &Bt,
  * Something is going crazy with armadillo
  */
 
-void cblas_sgemm(const AMAT &A, const AMAT &B, double *C) {
-  UWORD m = A.n_rows;
-  UWORD n = B.n_cols;
-  UWORD k = A.n_cols;
+void cblas_sgemm(const arma::mat &A, const arma::mat &B, double *C) {
+  arma::uword m = A.n_rows;
+  arma::uword n = B.n_cols;
+  arma::uword k = A.n_cols;
   double alpha = 1.0;
   double beta = 0.0;
   cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, m, n, k, alpha,
               A.memptr(), m, B.memptr(), k, beta, C, m);
 }
-
-#endif  // COMMON_UTILS_HPP_

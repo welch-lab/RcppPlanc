@@ -1,7 +1,5 @@
+#pragma once
 /* Copyright Ramakrishnan Kannan 2017 */
-
-#ifndef COMMON_PARSECOMMANDLINE_HPP_
-#define COMMON_PARSECOMMANDLINE_HPP_
 
 #include <getopt.h>
 #include <armadillo>
@@ -31,14 +29,14 @@ class ParseCommandLine {
   // std::string m_init_file_name;
 
   // nmf related values
-  UWORD m_k;
-  UWORD m_globalm;
-  UWORD m_globaln;
+  arma::uword m_k;
+  arma::uword m_globalm;
+  arma::uword m_globaln;
   int m_initseed;
 
   // algo related values
-  FVEC m_regW;
-  FVEC m_regH;
+  arma::fvec m_regW;
+  arma::fvec m_regH;
   float m_sparsity;
 
   // distnmf related values
@@ -49,9 +47,9 @@ class ParseCommandLine {
 
   // dist ntf
   int m_num_modes;
-  UVEC m_dimensions;
-  UVEC m_proc_grids;
-  FVEC m_regularizers;
+  arma::uvec m_dimensions;
+  arma::uvec m_proc_grids;
+  arma::fvec m_regularizers;
 
   // LUC params (optional)
   int m_max_luciters;
@@ -68,9 +66,9 @@ class ParseCommandLine {
         i++;
       }
       this->m_num_modes = i;
-      this->m_dimensions = arma::zeros<UVEC>(this->m_num_modes);
-      this->m_regularizers = arma::zeros<FVEC>(2 * this->m_num_modes);
-      this->m_proc_grids = arma::ones<UVEC>(this->m_num_modes);
+      this->m_dimensions = arma::zeros<arma::uvec>(this->m_num_modes);
+      this->m_regularizers = arma::zeros<arma::fvec>(2 * this->m_num_modes);
+      this->m_proc_grids = arma::ones<arma::uvec>(this->m_num_modes);
     }
     i = 0;
     ss.clear();
@@ -103,8 +101,8 @@ class ParseCommandLine {
     this->m_num_modes = 0;
     this->m_pr = 1;
     this->m_pc = 1;
-    this->m_regW = arma::zeros<FVEC>(2);
-    this->m_regH = arma::zeros<FVEC>(2);
+    this->m_regW = arma::zeros<arma::fvec>(2);
+    this->m_regH = arma::zeros<arma::fvec>(2);
     this->m_num_k_blocks = 1;
     this->m_k = 20;
     this->m_num_it = 20;
@@ -402,23 +400,23 @@ class ParseCommandLine {
          << std::endl;
   }
   /// returns the low rank. Passed as parameter --lowrank or -k
-  UWORD lowrankk() { return m_k; }
+  arma::uword lowrankk() { return m_k; }
   /// return global rows. Passed as parameter -d
-  UWORD globalm() { return m_globalm; }
+  arma::uword globalm() { return m_globalm; }
   //// returns the global columns. Passed as parameter -d
-  UWORD globaln() { return m_globaln; }
+  arma::uword globaln() { return m_globaln; }
   /**
    * L2 regularization as the first parameter and L1 as second
    * for left lowrank factor W. Passed as parameter --regularizer
    * with pair of values in double quotes for W and H "l2W l1W l2H l1H"
    */
-  FVEC regW() { return m_regW; }
+  arma::fvec regW() { return m_regW; }
   /**
    * L2 regularization as the first parameter and L1 as second
    * for right lowrank factor H. Passed as parameter --regularizer
    * with pair of values in double quotes for W and H "l2W l1W l2H l1H"
    */
-  FVEC regH() { return m_regH; }
+  arma::fvec regH() { return m_regH; }
   /// Returns the NMF algorithm to run. Passed as parameter --algo or -a
   algotype lucalgo() { return m_lucalgo; }
   /**
@@ -426,19 +424,19 @@ class ParseCommandLine {
    * Passed as parameter --processors or -p
    */
 
-  UVEC processor_grids() { return m_proc_grids; }
+  arma::uvec processor_grids() { return m_proc_grids; }
   /**
    * Returns the vector regularizers for all the modes.
    * It will 2 times the mode values. The first entry is
    * L2 regularization and second value is L1 for every mode.
    * Passed as parameter --regularizers "L2 L1" for every mode.
    */
-  FVEC regularizers() { return m_regularizers; }
+  arma::fvec regularizers() { return m_regularizers; }
   /**
    *  Returns vector of dimensions for every mode.
    * Passed as parameter -d or --dimensions
    */
-  UVEC dimensions() { return m_dimensions; }
+  arma::uvec dimensions() { return m_dimensions; }
   int num_k_blocks() { return m_num_k_blocks; }
   /// Returns number of iterations. passed as -t or --iter
   int iterations() { return m_num_it; }
@@ -489,5 +487,3 @@ class ParseCommandLine {
   int initseed() { return m_initseed; }
 };  // ParseCommandLine
 }  // namespace planc
-
-#endif  // COMMON_PARSECOMMANDLINE_HPP_

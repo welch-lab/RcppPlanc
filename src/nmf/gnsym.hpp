@@ -1,7 +1,5 @@
+#pragma once
 /* Copyright 2016 Ramakrishnan Kannan */
-
-#ifndef NMF_GNSYM_HPP_
-#define NMF_GNSYM_HPP_
 
 #include "nmf.hpp"
 
@@ -12,16 +10,16 @@ class GNSYMNMF : public NMF<T> {
  private:
   // Not happy with this design. However to avoid computing At again and again
   // making this as private variable.
-  AMAT HtH;
-  AMAT AHt;
+  arma::mat HtH;
+  arma::mat AHt;
 
   // CG Matrices
-  AMAT Dt;           // k*(globaln/p) used as direction vector (same size as H)
-  AMAT grad;         // k*(globaln/p) used to store transposed
+  arma::mat Dt;           // k*(globaln/p) used as direction vector (same size as H)
+  arma::mat grad;         // k*(globaln/p) used to store transposed
                     // matmul and gradient (same size as H)
-  AMAT Pk;           // k*(globaln/p) used to store conjugate direction
-  AMAT Y;            // k*(globaln/p) used to store the application of Hessian
-  AMAT XtX;          // k*k temporary to store gradient-search products
+  arma::mat Pk;           // k*(globaln/p) used to store conjugate direction
+  arma::mat Y;            // k*(globaln/p) used to store the application of Hessian
+  arma::mat XtX;          // k*k temporary to store gradient-search products
 
   // CG hyperparamters
   unsigned int cg_max_iters;
@@ -53,13 +51,13 @@ class GNSYMNMF : public NMF<T> {
    * iteration Htime Wtime totaltime normH normW densityH densityW relError
    */
   void allocateMatrices() {
-    HtH = arma::zeros<AMAT>(this->k, this->k);
-    AHt = arma::zeros<AMAT>(this->k, this->m);
+    HtH = arma::zeros<arma::mat>(this->k, this->k);
+    AHt = arma::zeros<arma::mat>(this->k, this->m);
 
-    Pk  = arma::zeros<AMAT>(this->k, this->m);
-    Y   = arma::zeros<AMAT>(this->k, this->m);
-    Dt  = arma::zeros<AMAT>(this->k, this->m);
-    XtX = arma::zeros<AMAT>(this->k, this->m);
+    Pk  = arma::zeros<arma::mat>(this->k, this->m);
+    Y   = arma::zeros<arma::mat>(this->k, this->m);
+    Dt  = arma::zeros<arma::mat>(this->k, this->m);
+    XtX = arma::zeros<arma::mat>(this->k, this->m);
   }
   void freeMatrices() {
     HtH.clear();
@@ -98,7 +96,7 @@ class GNSYMNMF : public NMF<T> {
     cg_tot_iters = 0;
   }
 
-  GNSYMNMF(const T &A, const AMAT &llf, const AMAT &rlf) : NMF<T>(A, llf, rlf) {
+  GNSYMNMF(const T &A, const arma::mat &llf, const arma::mat &rlf) : NMF<T>(A, llf, rlf) {
     this->W.clear();  //  clear W variable
     allocateMatrices();
     sqnormA = this->normA * this->normA;
@@ -236,7 +234,7 @@ class GNSYMNMF : public NMF<T> {
       // Project the solution
       this->H = this->H - Dt.t();
       this->H.for_each(
-          [](AMAT::elem_type &val) { val = val > 0.0 ? val : 0.0; });
+          [](arma::mat::elem_type &val) { val = val > 0.0 ? val : 0.0; });
       stale_matmul = true;
       stale_gram = true;
 
@@ -254,5 +252,3 @@ class GNSYMNMF : public NMF<T> {
 };
 
 }  // namespace planc
-
-#endif  // NMF_GNSYM_HPP_

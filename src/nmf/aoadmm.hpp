@@ -1,7 +1,5 @@
+#pragma once
 /* Copyright 2016 Ramakrishnan Kannan */
-
-#ifndef NMF_AOADMM_HPP_
-#define NMF_AOADMM_HPP_
 
 #include "nmf.hpp"
 
@@ -13,23 +11,23 @@ class AOADMMNMF : public NMF<T> {
   // Not happy with this design. However to avoid computing At again and again
   // making this as private variable.
   T At;
-  AMAT WtW;
-  AMAT HtH;
-  AMAT WtA;
-  AMAT AH;
+  arma::mat WtW;
+  arma::mat HtH;
+  arma::mat WtA;
+  arma::mat AH;
 
   // Dual Variables
-  AMAT U;
-  AMAT V;
+  arma::mat U;
+  arma::mat V;
 
   // Auxiliary/Temporary Variables
-  AMAT Htaux;
-  AMAT tempHtaux;
-  AMAT H0;
-  AMAT Wtaux;
-  AMAT tempWtaux;
-  AMAT W0;
-  AMAT L;
+  arma::mat Htaux;
+  arma::mat tempHtaux;
+  arma::mat H0;
+  arma::mat Wtaux;
+  arma::mat tempWtaux;
+  arma::mat W0;
+  arma::mat L;
 
   // Hyperparameters
   double alpha, beta, tolerance;
@@ -40,10 +38,10 @@ class AOADMMNMF : public NMF<T> {
    * iteration Htime Wtime totaltime normH normW densityH densityW relError
    */
   void allocateMatrices() {
-    WtW = arma::zeros<AMAT>(this->k, this->k);
-    HtH = arma::zeros<AMAT>(this->k, this->k);
-    WtA = arma::zeros<AMAT>(this->n, this->k);
-    AH = arma::zeros<AMAT>(this->m, this->k);
+    WtW = arma::zeros<arma::mat>(this->k, this->k);
+    HtH = arma::zeros<arma::mat>(this->k, this->k);
+    WtA = arma::zeros<arma::mat>(this->n, this->k);
+    AH = arma::zeros<arma::mat>(this->m, this->k);
 
     // Dual Variables
     U.zeros(size(this->W));
@@ -77,7 +75,7 @@ class AOADMMNMF : public NMF<T> {
     this->normalize_by_W();
     allocateMatrices();
   }
-  AOADMMNMF(const T &A, const AMAT &llf, const AMAT &rlf) : NMF<T>(A, llf, rlf) {
+  AOADMMNMF(const T &A, const arma::mat &llf, const arma::mat &rlf) : NMF<T>(A, llf, rlf) {
     this->normalize_by_W();
     allocateMatrices();
   }
@@ -114,10 +112,10 @@ class AOADMMNMF : public NMF<T> {
 
         this->H = Htaux.t();
         // Uncomment if numerical issues are seen
-        // fixNumericalError<AMAT>(&(this->H), EPSILON_1EMINUS16, 0.0);
+        // fixNumericalError<arma::mat>(&(this->H), EPSILON_1EMINUS16, 0.0);
         this->H = this->H - V;
         this->H.for_each(
-            [](AMAT::elem_type &val) { val = val > 0.0 ? val : 0.0; });
+            [](arma::mat::elem_type &val) { val = val > 0.0 ? val : 0.0; });
         V = V + this->H - Htaux.t();
 
         // Check stopping criteria
@@ -160,10 +158,10 @@ class AOADMMNMF : public NMF<T> {
 
         this->W = Wtaux.t();
         // Uncomment if numerical issues are seen
-        // fixNumericalError<AMAT>(&(this->W), EPSILON_1EMINUS16, 0.0);
+        // fixNumericalError<arma::mat>(&(this->W), EPSILON_1EMINUS16, 0.0);
         this->W = this->W - U;
         this->W.for_each(
-            [](AMAT::elem_type &val) { val = val > 0.0 ? val : 0.0; });
+            [](arma::mat::elem_type &val) { val = val > 0.0 ? val : 0.0; });
 
         U = U + this->W - Wtaux.t();
 
@@ -195,5 +193,3 @@ class AOADMMNMF : public NMF<T> {
 };
 
 }  // namespace planc
-
-#endif  // NMF_AOADMM_HPP_

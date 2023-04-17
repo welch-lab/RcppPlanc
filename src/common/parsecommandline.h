@@ -1,7 +1,6 @@
+#pragma once
 /* Copyright Ramakrishnan Kannan 2017 */
 
-#ifndef COMMON_PARSECOMMANDLINE_H_
-#define COMMON_PARSECOMMANDLINE_H_
 
 #include <getopt.h>
 #include "utils.h"
@@ -17,13 +16,13 @@
 // distnmf related defines
 // #define PROCROWS        2002
 // #define PROCCOLS        2003
-#define NUMKBLOCKS 2004
-#define NORMALIZATION 2005
-#define DIMTREE 2006
-#define SYMMETRICREG 2007
-#define ADJRAND 2008
-#define NUMLUCITERS 2009
-#define INITSEED 2010
+constexpr auto NUMKBLOCKS = 2004;
+constexpr auto NORMALIZATION = 2005;
+constexpr auto DIMTREE = 2006;
+constexpr auto SYMMETRICREG = 2007;
+constexpr auto ADJRAND = 2008;
+constexpr auto NUMLUCITERS = 2009;
+constexpr auto INITSEED = 2010;
 
 // enum factorizationtype{FT_NMF, FT_DISTNMF, FT_NTF, FT_DISTNTF};
 
@@ -95,6 +94,3 @@ struct option plancopts[] = {
     {"luciters", required_argument, 0, NUMLUCITERS},
     {"seed", required_argument, 0, INITSEED},
     {0, 0, 0, 0}};
-
-#endif  // COMMON_PARSECOMMANDLINE_H_
-

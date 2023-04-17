@@ -1,7 +1,5 @@
+#pragma once
 /*Copyright 2016 Ramakrishnan Kannan*/
-
-#ifndef NNLS_BPPNNLS_HPP_
-#define NNLS_BPPNNLS_HPP_
 
 #include <assert.h>
 #include "nnls.hpp"
@@ -65,38 +63,38 @@ class BPPNNLS : public NNLS<MATTYPE, VECTYPE> {
      * associated with the paper.
      */
     int solveNNLSMultipleRHS() {
-        UINT iter = 0;
-        UINT MAX_ITERATIONS = this->n * 5;
+        unsigned int iter = 0;
+        unsigned int MAX_ITERATIONS = this->n * 5;
         bool success = true;
 
         // Set the initial feasible solution
         MATTYPE Y = (this->AtA * this->X) - this->AtB;
-        UMAT PassiveSet = (this->X > 0);
+        arma::umat PassiveSet = (this->X > 0);
 
         int pbar = 3;
-        UROWVEC P(this->k);
+        arma::urowvec P(this->k);
         P.fill(pbar);
 
-        UROWVEC Ninf(this->k);
+        arma::urowvec Ninf(this->k);
         Ninf.fill(this->n+1);
 
-        UMAT NonOptSet  = (Y < 0) % (PassiveSet == 0);
-        UMAT InfeaSet   = (this->X < 0) % PassiveSet;
-        UROWVEC NotGood = arma::sum(NonOptSet) + arma::sum(InfeaSet);
-        UROWVEC NotOptCols = (NotGood > 0);
+        arma::umat NonOptSet  = (Y < 0) % (PassiveSet == 0);
+        arma::umat InfeaSet   = (this->X < 0) % PassiveSet;
+        arma::urowvec NotGood = arma::sum(NonOptSet) + arma::sum(InfeaSet);
+        arma::urowvec NotOptCols = (NotGood > 0);
 
-        UWORD numNonOptCols = arma::accu(NotOptCols);
+        arma::uword numNonOptCols = arma::accu(NotOptCols);
 #ifdef _VERBOSE
         INFO << "Rank : " << arma::rank(this->AtA) << std::endl;
         INFO << "Condition : " << cond(this->AtA) << std::endl;
         INFO << "numNonOptCols : " << numNonOptCols;
 #endif
         // Temporaries needed in loop
-        UROWVEC Cols1 = NotOptCols;
-        UROWVEC Cols2 = NotOptCols;
-        UMAT PSetBits = NonOptSet;
-        UMAT POffBits = InfeaSet;
-        UMAT NotOptMask = arma::ones<UMAT>(arma::size(NonOptSet));
+        arma::urowvec Cols1 = NotOptCols;
+        arma::urowvec Cols2 = NotOptCols;
+        arma::umat PSetBits = NonOptSet;
+        arma::umat POffBits = InfeaSet;
+        arma::umat NotOptMask = arma::ones<arma::umat>(arma::size(NonOptSet));
 
         while (numNonOptCols > 0) {
             iter++;
@@ -105,7 +103,7 @@ class BPPNNLS : public NNLS<MATTYPE, VECTYPE> {
 
             Cols1 = NotOptCols % (NotGood < Ninf);
             Cols2 = NotOptCols % (NotGood >= Ninf) % (P >= 1);
-            UROWVEC Cols3Ix = arma::conv_to<UROWVEC>::from(
+            arma::urowvec Cols3Ix = arma::conv_to<arma::urowvec>::from(
                         arma::find(NotOptCols % (Cols1 == 0) % (Cols2 == 0)));
 
             // Columns that didn't increase number of infeasible variables
@@ -144,10 +142,10 @@ class BPPNNLS : public NNLS<MATTYPE, VECTYPE> {
 
             // Columns using backup rule
             if (!Cols3Ix.empty()) {
-                UROWVEC::iterator citr;
+                arma::urowvec::iterator citr;
                 for (citr = Cols3Ix.begin(); citr !=  Cols3Ix.end(); ++citr) {
-                    UWORD colidx = *citr;
-                    UWORD rowidx = arma::max(arma::find(
+                    arma::uword colidx = *citr;
+                    arma::uword rowidx = arma::max(arma::find(
                         NonOptSet.col(colidx) + InfeaSet.col(colidx)));
                     if (PassiveSet(rowidx, colidx) > 0) {
                         PassiveSet(rowidx, colidx) = 0u;
@@ -157,7 +155,7 @@ class BPPNNLS : public NNLS<MATTYPE, VECTYPE> {
                 }
             }
 
-            UVEC NotOptColsIx = arma::find(NotOptCols);
+            arma::uvec NotOptColsIx = arma::find(NotOptCols);
             this->X.cols(NotOptColsIx) = solveNormalEqComb(this->AtA,
                                    this->AtB.cols(NotOptColsIx),
                                    PassiveSet.cols(NotOptColsIx));
@@ -193,17 +191,17 @@ class BPPNNLS : public NNLS<MATTYPE, VECTYPE> {
      * @param[in] RHS of the system of size \f$n \times nrhs\f$
      * @param[in] Binary matrix of size \f$n \times nrhs\f$ representing the Passive Set
      */
-    MATTYPE solveNormalEqComb(MATTYPE AtA, MATTYPE AtB, UMAT PassSet) {
+    MATTYPE solveNormalEqComb(MATTYPE AtA, MATTYPE AtB, arma::umat PassSet) {
         MATTYPE Z;
-        UVEC anyZeros = arma::find(PassSet == 0);
+        arma::uvec anyZeros = arma::find(PassSet == 0);
         if (anyZeros.empty()) {
             // Everything is the in the passive set.
             Z = arma::solve(AtA, AtB, arma::solve_opts::likely_sympd);
         } else {
-            UVEC Pv = arma::find(PassSet != 0);
+            arma::uvec Pv = arma::find(PassSet != 0);
             Z.resize(AtB.n_rows, AtB.n_cols);
             Z.zeros();
-            UINT k1 = PassSet.n_cols;
+            unsigned int k1 = PassSet.n_cols;
             if (k1 == 1) {
                 // Single column to solve for.
                 Z(Pv) = arma::solve(AtA(Pv, Pv), AtB(Pv),
@@ -211,19 +209,19 @@ class BPPNNLS : public NNLS<MATTYPE, VECTYPE> {
             } else {
                 // we have to group passive set columns that are same.
                 // find the correlation matrix of passive set matrix.
-                std::vector<UWORD> sortedIdx, beginIdx;
+                std::vector<arma::uword> sortedIdx, beginIdx;
                 computeCorrelationScore(PassSet, sortedIdx, beginIdx);
 
                 // Go through the groups one at a time
-                for (UINT i = 1; i < beginIdx.size(); i++) {
-                    UWORD sortedBeginIdx = beginIdx[i - 1];
-                    UWORD sortedEndIdx = beginIdx[i];
+                for (unsigned int i = 1; i < beginIdx.size(); i++) {
+                    arma::uword sortedBeginIdx = beginIdx[i - 1];
+                    arma::uword sortedEndIdx = beginIdx[i];
 
                     // Create submatrices of indices for solve.
-                    UVEC samePassiveSetCols(std::vector<UWORD>
+                    arma::uvec samePassiveSetCols(std::vector<arma::uword>
                                             (sortedIdx.begin() + sortedBeginIdx,
                                              sortedIdx.begin() + sortedEndIdx));
-                    UVEC currentPassiveSet = arma::find(
+                    arma::uvec currentPassiveSet = arma::find(
                             PassSet.col(sortedIdx[sortedBeginIdx]) == 1);
 #ifdef _VERBOSE
                     INFO << "samePassiveSetCols::" << std::endl
@@ -261,11 +259,11 @@ class BPPNNLS : public NNLS<MATTYPE, VECTYPE> {
     * @param[in] Running indices of the grouped columns in the sorted index
     *            array
     */
-    void computeCorrelationScore(UMAT &PassSet, std::vector<UWORD> &sortedIdx,
-                                 std::vector<UWORD> &beginIndex) {
-        SortBooleanMatrix<UMAT> sbm(PassSet);
+    void computeCorrelationScore(arma::umat &PassSet, std::vector<arma::uword> &sortedIdx,
+                                 std::vector<arma::uword> &beginIndex) {
+        SortBooleanMatrix<arma::umat> sbm(PassSet);
         sortedIdx = sbm.sortIndex();
-        BooleanArrayComparator<UMAT> bac(PassSet);
+        BooleanArrayComparator<arma::umat> bac(PassSet);
         unsigned int beginIdx = 0;
         beginIndex.clear();
         beginIndex.push_back(beginIdx);
@@ -278,5 +276,3 @@ class BPPNNLS : public NNLS<MATTYPE, VECTYPE> {
         }
     }
 };
-
-#endif  // NNLS_BPPNNLS_HPP_
