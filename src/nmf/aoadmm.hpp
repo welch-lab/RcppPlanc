@@ -82,7 +82,9 @@ class AOADMMNMF : public NMF<T> {
   void computeNMF() {
     unsigned int currentIteration = 0;
     this->At = this->A.t();
+    #ifdef _VERBOSE
     INFO << "computed transpose At=" << PRINTMATINFO(this->At) << std::endl;
+    #endif
     while (currentIteration < this->num_iterations()) {
       tic();
       // update H
@@ -93,10 +95,11 @@ class AOADMMNMF : public NMF<T> {
       beta = trace(WtW) / this->k;
       beta = beta > 0 ? beta : 0.01;
       WtW.diag() += beta;
-
+      #ifdef _VERBOSE
       INFO << "starting H Prereq for "
            << " took=" << toc() << PRINTMATINFO(WtW) << PRINTMATINFO(WtA)
            << std::endl;
+      #endif
       // to avoid divide by zero error.
       tic();
       L = arma::chol(WtW, "lower");
@@ -127,11 +130,11 @@ class AOADMMNMF : public NMF<T> {
         if (r < (tolerance * normH) && s < (tolerance * normV))
           stop_iter = true;
       }
-
+      #ifdef _VERBOSE
       INFO << "Completed H (" << currentIteration << "/"
            << this->num_iterations() << ")"
            << " time =" << toc() << std::endl;
-
+      #endif
       // update W;
       tic();
       AH = this->A * this->H;
@@ -140,10 +143,11 @@ class AOADMMNMF : public NMF<T> {
       alpha = trace(HtH) / this->k;
       alpha = alpha > 0 ? alpha : 0.01;
       HtH.diag() += alpha;
-
+      #ifdef _VERBOSE
       INFO << "starting W Prereq for "
            << " took=" << toc() << PRINTMATINFO(HtH) << PRINTMATINFO(AH)
            << std::endl;
+      #endif
       tic();
       L = arma::chol(HtH, "lower");
 
@@ -174,7 +178,7 @@ class AOADMMNMF : public NMF<T> {
         if (r < (tolerance * normW) && s < (tolerance * normU))
           stop_iter = true;
       }
-
+      #ifdef _VERBOSE
       INFO << "Completed W (" << currentIteration << "/"
            << this->num_iterations() << ")"
            << " time =" << toc() << std::endl;
@@ -182,10 +186,13 @@ class AOADMMNMF : public NMF<T> {
       INFO << "Completed It (" << currentIteration << "/"
            << this->num_iterations() << ")"
            << " time =" << toc() << std::endl;
+      #endif
       this->computeObjectiveError();
+      #ifdef _VERBOSE
       INFO << "Completed it = " << currentIteration
            << " AOADMMERR=" << sqrt(this->objective_err) / this->normA
            << std::endl;
+      #endif
       currentIteration++;
     }
   }

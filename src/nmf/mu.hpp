@@ -45,7 +45,9 @@ class MUNMF : public NMF<T> {
   }
   void computeNMF() {
     unsigned int currentIteration = 0;
+    #ifdef _VERBOSE
     INFO << "computed transpose At=" << PRINTMATINFO(this->At) << std::endl;
+    #endif
     while (currentIteration < this->num_iterations()) {
       tic();
       // update H
@@ -53,27 +55,33 @@ class MUNMF : public NMF<T> {
       AtW = this->At * this->W;
       WtW = this->W.t() * this->W;
       this->applyReg(this->regH(), &this->WtW);
+      #ifdef _VERBOSE
       INFO << "starting H Prereq for "
            << " took=" << toc();
       INFO << PRINTMATINFO(WtW) << PRINTMATINFO(AtW) << std::endl;
+      #endif
       // to avoid divide by zero error.
       tic();
       // H = H.*AtW./(WtW_reg*H + epsilon);
       this->H = (this->H % AtW) / (this->H * WtW + EPSILON_1EMINUS16);
+      #ifdef _VERBOSE
       INFO << "Completed H (" << currentIteration << "/"
            << this->num_iterations() << ")"
            << " time =" << toc() << std::endl;
-
+      #endif
       // update W;
       tic();
       AH = this->A * this->H;
       HtH = this->H.t() * this->H;
       this->applyReg(this->regW(), &this->HtH);
+      #ifdef _VERBOSE
       INFO << "starting W Prereq for "
            << " took=" << toc() << PRINTMATINFO(HtH) << PRINTMATINFO(AH)
            << std::endl;
+      #endif
       tic();
       // W = W.*AH./(W*HtH_reg + epsilon);
+      #ifdef _VERBOSE
       this->W = (this->W % AH) / ((this->W * HtH) + EPSILON_1EMINUS16);
       INFO << "Completed W (" << currentIteration << "/"
            << this->num_iterations() << ")"
@@ -81,9 +89,12 @@ class MUNMF : public NMF<T> {
       INFO << "Completed It (" << currentIteration << "/"
            << this->num_iterations() << ")"
            << " time =" << toc() << std::endl;
+      #endif
       this->computeObjectiveError();
+      #ifdef _VERBOSE
       INFO << "Completed it = " << currentIteration
            << " MUERR=" << sqrt(this->objective_err) / this->normA << std::endl;
+      #endif
       currentIteration++;
     }
     this->normalize_by_W();

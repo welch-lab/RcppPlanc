@@ -191,10 +191,10 @@ class GNSYMNMF : public NMF<T> {
       Pk = grad;
       Dt.zeros();
       double rsold = arma::accu(grad % grad);
-
+      #ifdef _VERBOSE
       INFO << "it=" << currentIteration
            << "::CG intial residual::" << rsold << std::endl;
-
+      #endif
       // Enter CG iterations only if residual is large
       if (rsold > cg_tol) {
         // for k = 1,2,...
@@ -213,10 +213,10 @@ class GNSYMNMF : public NMF<T> {
 
           // beta_k = r_{k+1}^T r_{k+1} / r_k^T r_k
           double rsnew = arma::accu(grad % grad);
-
+          #ifdef _VERBOSE
           INFO << "it=" << currentIteration << "::CG iter::" << cgiter
                << "::CG residual::" << rsnew << std::endl;
-
+          #endif
           // Stopping criteria
           if (rsnew < cg_tol)
             break;
@@ -237,14 +237,17 @@ class GNSYMNMF : public NMF<T> {
           [](arma::mat::elem_type &val) { val = val > 0.0 ? val : 0.0; });
       stale_matmul = true;
       stale_gram = true;
-
+      #ifdef _VERBOSE
       INFO << "Completed It (" << currentIteration << "/"
            << this->num_iterations() << ")"
            << " time =" << toc() << std::endl;
+      #endif
       this->computeObjectiveError();
+      #ifdef _VERBOSE
       INFO << "Completed it = " << currentIteration
            << " GNSYMERR=" << sqrt(this->objective_err) / this->normA
            << std::endl;
+      #endif
       currentIteration++;
     }
   }
