@@ -74,9 +74,9 @@ Rcpp::List RcallNMF(arma::sp_mat x, int k, int niter)
 //' @export
 //' @returns The calculated factor matrices as an Rcpp::list
 //' @examplesIf require("Matrix")
-//' rcppplanc_aoadmmnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
+//' aoadmmnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
 // [[Rcpp::export]]
-Rcpp::List rcppplanc_aoadmmnmf(const arma::sp_mat & x, const int & k, const int & niter) {
+Rcpp::List aoadmmnmf(const arma::sp_mat & x, const int & k, const int & niter) {
   return RcallNMF<planc::AOADMMNMF<arma::sp_mat>>(x, k, niter);
 }
 
@@ -90,9 +90,9 @@ Rcpp::List rcppplanc_aoadmmnmf(const arma::sp_mat & x, const int & k, const int 
 //' @export
 //' @returns The calculated factor matrices as an Rcpp::list
 //' @examplesIf require("Matrix")
-//' rcppplanc_gnsymnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
+//' gnsymnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
 // [[Rcpp::export]]
-Rcpp::List rcppplanc_gnsymnmf(const arma::sp_mat &x, const int &k, const int &niter)
+Rcpp::List gnsymnmf(const arma::sp_mat &x, const int &k, const int &niter)
 {
   return RcallNMF<planc::GNSYMNMF<arma::sp_mat>>(x, k, niter);
 }
@@ -107,9 +107,9 @@ Rcpp::List rcppplanc_gnsymnmf(const arma::sp_mat &x, const int &k, const int &ni
 //' @export
 //' @returns The calculated factor matrices as an Rcpp::list
 //' @examplesIf require("Matrix")
-//' rcppplanc_halsmnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
+//' halsmnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
 // [[Rcpp::export]]
-Rcpp::List rcppplanc_halsnmf(const arma::sp_mat &x, const int &k, const int &niter)
+Rcpp::List halsnmf(const arma::sp_mat &x, const int &k, const int &niter)
 {
   return RcallNMF<planc::HALSNMF<arma::sp_mat>>(x, k, niter);
 }
@@ -123,9 +123,9 @@ Rcpp::List rcppplanc_halsnmf(const arma::sp_mat &x, const int &k, const int &nit
 //' @export
 //' @returns The calculated factor matrices as an Rcpp::list
 //' @examplesIf require("Matrix")
-//' rcppplanc_halsnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
+//' halsnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
 // [[Rcpp::export]]
-Rcpp::List rcppplanc_munmf(const arma::sp_mat &x, const int &k, const int &niter)
+Rcpp::List munmf(const arma::sp_mat &x, const int &k, const int &niter)
 {
   return RcallNMF<planc::MUNMF<arma::sp_mat>>(x, k, niter);
 }
@@ -139,9 +139,9 @@ Rcpp::List rcppplanc_munmf(const arma::sp_mat &x, const int &k, const int &niter
 //' @export
 //' @returns The calculated factor matrices as an Rcpp::list
 //' @examplesIf require("Matrix")
-//' rcppplanc_munmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
+//' munmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
 // [[Rcpp::export]]
-Rcpp::List rcppplanc_bppnmf(const arma::sp_mat & x, const int & k, const int & niter) {
+Rcpp::List bppnmf(const arma::sp_mat & x, const int & k, const int & niter) {
   return RcallNMF<planc::BPPNMF<arma::sp_mat>>(x, k, niter);
 }
 //' Block Principal Pivoted Non-Negative Least Squares
@@ -153,9 +153,9 @@ Rcpp::List rcppplanc_bppnmf(const arma::sp_mat & x, const int & k, const int & n
 //' @export
 //' @returns The calculated solution matrix in dense form.
 //' @examplesIf require("Matrix")
-//' rcppplanc_bppnnls(rsparsematrix(nrow=20,ncol=20,nnz=10), Matrix(runif(n=200,min=0,max=2),20,10))
+//' bppnnls(rsparsematrix(nrow=20,ncol=20,nnz=10), Matrix(runif(n=200,min=0,max=2),20,10))
 // [[Rcpp::export]]
-arma::mat rcppplanc_bppnnls(const arma::sp_mat &A, const arma::mat &B)
+arma::mat bppnnls(const arma::sp_mat &A, const arma::mat &B)
 {
   arma::uword m_n = B.n_cols;
   arma::uword m_m = A.n_cols;

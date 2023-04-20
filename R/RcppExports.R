@@ -11,9 +11,9 @@
 #' @export
 #' @returns The calculated factor matrices as an Rcpp::list
 #' @examplesIf require("Matrix")
-#' rcppplanc_aoadmmnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
-rcppplanc_aoadmmnmf <- function(x, k, niter) {
-    .Call(`_RcppPlanc_rcppplanc_aoadmmnmf`, x, k, niter)
+#' aoadmmnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
+aoadmmnmf <- function(x, k, niter) {
+    .Call(`_RcppPlanc_aoadmmnmf`, x, k, niter)
 }
 
 #' Gauss-Newton using Conjugate Gradients NMF
@@ -26,9 +26,9 @@ rcppplanc_aoadmmnmf <- function(x, k, niter) {
 #' @export
 #' @returns The calculated factor matrices as an Rcpp::list
 #' @examplesIf require("Matrix")
-#' rcppplanc_gnsymnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
-rcppplanc_gnsymnmf <- function(x, k, niter) {
-    .Call(`_RcppPlanc_rcppplanc_gnsymnmf`, x, k, niter)
+#' gnsymnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
+gnsymnmf <- function(x, k, niter) {
+    .Call(`_RcppPlanc_gnsymnmf`, x, k, niter)
 }
 
 #' Hierarchical Alternating Least Squares NMF
@@ -41,9 +41,9 @@ rcppplanc_gnsymnmf <- function(x, k, niter) {
 #' @export
 #' @returns The calculated factor matrices as an Rcpp::list
 #' @examplesIf require("Matrix")
-#' rcppplanc_halsnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
-rcppplanc_halsnmf <- function(x, k, niter) {
-    .Call(`_RcppPlanc_rcppplanc_halsnmf`, x, k, niter)
+#' halsmnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
+halsnmf <- function(x, k, niter) {
+    .Call(`_RcppPlanc_halsnmf`, x, k, niter)
 }
 
 #' Multiplicative Update NMF
@@ -56,9 +56,9 @@ rcppplanc_halsnmf <- function(x, k, niter) {
 #' @export
 #' @returns The calculated factor matrices as an Rcpp::list
 #' @examplesIf require("Matrix")
-#' rcppplanc_halsnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
-rcppplanc_munmf <- function(x, k, niter) {
-    .Call(`_RcppPlanc_rcppplanc_munmf`, x, k, niter)
+#' halsnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
+munmf <- function(x, k, niter) {
+    .Call(`_RcppPlanc_munmf`, x, k, niter)
 }
 
 #' Alternating  Nonnegative Least Squares with Block Principal Pivoting NMF
@@ -71,9 +71,9 @@ rcppplanc_munmf <- function(x, k, niter) {
 #' @export
 #' @returns The calculated factor matrices as an Rcpp::list
 #' @examplesIf require("Matrix")
-#' rcppplanc_munmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
-rcppplanc_bppnmf <- function(x, k, niter) {
-    .Call(`_RcppPlanc_rcppplanc_bppnmf`, x, k, niter)
+#' munmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
+bppnmf <- function(x, k, niter) {
+    .Call(`_RcppPlanc_bppnmf`, x, k, niter)
 }
 
 #' Block Principal Pivoted Non-Negative Least Squares
@@ -85,8 +85,8 @@ rcppplanc_bppnmf <- function(x, k, niter) {
 #' @export
 #' @returns The calculated solution matrix in dense form.
 #' @examplesIf require("Matrix")
-#' rcppplanc_bppnnls(rsparsematrix(nrow=20,ncol=20,nnz=10), matrix(runif(n=200,min=0,max=2),20,10))
-rcppplanc_bppnnls <- function(A, B) {
-    .Call(`_RcppPlanc_rcppplanc_bppnnls`, A, B)
+#' bppnnls(rsparsematrix(nrow=20,ncol=20,nnz=10), Matrix(runif(n=200,min=0,max=2),20,10))
+bppnnls <- function(A, B) {
+    .Call(`_RcppPlanc_bppnnls`, A, B)
 }
 
