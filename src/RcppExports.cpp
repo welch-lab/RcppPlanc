@@ -11,6 +11,58 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// rcppplanc_aoadmmnmf
+Rcpp::List rcppplanc_aoadmmnmf(const arma::sp_mat& x, const int& k, const int& niter);
+RcppExport SEXP _RcppPlanc_rcppplanc_aoadmmnmf(SEXP xSEXP, SEXP kSEXP, SEXP niterSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::sp_mat& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const int& >::type k(kSEXP);
+    Rcpp::traits::input_parameter< const int& >::type niter(niterSEXP);
+    rcpp_result_gen = Rcpp::wrap(rcppplanc_aoadmmnmf(x, k, niter));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rcppplanc_gnsymnmf
+Rcpp::List rcppplanc_gnsymnmf(const arma::sp_mat& x, const int& k, const int& niter);
+RcppExport SEXP _RcppPlanc_rcppplanc_gnsymnmf(SEXP xSEXP, SEXP kSEXP, SEXP niterSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::sp_mat& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const int& >::type k(kSEXP);
+    Rcpp::traits::input_parameter< const int& >::type niter(niterSEXP);
+    rcpp_result_gen = Rcpp::wrap(rcppplanc_gnsymnmf(x, k, niter));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rcppplanc_halsnmf
+Rcpp::List rcppplanc_halsnmf(const arma::sp_mat& x, const int& k, const int& niter);
+RcppExport SEXP _RcppPlanc_rcppplanc_halsnmf(SEXP xSEXP, SEXP kSEXP, SEXP niterSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::sp_mat& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const int& >::type k(kSEXP);
+    Rcpp::traits::input_parameter< const int& >::type niter(niterSEXP);
+    rcpp_result_gen = Rcpp::wrap(rcppplanc_halsnmf(x, k, niter));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rcppplanc_munmf
+Rcpp::List rcppplanc_munmf(const arma::sp_mat& x, const int& k, const int& niter);
+RcppExport SEXP _RcppPlanc_rcppplanc_munmf(SEXP xSEXP, SEXP kSEXP, SEXP niterSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::sp_mat& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const int& >::type k(kSEXP);
+    Rcpp::traits::input_parameter< const int& >::type niter(niterSEXP);
+    rcpp_result_gen = Rcpp::wrap(rcppplanc_munmf(x, k, niter));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rcppplanc_bppnmf
 Rcpp::List rcppplanc_bppnmf(const arma::sp_mat& x, const int& k, const int& niter);
 RcppExport SEXP _RcppPlanc_rcppplanc_bppnmf(SEXP xSEXP, SEXP kSEXP, SEXP niterSEXP) {
@@ -38,6 +90,10 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_RcppPlanc_rcppplanc_aoadmmnmf", (DL_FUNC) &_RcppPlanc_rcppplanc_aoadmmnmf, 3},
+    {"_RcppPlanc_rcppplanc_gnsymnmf", (DL_FUNC) &_RcppPlanc_rcppplanc_gnsymnmf, 3},
+    {"_RcppPlanc_rcppplanc_halsnmf", (DL_FUNC) &_RcppPlanc_rcppplanc_halsnmf, 3},
+    {"_RcppPlanc_rcppplanc_munmf", (DL_FUNC) &_RcppPlanc_rcppplanc_munmf, 3},
     {"_RcppPlanc_rcppplanc_bppnmf", (DL_FUNC) &_RcppPlanc_rcppplanc_bppnmf, 3},
     {"_RcppPlanc_rcppplanc_bppnnls", (DL_FUNC) &_RcppPlanc_rcppplanc_bppnnls, 2},
     {NULL, NULL, 0}
