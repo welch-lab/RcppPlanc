@@ -79,18 +79,18 @@ arma::mat rcppplanc_bppnnls(const arma::sp_mat &A, const arma::mat &B)
   int m_k = B.n_rows;
   arma::mat outmat = arma::randu<arma::mat>(m_m, m_k);
   arma::mat *outmatptr;
-  UINT numChunks = m_n / ONE_THREAD_MATRIX_SIZE;
+  unsigned int numChunks = m_n / ONE_THREAD_MATRIX_SIZE;
 #pragma omp parallel for schedule(auto)
-  for (UINT i = 0; i < numChunks; i++)
+  for (unsigned int i = 0; i < numChunks; i++)
   {
-    UINT spanStart = i * ONE_THREAD_MATRIX_SIZE;
-    UINT spanEnd = (i + 1) * ONE_THREAD_MATRIX_SIZE - 1;
+    unsigned int spanStart = i * ONE_THREAD_MATRIX_SIZE;
+    unsigned int spanEnd = (i + 1) * ONE_THREAD_MATRIX_SIZE - 1;
     if (spanEnd > m_n - 1)
     {
       spanEnd = m_n - 1;
     }
     // double start = omp_get_wtime();
-    BPPNNLS<AMAT, VEC> solveProblem(B.t(), (AMAT)A.cols(spanStart, spanEnd));
+    BPPNNLS<arma::mat, arma::vec> solveProblem(B.t(), (arma::mat)A.cols(spanStart, spanEnd));
     solveProblem.solveNNLS();
     // double end = omp_get_wtime();
     // titer = end - start;
