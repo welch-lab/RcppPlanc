@@ -64,45 +64,96 @@ Rcpp::List RcallNMF(arma::sp_mat x, int k, int niter)
       Rcpp::Named("H") = MyNMF.getRightLowRankFactor());
 }
 
-// Use the AOADMM algorithm to factor a given matrix
-// at the given rank.
+//' Alternating Direction Method of Multipliers NMF
+//'
+//' Use the AOADMM algorithm to factor a given matrix at the given rank.
+//'
+//' @param x Input matrix for factorization
+//' @param k Factor matrix rank
+//' @param niter Maximum number of nmf iterations
+//' @export
+//' @returns The calculated factor matrices as an Rcpp::list
+//' @examplesIf require("Matrix")
+//' rcppplanc_aoadmmnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
 // [[Rcpp::export]]
 Rcpp::List rcppplanc_aoadmmnmf(const arma::sp_mat & x, const int & k, const int & niter) {
   return RcallNMF<planc::AOADMMNMF<arma::sp_mat>>(x, k, niter);
 }
 
-// Use the GYNSYM algorithm to factor a given matrix
-// at the given rank.
+//' Gauss-Newton using Conjugate Gradients NMF
+//'
+//' Use the Gauss-Newton algorithm to factor a given matrix at the given rank.
+//'
+//' @param x Input matrix for factorization
+//' @param k Factor matrix rank
+//' @param niter Maximum number of nmf iterations
+//' @export
+//' @returns The calculated factor matrices as an Rcpp::list
+//' @examplesIf require("Matrix")
+//' rcppplanc_gnsymnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
 // [[Rcpp::export]]
 Rcpp::List rcppplanc_gnsymnmf(const arma::sp_mat &x, const int &k, const int &niter)
 {
   return RcallNMF<planc::GNSYMNMF<arma::sp_mat>>(x, k, niter);
 }
 
-// Use the HALS algorithm to factor a given matrix
-// at the given rank.
+//' Hierarchical Alternating Least Squares NMF
+//'
+//' Use the HALS algorithm to factor a given matrix at the given rank.
+//'
+//' @param x Input matrix for factorization
+//' @param k Factor matrix rank
+//' @param niter Maximum number of nmf iterations
+//' @export
+//' @returns The calculated factor matrices as an Rcpp::list
+//' @examplesIf require("Matrix")
+//' rcppplanc_halsmnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
 // [[Rcpp::export]]
 Rcpp::List rcppplanc_halsnmf(const arma::sp_mat &x, const int &k, const int &niter)
 {
   return RcallNMF<planc::HALSNMF<arma::sp_mat>>(x, k, niter);
 }
-
-// Use the MU algorithm to factor a given matrix
-// at the given rank.
+//' Multiplicative Update NMF
+//'
+//' Use the MU algorithm to factor a given matrix
+//' at the given rank.
+//' @param x Input matrix for factorization
+//' @param k Factor matrix rank
+//' @param niter Maximum number of nmf iterations
+//' @export
+//' @returns The calculated factor matrices as an Rcpp::list
+//' @examplesIf require("Matrix")
+//' rcppplanc_halsnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
 // [[Rcpp::export]]
 Rcpp::List rcppplanc_munmf(const arma::sp_mat &x, const int &k, const int &niter)
 {
   return RcallNMF<planc::MUNMF<arma::sp_mat>>(x, k, niter);
 }
-
-// Use the ANLS-BPP algorithm to factor a given matrix
-// at the given rank. TODO FIX set.seed
-
+//' Alternating  Nonnegative Least Squares with Block Principal Pivoting NMF
+//'
+//' Use the ANLS-BPP algorithm to factor a given matrix at the given rank.
+//'
+//' @param x Input matrix for factorization
+//' @param k Factor matrix rank
+//' @param niter Maximum number of nmf iterations
+//' @export
+//' @returns The calculated factor matrices as an Rcpp::list
+//' @examplesIf require("Matrix")
+//' rcppplanc_munmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
 // [[Rcpp::export]]
 Rcpp::List rcppplanc_bppnmf(const arma::sp_mat & x, const int & k, const int & niter) {
   return RcallNMF<planc::BPPNMF<arma::sp_mat>>(x, k, niter);
 }
-
+//' Block Principal Pivoted Non-Negative Least Squares
+//'
+//' Use the BPP algorithm to get the nonnegative least squares solution for the given matrices.
+//'
+//' @param A Input sparse matrix
+//' @param B Input factor dense matrix
+//' @export
+//' @returns The calculated solution matrix in dense form.
+//' @examplesIf require("Matrix")
+//' rcppplanc_bppnnls(rsparsematrix(nrow=20,ncol=20,nnz=10), Matrix(runif(n=200,min=0,max=2),20,10))
 // [[Rcpp::export]]
 arma::mat rcppplanc_bppnnls(const arma::sp_mat &A, const arma::mat &B)
 {
