@@ -52,7 +52,7 @@ class BPPNMF : public NMF<T> {
 #endif
     tic();
 
-// #pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(auto)
     for (unsigned int i = 0; i < numChunks; i++) {
       unsigned int spanStart = i * ONE_THREAD_MATRIX_SIZE;
       unsigned int spanEnd = (i + 1) * ONE_THREAD_MATRIX_SIZE - 1;
@@ -63,7 +63,7 @@ class BPPNMF : public NMF<T> {
       BPPNNLS<arma::mat, arma::vec> subProblem(giventGiven,
                               (arma::mat)giventInput.cols(spanStart, spanEnd), true);
 #ifdef _VERBOSE
-      // #pragma omp critical
+      #pragma omp critical
       {
         INFO << "Scheduling " << worh << " start=" << spanStart
              << ", end=" << spanEnd
@@ -118,7 +118,7 @@ class BPPNMF : public NMF<T> {
       arma::mat WtA = Wt * this->A;
       Wt.clear();
       {
-// #pragma omp parallel for
+#pragma omp parallel for schedule(auto)
         for (unsigned int i = 0; i < this->n; i++) {
           BPPNNLS<arma::mat, arma::vec> *subProblemforH =
               new BPPNNLS<arma::mat, arma::vec>(WtW, (arma::vec)WtA.col(i), true);
@@ -141,7 +141,6 @@ class BPPNMF : public NMF<T> {
 #ifdef _VERBOSE
       INFO << "H: at it = " << currentIteration << std::endl << this->H;
 #endif
-      // #pragma omp parallel
       {
         // clear previous allocations.
         WtW.clear();
@@ -152,7 +151,7 @@ class BPPNMF : public NMF<T> {
         arma::mat HtAt = Ht * At;
         Ht.clear();
 // solve for W given H;
-// #pragma omp parallel for
+#pragma omp parallel for schedule(auto)
         for (unsigned int i = 0; i < this->m; i++) {
           BPPNNLS<arma::mat, arma::vec> *subProblemforW =
               new BPPNNLS<arma::mat, arma::vec>(HtH, (arma::vec)HtAt.col(i), true);

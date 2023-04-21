@@ -225,7 +225,7 @@ class NMF {
         arma::mat  Qh(this->n, this->k);
         arma::mat  RwRh(this->k, this->k);
 
-        // #pragma omp parallel for reduction (+ : nnzsse,nnzwh)
+        #pragma omp parallel for reduction (+ : nnzsse,nnzwh)
         for (arma::uword jj = 1; jj <= this->A.n_cols; jj++) {
             arma::uword startIdx  = this->A.col_ptrs[jj - 1];
             arma::uword endIdx    = this->A.col_ptrs[jj];
