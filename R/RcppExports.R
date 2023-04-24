@@ -8,12 +8,14 @@
 #' @param x Input matrix for factorization
 #' @param k Factor matrix rank
 #' @param niter Maximum number of nmf iterations
+#' @param H_init Initial right-hand factor matrix (Optional)
+#' @param W_init Initial left-hand factor matrix (Optional)
 #' @export
-#' @returns The calculated factor matrices as an Rcpp::list
+#' @returns The calculated factor matrices as an Rcpp::List
 #' @examplesIf require("Matrix")
 #' aoadmmnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
-aoadmmnmf <- function(x, k, niter) {
-    .Call(`_RcppPlanc_aoadmmnmf`, x, k, niter)
+aoadmmnmf <- function(x, k, niter, W_init = NULL, H_init = NULL) {
+    .Call(`_RcppPlanc_aoadmmnmf`, x, k, niter, W_init, H_init)
 }
 
 #' Gauss-Newton using Conjugate Gradients NMF
@@ -23,12 +25,14 @@ aoadmmnmf <- function(x, k, niter) {
 #' @param x Input matrix for factorization
 #' @param k Factor matrix rank
 #' @param niter Maximum number of nmf iterations
+#' @param H_init Initial right-hand factor matrix (Optional)
+#' @param W_init Initial left-hand factor matrix (Optional)
 #' @export
-#' @returns The calculated factor matrices as an Rcpp::list
+#' @returns The calculated factor matrices as an Rcpp::List
 #' @examplesIf require("Matrix")
 #' gnsymnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
-gnsymnmf <- function(x, k, niter) {
-    .Call(`_RcppPlanc_gnsymnmf`, x, k, niter)
+gnsymnmf <- function(x, k, niter, W_init = NULL, H_init = NULL) {
+    .Call(`_RcppPlanc_gnsymnmf`, x, k, niter, W_init, H_init)
 }
 
 #' Hierarchical Alternating Least Squares NMF
@@ -38,12 +42,14 @@ gnsymnmf <- function(x, k, niter) {
 #' @param x Input matrix for factorization
 #' @param k Factor matrix rank
 #' @param niter Maximum number of nmf iterations
+#' @param H_init Initial right-hand factor matrix (Optional)
+#' @param W_init Initial left-hand factor matrix (Optional)
 #' @export
-#' @returns The calculated factor matrices as an Rcpp::list
+#' @returns The calculated factor matrices as an Rcpp::List
 #' @examplesIf require("Matrix")
 #' halsmnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
-halsnmf <- function(x, k, niter) {
-    .Call(`_RcppPlanc_halsnmf`, x, k, niter)
+halsnmf <- function(x, k, niter, W_init = NULL, H_init = NULL) {
+    .Call(`_RcppPlanc_halsnmf`, x, k, niter, W_init, H_init)
 }
 
 #' Multiplicative Update NMF
@@ -53,12 +59,14 @@ halsnmf <- function(x, k, niter) {
 #' @param x Input matrix for factorization
 #' @param k Factor matrix rank
 #' @param niter Maximum number of nmf iterations
+#' @param H_init Initial right-hand factor matrix (Optional)
+#' @param W_init Initial left-hand factor matrix (Optional)
 #' @export
-#' @returns The calculated factor matrices as an Rcpp::list
+#' @returns The calculated factor matrices as an Rcpp::List
 #' @examplesIf require("Matrix")
 #' halsnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
-munmf <- function(x, k, niter) {
-    .Call(`_RcppPlanc_munmf`, x, k, niter)
+munmf <- function(x, k, niter, W_init = NULL, H_init = NULL) {
+    .Call(`_RcppPlanc_munmf`, x, k, niter, W_init, H_init)
 }
 
 #' Alternating  Nonnegative Least Squares with Block Principal Pivoting NMF
@@ -68,12 +76,14 @@ munmf <- function(x, k, niter) {
 #' @param x Input matrix for factorization
 #' @param k Factor matrix rank
 #' @param niter Maximum number of nmf iterations
+#' @param H_init Initial right-hand factor matrix (Optional)
+#' @param W_init Initial left-hand factor matrix (Optional)
 #' @export
-#' @returns The calculated factor matrices as an Rcpp::list
+#' @returns The calculated factor matrices as an Rcpp::List
 #' @examplesIf require("Matrix")
 #' munmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
-bppnmf <- function(x, k, niter) {
-    .Call(`_RcppPlanc_bppnmf`, x, k, niter)
+bppnmf <- function(x, k, niter, W_init = NULL, H_init = NULL) {
+    .Call(`_RcppPlanc_bppnmf`, x, k, niter, W_init, H_init)
 }
 
 #' Block Principal Pivoted Non-Negative Least Squares
