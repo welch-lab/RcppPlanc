@@ -231,13 +231,14 @@ Rcpp::List bppnmf(const arma::sp_mat & x, const int & k, const int & niter,
 // [[Rcpp::export]]
 arma::mat bppnnls(const arma::sp_mat &A, const arma::mat &B)
 {
-  arma::uword m_n = B.n_cols;
-  arma::uword m_m = A.n_cols;
-  int m_k = B.n_rows;
-  arma::mat outmat = arma::randu<arma::mat>(m_m, m_k);
+  arma::uword m_m = A.n_rows;
+  arma::uword m_n = A.n_cols;
+  arma::uword m_k = B.n_rows;
+  arma::mat outmat = arma::randu<arma::mat>(m_n, m_k);
   arma::mat *outmatptr;
+  outmatptr = &outmat;
   unsigned int numChunks = m_n / ONE_THREAD_MATRIX_SIZE;
-#pragma omp parallel for schedule(auto)
+  #pragma omp parallel for schedule(auto)
   for (unsigned int i = 0; i < numChunks; i++)
   {
     unsigned int spanStart = i * ONE_THREAD_MATRIX_SIZE;
