@@ -238,6 +238,10 @@ arma::mat bppnnls(const arma::sp_mat &A, const arma::mat &B)
   arma::mat *outmatptr;
   outmatptr = &outmat;
   unsigned int numChunks = m_n / ONE_THREAD_MATRIX_SIZE;
+  if (numChunks*ONE_THREAD_MATRIX_SIZE < m_n)
+  {
+    numChunks++;
+  }
   #pragma omp parallel for schedule(auto)
   for (unsigned int i = 0; i < numChunks; i++)
   {
@@ -248,7 +252,7 @@ arma::mat bppnnls(const arma::sp_mat &A, const arma::mat &B)
       spanEnd = m_n - 1;
     }
     // double start = omp_get_wtime();
-    BPPNNLS<arma::mat, arma::vec> solveProblem(B.t(), (arma::mat)A.cols(spanStart, spanEnd));
+    BPPNNLS<arma::mat, arma::vec> solveProblem(B, (arma::mat)A.cols(spanStart, spanEnd));
     solveProblem.solveNNLS();
     // double end = omp_get_wtime();
     // titer = end - start;
@@ -258,7 +262,7 @@ arma::mat bppnnls(const arma::sp_mat &A, const arma::mat &B)
     //     << ", tid=" << omp_get_thread_num() << " cpu=" << sched_getcpu() << std::endl;
     //     // << " time taken=" << titer << std::endl;
     // #endif
-    (*outmatptr).rows(spanStart, spanEnd) = solveProblem.getSolutionMatrix().t();
+    (*outmatptr).cols(spanStart, spanEnd) = solveProblem.getSolutionMatrix();
   };
   return outmat;
 }
