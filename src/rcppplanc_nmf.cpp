@@ -3,14 +3,11 @@
 // we only include RcppArmadillo.h which pulls Rcpp.h in for us
 #include "RcppArmadillo.h"
 #include "bppnmf.hpp"
-#include "nmf.hpp"
-#include "utils.hpp"
 #include "bppnnls.hpp"
 #include "aoadmm.hpp"
 #include "gnsym.hpp"
 #include "hals.hpp"
 #include "mu.hpp"
-#include "nnls.hpp"
 
 // via the depends attribute we tell Rcpp to create hooks for
 // RcppArmadillo so that the build process will know what to do
