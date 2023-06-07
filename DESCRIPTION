@@ -15,3 +15,4 @@ Suggests:
 LinkingTo: Rcpp, RcppArmadillo
 License: GPL (>= 2)
 RoxygenNote: 7.2.3
+SystemRequirements: C++17
