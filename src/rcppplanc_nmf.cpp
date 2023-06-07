@@ -3,6 +3,7 @@
 // we only include RcppArmadillo.h which pulls Rcpp.h in for us
 #include "RcppArmadillo.h"
 #include "bppnmf.hpp"
+#include "bppinmf.hpp"
 #include "bppnnls.hpp"
 #include "aoadmm.hpp"
 #include "gnsym.hpp"
@@ -262,4 +263,29 @@ arma::mat bppnnls(const arma::sp_mat &A, const arma::mat &B)
     (*outmatptr).cols(spanStart, spanEnd) = solveProblem.getSolutionMatrix();
   };
   return outmat;
+}
+//' Block Principal Pivoted Iterative Non-Negative Matrix Factorization
+//'
+//' Use the BPP algorithm to iteratively factor the given datasets.
+//'
+//' @param Ei List of datasets in dense matrix form.
+//' @export
+//' @returns The calculated solution matrix in dense form.
+//' @examplesIf require("Matrix")
+//' bppinmf(rsparsematrix(nrow=20,ncol=20,nnz=10), Matrix(runif(n=200,min=0,max=2),20,10))
+// [[Rcpp::export]]
+arma::mat bppinmf(std::vector<Rcpp::NumericMatrix> objectList) {
+  std::vector<arma::mat> matVec;
+  std::vector<std::unique_ptr<arma::mat>> matPtrVec;
+  for (arma::uword i = 0; i < objectList.size(); ++i) {
+     matVec.push_back(arma::mat(objectList[i].begin(), objectList[i].nrow(), objectList[i].ncol(), false));
+     matPtrVec.push_back(std::unique_ptr<arma::mat>(&matVec[i]));
+
+     planc::BPPINMF<arma::mat> solver(matPtrVec, 50u, 4);
+     solver.optimizeALS(50u, 1);
+     return Rcpp::List::create(
+         Rcpp::Named("Hi") = solver.getHi(),
+         Rcpp::Named("Vi") = solver.getVi(),
+         Rcpp::Named("W") = solver.getW());
+  }
 }

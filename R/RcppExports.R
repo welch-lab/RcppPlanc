@@ -100,3 +100,16 @@ bppnnls <- function(A, B) {
     .Call(`_RcppPlanc_bppnnls`, A, B)
 }
 
+#' Block Principal Pivoted Iterative Non-Negative Matrix Factorization
+#'
+#' Use the BPP algorithm to iteratively factor the given datasets.
+#'
+#' @param Ei List of datasets in dense matrix form.
+#' @export
+#' @returns The calculated solution matrix in dense form.
+#' @examplesIf require("Matrix")
+#' bppinmf(rsparsematrix(nrow=20,ncol=20,nnz=10), Matrix(runif(n=200,min=0,max=2),20,10))
+bppinmf <- function(objectList) {
+    .Call(`_RcppPlanc_bppinmf`, objectList)
+}
+

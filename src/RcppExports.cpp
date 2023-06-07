@@ -98,6 +98,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// bppinmf
+arma::mat bppinmf(std::vector<Rcpp::NumericMatrix> objectList);
+RcppExport SEXP _RcppPlanc_bppinmf(SEXP objectListSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<Rcpp::NumericMatrix> >::type objectList(objectListSEXP);
+    rcpp_result_gen = Rcpp::wrap(bppinmf(objectList));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_RcppPlanc_aoadmmnmf", (DL_FUNC) &_RcppPlanc_aoadmmnmf, 5},
@@ -106,6 +117,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppPlanc_munmf", (DL_FUNC) &_RcppPlanc_munmf, 5},
     {"_RcppPlanc_bppnmf", (DL_FUNC) &_RcppPlanc_bppnmf, 5},
     {"_RcppPlanc_bppnnls", (DL_FUNC) &_RcppPlanc_bppnnls, 2},
+    {"_RcppPlanc_bppinmf", (DL_FUNC) &_RcppPlanc_bppinmf, 1},
     {NULL, NULL, 0}
 };
 
