@@ -25,10 +25,10 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${vcpkgRoot}/x64-linux/include/**",
-                "/home/andrew/R/x86_64-suse-linux-gnu-library/4.2/RcppArmadillo/include/**",
+                "/usr/local/lib/R/library/RcppArmadillo/include/**",
                 "/usr/lib64/R/library/Rcpp/include/**",
-                "/usr/lib64/R/include/**"
+                "/usr/lib64/R/include/**",
+                "/home/andrew/R/x86_64-redhat-linux-gnu-library/4.3/RcppSparse/include/**"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/g++",
