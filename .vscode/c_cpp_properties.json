@@ -28,9 +28,14 @@
                 "/usr/local/lib/R/library/RcppArmadillo/include/**",
                 "/usr/lib64/R/library/Rcpp/include/**",
                 "/usr/lib64/R/include/**",
-                "/home/andrew/R/x86_64-redhat-linux-gnu-library/4.3/RcppSparse/include/**"
+                "/home/andrew/R/x86_64-redhat-linux-gnu-library/4.3/RcppSparse/include/**",
+                "/Library/Frameworks/R.framework/Resources/include/**",
+                "/Library/Frameworks/R.framework/Resources/library/Rcpp/include/**",
+                "/Library/Frameworks/R.framework/Resources/library/RcppArmadillo/include/**"
             ],
-            "defines": ["HAVE_FLEXIBLAS_CBLAS_H"],
+            "defines": [
+                "HAVE_FLEXIBLAS_CBLAS_H"
+            ],
             "compilerPath": "/usr/bin/g++",
             "cStandard": "c17",
             "cppStandard": "c++17",
