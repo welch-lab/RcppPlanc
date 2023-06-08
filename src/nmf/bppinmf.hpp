@@ -42,8 +42,10 @@ private:
         // implement
         for (int i=0; i<this->nDatasets; i++) {
             this->updateC_solveV(i);
-            unsigned int C_V_rows = 2 * this->E_ncols[i];
-            T* Bptr = this->B_solveV->rows(0, C_V_rows).get();
+            unsigned int C_V_rows = 2 * this->ncol_E[i];
+            // TODO: still creating new matrices here
+            T B = this->B_solveV.rows(0, C_V_rows);
+            arma::mat C = this->C_solveV.rows(0, C_V_rows);
             arma::mat* Vptr = this->Vi[i].get();
 
             unsigned int numChunks = this->m / ONE_THREAD_MATRIX_SIZE;
@@ -55,8 +57,7 @@ private:
                 if (spanEnd > this->m - 1) {
                     spanEnd = this->m - 1;
                 }
-                BPPNNLS<arma::mat, arma::vec> subProbV(this->C_solveV->rows(0, C_V_rows),
-                                                       (arma::mat)(*Bptr).cols(spanStart, spanEnd));
+                BPPNNLS<arma::mat, arma::vec> subProbV(C, (arma::mat)B.cols(spanStart, spanEnd));
                 subProbV.solveNNLS();
                 (*Vptr).rows(spanStart, spanEnd) = subProbV.getSolutionMatrix().t();
             }
@@ -66,8 +67,8 @@ private:
 
     void solveW() {
         // implement
-        arma::mat* C_solveWptr = this->C_solveW.get();
-        T* B_solveWptr = this->B_solveW.get();
+        // arma::mat C_solveWptr = ;
+        // T B_solveWptr = this->B_solveW;
         arma::mat* Wptr = this->W.get();
         unsigned int numChunks = this->m / ONE_THREAD_MATRIX_SIZE;
         if (numChunks * ONE_THREAD_MATRIX_SIZE < this->m) numChunks++;
@@ -78,8 +79,8 @@ private:
             if (spanEnd > this->m - 1) {
                 spanEnd = this->m - 1;
             }
-            BPPNNLS<arma::mat, arma::vec> subProbW(C_solveWptr,
-                                                   (arma::mat)B_solveWptr.cols(spanStart, spanEnd));
+            BPPNNLS<arma::mat, arma::vec> subProbW(this->C_solveW,
+                                                   (arma::mat)this->B_solveW.cols(spanStart, spanEnd));
             subProbW.solveNNLS();
             (*Wptr).rows(spanStart, spanEnd) = subProbW.getSolutionMatrix().t();
         }
@@ -99,7 +100,7 @@ public:
             solveV();
             solveW();
             obj = this->objective();
-            delta = arma::abs<double>(this->objective_err - obj) / ((this->objective_err + obj) / 2);
+            delta = abs(this->objective_err - obj) / ((this->objective_err + obj) / 2);
             iter++;
             this->objective_err = obj;
         }
@@ -109,7 +110,7 @@ public:
         return *(this->Hi[i].get());
     }
 
-    arma::mat getHi() {
+    std::vector<std::unique_ptr<arma::mat>> getAllH() {
         return this->Hi;
     }
 
@@ -117,7 +118,7 @@ public:
         return *(this->Vi[i].get());
     }
 
-    arma::mat getVi() {
+    std::vector<std::unique_ptr<arma::mat>> getAllV() {
         return this->Vi;
     }
 

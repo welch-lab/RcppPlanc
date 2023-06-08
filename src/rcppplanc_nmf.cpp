@@ -274,18 +274,24 @@ arma::mat bppnnls(const arma::sp_mat &A, const arma::mat &B)
 //' @examplesIf require("Matrix")
 //' bppinmf(rsparsematrix(nrow=20,ncol=20,nnz=10), Matrix(runif(n=200,min=0,max=2),20,10))
 // [[Rcpp::export]]
-arma::mat bppinmf(std::vector<Rcpp::NumericMatrix> objectList) {
-  std::vector<arma::mat> matVec;
-  std::vector<std::unique_ptr<arma::mat>> matPtrVec;
-  for (arma::uword i = 0; i < objectList.size(); ++i) {
-     matVec.push_back(arma::mat(objectList[i].begin(), objectList[i].nrow(), objectList[i].ncol(), false));
-     matPtrVec.push_back(std::unique_ptr<arma::mat>(&matVec[i]));
-
-     planc::BPPINMF<arma::mat> solver(matPtrVec, 50u, 4);
-     solver.optimizeALS(50u, 1);
-     return Rcpp::List::create(
-         Rcpp::Named("Hi") = solver.getHi(),
-         Rcpp::Named("Vi") = solver.getVi(),
-         Rcpp::Named("W") = solver.getW());
-  }
+Rcpp::List bppinmf(std::vector<Rcpp::NumericMatrix> objectList) {
+    std::vector<arma::mat> matVec;
+    std::vector<std::unique_ptr<arma::mat>> matPtrVec;
+    for (arma::uword i = 0; i < objectList.size(); ++i) {
+        matVec.push_back(arma::mat(objectList[i].begin(), objectList[i].nrow(), objectList[i].ncol(), false));
+        matPtrVec.push_back(std::unique_ptr<arma::mat>(&matVec[i]));
+    }
+    planc::BPPINMF<arma::mat> solver(matPtrVec, 50u, 4);
+    solver.optimizeALS(50u, 1);
+    Rcpp::List HList = Rcpp::List::create();
+    Rcpp::List VList = Rcpp::List::create();
+    for (arma::uword i = 0; i < objectList.size(); ++i) {
+        HList.push_back(solver.getHi(i));
+        VList.push_back(solver.getVi(i));
+    }
+    return Rcpp::List::create(
+        Rcpp::Named("H") = HList,
+        Rcpp::Named("V") = VList,
+        Rcpp::Named("W") = solver.getW()
+    );
 }

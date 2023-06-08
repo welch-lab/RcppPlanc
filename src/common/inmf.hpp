@@ -11,7 +11,7 @@ namespace planc {
 
     template <class T>
     class INMF {
-    private:
+    protected:
         arma::uword m, k, nDatasets, nMax, nSum;
         std::vector<arma::uword> ncol_E;             // vector of n_i
         std::vector<std::unique_ptr<T>> Ei;          // each of size mxn_i
@@ -113,7 +113,7 @@ namespace planc {
                 T* Eptr = Ei[i].get();
                 arma::mat* Hptr = Hi[i].get();
                 arma::mat* Vptr = Vi[i].get();
-                arma::mat diff = *Eptr->t() - *Hptr * (Vptr->t() + Wptr->t());
+                arma::mat diff = Eptr->t() - *Hptr * (Vptr->t() + Wptr->t());
                 n1 = arma::norm<arma::mat>(diff, "fro");
                 n1 *= n1;
                 obj += n1;
