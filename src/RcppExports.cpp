@@ -99,7 +99,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // bppinmf
-arma::mat bppinmf(std::vector<Rcpp::NumericMatrix> objectList);
+Rcpp::List bppinmf(std::vector<Rcpp::NumericMatrix> objectList);
 RcppExport SEXP _RcppPlanc_bppinmf(SEXP objectListSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
