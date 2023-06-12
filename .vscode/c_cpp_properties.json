@@ -17,8 +17,8 @@
                 "C:/Users/andrew/AppData/Local/R/win-library/4.2/RcppArmadillo/include"
             ],
             "compilerPath": "C:\\Rtools42\\X86_64~1.POS\\bin\\g++.exe",
-            "cStandard": "gnu99",
-            "cppStandard": "gnu++14",
+            "cStandard": "c17",
+            "cppStandard": "gnu++17",
             "intelliSenseMode": "windows-gcc-x64"
         },
         {
@@ -28,10 +28,7 @@
                 "/usr/local/lib/R/library/RcppArmadillo/include/**",
                 "/usr/lib64/R/library/Rcpp/include/**",
                 "/usr/lib64/R/include/**",
-                "/home/andrew/R/x86_64-redhat-linux-gnu-library/4.3/RcppSparse/include/**",
-                "/Library/Frameworks/R.framework/Resources/include/**",
-                "/Library/Frameworks/R.framework/Resources/library/Rcpp/include/**",
-                "/Library/Frameworks/R.framework/Resources/library/RcppArmadillo/include/**"
+                "/home/andrew/R/x86_64-redhat-linux-gnu-library/4.3/RcppSparse/include/**"
             ],
             "defines": [
                 "HAVE_FLEXIBLAS_CBLAS_H"
@@ -40,6 +37,23 @@
             "cStandard": "c17",
             "cppStandard": "c++17",
             "intelliSenseMode": "linux-gcc-x64"
+        },
+        {
+            "name": "Mac",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/Library/Frameworks/R.framework/Resources/include/**",
+                "/Library/Frameworks/R.framework/Resources/library/Rcpp/include/**",
+                "/Library/Frameworks/R.framework/Resources/library/RcppArmadillo/include/**"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/lib64/ccache/gcc",
+            "cStandard": "c17",
+            "cppStandard": "gnu++17",
+            "intelliSenseMode": "macos-gcc-arm64",
+            "macFrameworkPath": [
+                "/Library/Frameworks/"
+            ]
         }
     ],
     "version": 4
