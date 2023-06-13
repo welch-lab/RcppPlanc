@@ -279,6 +279,9 @@ Rcpp::List bppinmf(std::vector<Rcpp::NumericMatrix> objectList) {
     std::vector<std::unique_ptr<arma::mat>> matPtrVec;
     for (arma::uword i = 0; i < objectList.size(); ++i) {
         matVec.push_back(arma::mat(objectList[i].begin(), objectList[i].nrow(), objectList[i].ncol(), false));
+    }
+    for (arma::uword i = 0; i < objectList.size(); ++i)
+    {
         matPtrVec.push_back(std::unique_ptr<arma::mat>(&matVec[i]));
     }
     planc::BPPINMF<arma::mat> solver(matPtrVec, 50u, 4);
