@@ -4,21 +4,16 @@
 \alias{bppnnls}
 \title{Block Principal Pivoted Non-Negative Least Squares}
 \usage{
-bppnnls(A, B)
+bppnnls(C, B)
 }
 \arguments{
-\item{A}{Input sparse matrix}
+\item{C}{Input factor dense matrix}
 
-\item{B}{Input factor dense matrix}
+\item{B}{Input sparse matrix}
 }
 \value{
 The calculated solution matrix in dense form.
 }
 \description{
 Use the BPP algorithm to get the nonnegative least squares solution for the given matrices.
-}
-\examples{
-\dontshow{if (require("Matrix")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
-bppnnls(rsparsematrix(nrow=20,ncol=20,nnz=10), Matrix(runif(n=200,min=0,max=2),20,10))
-\dontshow{\}) # examplesIf}
 }

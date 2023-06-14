@@ -87,19 +87,19 @@ BEGIN_RCPP
 END_RCPP
 }
 // bppnnls
-arma::mat bppnnls(const arma::sp_mat& A, const arma::mat& B);
-RcppExport SEXP _RcppPlanc_bppnnls(SEXP ASEXP, SEXP BSEXP) {
+arma::mat bppnnls(const arma::mat& C, const arma::sp_mat& B);
+RcppExport SEXP _RcppPlanc_bppnnls(SEXP CSEXP, SEXP BSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::sp_mat& >::type A(ASEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type B(BSEXP);
-    rcpp_result_gen = Rcpp::wrap(bppnnls(A, B));
+    Rcpp::traits::input_parameter< const arma::mat& >::type C(CSEXP);
+    Rcpp::traits::input_parameter< const arma::sp_mat& >::type B(BSEXP);
+    rcpp_result_gen = Rcpp::wrap(bppnnls(C, B));
     return rcpp_result_gen;
 END_RCPP
 }
 // bppinmf
-arma::mat bppinmf(std::vector<Rcpp::NumericMatrix> objectList);
+Rcpp::List bppinmf(std::vector<Rcpp::NumericMatrix> objectList);
 RcppExport SEXP _RcppPlanc_bppinmf(SEXP objectListSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;

@@ -4,7 +4,7 @@
 \alias{aoadmmnmf}
 \title{Alternating Direction Method of Multipliers NMF}
 \usage{
-aoadmmnmf(x, k, niter)
+aoadmmnmf(x, k, niter, W_init = NULL, H_init = NULL)
 }
 \arguments{
 \item{x}{Input matrix for factorization}
@@ -12,9 +12,13 @@ aoadmmnmf(x, k, niter)
 \item{k}{Factor matrix rank}
 
 \item{niter}{Maximum number of nmf iterations}
+
+\item{W_init}{Initial left-hand factor matrix (Optional)}
+
+\item{H_init}{Initial right-hand factor matrix (Optional)}
 }
 \value{
-The calculated factor matrices as an Rcpp::list
+The calculated factor matrices as an Rcpp::List
 }
 \description{
 Use the AOADMM algorithm to factor a given matrix at the given rank.

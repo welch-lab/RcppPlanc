@@ -90,14 +90,12 @@ bppnmf <- function(x, k, niter, W_init = NULL, H_init = NULL) {
 #'
 #' Use the BPP algorithm to get the nonnegative least squares solution for the given matrices.
 #'
-#' @param A Input sparse matrix
-#' @param B Input factor dense matrix
+#' @param C Input factor dense matrix
+#' @param B Input sparse matrix
 #' @export
 #' @returns The calculated solution matrix in dense form.
-#' @examplesIf require("Matrix")
-#' bppnnls(rsparsematrix(nrow=20,ncol=20,nnz=10), Matrix(runif(n=200,min=0,max=2),20,10))
-bppnnls <- function(A, B) {
-    .Call(`_RcppPlanc_bppnnls`, A, B)
+bppnnls <- function(C, B) {
+    .Call(`_RcppPlanc_bppnnls`, C, B)
 }
 
 #' Block Principal Pivoted Iterative Non-Negative Matrix Factorization

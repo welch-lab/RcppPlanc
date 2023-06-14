@@ -216,54 +216,47 @@ Rcpp::List bppnmf(const arma::sp_mat & x, const int & k, const int & niter,
   }
   return outlist;
 }
+
 //' Block Principal Pivoted Non-Negative Least Squares
 //'
 //' Use the BPP algorithm to get the nonnegative least squares solution for the given matrices.
 //'
-//' @param A Input sparse matrix
-//' @param B Input factor dense matrix
+//' @param C Input factor dense matrix
+//' @param B Input sparse matrix
 //' @export
 //' @returns The calculated solution matrix in dense form.
-//' @examplesIf require("Matrix")
-//' bppnnls(rsparsematrix(nrow=20,ncol=20,nnz=10), Matrix(runif(n=200,min=0,max=2),20,10))
 // [[Rcpp::export]]
-arma::mat bppnnls(const arma::sp_mat &A, const arma::mat &B)
-{
-  arma::uword m_m = A.n_rows;
-  arma::uword m_n = A.n_cols;
-  arma::uword m_k = B.n_rows;
-  arma::mat outmat = arma::randu<arma::mat>(m_n, m_k);
-  arma::mat *outmatptr;
-  outmatptr = &outmat;
-  unsigned int numChunks = m_n / ONE_THREAD_MATRIX_SIZE;
-  if (numChunks*ONE_THREAD_MATRIX_SIZE < m_n)
-  {
-    numChunks++;
-  }
-  #pragma omp parallel for schedule(auto)
-  for (unsigned int i = 0; i < numChunks; i++)
-  {
-    unsigned int spanStart = i * ONE_THREAD_MATRIX_SIZE;
-    unsigned int spanEnd = (i + 1) * ONE_THREAD_MATRIX_SIZE - 1;
-    if (spanEnd > m_n - 1)
-    {
-      spanEnd = m_n - 1;
-    }
-    // double start = omp_get_wtime();
-    BPPNNLS<arma::mat, arma::vec> solveProblem(B, (arma::mat)A.cols(spanStart, spanEnd));
-    solveProblem.solveNNLS();
-    // double end = omp_get_wtime();
-    // titer = end - start;
-    // #ifdef _VERBOSE
-    // INFO << " start=" << spanStart
-    //     << ", end=" << spanEnd
-    //     << ", tid=" << omp_get_thread_num() << " cpu=" << sched_getcpu() << std::endl;
-    //     // << " time taken=" << titer << std::endl;
-    // #endif
-    (*outmatptr).cols(spanStart, spanEnd) = solveProblem.getSolutionMatrix();
-  };
-  return outmat;
+arma::mat bppnnls(const arma::mat &C, const arma::sp_mat &B) {
+    arma::uword m_n = B.n_cols;
+    arma::uword m_k = C.n_cols;
+    arma::mat outmat = arma::zeros<arma::mat>(m_k, m_n);
+    arma::mat *outmatptr;
+    outmatptr = &outmat;
+    unsigned int numChunks = m_n / ONE_THREAD_MATRIX_SIZE;
+    if (numChunks*ONE_THREAD_MATRIX_SIZE < m_n) numChunks++;
+#pragma omp parallel for schedule(auto)
+    for (unsigned int i = 0; i < numChunks; i++) {
+        unsigned int spanStart = i * ONE_THREAD_MATRIX_SIZE;
+        unsigned int spanEnd = (i + 1) * ONE_THREAD_MATRIX_SIZE - 1;
+        if (spanEnd > m_n - 1) spanEnd = m_n - 1;
+        // double start = omp_get_wtime();
+        BPPNNLS<arma::mat, arma::vec> solveProblem(C, (arma::mat)B.cols(spanStart, spanEnd));
+        solveProblem.solveNNLS();
+        // double end = omp_get_wtime();
+      // titer = end - start;
+      // #ifdef _VERBOSE
+      // INFO << " start=" << spanStart
+      //     << ", end=" << spanEnd
+      //     << ", tid=" << omp_get_thread_num() << " cpu=" << sched_getcpu() << std::endl;
+      //     // << " time taken=" << titer << std::endl;
+      // #endif
+        (*outmatptr).cols(spanStart, spanEnd) = solveProblem.getSolutionMatrix();
+    };
+
+    return outmat;
 }
+
+
 //' Block Principal Pivoted Iterative Non-Negative Matrix Factorization
 //'
 //' Use the BPP algorithm to iteratively factor the given datasets.
