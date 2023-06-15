@@ -87,14 +87,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // bppnnls
-arma::mat bppnnls(const arma::sp_mat& A, const arma::mat& B);
-RcppExport SEXP _RcppPlanc_bppnnls(SEXP ASEXP, SEXP BSEXP) {
+arma::mat bppnnls(const arma::mat& C, const arma::sp_mat& B);
+RcppExport SEXP _RcppPlanc_bppnnls(SEXP CSEXP, SEXP BSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::sp_mat& >::type A(ASEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type B(BSEXP);
-    rcpp_result_gen = Rcpp::wrap(bppnnls(A, B));
+    Rcpp::traits::input_parameter< const arma::mat& >::type C(CSEXP);
+    Rcpp::traits::input_parameter< const arma::sp_mat& >::type B(BSEXP);
+    rcpp_result_gen = Rcpp::wrap(bppnnls(C, B));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -113,16 +113,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// bppinmf_test
-Rcpp::List bppinmf_test(Rcpp::List objectList, arma::uword k, double lambda);
-RcppExport SEXP _RcppPlanc_bppinmf_test(SEXP objectListSEXP, SEXP kSEXP, SEXP lambdaSEXP) {
+// bppinmf_sparse
+Rcpp::List bppinmf_sparse(Rcpp::List objectList, arma::uword k, double lambda);
+RcppExport SEXP _RcppPlanc_bppinmf_sparse(SEXP objectListSEXP, SEXP kSEXP, SEXP lambdaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::List >::type objectList(objectListSEXP);
     Rcpp::traits::input_parameter< arma::uword >::type k(kSEXP);
     Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
-    rcpp_result_gen = Rcpp::wrap(bppinmf_test(objectList, k, lambda));
+    rcpp_result_gen = Rcpp::wrap(bppinmf_sparse(objectList, k, lambda));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -135,7 +135,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppPlanc_bppnmf", (DL_FUNC) &_RcppPlanc_bppnmf, 5},
     {"_RcppPlanc_bppnnls", (DL_FUNC) &_RcppPlanc_bppnnls, 2},
     {"_RcppPlanc_bppinmf", (DL_FUNC) &_RcppPlanc_bppinmf, 5},
-    {"_RcppPlanc_bppinmf_test", (DL_FUNC) &_RcppPlanc_bppinmf_test, 3},
+    {"_RcppPlanc_bppinmf_sparse", (DL_FUNC) &_RcppPlanc_bppinmf_sparse, 3},
     {NULL, NULL, 0}
 };
 

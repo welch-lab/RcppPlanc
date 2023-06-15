@@ -2,7 +2,7 @@
 
 export(aoadmmnmf)
 export(bppinmf)
-export(bppinmf_test)
+export(bppinmf_sparse)
 export(bppnmf)
 export(bppnnls)
 export(gnsymnmf)
