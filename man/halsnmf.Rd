@@ -4,7 +4,7 @@
 \alias{halsnmf}
 \title{Hierarchical Alternating Least Squares NMF}
 \usage{
-halsnmf(x, k, niter)
+halsnmf(x, k, niter, W_init = NULL, H_init = NULL)
 }
 \arguments{
 \item{x}{Input matrix for factorization}
@@ -12,9 +12,13 @@ halsnmf(x, k, niter)
 \item{k}{Factor matrix rank}
 
 \item{niter}{Maximum number of nmf iterations}
+
+\item{W_init}{Initial left-hand factor matrix (Optional)}
+
+\item{H_init}{Initial right-hand factor matrix (Optional)}
 }
 \value{
-The calculated factor matrices as an Rcpp::list
+The calculated factor matrices as an Rcpp::List
 }
 \description{
 Use the HALS algorithm to factor a given matrix at the given rank.

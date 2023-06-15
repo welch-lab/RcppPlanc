@@ -264,6 +264,7 @@ arma::mat bppnnls(const arma::sp_mat &A, const arma::mat &B)
   };
   return outmat;
 }
+
 //' Block Principal Pivoted Iterative Non-Negative Matrix Factorization
 //'
 //' Use the BPP algorithm to iteratively factor the given datasets.
@@ -274,18 +275,58 @@ arma::mat bppnnls(const arma::sp_mat &A, const arma::mat &B)
 //' @examplesIf require("Matrix")
 //' bppinmf(rsparsematrix(nrow=20,ncol=20,nnz=10), Matrix(runif(n=200,min=0,max=2),20,10))
 // [[Rcpp::export]]
-Rcpp::List bppinmf(std::vector<Rcpp::NumericMatrix> objectList) {
-    std::vector<arma::mat> matVec;
+Rcpp::List bppinmf(std::vector<arma::mat> objectList, arma::uword k, double lambda, arma::uword maxIter, double thresh) {
+    // std::vector<arma::mat> matVec;
+    // std::vector<std::unique_ptr<arma::mat>> matPtrVec;
+    // for (arma::uword i = 0; i < objectList.size(); ++i) {
+    //     matVec.push_back(arma::mat(objectList[i].begin(), objectList[i].nrow(), objectList[i].ncol(), false));
+    // }
+    // for (arma::uword i = 0; i < objectList.size(); ++i)
+    // {
+    //     matPtrVec.push_back(std::unique_ptr<arma::mat>(&matVec[i]));
+    // }
+
+
     std::vector<std::unique_ptr<arma::mat>> matPtrVec;
-    for (arma::uword i = 0; i < objectList.size(); ++i) {
-        matVec.push_back(arma::mat(objectList[i].begin(), objectList[i].nrow(), objectList[i].ncol(), false));
-    }
     for (arma::uword i = 0; i < objectList.size(); ++i)
     {
-        matPtrVec.push_back(std::unique_ptr<arma::mat>(&matVec[i]));
+        arma::mat E = arma::mat(objectList[i].begin(), objectList[i].n_rows, objectList[i].n_cols, false, true);
+        std::unique_ptr<arma::mat> ptr = std::make_unique<arma::mat>(E);
+        matPtrVec.push_back(std::move(ptr));
     }
-    planc::BPPINMF<arma::mat> solver(matPtrVec, 50u, 4);
-    solver.optimizeALS(50u, 1);
+    planc::BPPINMF<arma::mat> solver(matPtrVec, k, lambda);
+    solver.optimizeALS(maxIter, thresh);
+    std::cout << "iNMF finished" << std::endl;
+    Rcpp::List HList = Rcpp::List::create();
+    Rcpp::List VList = Rcpp::List::create();
+    for (arma::uword i = 0; i < objectList.size(); ++i) {
+        HList.push_back(solver.getHi(i));
+        VList.push_back(solver.getVi(i));
+    }
+    // return HList;
+    return Rcpp::List::create(
+        Rcpp::Named("H") = HList,
+        Rcpp::Named("V") = VList,
+        Rcpp::Named("W") = solver.getW()
+    );
+}
+
+//' @export
+// [[Rcpp::export]]
+Rcpp::List bppinmf_test(Rcpp::List objectList, arma::uword k, double lambda) {
+    std::cout << "Testing bppinmf" << std::endl;
+    std::vector<std::unique_ptr<arma::sp_mat>> matPtrVec;
+    for (arma::uword i = 0; i < objectList.size(); ++i)
+    {
+        std::cout << "i=" << i << std::endl;
+        arma::sp_mat E = arma::sp_mat(objectList[i]);
+        std::unique_ptr<arma::sp_mat> ptr = std::make_unique<arma::sp_mat>(E);
+        matPtrVec.push_back(std::move(ptr));
+    }
+    std::cout << "matPtrVec size=" << matPtrVec.size() << std::endl;
+    planc::BPPINMF<arma::sp_mat> solver(matPtrVec, k, lambda);
+    std::cout << "solver created" << std::endl;
+    solver.optimizeALS(5u, 0.000001);
     Rcpp::List HList = Rcpp::List::create();
     Rcpp::List VList = Rcpp::List::create();
     for (arma::uword i = 0; i < objectList.size(); ++i) {

@@ -99,13 +99,30 @@ BEGIN_RCPP
 END_RCPP
 }
 // bppinmf
-Rcpp::List bppinmf(std::vector<Rcpp::NumericMatrix> objectList);
-RcppExport SEXP _RcppPlanc_bppinmf(SEXP objectListSEXP) {
+Rcpp::List bppinmf(std::vector<arma::mat> objectList, arma::uword k, double lambda, arma::uword maxIter, double thresh);
+RcppExport SEXP _RcppPlanc_bppinmf(SEXP objectListSEXP, SEXP kSEXP, SEXP lambdaSEXP, SEXP maxIterSEXP, SEXP threshSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::vector<Rcpp::NumericMatrix> >::type objectList(objectListSEXP);
-    rcpp_result_gen = Rcpp::wrap(bppinmf(objectList));
+    Rcpp::traits::input_parameter< std::vector<arma::mat> >::type objectList(objectListSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type k(kSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type maxIter(maxIterSEXP);
+    Rcpp::traits::input_parameter< double >::type thresh(threshSEXP);
+    rcpp_result_gen = Rcpp::wrap(bppinmf(objectList, k, lambda, maxIter, thresh));
+    return rcpp_result_gen;
+END_RCPP
+}
+// bppinmf_test
+Rcpp::List bppinmf_test(Rcpp::List objectList, arma::uword k, double lambda);
+RcppExport SEXP _RcppPlanc_bppinmf_test(SEXP objectListSEXP, SEXP kSEXP, SEXP lambdaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::List >::type objectList(objectListSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type k(kSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    rcpp_result_gen = Rcpp::wrap(bppinmf_test(objectList, k, lambda));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -117,7 +134,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppPlanc_munmf", (DL_FUNC) &_RcppPlanc_munmf, 5},
     {"_RcppPlanc_bppnmf", (DL_FUNC) &_RcppPlanc_bppnmf, 5},
     {"_RcppPlanc_bppnnls", (DL_FUNC) &_RcppPlanc_bppnnls, 2},
-    {"_RcppPlanc_bppinmf", (DL_FUNC) &_RcppPlanc_bppinmf, 1},
+    {"_RcppPlanc_bppinmf", (DL_FUNC) &_RcppPlanc_bppinmf, 5},
+    {"_RcppPlanc_bppinmf_test", (DL_FUNC) &_RcppPlanc_bppinmf_test, 3},
     {NULL, NULL, 0}
 };
 
