@@ -1,10 +1,16 @@
 AC_PREREQ([2.71])
 AC_INIT([RcppPlanc],[0.8.0.9000],[robbiand@med.umich.edu])
 AC_CONFIG_AUX_DIR([tools])
+m4_include([tools/m4/ax_require_defined.m4])
 m4_include([tools/m4/ax_openmp.m4])
 m4_include([tools/m4/ax_blas.m4])
 m4_include([tools/m4/ax_lapack.m4])
 m4_include([tools/m4/ax_cxx_compile_stdcxx.m4])
+m4_include([tools/m4/ax_append_flag.m4])
+m4_include([tools/m4/ax_check_compile_flag.m4])
+m4_include([tools/m4/ax_append_compile_flags.m4])
+m4_include([tools/m4/ax_gcc_x86_cpu_supports.m4])
+m4_include([tools/m4/ax_check_x86_features.m4])
 # Find the compiler and compiler flags used by R.
 : ${R_HOME=`R RHOME`}
 if test -z "${R_HOME}"; then
@@ -41,13 +47,14 @@ AC_CHECK_HEADER([flexiblas/cblas.h], [CPPFLAGS="$CPPFLAGS -DHAVE_FLEXIBLAS_CBLAS
 ])
 #Checks for typedefs, structures, and compiler characteristics.
 AX_CXX_COMPILE_STDCXX([17], [], mandatory)
-#AC_CHECK_HEADER_STDBOOL
+AX_APPEND_COMPILE_FLAGS([-funsafe-math-optimizations -ffinite-math-only -fno-trapping-math -fno-math-errno -fno-signed-zeros -freciprocal-math])
+AX_CHECK_X86_FEATURES()
 #AC_C_INLINE
 #AC_TYPE_INT32_T
 #AC_TYPE_INT64_T
 #AC_C_RESTRICT
-#AC_TYPE_SIZE_T
-#AC_TYPE_UINT64_T
+AC_TYPE_SIZE_T
+AC_TYPE_UINT64_T
 
 # Checks for library functions.
 #AC_CHECK_FUNCS([floor pow sqrt])
@@ -59,7 +66,7 @@ PKG_LIBS="\$(SHLIB_OPENMP_CXXFLAGS) $LAPACK_LIBS $BLAS_LIBS $FLIBS"
 # Write the flags into the src/Makevars file.
 AC_SUBST([PKG_CPPFLAGS], ["${CPPFLAGS} ${PKG_CPPFLAGS}"])
 AC_SUBST([PKG_LIBS], ["${LIBS} ${PKG_LIBS}"])
-AC_SUBST([PKG_CXXFLAGS], ["${PKG_CXXFLAGS}"])
+AC_SUBST([PKG_CXXFLAGS], ["${X86_FEATURE_CFLAGS} ${PKG_CXXFLAGS}"])
 AC_CONFIG_FILES([src/Makevars])
 AC_OUTPUT
 
