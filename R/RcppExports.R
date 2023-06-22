@@ -112,7 +112,7 @@ bppinmf <- function(objectList, k, lambda, maxIter, thresh) {
 }
 
 #' @export
-bppinmf_sparse <- function(objectList, k, lambda) {
-    .Call(`_RcppPlanc_bppinmf_sparse`, objectList, k, lambda)
+bppinmf_sparse <- function(objectList, k, lambda, maxIter, thresh) {
+    .Call(`_RcppPlanc_bppinmf_sparse`, objectList, k, lambda, maxIter, thresh)
 }
 

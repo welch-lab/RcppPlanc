@@ -304,20 +304,17 @@ Rcpp::List bppinmf(std::vector<arma::mat> objectList, arma::uword k, double lamb
 
 //' @export
 // [[Rcpp::export]]
-Rcpp::List bppinmf_sparse(Rcpp::List objectList, arma::uword k, double lambda) {
-    std::cout << "Testing bppinmf" << std::endl;
+Rcpp::List bppinmf_sparse(Rcpp::List objectList, arma::uword k, double lambda, arma::uword maxIter, double thresh) {
     std::vector<std::unique_ptr<arma::sp_mat>> matPtrVec;
     for (arma::uword i = 0; i < objectList.size(); ++i)
     {
-        std::cout << "i=" << i << std::endl;
         arma::sp_mat E = arma::sp_mat(objectList[i]);
         std::unique_ptr<arma::sp_mat> ptr = std::make_unique<arma::sp_mat>(E);
         matPtrVec.push_back(std::move(ptr));
     }
     std::cout << "matPtrVec size=" << matPtrVec.size() << std::endl;
     planc::BPPINMF<arma::sp_mat> solver(matPtrVec, k, lambda);
-    std::cout << "solver created" << std::endl;
-    solver.optimizeALS(5u, 0.000001);
+    solver.optimizeALS(maxIter, thresh);
     Rcpp::List HList = Rcpp::List::create();
     Rcpp::List VList = Rcpp::List::create();
     for (arma::uword i = 0; i < objectList.size(); ++i) {
