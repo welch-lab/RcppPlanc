@@ -213,7 +213,7 @@ class BPPNNLS : public NNLS<MATTYPE, VECTYPE> {
                 computeCorrelationScore(PassSet, sortedIdx, beginIdx);
 
                 // Go through the groups one at a time
-                for (unsigned int i = 1; i < beginIdx.size(); i++) {
+                for (unsigned int i = 1; i < beginIdx.size(); ++i) {
                     arma::uword sortedBeginIdx = beginIdx[i - 1];
                     arma::uword sortedEndIdx = beginIdx[i];
 
@@ -267,7 +267,7 @@ class BPPNNLS : public NNLS<MATTYPE, VECTYPE> {
         unsigned int beginIdx = 0;
         beginIndex.clear();
         beginIndex.push_back(beginIdx);
-        for (unsigned int i = 0; i < sortedIdx.size(); i++) {
+        for (unsigned int i = 0; i < sortedIdx.size(); ++i) {
             if (i == sortedIdx.size() - 1 ||
                     bac(sortedIdx[i], sortedIdx[i + 1]) == true) {
                 beginIdx = i + 1;
