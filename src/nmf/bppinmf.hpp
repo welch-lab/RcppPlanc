@@ -29,11 +29,11 @@ private:
                 unsigned int spanStart = j * ONE_THREAD_MATRIX_SIZE;
                 unsigned int spanEnd = (j + 1) * ONE_THREAD_MATRIX_SIZE - 1;
                 if (spanEnd > dataSize - 1) spanEnd = dataSize - 1;
-                this->B_solveH_chunk = arma::zeros<arma::mat>(2 * this->m, spanEnd - spanStart + 1);
-                this->B_solveH_chunk.rows(0, this->m - 1) = Eptr->cols(spanStart, spanEnd);
+                arma::mat B_solveH_chunk = arma::zeros<arma::mat>(2 * this->m, spanEnd - spanStart + 1);
+                B_solveH_chunk.rows(0, this->m - 1) = Eptr->cols(spanStart, spanEnd);
                 // BPPNNLS<arma::mat, arma::vec> subProbH(this->C_solveH,
                 //                                        (arma::mat)(*Bptr).cols(spanStart, spanEnd));
-                BPPNNLS<arma::mat, arma::vec> subProbH(this->C_solveH, this->B_solveH_chunk);
+                BPPNNLS<arma::mat, arma::vec> subProbH(this->C_solveH, B_solveH_chunk);
                 subProbH.solveNNLS();
                 (*Hptr).rows(spanStart, spanEnd) = subProbH.getSolutionMatrix().t();
             }

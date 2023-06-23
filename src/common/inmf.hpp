@@ -24,7 +24,7 @@ namespace planc {
         double lambda, sqrtLambda, objective_err;
         bool cleared;
         // std::vector<arma::mat> C_solveH;//(2*m, k);
-        // T B_solveH;//(2*m, n_i);
+        arma::mat B_solveH;//(2*m, n_i);
         // std::vector<arma::mat> C_solveV;//(2*n_i, k);
         // std::vector<std::unique_ptr<T>> B_solveV; //(2*n_i, m);
         // arma::mat C_solveW;
@@ -35,7 +35,7 @@ namespace planc {
         // arma::mat B_solveV;         //(2*n_max, m);
         arma::mat C_solveW; //(nSum, k)
         // arma::mat B_solveW;         //(nSum, m)
-        arma::mat B_solveH_chunk; //(2*m, CHUNK_SIZE);
+        // arma::mat B_solveH_chunk; //(2*m, CHUNK_SIZE);
 // #ifdef CMAKE_BUILD_SPARSE
 //         arma::sp_mat B_solveW_i; //(this->n, this->m);
 // #else
@@ -188,7 +188,7 @@ namespace planc {
                 this->C_solveW.clear();
                 // this->B_solveW.clear();
                 // this->B_solveV.clear();
-                this->B_solveH_chunk.clear();
+                // this->B_solveH_chunk.clear();
                 // for (unsigned int i = 0; i < B_solveH.size(); ++i) {
                 //     B_solveH[i].reset();
                 // }
