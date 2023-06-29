@@ -19,7 +19,8 @@
             "compilerPath": "C:\\Rtools42\\X86_64~1.POS\\bin\\g++.exe",
             "cStandard": "c17",
             "cppStandard": "gnu++17",
-            "intelliSenseMode": "windows-gcc-x64"
+            "intelliSenseMode": "windows-gcc-x64",
+            "configurationProvider": "ms-vscode.cmake-tools"
         },
         {
             "name": "Linux",

@@ -118,6 +118,9 @@ class NNLS {
         this->k = RHS.n_cols;
         X.resize(this->n, this->k);
         X.zeros();
+        if (RHS.n_cols == 1) {
+            x.zeros(this->n);
+        }
 #ifdef _VERBOSE
         INFO << "NNLS::Constructor with multiple RHS vector"
              << "k=" << k << std::endl;
@@ -161,6 +164,9 @@ class NNLS {
         this->k = RHS.n_cols;
         X.resize(this->n, this->k);
         X = initX;
+        if (RHS.n_cols == 1) {
+            x = X.col(0);
+        }
 #ifdef _VERBOSE
         INFO << "NNLS::Constructor with multiple RHS vector"
              << "k=" << k << std::endl;

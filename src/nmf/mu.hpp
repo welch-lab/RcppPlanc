@@ -92,8 +92,7 @@ class MUNMF : public NMF<T> {
       #endif
       this->computeObjectiveError();
       #ifdef _VERBOSE
-      INFO << "Completed it = " << currentIteration
-           << " MUERR=" << sqrt(this->objective_err) / this->normA << std::endl;
+      this->printObjective(currentIteration);
       #endif
       currentIteration++;
     }

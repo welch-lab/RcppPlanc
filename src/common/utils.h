@@ -6,9 +6,12 @@
 // #define _VERBOSE 1
 // #endif
 
-enum algotype { MU, HALS, ANLSBPP, NAIVEANLSBPP, AOADMM, NESTEROV, CPALS, GNSYM, R2};
+enum algotype { MU, HALS, ANLSBPP, NAIVEANLSBPP, AOADMM,
+        NESTEROV, CPALS, GNSYM, R2, PGD, PGNCG };
 
 enum normtype { NONE, L2NORM, MAXNORM };
+
+enum helptype { NMF, DISTNMF, NTF, DISTNTF, JOINTNMF, DISTJOINTNMF, HIERNMF };
 
 // #if !defined(ARMA_64BIT_WORD)
 // #define ARMA_64BIT_WORD
@@ -40,12 +43,14 @@ enum normtype { NONE, L2NORM, MAXNORM };
 #endif
 
 constexpr auto EPSILON_1EMINUS16 = 0.00000000000000001;
+constexpr auto EPSILON_1EMINUS8=0.00000001;
 constexpr auto EPSILON = 0.000001;
 constexpr auto EPSILON_1EMINUS12 = 1e-12;
 constexpr auto NUMBEROF_DECIMAL_PLACES = 12;
 constexpr auto RAND_SEED = 100;
 constexpr auto RAND_SEED_SPARSE = 100;
-
+constexpr auto WTRUE_SEED=1196089;
+constexpr auto HTRUE_SEED=1230587;
 
 #ifdef BUILD_SPARSE
 typedef std::pair<arma::sp_mat, arma::mat> PAIRMAT;

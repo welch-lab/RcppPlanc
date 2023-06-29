@@ -23,6 +23,11 @@ constexpr auto SYMMETRICREG = 2007;
 constexpr auto ADJRAND = 2008;
 constexpr auto NUMLUCITERS = 2009;
 constexpr auto INITSEED = 2010;
+constexpr auto ALPHAREG=2011;
+constexpr auto BETAREG=2012;
+constexpr auto MAT_TYPE=2013;
+constexpr auto MOMENTUM=2014;
+constexpr auto UNPARTITIONED=2015;
 
 // enum factorizationtype{FT_NMF, FT_DISTNMF, FT_NTF, FT_DISTNTF};
 
@@ -86,11 +91,18 @@ struct option plancopts[] = {
     {"iter", required_argument, 0, 't'},
     {"nodes", required_argument, 0, 'n'},
     {"tolerance", required_argument, 0, 'l'},
+    {"connection_matrix", required_argument, 0, 'c'},
     {"numkblocks", required_argument, 0, NUMKBLOCKS},
     {"normalization", required_argument, 0, NORMALIZATION},
     {"dimtree", required_argument, 0, DIMTREE},
     {"symm", required_argument, 0, SYMMETRICREG},
+    {"alpha", required_argument, 0, ALPHAREG},
+    {"beta", required_argument, 0, BETAREG},
+    {"mat_type", required_argument, 0, MAT_TYPE},
     {"adjrand", no_argument, 0, ADJRAND},
     {"luciters", required_argument, 0, NUMLUCITERS},
     {"seed", required_argument, 0, INITSEED},
+    {"conn_grid", required_argument, 0, 'q'},
+    {"momentum", required_argument, 0, MOMENTUM},
+    {"unpartitioned", required_argument, 0, UNPARTITIONED},
     {0, 0, 0, 0}};

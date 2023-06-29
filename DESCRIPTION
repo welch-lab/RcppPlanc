@@ -1,7 +1,7 @@
 Package: RcppPlanc
 Type: Package
 Title: Fast multithreaded factorization
-Version: 0.8.0.9000
+Version: 0.8.3.9000
 Date: 2023-04-03
 Author: Ramakrishnan Kannan, Andrew Robbins
 Maintainer: Andrew Robbins <robbiand@med.umich.edu>
