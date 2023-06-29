@@ -9,8 +9,6 @@ m4_include([tools/m4/ax_cxx_compile_stdcxx.m4])
 m4_include([tools/m4/ax_append_flag.m4])
 m4_include([tools/m4/ax_check_compile_flag.m4])
 m4_include([tools/m4/ax_append_compile_flags.m4])
-m4_include([tools/m4/ax_gcc_x86_cpu_supports.m4])
-m4_include([tools/m4/ax_check_x86_features.m4])
 # Find the compiler and compiler flags used by R.
 : ${R_HOME=`R RHOME`}
 if test -z "${R_HOME}"; then
@@ -31,6 +29,7 @@ AC_PROG_CXX
 AC_PROG_CC
 
 
+
 #get libraries
 
 AX_OPENMP([CXXFLAGS="$CXXFLAGS $OPENMP_CXXFLAGS"])
@@ -47,8 +46,7 @@ AC_CHECK_HEADER([flexiblas/cblas.h], [CPPFLAGS="$CPPFLAGS -DHAVE_FLEXIBLAS_CBLAS
 ])
 #Checks for typedefs, structures, and compiler characteristics.
 AX_CXX_COMPILE_STDCXX([17], [], mandatory)
-AX_APPEND_COMPILE_FLAGS([-funsafe-math-optimizations -ffinite-math-only -fno-trapping-math -fno-math-errno -fno-signed-zeros -freciprocal-math])
-AX_CHECK_X86_FEATURES()
+AX_APPEND_COMPILE_FLAGS([-funsafe-math-optimizations -ffinite-math-only -fno-trapping-math -fno-math-errno -fno-signed-zeros -freciprocal-math -march=native -mtune=native])
 #AC_C_INLINE
 #AC_TYPE_INT32_T
 #AC_TYPE_INT64_T
