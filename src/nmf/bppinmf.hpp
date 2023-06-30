@@ -13,14 +13,26 @@ namespace planc {
 template <class T>
 class BPPINMF : INMF<T> {
 private:
+    arma::mat giventGiven;
+
     void solveH() {
         auto time0 = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> elapse;
         std::cout << "--Solving H--  ";
+        arma::mat giventInput;
+        arma::mat* Wptr = this->W.get();
+        arma::mat given(this->m, this->k);
+        // arma::mat B;
         for (int i=0; i<this->nDatasets; ++i) {
-            this->updateC_solveH(i);
+            arma::mat* Vptr = this->Vi[i].get();
             arma::mat* Hptr = this->Hi[i].get();
             T* Eptr = this->Ei[i].get();
+            given = *Wptr + *Vptr;
+            giventGiven = given.t() * given;
+            giventGiven += (*Vptr).t() * (*Vptr) * this->lambda;
+            // giventGiven = this->C_solveH.t() * this->C_solveH;
+            // giventInput = this->C_solveH.t() * (*Bptr);
+            giventInput = given.t() * (*Eptr);
             unsigned int dataSize = this->ncol_E[i];
             unsigned int numChunks = dataSize / ONE_THREAD_MATRIX_SIZE;
             if (numChunks * ONE_THREAD_MATRIX_SIZE < dataSize) numChunks++;
@@ -29,16 +41,16 @@ private:
                 unsigned int spanStart = j * ONE_THREAD_MATRIX_SIZE;
                 unsigned int spanEnd = (j + 1) * ONE_THREAD_MATRIX_SIZE - 1;
                 if (spanEnd > dataSize - 1) spanEnd = dataSize - 1;
-                arma::mat B_solveH_chunk = arma::zeros<arma::mat>(2 * this->m, spanEnd - spanStart + 1);
-                B_solveH_chunk.rows(0, this->m - 1) = Eptr->cols(spanStart, spanEnd);
-                // BPPNNLS<arma::mat, arma::vec> subProbH(this->C_solveH,
-                //                                        (arma::mat)(*Bptr).cols(spanStart, spanEnd));
-                BPPNNLS<arma::mat, arma::vec> subProbH(this->C_solveH, B_solveH_chunk);
+                // B = arma::zeros<arma::mat>(2 * this->m, spanEnd - spanStart + 1);
+                // B.rows(0, this->m - 1) = Eptr->cols(spanStart, spanEnd);
+                // BPPNNLS<arma::mat, arma::vec> subProbH(this->C_solveH, (arma::mat)Bptr->cols(spanStart, spanEnd));
+                BPPNNLS<arma::mat, arma::vec> subProbH(giventGiven, (arma::mat)giventInput.cols(spanStart, spanEnd), true);
                 subProbH.solveNNLS();
                 (*Hptr).rows(spanStart, spanEnd) = subProbH.getSolutionMatrix().t();
             }
-            this->updateC_solveW(i);
         }
+        giventGiven.clear();
+        giventInput.clear();
         auto time1 = std::chrono::high_resolution_clock::now();
         elapse = time1 - time0;
         std::cout << elapse.count() << " sec" << std::endl;
@@ -49,16 +61,14 @@ private:
         std::chrono::duration<double> elapse;
         std::cout << "--Solving V--  ";
         arma::mat* WTptr = this->WT.get();
+        arma::mat B;
+        arma::mat giventInput(this->k, ONE_THREAD_MATRIX_SIZE);;
         for (int i=0; i<this->nDatasets; ++i) {
-            this->updateC_solveV(i);
-            // this->updateB_solveV(i);
-            unsigned int C_V_rows = 2 * this->ncol_E[i];
-            // TODO: still creating new matrices here
-            // arma::mat B = this->B_solveV.rows(0, C_V_rows - 1);
-            arma::mat C = this->C_solveV.rows(0, C_V_rows - 1);
+            arma::mat* Hptr = this->Hi[i].get();\
+            giventGiven = (*Hptr).t() * (*Hptr);
+            giventGiven *= 1 + this->lambda;
             arma::mat* Vptr = this->Vi[i].get();
             arma::mat* VTptr = this->ViT[i].get();
-            arma::mat* Hptr = this->Hi[i].get();
             T* ETptr = this->EiT[i].get();
             unsigned int numChunks = this->m / ONE_THREAD_MATRIX_SIZE;
             if (numChunks * ONE_THREAD_MATRIX_SIZE < this->m) numChunks++;
@@ -67,17 +77,20 @@ private:
                 unsigned int spanStart = j * ONE_THREAD_MATRIX_SIZE;
                 unsigned int spanEnd = (j + 1) * ONE_THREAD_MATRIX_SIZE - 1;
                 if (spanEnd > this->m - 1) spanEnd = this->m - 1;
-                arma::mat B = arma::zeros<arma::mat>(C_V_rows, spanEnd - spanStart + 1);
-                B.rows(0, this->ncol_E[i] - 1) = *Hptr * (*WTptr).cols(spanStart, spanEnd);
-                B.rows(0, this->ncol_E[i] - 1) -= (*ETptr).cols(spanStart, spanEnd);
+                B = *Hptr * (*WTptr).cols(spanStart, spanEnd);
+                B -= (*ETptr).cols(spanStart, spanEnd);
                 B *= -1;
-                BPPNNLS<arma::mat, arma::vec> subProbV(C, B);
+                giventInput = (*Hptr).t() * B;
+                // BPPNNLS<arma::mat, arma::vec> subProbV(C, B);
+                BPPNNLS<arma::mat, arma::vec> subProbV(giventGiven, giventInput, true);
                 subProbV.solveNNLS();
                 (*Vptr).rows(spanStart, spanEnd) = subProbV.getSolutionMatrix().t();
+                (*VTptr).cols(spanStart, spanEnd) = subProbV.getSolutionMatrix();
             }
-            *VTptr = (*Vptr).t();
-            // this->updateB_solveW(i);
         }
+        B.clear();
+        giventGiven.clear();
+        giventInput.clear();
         auto time1 = std::chrono::high_resolution_clock::now();
         elapse = time1 - time0;
         std::cout << elapse.count() << " sec" << std::endl;
@@ -89,6 +102,15 @@ private:
         std::cout << "--Solving W--  ";
         arma::mat* Wptr = this->W.get();
         arma::mat* WTptr = this->WT.get();
+        arma::mat B;//(this->nSum, ONE_THREAD_MATRIX_SIZE);
+        arma::mat giventInput; //(this->k, ONE_THREAD_MATRIX_SIZE); ///
+        // this->applyReg(this->regW(), &giventGiven); ///
+        giventGiven = arma::zeros<arma::mat>(this->k, this->k); ///
+        for (unsigned int j = 0; j < this->nDatasets; ++j) {
+            arma::mat* Hptr = this->Hi[j].get();
+            giventGiven += (*Hptr).t() * (*Hptr);
+        }
+
         unsigned int numChunks = this->m / ONE_THREAD_MATRIX_SIZE;
         if (numChunks * ONE_THREAD_MATRIX_SIZE < this->m) numChunks++;
 #pragma omp parallel for schedule(auto)
@@ -97,23 +119,30 @@ private:
             unsigned int spanEnd = (i + 1) * ONE_THREAD_MATRIX_SIZE - 1;
             if (spanEnd > this->m - 1) spanEnd = this->m - 1;
             // See inmf.hpp protected members for dimensionality details
-            arma::mat B = arma::zeros<arma::mat>(this->nSum, spanEnd - spanStart + 1);
-            arma::uword rowStart = 0;
-            arma::uword rowEnd = 0;
+            // B = arma::zeros<arma::mat>(this->nSum, spanEnd - spanStart + 1);
+            if (i == numChunks - 1) {
+                // B.reshape(this->nSum, spanEnd - spanStart + 1);
+                giventInput.reshape(this->k, spanEnd - spanStart + 1); ///
+            }
+            giventInput = arma::zeros<arma::mat>(this->k, spanEnd - spanStart + 1); ///
             for (unsigned int j = 0; j < this->nDatasets; ++j) {
                 T* ETptr = this->EiT[j].get();
                 arma::mat* Hptr = this->Hi[j].get();
                 arma::mat* VTptr = this->ViT[j].get();
-                rowEnd = rowStart + this->ncol_E[j] - 1;
-                B.rows(rowStart, rowEnd) = *Hptr * (*VTptr).cols(spanStart, spanEnd);
-                B.rows(rowStart, rowEnd) -= (*ETptr).cols(spanStart, spanEnd);
-                rowStart = rowEnd + 1;
+                B = *Hptr * (*VTptr).cols(spanStart, spanEnd);
+                B -= (*ETptr).cols(spanStart, spanEnd);
+                B *= -1;
+                giventInput += (*Hptr).t() * B;
             }
-            B *= -1;
-            BPPNNLS<arma::mat, arma::vec> subProbW(this->C_solveW, B);
+            // BPPNNLS<arma::mat, arma::vec> subProbW(this->C_solveW, B);
+            BPPNNLS<arma::mat, arma::vec> subProbW(giventGiven, giventInput, true); ///
             subProbW.solveNNLS();
             (*Wptr).rows(spanStart, spanEnd) = subProbW.getSolutionMatrix().t();
+            (*WTptr).cols(spanStart, spanEnd) = subProbW.getSolutionMatrix();
         }
+        B.clear();
+        giventGiven.clear(); ///
+        giventInput.clear(); ///
         *WTptr = (*Wptr).t();
         auto time1 = std::chrono::high_resolution_clock::now();
         elapse = time1 - time0;
@@ -122,6 +151,12 @@ private:
 
 public:
     BPPINMF(std::vector<std::unique_ptr<T>>& Ei, arma::uword k, double lambda) : INMF<T>(Ei, k, lambda) {
+
+    }
+    BPPINMF(std::vector<std::unique_ptr<T>>& Ei, arma::uword k, double lambda,
+            std::vector<std::unique_ptr<arma::mat>>& Hinit,
+            std::vector<std::unique_ptr<arma::mat>>& Vinit,
+            arma::mat& Winit) : INMF<T>(Ei, k, lambda, Hinit, Vinit, Winit) {
 
     }
 
@@ -138,7 +173,7 @@ public:
             solveH();
             solveV();
             solveW();
-            obj = this->objective();
+            obj = this->computeObjectiveError();
             std::cout << "Iteration: " << iter << " Objective: " << obj << std::endl;
             delta = abs(this->objective_err - obj) / ((this->objective_err + obj) / 2);
             std::cout << "Delta: " << delta << std::endl;

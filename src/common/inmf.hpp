@@ -22,18 +22,20 @@ namespace planc {
         std::unique_ptr<arma::mat> W;                // mxk
         std::unique_ptr<arma::mat> WT;                // kxm
         double lambda, sqrtLambda, objective_err;
+        double m_symm_reg;              /// Symmetric Regularization parameter
+        arma::fvec m_regW;
+        arma::fvec m_regH;
         bool cleared;
         // std::vector<arma::mat> C_solveH;//(2*m, k);
-        arma::mat B_solveH;//(2*m, n_i);
+        // arma::mat B_solveH;//(2*m, n_i);
         // std::vector<arma::mat> C_solveV;//(2*n_i, k);
         // std::vector<std::unique_ptr<T>> B_solveV; //(2*n_i, m);
         // arma::mat C_solveW;
         // T B_solveW;
-        arma::mat C_solveH; //(2*m, k);
+        // arma::mat C_solveH; //(2*m, k);
         // std::vector<std::unique_ptr<T>> B_solveH;    //(2*m, n_i);
-        arma::mat C_solveV; //(2*n_max, k);
         // arma::mat B_solveV;         //(2*n_max, m);
-        arma::mat C_solveW; //(nSum, k)
+        // arma::mat C_solveW; //(nSum, k)
         // arma::mat B_solveW;         //(nSum, m)
         // arma::mat B_solveH_chunk; //(2*m, CHUNK_SIZE);
 // #ifdef CMAKE_BUILD_SPARSE
@@ -41,32 +43,60 @@ namespace planc {
 // #else
 //         arma::mat B_solveW_i;   //(this->n, this->m); /// At(nxm) - HV(nxm);
 // #endif
+        void regW(const arma::fvec &iregW) { this->m_regW = iregW; }
+        /// Sets the regularization on right low rank H
+        void regH(const arma::fvec &iregH) { this->m_regH = iregH; }
+        /// Returns the L2 and L1 regularization parameters of W as a vector
+        arma::fvec regW() { return this->m_regW; }
+        /// Returns the L2 and L1 regularization parameters of W as a vector
+        arma::fvec regH() { return this->m_regH; }
 
-        void updateC_solveH(int i) {
-            // Execute in constructor and after each update of W
-            arma::mat* Wptr = this->W.get();
-            arma::mat* Vptr = this->Vi[i].get();
-            this->C_solveH.rows(0, this->m - 1) = *Wptr + *Vptr;
-            this->C_solveH.rows(this->m, 2 * this->m - 1) = sqrtLambda * *Vptr;
-        }
-
-        void updateC_solveV(int i) {
-            arma::mat* Hptr = this->Hi[i].get();
-            this->C_solveV.rows(0, this->ncol_E[i] - 1) = *Hptr;
-            this->C_solveV.rows(this->ncol_E[i], 2 * this->ncol_E[i] - 1) = sqrtLambda * *Hptr;
-        }
-
-        void updateC_solveW(int i) {
-            // Only update slices of C_solveW that correspond to Hi[i]
-            arma::mat* Hptr = this->Hi[i].get();
-            unsigned int start = 0, end;
-            // accumulate the number of columns of Ei up to i
-            for (unsigned int j = 0; j < i; ++j) {
-                start += this->ncol_E[j];
+        void applyReg(const arma::fvec &reg, arma::mat *AtA) {
+            // Frobenius norm regularization
+            if (reg(0) > 0) {
+            arma::mat identity = arma::eye<arma::mat>(this->k, this->k);
+            float lambda_l2 = reg(0);
+            (*AtA) = (*AtA) + 2 * lambda_l2 * identity;
             }
-            end = start + this->ncol_E[i] - 1;
-            this->C_solveW.rows(start, end) = *Hptr;
+
+            // L1 - norm regularization
+            if (reg(1) > 0) {
+            arma::mat onematrix = arma::ones<arma::mat>(this->k, this->k);
+            float lambda_l1 = reg(1);
+            (*AtA) = (*AtA) + 2 * lambda_l1 * onematrix;
+            }
         }
+
+        void applySymmetricReg(double sym_reg, arma::mat *lhs, arma::mat *fac, arma::mat *rhs) {
+            if (sym_reg > 0) {
+            arma::mat identity = arma::eye<arma::mat>(this->k, this->k);
+            (*lhs) = (*lhs) + sym_reg * identity;
+            (*rhs) = (*rhs) + sym_reg * (*fac);
+            }
+        }
+        void symm_reg(const double &i_symm_reg) { this->m_symm_reg = i_symm_reg; }
+        /// Returns the Symmetric regularization parameter
+        double symm_reg() { return this->m_symm_reg; }
+
+        // void updateC_solveH(int i) {
+        //     // Execute in constructor and after each update of W
+        //     arma::mat* Wptr = this->W.get();
+        //     arma::mat* Vptr = this->Vi[i].get();
+        //     this->C_solveH.rows(0, this->m - 1) = *Wptr + *Vptr;
+        //     this->C_solveH.rows(this->m, 2 * this->m - 1) = sqrtLambda * *Vptr;
+        // }
+
+        // void updateC_solveW(int i) {
+        //     // Only update slices of C_solveW that correspond to Hi[i]
+        //     arma::mat* Hptr = this->Hi[i].get();
+        //     unsigned int start = 0, end;
+        //     // accumulate the number of columns of Ei up to i
+        //     for (unsigned int j = 0; j < i; ++j) {
+        //         start += this->ncol_E[j];
+        //     }
+        //     end = start + this->ncol_E[i] - 1;
+        //     this->C_solveW.rows(start, end) = *Hptr;
+        // }
 
         // void updateB_solveH(T* E) {
         //     std::unique_ptr<T> B_H;
@@ -76,46 +106,41 @@ namespace planc {
         //     B_solveH.push_back(std::move(B_H));
         // }
 
-        // void updateB_solveV(int i) {
-        //     T* Eptr = this->Ei[i].get();
-        //     arma::mat* Wptr = W.get();
-        //     arma::mat* Hptr = this->Hi[i].get();
-        //     unsigned int dataSize = this->ncol_E[i];
-        //     this->B_solveV.rows(0, dataSize - 1) = Eptr->t() - *Hptr * Wptr->t();
-        //     this->B_solveV.rows(dataSize, 2 * dataSize - 1) = arma::zeros<T>(dataSize, this->m);
-        // }
-
-        // void updateB_solveW(int i) {
-        //     T* Eptr = this->Ei[i].get();
-        //     arma::mat* Hptr = this->Hi[i].get();
-        //     arma::mat* Vptr = this->Vi[i].get();
-        //     unsigned int start = 0, end;
-        //     // accumulate the number of columns of Ei up to i
-        //     for (unsigned int j = 0; j < i; ++j) {
-        //         start += this->ncol_E[j];
-        //     }
-        //     end = start + this->ncol_E[i] - 1;
-        //     this->B_solveW.rows(start, end) = Eptr->t() - *Hptr * Vptr->t();
-        // }
-
-        double objective() {
+        double computeObjectiveError() {
+            auto time0 = std::chrono::high_resolution_clock::now();
+            std::chrono::duration<double> elapse;
             // Calculate the objective function
-            double obj = 0, n1, n2;
-            // arma::mat* Wptr = this->W.get();
-            arma::mat* WTptr = this->WT.get();
+            double obj = 0, norm;
+            arma::mat* Wptr = this->W.get();
             for (arma::uword i = 0; i < this->nDatasets; ++i) {
+                arma::uword dataSize = this->ncol_E[i];
                 T* Eptr = this->Ei[i].get();
                 arma::mat* Hptr = this->Hi[i].get();
-                arma::mat* VTptr = this->ViT[i].get();
-                // TODO: Perhaps we can also write this part in chunks to save memory
-                arma::mat diff = *Hptr * (*VTptr + *WTptr) - Eptr->t();
-                n1 = arma::norm<arma::mat>(diff, "fro");
-                n1 *= n1;
-                obj += n1;
-                n2 = arma::norm<arma::mat>(*Hptr * *VTptr, "fro");
-                n2 *= n2;
-                obj += this->lambda * n2;
+                arma::mat* Vptr = this->Vi[i].get();
+                arma::mat errMat(this->m, ONE_THREAD_MATRIX_SIZE);
+                unsigned int numChunks = dataSize / ONE_THREAD_MATRIX_SIZE;
+                if (numChunks * ONE_THREAD_MATRIX_SIZE < dataSize) numChunks++;
+#pragma omp parallel for schedule(auto)
+                for (unsigned int j = 0; j < numChunks; ++j) {
+                    unsigned int spanStart = j * ONE_THREAD_MATRIX_SIZE;
+                    unsigned int spanEnd = (j + 1) * ONE_THREAD_MATRIX_SIZE - 1;
+                    if (spanEnd > dataSize - 1) spanEnd = dataSize - 1;
+                    if (j == numChunks - 1) errMat.resize(this->m, spanEnd - spanStart + 1);
+                    errMat = (*Vptr + *Wptr) * arma::mat(Hptr->t()).cols(spanStart, spanEnd);
+                    errMat -= Eptr->cols(spanStart, spanEnd);
+                    norm = arma::norm<arma::mat>(errMat, "fro");
+                    norm *= norm;
+                    obj += norm;
+
+                    errMat = *Vptr * arma::mat(Hptr->t()).cols(spanStart, spanEnd);
+                    norm = arma::norm<arma::mat>(errMat, "fro");
+                    norm *= norm;
+                    obj += this->lambda * norm;
+                }
             }
+            auto time1 = std::chrono::high_resolution_clock::now();
+            elapse = time1 - time0;
+            std::cout << "Objective calculation time: " << elapse.count() << " sec" << std::endl;
             return obj;
         }
 
@@ -141,12 +166,11 @@ namespace planc {
             this->WT = std::unique_ptr<arma::mat>(new arma::mat);
             *this->W = arma::randu<arma::mat>(this->m, this->k);
             *this->WT = (*this->W).t();
-            this->objective_err = this->objective();
+            this->objective_err = this->computeObjectiveError();
             std::cout << "Initial objective: " << this->objective_err << std::endl;
         }
-    public:
-        INMF(std::vector<std::unique_ptr<T>>& Ei,
-            arma::uword k, double lambda) {
+
+        void constructObject(std::vector<std::unique_ptr<T>>& Ei, arma::uword k, double lambda) {
             this->Ei = std::move(Ei);
             this->k = k;
             this->m = this->Ei[0].get()->n_rows;
@@ -170,22 +194,43 @@ namespace planc {
             };
             std::cout << "nMax=" << this->nMax << "; nSum=" << this->nSum << std::endl;
             std::cout << "nDatasets=" << this->nDatasets << std::endl;
-            this->initHWV();
+            // this->initHWV();
             this->lambda = lambda;
             this->sqrtLambda = sqrt(lambda); //TODO
+            this->m_regW = arma::zeros<arma::fvec>(2);
+            this->m_regH = arma::zeros<arma::fvec>(2);
             //TODO implement common tasks i.e. norm, reg, etc
-            this->C_solveH = arma::zeros(2 * this->m, this->k);
-            this->C_solveV = arma::zeros(2 * this->nMax, this->k);
-            this->C_solveW = arma::zeros(this->nSum, this->k);
-            // this->B_solveV = arma::zeros<T>(2 * this->nMax, this->m);
-            // this->B_solveW = arma::zeros<T>(this->nSum, this->m);
-        };
+        }
+    public:
+        INMF(std::vector<std::unique_ptr<T>>& Ei, arma::uword k, double lambda) {
+            this->constructObject(Ei, k, lambda);
+            this->initHWV();
+        }
+        INMF(std::vector<std::unique_ptr<T>>& Ei, arma::uword k, double lambda,
+             std::vector<std::unique_ptr<arma::mat>>& Hinit,
+             std::vector<std::unique_ptr<arma::mat>>& Vinit,
+             arma::mat& Winit) {
+            this->constructObject(Ei, k, lambda);
+            this->W = std::make_unique<arma::mat>(Winit);
+
+            for (arma::uword i = 0; i < this->nDatasets; ++i) {
+                this->Hi.push_back(std::move(Hinit[i]));
+                arma::mat* Vptr = Vinit[i].get();
+                std::unique_ptr<arma::mat> VTptr = std::unique_ptr<arma::mat>(new arma::mat);
+                *VTptr = Vptr->t();
+                this->Vi.push_back(std::move(Vinit[i]));
+                this->ViT.push_back(std::move(VTptr));
+            }
+            std::unique_ptr<arma::mat> WTptr = std::unique_ptr<arma::mat>(new arma::mat);
+            *WTptr = this->W->t();
+            this->WT = std::move(WTptr);
+        }
+
         ~INMF() { clear(); }
         void clear() {
             if (!this->cleared) {
-                this->C_solveH.clear();
-                this->C_solveV.clear();
-                this->C_solveW.clear();
+                // this->C_solveH.clear();
+                // this->C_solveW.clear();
                 // this->B_solveW.clear();
                 // this->B_solveV.clear();
                 // this->B_solveH_chunk.clear();

@@ -304,7 +304,11 @@ Rcpp::List bppinmf(std::vector<arma::mat> objectList, arma::uword k, double lamb
 
 //' @export
 // [[Rcpp::export]]
-Rcpp::List bppinmf_sparse(Rcpp::List objectList, arma::uword k, double lambda, arma::uword maxIter, double thresh) {
+Rcpp::List bppinmf_sparse(Rcpp::List objectList, arma::uword k, double lambda,
+    arma::uword maxIter, double thresh,
+    Rcpp::Nullable<std::vector<arma::mat>> Hinit,
+    Rcpp::Nullable<std::vector<arma::mat>> Vinit,
+    Rcpp::Nullable<arma::mat> Winit) {
     std::vector<std::unique_ptr<arma::sp_mat>> matPtrVec;
     for (arma::uword i = 0; i < objectList.size(); ++i)
     {
@@ -312,8 +316,39 @@ Rcpp::List bppinmf_sparse(Rcpp::List objectList, arma::uword k, double lambda, a
         std::unique_ptr<arma::sp_mat> ptr = std::make_unique<arma::sp_mat>(E);
         matPtrVec.push_back(std::move(ptr));
     }
+
+    std::vector<std::unique_ptr<arma::mat>> HPtrVec;
+    if (Hinit.isNotNull()) {
+        std::vector<arma::mat> HinitList = Rcpp::as<std::vector<arma::mat>>(Hinit);
+        for (arma::uword i = 0; i < HinitList.size(); ++i)
+        {
+            arma::mat H = arma::mat(HinitList[i].begin(), HinitList[i].n_rows, HinitList[i].n_cols, false, true);
+            std::unique_ptr<arma::mat> ptr = std::make_unique<arma::mat>(H);
+            HPtrVec.push_back(std::move(ptr));
+        }
+        std::cout << "Taking " << HPtrVec.size() << " initialized H matrices" << std::endl;
+    }
+
+    std::vector<std::unique_ptr<arma::mat>> VPtrVec;
+    if (Vinit.isNotNull()) {
+        std::vector<arma::mat> VinitList = Rcpp::as<std::vector<arma::mat>>(Vinit);
+        for (arma::uword i = 0; i < VinitList.size(); ++i)
+        {
+            arma::mat V = arma::mat(VinitList[i].begin(), VinitList[i].n_rows, VinitList[i].n_cols, false, true);
+            std::unique_ptr<arma::mat> ptr = std::make_unique<arma::mat>(V);
+            VPtrVec.push_back(std::move(ptr));
+        }
+        std::cout << "Taking " << VPtrVec.size() << " initialized V matrices" << std::endl;
+    }
+
+    arma::mat W;
+    if (Winit.isNotNull()) {
+        W = Rcpp::as<arma::mat>(Winit);
+        std::cout << "Taking initialized W matrix" << std::endl;
+    }
+
     std::cout << "matPtrVec size=" << matPtrVec.size() << std::endl;
-    planc::BPPINMF<arma::sp_mat> solver(matPtrVec, k, lambda);
+    planc::BPPINMF<arma::sp_mat> solver(matPtrVec, k, lambda, HPtrVec, VPtrVec, W);
     solver.optimizeALS(maxIter, thresh);
     Rcpp::List HList = Rcpp::List::create();
     Rcpp::List VList = Rcpp::List::create();
