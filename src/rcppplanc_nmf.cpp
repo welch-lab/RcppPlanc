@@ -306,9 +306,9 @@ Rcpp::List bppinmf(std::vector<arma::mat> objectList, arma::uword k, double lamb
 // [[Rcpp::export]]
 Rcpp::List bppinmf_sparse(Rcpp::List objectList, arma::uword k, double lambda,
     arma::uword maxIter, double thresh,
-    Rcpp::Nullable<std::vector<arma::mat>> Hinit,
-    Rcpp::Nullable<std::vector<arma::mat>> Vinit,
-    Rcpp::Nullable<arma::mat> Winit) {
+    Rcpp::Nullable<std::vector<arma::mat>> Hinit = R_NilValue,
+    Rcpp::Nullable<std::vector<arma::mat>> Vinit = R_NilValue,
+    Rcpp::Nullable<arma::mat> Winit  = R_NilValue) {
     std::vector<std::unique_ptr<arma::sp_mat>> matPtrVec;
     for (arma::uword i = 0; i < objectList.size(); ++i)
     {
