@@ -121,12 +121,10 @@ namespace planc {
                 if (numChunks * ONE_THREAD_MATRIX_SIZE < dataSize) numChunks++;
 #pragma omp parallel for schedule(auto)
                 for (unsigned int j = 0; j < numChunks; ++j) {
-                    arma::mat errMat(this->m, ONE_THREAD_MATRIX_SIZE);
-
                     unsigned int spanStart = j * ONE_THREAD_MATRIX_SIZE;
                     unsigned int spanEnd = (j + 1) * ONE_THREAD_MATRIX_SIZE - 1;
                     if (spanEnd > dataSize - 1) spanEnd = dataSize - 1;
-                    if (j == numChunks - 1) errMat.resize(this->m, spanEnd - spanStart + 1);
+                    arma::mat errMat(this->m, spanEnd - spanStart + 1);
                     errMat = (*Vptr + *Wptr) * arma::mat(Hptr->t()).cols(spanStart, spanEnd);
                     errMat -= Eptr->cols(spanStart, spanEnd);
                     norm = arma::norm<arma::mat>(errMat, "fro");
