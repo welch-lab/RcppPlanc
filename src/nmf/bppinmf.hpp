@@ -11,7 +11,7 @@
 namespace planc {
 
 template <class T>
-class BPPINMF : INMF<T> {
+class BPPINMF : public INMF<T> {
 private:
     arma::mat giventGiven;
 
@@ -153,12 +153,12 @@ public:
     BPPINMF(std::vector<std::unique_ptr<T>>& Ei, arma::uword k, double lambda) : INMF<T>(Ei, k, lambda) {
 
     }
-    BPPINMF(std::vector<std::unique_ptr<T>>& Ei, arma::uword k, double lambda,
-            std::vector<std::unique_ptr<arma::mat>>& Hinit,
-            std::vector<std::unique_ptr<arma::mat>>& Vinit,
-            arma::mat& Winit) : INMF<T>(Ei, k, lambda, Hinit, Vinit, Winit) {
+    // BPPINMF(std::vector<std::unique_ptr<T>>& Ei, arma::uword k, double lambda,
+    //         std::vector<std::unique_ptr<arma::mat>>& Hinit,
+    //         std::vector<std::unique_ptr<arma::mat>>& Vinit,
+    //         arma::mat& Winit) : INMF<T>(Ei, k, lambda, Hinit, Vinit, Winit) {
 
-    }
+    // }
 
     void optimizeALS(int maxIter, const double thresh) {
         // execute private functions here

@@ -144,31 +144,31 @@ namespace planc {
             return obj;
         }
 
-        void initHWV() {
-            // Initialize H, W, V
-            std::unique_ptr<arma::mat> H;
-            std::unique_ptr<arma::mat> V;
-            std::unique_ptr<arma::mat> VT;
-            // std::unique_ptr<arma::mat> W;
-            for (arma::uword i = 0; i < this->nDatasets; ++i) {
-                H = std::unique_ptr<arma::mat>(new arma::mat);
-                *H = arma::randu<arma::mat>(this->ncol_E[i], this->k);
-                this->Hi.push_back(std::move(H));
+        // void initHWV() {
+        //     // Initialize H, W, V
+        //     std::unique_ptr<arma::mat> H;
+        //     std::unique_ptr<arma::mat> V;
+        //     std::unique_ptr<arma::mat> VT;
+        //     // std::unique_ptr<arma::mat> W;
+        //     for (arma::uword i = 0; i < this->nDatasets; ++i) {
+        //         H = std::unique_ptr<arma::mat>(new arma::mat);
+        //         *H = arma::randu<arma::mat>(this->ncol_E[i], this->k);
+        //         this->Hi.push_back(std::move(H));
 
-                V = std::unique_ptr<arma::mat>(new arma::mat);
-                VT = std::unique_ptr<arma::mat>(new arma::mat);
-                *V = arma::randu<arma::mat>(this->m, this->k);
-                *VT = (*V).t();
-                this->Vi.push_back(std::move(V));
-                this->ViT.push_back(std::move(VT));
-            }
-            this->W = std::unique_ptr<arma::mat>(new arma::mat);
-            this->WT = std::unique_ptr<arma::mat>(new arma::mat);
-            *this->W = arma::randu<arma::mat>(this->m, this->k);
-            *this->WT = (*this->W).t();
-            this->objective_err = this->computeObjectiveError();
-            std::cout << "Initial objective: " << this->objective_err << std::endl;
-        }
+        //         V = std::unique_ptr<arma::mat>(new arma::mat);
+        //         VT = std::unique_ptr<arma::mat>(new arma::mat);
+        //         *V = arma::randu<arma::mat>(this->m, this->k);
+        //         *VT = (*V).t();
+        //         this->Vi.push_back(std::move(V));
+        //         this->ViT.push_back(std::move(VT));
+        //     }
+        //     this->W = std::unique_ptr<arma::mat>(new arma::mat);
+        //     this->WT = std::unique_ptr<arma::mat>(new arma::mat);
+        //     *this->W = arma::randu<arma::mat>(this->m, this->k);
+        //     *this->WT = (*this->W).t();
+        //     this->objective_err = this->computeObjectiveError();
+        //     std::cout << "Initial objective: " << this->objective_err << std::endl;
+        // }
 
         void constructObject(std::vector<std::unique_ptr<T>>& Ei, arma::uword k, double lambda) {
             this->Ei = std::move(Ei);
@@ -204,26 +204,89 @@ namespace planc {
     public:
         INMF(std::vector<std::unique_ptr<T>>& Ei, arma::uword k, double lambda) {
             this->constructObject(Ei, k, lambda);
-            this->initHWV();
+            // this->initHWV();
         }
-        INMF(std::vector<std::unique_ptr<T>>& Ei, arma::uword k, double lambda,
-             std::vector<std::unique_ptr<arma::mat>>& Hinit,
-             std::vector<std::unique_ptr<arma::mat>>& Vinit,
-             arma::mat& Winit) {
-            this->constructObject(Ei, k, lambda);
-            this->W = std::make_unique<arma::mat>(Winit);
+        // INMF(std::vector<std::unique_ptr<T>>& Ei, arma::uword k, double lambda,
+        //      std::vector<std::unique_ptr<arma::mat>>& Hinit,
+        //      std::vector<std::unique_ptr<arma::mat>>& Vinit,
+        //      arma::mat& Winit) {
+        //     this->constructObject(Ei, k, lambda);
+        //     this->W = std::make_unique<arma::mat>(Winit);
 
+        //     for (arma::uword i = 0; i < this->nDatasets; ++i) {
+        //         this->Hi.push_back(std::move(Hinit[i]));
+        //         arma::mat* Vptr = Vinit[i].get();
+        //         std::unique_ptr<arma::mat> VTptr = std::unique_ptr<arma::mat>(new arma::mat);
+        //         *VTptr = Vptr->t();
+        //         this->Vi.push_back(std::move(Vinit[i]));
+        //         this->ViT.push_back(std::move(VTptr));
+        //     }
+        //     std::unique_ptr<arma::mat> WTptr = std::unique_ptr<arma::mat>(new arma::mat);
+        //     *WTptr = this->W->t();
+        //     this->WT = std::move(WTptr);
+        // }
+        void initH(std::vector<arma::mat>& Hinit) {
+            std::cout << "Taking initialized H matrices" << std::endl;
+            std::unique_ptr<arma::mat> H;
             for (arma::uword i = 0; i < this->nDatasets; ++i) {
-                this->Hi.push_back(std::move(Hinit[i]));
-                arma::mat* Vptr = Vinit[i].get();
-                std::unique_ptr<arma::mat> VTptr = std::unique_ptr<arma::mat>(new arma::mat);
-                *VTptr = Vptr->t();
-                this->Vi.push_back(std::move(Vinit[i]));
-                this->ViT.push_back(std::move(VTptr));
+                H = std::unique_ptr<arma::mat>(new arma::mat);
+                *H = Hinit[i];
+                this->Hi.push_back(std::move(H));
             }
-            std::unique_ptr<arma::mat> WTptr = std::unique_ptr<arma::mat>(new arma::mat);
-            *WTptr = this->W->t();
-            this->WT = std::move(WTptr);
+        }
+
+        void initH() {
+            std::cout << "Randomly initializing H matrices" << std::endl;
+            std::unique_ptr<arma::mat> H;
+            for (arma::uword i = 0; i < this->nDatasets; ++i) {
+                H = std::unique_ptr<arma::mat>(new arma::mat);
+                *H = arma::randu<arma::mat>(this->ncol_E[i], this->k);
+                this->Hi.push_back(std::move(H));
+            }
+        }
+
+        void initV(std::vector<arma::mat>& Vinit) {
+            std::cout << "Taking initialized V matrices" << std::endl;
+            std::unique_ptr<arma::mat> V;
+            std::unique_ptr<arma::mat> VT;
+            for (arma::uword i = 0; i < this->nDatasets; ++i) {
+                V = std::unique_ptr<arma::mat>(new arma::mat);
+                VT = std::unique_ptr<arma::mat>(new arma::mat);
+                *V = Vinit[i];
+                *VT = (*V).t();
+                this->Vi.push_back(std::move(V));
+                this->ViT.push_back(std::move(VT));
+            }
+        }
+
+        void initV() {
+            std::cout << "Randomly initializing V matrices" << std::endl;
+            std::unique_ptr<arma::mat> V;
+            std::unique_ptr<arma::mat> VT;
+            for (arma::uword i = 0; i < this->nDatasets; ++i) {
+                V = std::unique_ptr<arma::mat>(new arma::mat);
+                VT = std::unique_ptr<arma::mat>(new arma::mat);
+                *V = arma::randu<arma::mat>(this->m, this->k);
+                *VT = (*V).t();
+                this->Vi.push_back(std::move(V));
+                this->ViT.push_back(std::move(VT));
+            }
+        }
+
+        void initW(arma::mat Winit) {
+            std::cout << "Taking initialized W matrix" << std::endl;
+            this->W = std::unique_ptr<arma::mat>(new arma::mat);
+            this->WT = std::unique_ptr<arma::mat>(new arma::mat);
+            *this->W = Winit;
+            *this->WT = (*this->W).t();
+        }
+
+        void initW() {
+            std::cout << "Randomly initializing W matrix" << std::endl;
+            this->W = std::unique_ptr<arma::mat>(new arma::mat);
+            this->WT = std::unique_ptr<arma::mat>(new arma::mat);
+            *this->W = arma::randu<arma::mat>(this->m, this->k);
+            *this->WT = (*this->W).t();
         }
 
         ~INMF() { clear(); }
