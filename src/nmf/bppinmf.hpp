@@ -61,7 +61,6 @@ private:
         std::chrono::duration<double> elapse;
         std::cout << "--Solving V--  ";
         arma::mat* WTptr = this->WT.get();
-        arma::mat B;
         arma::mat giventInput(this->k, ONE_THREAD_MATRIX_SIZE);;
         for (int i=0; i<this->nDatasets; ++i) {
             arma::mat* Hptr = this->Hi[i].get();\
@@ -77,7 +76,7 @@ private:
                 unsigned int spanStart = j * ONE_THREAD_MATRIX_SIZE;
                 unsigned int spanEnd = (j + 1) * ONE_THREAD_MATRIX_SIZE - 1;
                 if (spanEnd > this->m - 1) spanEnd = this->m - 1;
-                B = *Hptr * (*WTptr).cols(spanStart, spanEnd);
+                arma::mat B = *Hptr * (*WTptr).cols(spanStart, spanEnd);
                 B -= (*ETptr).cols(spanStart, spanEnd);
                 B *= -1;
                 giventInput = (*Hptr).t() * B;
@@ -88,7 +87,6 @@ private:
                 (*VTptr).cols(spanStart, spanEnd) = subProbV.getSolutionMatrix();
             }
         }
-        B.clear();
         giventGiven.clear();
         giventInput.clear();
         auto time1 = std::chrono::high_resolution_clock::now();
@@ -102,7 +100,6 @@ private:
         std::cout << "--Solving W--  ";
         arma::mat* Wptr = this->W.get();
         arma::mat* WTptr = this->WT.get();
-        arma::mat B;//(this->nSum, ONE_THREAD_MATRIX_SIZE);
         arma::mat giventInput; //(this->k, ONE_THREAD_MATRIX_SIZE); ///
         // this->applyReg(this->regW(), &giventGiven); ///
         giventGiven = arma::zeros<arma::mat>(this->k, this->k); ///
@@ -113,7 +110,6 @@ private:
 
         unsigned int numChunks = this->m / ONE_THREAD_MATRIX_SIZE;
         if (numChunks * ONE_THREAD_MATRIX_SIZE < this->m) numChunks++;
-#pragma omp parallel for schedule(auto)
         for (unsigned int i = 0; i < numChunks; ++i) {
             unsigned int spanStart = i * ONE_THREAD_MATRIX_SIZE;
             unsigned int spanEnd = (i + 1) * ONE_THREAD_MATRIX_SIZE - 1;
@@ -125,7 +121,9 @@ private:
                 giventInput.reshape(this->k, spanEnd - spanStart + 1); ///
             }
             giventInput = arma::zeros<arma::mat>(this->k, spanEnd - spanStart + 1); ///
+            #pragma omp parallel for schedule(auto)
             for (unsigned int j = 0; j < this->nDatasets; ++j) {
+                arma::mat B; //(this->nSum, ONE_THREAD_MATRIX_SIZE);
                 T* ETptr = this->EiT[j].get();
                 arma::mat* Hptr = this->Hi[j].get();
                 arma::mat* VTptr = this->ViT[j].get();
@@ -133,6 +131,7 @@ private:
                 B -= (*ETptr).cols(spanStart, spanEnd);
                 B *= -1;
                 giventInput += (*Hptr).t() * B;
+                B.clear();
             }
             // BPPNNLS<arma::mat, arma::vec> subProbW(this->C_solveW, B);
             BPPNNLS<arma::mat, arma::vec> subProbW(giventGiven, giventInput, true); ///
@@ -140,7 +139,6 @@ private:
             (*Wptr).rows(spanStart, spanEnd) = subProbW.getSolutionMatrix().t();
             (*WTptr).cols(spanStart, spanEnd) = subProbW.getSolutionMatrix();
         }
-        B.clear();
         giventGiven.clear(); ///
         giventInput.clear(); ///
         *WTptr = (*Wptr).t();

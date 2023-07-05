@@ -117,11 +117,12 @@ namespace planc {
                 T* Eptr = this->Ei[i].get();
                 arma::mat* Hptr = this->Hi[i].get();
                 arma::mat* Vptr = this->Vi[i].get();
-                arma::mat errMat(this->m, ONE_THREAD_MATRIX_SIZE);
                 unsigned int numChunks = dataSize / ONE_THREAD_MATRIX_SIZE;
                 if (numChunks * ONE_THREAD_MATRIX_SIZE < dataSize) numChunks++;
 #pragma omp parallel for schedule(auto)
                 for (unsigned int j = 0; j < numChunks; ++j) {
+                    arma::mat errMat(this->m, ONE_THREAD_MATRIX_SIZE);
+
                     unsigned int spanStart = j * ONE_THREAD_MATRIX_SIZE;
                     unsigned int spanEnd = (j + 1) * ONE_THREAD_MATRIX_SIZE - 1;
                     if (spanEnd > dataSize - 1) spanEnd = dataSize - 1;
