@@ -6,7 +6,7 @@
 #include "bppnnls.hpp"
 #include "inmf.hpp"
 
-#define ONE_THREAD_MATRIX_SIZE 2000
+#define ONE_THREAD_MATRIX_SIZE 1000
 
 namespace planc {
 
@@ -16,10 +16,10 @@ private:
     arma::mat giventGiven;
 
     void solveH() {
-        auto time0 = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> elapse;
+        tic();
+#ifdef _VERBOSE
         std::cout << "--Solving H--  ";
-        arma::mat giventInput;
+#endif
         arma::mat* Wptr = this->W.get();
         arma::mat given(this->m, this->k);
         // arma::mat B;
@@ -30,9 +30,7 @@ private:
             given = *Wptr + *Vptr;
             giventGiven = given.t() * given;
             giventGiven += (*Vptr).t() * (*Vptr) * this->lambda;
-            // giventGiven = this->C_solveH.t() * this->C_solveH;
-            // giventInput = this->C_solveH.t() * (*Bptr);
-            giventInput = given.t() * (*Eptr);
+            // giventInput = given.t() * (*Eptr);
             unsigned int dataSize = this->ncol_E[i];
             unsigned int numChunks = dataSize / ONE_THREAD_MATRIX_SIZE;
             if (numChunks * ONE_THREAD_MATRIX_SIZE < dataSize) numChunks++;
@@ -41,25 +39,24 @@ private:
                 unsigned int spanStart = j * ONE_THREAD_MATRIX_SIZE;
                 unsigned int spanEnd = (j + 1) * ONE_THREAD_MATRIX_SIZE - 1;
                 if (spanEnd > dataSize - 1) spanEnd = dataSize - 1;
-                // B = arma::zeros<arma::mat>(2 * this->m, spanEnd - spanStart + 1);
-                // B.rows(0, this->m - 1) = Eptr->cols(spanStart, spanEnd);
-                // BPPNNLS<arma::mat, arma::vec> subProbH(this->C_solveH, (arma::mat)Bptr->cols(spanStart, spanEnd));
-                BPPNNLS<arma::mat, arma::vec> subProbH(giventGiven, (arma::mat)giventInput.cols(spanStart, spanEnd), true);
+                arma::mat giventInput = given.t() * (*Eptr).cols(spanStart, spanEnd);
+                BPPNNLS<arma::mat, arma::vec> subProbH(giventGiven, giventInput, true);
                 subProbH.solveNNLS();
                 (*Hptr).rows(spanStart, spanEnd) = subProbH.getSolutionMatrix().t();
+                giventInput.clear();
             }
         }
         giventGiven.clear();
-        giventInput.clear();
-        auto time1 = std::chrono::high_resolution_clock::now();
-        elapse = time1 - time0;
-        std::cout << elapse.count() << " sec" << std::endl;
+#ifdef _VERBOSE
+        std::cout << toc() << " sec" << std::endl;
+#endif
     }
 
     void solveV() {
-        auto time0 = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> elapse;
+        tic();
+#ifdef _VERBOSE
         std::cout << "--Solving V--  ";
+#endif
         arma::mat* WTptr = this->WT.get();
         arma::mat giventInput(this->k, ONE_THREAD_MATRIX_SIZE);;
         for (int i=0; i<this->nDatasets; ++i) {
@@ -76,11 +73,9 @@ private:
                 unsigned int spanStart = j * ONE_THREAD_MATRIX_SIZE;
                 unsigned int spanEnd = (j + 1) * ONE_THREAD_MATRIX_SIZE - 1;
                 if (spanEnd > this->m - 1) spanEnd = this->m - 1;
-                arma::mat B = *Hptr * (*WTptr).cols(spanStart, spanEnd);
-                B -= (*ETptr).cols(spanStart, spanEnd);
-                B *= -1;
-                giventInput = (*Hptr).t() * B;
-                // BPPNNLS<arma::mat, arma::vec> subProbV(C, B);
+                arma::mat giventInput;
+                giventInput = (*Hptr).t() * (*ETptr).cols(spanStart, spanEnd);
+                giventInput -= (*Hptr).t() * *Hptr * (*WTptr).cols(spanStart, spanEnd);
                 BPPNNLS<arma::mat, arma::vec> subProbV(giventGiven, giventInput, true);
                 subProbV.solveNNLS();
                 (*Vptr).rows(spanStart, spanEnd) = subProbV.getSolutionMatrix().t();
@@ -89,20 +84,20 @@ private:
         }
         giventGiven.clear();
         giventInput.clear();
-        auto time1 = std::chrono::high_resolution_clock::now();
-        elapse = time1 - time0;
-        std::cout << elapse.count() << " sec" << std::endl;
+#ifdef _VERBOSE
+        std::cout << toc() << " sec" << std::endl;
+#endif
     }
 
     void solveW() {
-        auto time0 = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double> elapse;
+        tic();
+#ifdef _VERBOSE
         std::cout << "--Solving W--  ";
+#endif
         arma::mat* Wptr = this->W.get();
         arma::mat* WTptr = this->WT.get();
-        arma::mat giventInput; //(this->k, ONE_THREAD_MATRIX_SIZE); ///
-        // this->applyReg(this->regW(), &giventGiven); ///
         giventGiven = arma::zeros<arma::mat>(this->k, this->k); ///
+        arma::mat giventInput;
         for (unsigned int j = 0; j < this->nDatasets; ++j) {
             arma::mat* Hptr = this->Hi[j].get();
             giventGiven += (*Hptr).t() * (*Hptr);
@@ -114,26 +109,15 @@ private:
             unsigned int spanStart = i * ONE_THREAD_MATRIX_SIZE;
             unsigned int spanEnd = (i + 1) * ONE_THREAD_MATRIX_SIZE - 1;
             if (spanEnd > this->m - 1) spanEnd = this->m - 1;
-            // See inmf.hpp protected members for dimensionality details
-            // B = arma::zeros<arma::mat>(this->nSum, spanEnd - spanStart + 1);
-            if (i == numChunks - 1) {
-                // B.reshape(this->nSum, spanEnd - spanStart + 1);
-                giventInput.reshape(this->k, spanEnd - spanStart + 1); ///
-            }
             giventInput = arma::zeros<arma::mat>(this->k, spanEnd - spanStart + 1); ///
             #pragma omp parallel for schedule(auto)
             for (unsigned int j = 0; j < this->nDatasets; ++j) {
-                arma::mat B; //(this->nSum, ONE_THREAD_MATRIX_SIZE);
                 T* ETptr = this->EiT[j].get();
                 arma::mat* Hptr = this->Hi[j].get();
                 arma::mat* VTptr = this->ViT[j].get();
-                B = *Hptr * (*VTptr).cols(spanStart, spanEnd);
-                B -= (*ETptr).cols(spanStart, spanEnd);
-                B *= -1;
-                giventInput += (*Hptr).t() * B;
-                B.clear();
+                giventInput += (*Hptr).t() * (*ETptr).cols(spanStart, spanEnd);
+                giventInput -= (*Hptr).t() * *Hptr * (*VTptr).cols(spanStart, spanEnd);
             }
-            // BPPNNLS<arma::mat, arma::vec> subProbW(this->C_solveW, B);
             BPPNNLS<arma::mat, arma::vec> subProbW(giventGiven, giventInput, true); ///
             subProbW.solveNNLS();
             (*Wptr).rows(spanStart, spanEnd) = subProbW.getSolutionMatrix().t();
@@ -142,9 +126,9 @@ private:
         giventGiven.clear(); ///
         giventInput.clear(); ///
         *WTptr = (*Wptr).t();
-        auto time1 = std::chrono::high_resolution_clock::now();
-        elapse = time1 - time0;
-        std::cout << elapse.count() << " sec" << std::endl;
+#ifdef _VERBOSE
+        std::cout << toc() << " sec" << std::endl;
+#endif
     }
 
 public:
@@ -160,26 +144,31 @@ public:
 
     void optimizeALS(int maxIter, const double thresh) {
         // execute private functions here
-        std::cout << "BPPINMF optimizeALS started, maxIter=" << maxIter << ", thresh=" << thresh << std::endl;
+#ifdef _VERBOSE
+        std::cout << "BPPINMF optimizeALS started, maxIter="
+            << maxIter << ", thresh=" << thresh << std::endl;
+#endif
         unsigned int iter = 0;
         double delta=100, obj;
-        std::chrono::duration<double> elapse;
-
         while (delta > thresh && iter < maxIter ) {
-            auto time0 = std::chrono::high_resolution_clock::now();
-            std::cout << "========Staring iteration " << iter+1 << "========" << std::endl;
+            tic();
+#ifdef _VERBOSE
+            std::cout << "========Staring iteration "
+            << iter+1 << "========" << std::endl;
+#endif
             solveH();
             solveV();
             solveW();
             obj = this->computeObjectiveError();
-            std::cout << "Iteration: " << iter << " Objective: " << obj << std::endl;
             delta = abs(this->objective_err - obj) / ((this->objective_err + obj) / 2);
-            std::cout << "Delta: " << delta << std::endl;
             iter++;
             this->objective_err = obj;
-            auto time1 = std::chrono::high_resolution_clock::now();
-            elapse = time1 - time0;
-            std::cout << "Iteration " << iter << " took " << elapse.count() << " seconds" << std::endl;
+#ifdef _VERBOSE
+            std::cout << "Objective:  " << obj << std::endl
+                      << "Delta:      " << delta << std::endl
+                      << "Total time: " << toc() << " sec" << std::endl;
+#endif
+
         }
     }
 

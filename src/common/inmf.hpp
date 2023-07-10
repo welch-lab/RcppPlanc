@@ -22,95 +22,14 @@ namespace planc {
         std::unique_ptr<arma::mat> W;                // mxk
         std::unique_ptr<arma::mat> WT;                // kxm
         double lambda, sqrtLambda, objective_err;
-        double m_symm_reg;              /// Symmetric Regularization parameter
-        arma::fvec m_regW;
-        arma::fvec m_regH;
         bool cleared;
-        // std::vector<arma::mat> C_solveH;//(2*m, k);
-        // arma::mat B_solveH;//(2*m, n_i);
-        // std::vector<arma::mat> C_solveV;//(2*n_i, k);
-        // std::vector<std::unique_ptr<T>> B_solveV; //(2*n_i, m);
-        // arma::mat C_solveW;
-        // T B_solveW;
-        // arma::mat C_solveH; //(2*m, k);
-        // std::vector<std::unique_ptr<T>> B_solveH;    //(2*m, n_i);
-        // arma::mat B_solveV;         //(2*n_max, m);
-        // arma::mat C_solveW; //(nSum, k)
-        // arma::mat B_solveW;         //(nSum, m)
-        // arma::mat B_solveH_chunk; //(2*m, CHUNK_SIZE);
-// #ifdef CMAKE_BUILD_SPARSE
-//         arma::sp_mat B_solveW_i; //(this->n, this->m);
-// #else
-//         arma::mat B_solveW_i;   //(this->n, this->m); /// At(nxm) - HV(nxm);
-// #endif
-        void regW(const arma::fvec &iregW) { this->m_regW = iregW; }
-        /// Sets the regularization on right low rank H
-        void regH(const arma::fvec &iregH) { this->m_regH = iregH; }
-        /// Returns the L2 and L1 regularization parameters of W as a vector
-        arma::fvec regW() { return this->m_regW; }
-        /// Returns the L2 and L1 regularization parameters of W as a vector
-        arma::fvec regH() { return this->m_regH; }
-
-        void applyReg(const arma::fvec &reg, arma::mat *AtA) {
-            // Frobenius norm regularization
-            if (reg(0) > 0) {
-            arma::mat identity = arma::eye<arma::mat>(this->k, this->k);
-            float lambda_l2 = reg(0);
-            (*AtA) = (*AtA) + 2 * lambda_l2 * identity;
-            }
-
-            // L1 - norm regularization
-            if (reg(1) > 0) {
-            arma::mat onematrix = arma::ones<arma::mat>(this->k, this->k);
-            float lambda_l1 = reg(1);
-            (*AtA) = (*AtA) + 2 * lambda_l1 * onematrix;
-            }
-        }
-
-        void applySymmetricReg(double sym_reg, arma::mat *lhs, arma::mat *fac, arma::mat *rhs) {
-            if (sym_reg > 0) {
-            arma::mat identity = arma::eye<arma::mat>(this->k, this->k);
-            (*lhs) = (*lhs) + sym_reg * identity;
-            (*rhs) = (*rhs) + sym_reg * (*fac);
-            }
-        }
-        void symm_reg(const double &i_symm_reg) { this->m_symm_reg = i_symm_reg; }
-        /// Returns the Symmetric regularization parameter
-        double symm_reg() { return this->m_symm_reg; }
-
-        // void updateC_solveH(int i) {
-        //     // Execute in constructor and after each update of W
-        //     arma::mat* Wptr = this->W.get();
-        //     arma::mat* Vptr = this->Vi[i].get();
-        //     this->C_solveH.rows(0, this->m - 1) = *Wptr + *Vptr;
-        //     this->C_solveH.rows(this->m, 2 * this->m - 1) = sqrtLambda * *Vptr;
-        // }
-
-        // void updateC_solveW(int i) {
-        //     // Only update slices of C_solveW that correspond to Hi[i]
-        //     arma::mat* Hptr = this->Hi[i].get();
-        //     unsigned int start = 0, end;
-        //     // accumulate the number of columns of Ei up to i
-        //     for (unsigned int j = 0; j < i; ++j) {
-        //         start += this->ncol_E[j];
-        //     }
-        //     end = start + this->ncol_E[i] - 1;
-        //     this->C_solveW.rows(start, end) = *Hptr;
-        // }
-
-        // void updateB_solveH(T* E) {
-        //     std::unique_ptr<T> B_H;
-        //     B_H = std::unique_ptr<T>(new T(2 * this->m, E->n_cols));
-        //     // Copy the values from E to the top half of B_H
-        //     B_H->rows(0, this->m - 1) = *E;
-        //     B_solveH.push_back(std::move(B_H));
-        // }
 
         double computeObjectiveError() {
-            auto time0 = std::chrono::high_resolution_clock::now();
-            std::chrono::duration<double> elapse;
-            // Calculate the objective function
-            double obj = 0, norm;
+            tic();
+#ifdef _VERBOSE
+            std::cout << "--calc  obj--  ";
+#endif
+            double obj = 0;
             arma::mat* Wptr = this->W.get();
             for (arma::uword i = 0; i < this->nDatasets; ++i) {
                 arma::uword dataSize = this->ncol_E[i];
@@ -123,6 +42,7 @@ namespace planc {
                 for (unsigned int j = 0; j < numChunks; ++j) {
                     unsigned int spanStart = j * ONE_THREAD_MATRIX_SIZE;
                     unsigned int spanEnd = (j + 1) * ONE_THREAD_MATRIX_SIZE - 1;
+                    double norm;
                     if (spanEnd > dataSize - 1) spanEnd = dataSize - 1;
                     arma::mat errMat(this->m, spanEnd - spanStart + 1);
                     errMat = (*Vptr + *Wptr) * arma::mat(Hptr->t()).cols(spanStart, spanEnd);
@@ -137,9 +57,9 @@ namespace planc {
                     obj += this->lambda * norm;
                 }
             }
-            auto time1 = std::chrono::high_resolution_clock::now();
-            elapse = time1 - time0;
-            std::cout << "Objective calculation time: " << elapse.count() << " sec" << std::endl;
+#ifdef _VERBOSE
+            std::cout << toc() << " sec" << std::endl;
+#endif
             return obj;
         }
 
@@ -189,15 +109,12 @@ namespace planc {
                 }
                 this->nSum += E->n_cols;
                 this->nDatasets++;
-                // updateB_solveH(E);
             };
             std::cout << "nMax=" << this->nMax << "; nSum=" << this->nSum << std::endl;
             std::cout << "nDatasets=" << this->nDatasets << std::endl;
             // this->initHWV();
             this->lambda = lambda;
             this->sqrtLambda = sqrt(lambda); //TODO
-            this->m_regW = arma::zeros<arma::fvec>(2);
-            this->m_regH = arma::zeros<arma::fvec>(2);
             //TODO implement common tasks i.e. norm, reg, etc
         }
     public:
@@ -291,14 +208,6 @@ namespace planc {
         ~INMF() { clear(); }
         void clear() {
             if (!this->cleared) {
-                // this->C_solveH.clear();
-                // this->C_solveW.clear();
-                // this->B_solveW.clear();
-                // this->B_solveV.clear();
-                // this->B_solveH_chunk.clear();
-                // for (unsigned int i = 0; i < B_solveH.size(); ++i) {
-                //     B_solveH[i].reset();
-                // }
                 for (unsigned int i = 0; i < Ei.size(); ++i) {
                     Ei[i].reset();
                 }
