@@ -142,33 +142,48 @@ public:
 
     // }
 
-    void optimizeALS(int maxIter, const double thresh) {
+    void optimizeALS(int maxIter, const double thresh, bool verbose) {
         // execute private functions here
+        if (verbose) {
+            std::cerr << "BPPINMF optimizeALS started, maxIter="
+                << maxIter << ", thresh=" << thresh << std::endl;
+        }
 #ifdef _VERBOSE
         std::cout << "BPPINMF optimizeALS started, maxIter="
             << maxIter << ", thresh=" << thresh << std::endl;
 #endif
         unsigned int iter = 0;
         double delta=100, obj;
+        Progress p(maxIter, verbose);
         while (delta > thresh && iter < maxIter ) {
-            tic();
+            Rcpp::checkUserInterrupt();
+            if ( ! p.is_aborted() ) {
 #ifdef _VERBOSE
-            std::cout << "========Staring iteration "
-            << iter+1 << "========" << std::endl;
+                tic();
+                std::cout << "========Staring iteration "
+                << iter+1 << "========" << std::endl;
 #endif
-            solveH();
-            solveV();
-            solveW();
-            obj = this->computeObjectiveError();
-            delta = abs(this->objective_err - obj) / ((this->objective_err + obj) / 2);
-            iter++;
-            this->objective_err = obj;
+                solveH();
+                solveV();
+                solveW();
+                obj = this->computeObjectiveError();
+                delta = abs(this->objective_err - obj) / ((this->objective_err + obj) / 2);
+                iter++;
+                this->objective_err = obj;
 #ifdef _VERBOSE
-            std::cout << "Objective:  " << obj << std::endl
-                      << "Delta:      " << delta << std::endl
-                      << "Total time: " << toc() << " sec" << std::endl;
+                std::cout << "Objective:  " << obj << std::endl
+                        << "Delta:      " << delta << std::endl
+                        << "Total time: " << toc() << " sec" << std::endl;
 #endif
-
+                p.increment();
+            } else {
+                break;
+            }
+        }
+        if (verbose) {
+            std::cerr << "Finished after " << iter << " iterations." << std::endl
+                << "Final objective: " << this->objective_err << std::endl
+                << "Final delta:     " << delta << std::endl;
         }
     }
 

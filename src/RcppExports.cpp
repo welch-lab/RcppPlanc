@@ -99,8 +99,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // bppinmf
-Rcpp::List bppinmf(std::vector<arma::mat> objectList, arma::uword k, double lambda, arma::uword maxIter, double thresh);
-RcppExport SEXP _RcppPlanc_bppinmf(SEXP objectListSEXP, SEXP kSEXP, SEXP lambdaSEXP, SEXP maxIterSEXP, SEXP threshSEXP) {
+Rcpp::List bppinmf(std::vector<arma::mat> objectList, arma::uword k, double lambda, arma::uword maxIter, double thresh, bool verbose);
+RcppExport SEXP _RcppPlanc_bppinmf(SEXP objectListSEXP, SEXP kSEXP, SEXP lambdaSEXP, SEXP maxIterSEXP, SEXP threshSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -109,13 +109,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
     Rcpp::traits::input_parameter< arma::uword >::type maxIter(maxIterSEXP);
     Rcpp::traits::input_parameter< double >::type thresh(threshSEXP);
-    rcpp_result_gen = Rcpp::wrap(bppinmf(objectList, k, lambda, maxIter, thresh));
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(bppinmf(objectList, k, lambda, maxIter, thresh, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
 // bppinmf_sparse
-Rcpp::List bppinmf_sparse(Rcpp::List objectList, arma::uword k, double lambda, arma::uword maxIter, double thresh, Rcpp::Nullable<std::vector<arma::mat>> Hinit, Rcpp::Nullable<std::vector<arma::mat>> Vinit, Rcpp::Nullable<arma::mat> Winit);
-RcppExport SEXP _RcppPlanc_bppinmf_sparse(SEXP objectListSEXP, SEXP kSEXP, SEXP lambdaSEXP, SEXP maxIterSEXP, SEXP threshSEXP, SEXP HinitSEXP, SEXP VinitSEXP, SEXP WinitSEXP) {
+Rcpp::List bppinmf_sparse(Rcpp::List objectList, arma::uword k, double lambda, arma::uword maxIter, double thresh, bool verbose, Rcpp::Nullable<std::vector<arma::mat>> Hinit, Rcpp::Nullable<std::vector<arma::mat>> Vinit, Rcpp::Nullable<arma::mat> Winit);
+RcppExport SEXP _RcppPlanc_bppinmf_sparse(SEXP objectListSEXP, SEXP kSEXP, SEXP lambdaSEXP, SEXP maxIterSEXP, SEXP threshSEXP, SEXP verboseSEXP, SEXP HinitSEXP, SEXP VinitSEXP, SEXP WinitSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -124,10 +125,11 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
     Rcpp::traits::input_parameter< arma::uword >::type maxIter(maxIterSEXP);
     Rcpp::traits::input_parameter< double >::type thresh(threshSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
     Rcpp::traits::input_parameter< Rcpp::Nullable<std::vector<arma::mat>> >::type Hinit(HinitSEXP);
     Rcpp::traits::input_parameter< Rcpp::Nullable<std::vector<arma::mat>> >::type Vinit(VinitSEXP);
     Rcpp::traits::input_parameter< Rcpp::Nullable<arma::mat> >::type Winit(WinitSEXP);
-    rcpp_result_gen = Rcpp::wrap(bppinmf_sparse(objectList, k, lambda, maxIter, thresh, Hinit, Vinit, Winit));
+    rcpp_result_gen = Rcpp::wrap(bppinmf_sparse(objectList, k, lambda, maxIter, thresh, verbose, Hinit, Vinit, Winit));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -139,8 +141,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppPlanc_munmf", (DL_FUNC) &_RcppPlanc_munmf, 5},
     {"_RcppPlanc_bppnmf", (DL_FUNC) &_RcppPlanc_bppnmf, 5},
     {"_RcppPlanc_bppnnls", (DL_FUNC) &_RcppPlanc_bppnnls, 2},
-    {"_RcppPlanc_bppinmf", (DL_FUNC) &_RcppPlanc_bppinmf, 5},
-    {"_RcppPlanc_bppinmf_sparse", (DL_FUNC) &_RcppPlanc_bppinmf_sparse, 8},
+    {"_RcppPlanc_bppinmf", (DL_FUNC) &_RcppPlanc_bppinmf, 6},
+    {"_RcppPlanc_bppinmf_sparse", (DL_FUNC) &_RcppPlanc_bppinmf_sparse, 9},
     {NULL, NULL, 0}
 };
 

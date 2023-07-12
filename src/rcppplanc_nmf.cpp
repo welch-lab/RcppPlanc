@@ -1,7 +1,8 @@
 // -*- mode: C++; c-indent-level: 4; c-basic-offset: 4; indent-tabs-mode: nil; -*-
 
 // we only include RcppArmadillo.h which pulls Rcpp.h in for us
-#include "RcppArmadillo.h"
+#include <RcppArmadillo.h>
+#include <progress.hpp>
 #include "bppnmf.hpp"
 #include "bppinmf.hpp"
 #include "bppnnls.hpp"
@@ -14,7 +15,7 @@
 // RcppArmadillo so that the build process will know what to do
 //
 // [[Rcpp::depends(RcppArmadillo)]]
-
+// [[Rcpp::depends(RcppProgress)]]
 normtype m_input_normalization;
 int m_initseed;
 arma::fvec m_regW;
@@ -266,7 +267,8 @@ arma::mat bppnnls(const arma::mat &C, const arma::sp_mat &B) {
 //' @examplesIf require("Matrix")
 //' bppinmf(rsparsematrix(nrow=20,ncol=20,nnz=10), Matrix(runif(n=200,min=0,max=2),20,10))
 // [[Rcpp::export]]
-Rcpp::List bppinmf(std::vector<arma::mat> objectList, arma::uword k, double lambda, arma::uword maxIter, double thresh) {
+Rcpp::List bppinmf(std::vector<arma::mat> objectList, arma::uword k,
+    double lambda, arma::uword maxIter, double thresh, bool verbose = true) {
     // std::vector<arma::mat> matVec;
     // std::vector<std::unique_ptr<arma::mat>> matPtrVec;
     // for (arma::uword i = 0; i < objectList.size(); ++i) {
@@ -286,7 +288,7 @@ Rcpp::List bppinmf(std::vector<arma::mat> objectList, arma::uword k, double lamb
         matPtrVec.push_back(std::move(ptr));
     }
     planc::BPPINMF<arma::mat> solver(matPtrVec, k, lambda);
-    solver.optimizeALS(maxIter, thresh);
+    solver.optimizeALS(maxIter, thresh, verbose);
     std::cout << "iNMF finished" << std::endl;
     Rcpp::List HList = Rcpp::List::create();
     Rcpp::List VList = Rcpp::List::create();
@@ -305,7 +307,7 @@ Rcpp::List bppinmf(std::vector<arma::mat> objectList, arma::uword k, double lamb
 //' @export
 // [[Rcpp::export]]
 Rcpp::List bppinmf_sparse(Rcpp::List objectList, arma::uword k, double lambda,
-    arma::uword maxIter, double thresh,
+    arma::uword maxIter, double thresh, bool verbose = true,
     Rcpp::Nullable<std::vector<arma::mat>> Hinit = R_NilValue,
     Rcpp::Nullable<std::vector<arma::mat>> Vinit = R_NilValue,
     Rcpp::Nullable<arma::mat> Winit  = R_NilValue) {
@@ -352,9 +354,7 @@ Rcpp::List bppinmf_sparse(Rcpp::List objectList, arma::uword k, double lambda,
         solver.initW();
     }
 
-    std::cout << "matPtrVec size=" << matPtrVec.size() << std::endl;
-    // planc::BPPINMF<arma::sp_mat> solver(matPtrVec, k, lambda, HPtrVec, VPtrVec, W);
-    solver.optimizeALS(maxIter, thresh);
+    solver.optimizeALS(maxIter, thresh, verbose);
     Rcpp::List HList = Rcpp::List::create();
     Rcpp::List VList = Rcpp::List::create();
     for (arma::uword i = 0; i < objectList.size(); ++i) {
@@ -364,6 +364,7 @@ Rcpp::List bppinmf_sparse(Rcpp::List objectList, arma::uword k, double lambda,
     return Rcpp::List::create(
         Rcpp::Named("H") = HList,
         Rcpp::Named("V") = VList,
-        Rcpp::Named("W") = solver.getW()
+        Rcpp::Named("W") = solver.getW(),
+        Rcpp::Named("objErr") = solver.objErr()
     );
 }

@@ -4,7 +4,7 @@
 \alias{bppinmf}
 \title{Block Principal Pivoted Iterative Non-Negative Matrix Factorization}
 \usage{
-bppinmf(objectList, k, lambda, maxIter, thresh)
+bppinmf(objectList, k, lambda, maxIter, thresh, verbose = TRUE)
 }
 \arguments{
 \item{Ei}{List of datasets in dense matrix form.}

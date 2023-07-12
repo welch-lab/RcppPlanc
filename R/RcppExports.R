@@ -107,12 +107,12 @@ bppnnls <- function(C, B) {
 #' @returns The calculated solution matrix in dense form.
 #' @examplesIf require("Matrix")
 #' bppinmf(rsparsematrix(nrow=20,ncol=20,nnz=10), Matrix(runif(n=200,min=0,max=2),20,10))
-bppinmf <- function(objectList, k, lambda, maxIter, thresh) {
-    .Call(`_RcppPlanc_bppinmf`, objectList, k, lambda, maxIter, thresh)
+bppinmf <- function(objectList, k, lambda, maxIter, thresh, verbose = TRUE) {
+    .Call(`_RcppPlanc_bppinmf`, objectList, k, lambda, maxIter, thresh, verbose)
 }
 
 #' @export
-bppinmf_sparse <- function(objectList, k, lambda, maxIter, thresh, Hinit = NULL, Vinit = NULL, Winit = NULL) {
-    .Call(`_RcppPlanc_bppinmf_sparse`, objectList, k, lambda, maxIter, thresh, Hinit, Vinit, Winit)
+bppinmf_sparse <- function(objectList, k, lambda, maxIter, thresh, verbose = TRUE, Hinit = NULL, Vinit = NULL, Winit = NULL) {
+    .Call(`_RcppPlanc_bppinmf_sparse`, objectList, k, lambda, maxIter, thresh, verbose, Hinit, Vinit, Winit)
 }
 
