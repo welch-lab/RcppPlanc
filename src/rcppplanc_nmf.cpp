@@ -320,16 +320,6 @@ Rcpp::List runINMF(std::vector<T> objectList, arma::uword k, double lambda,
         Rcpp::Named("objErr") = solver.objErr());
 }
 
-//' Block Principal Pivoted Iterative Non-Negative Matrix Factorization
-//'
-//' Use the BPP algorithm to iteratively factor the given datasets.
-//'
-//' @param Ei List of datasets in dense matrix form.
-//' @export
-//' @returns The calculated solution matrix in dense form.
-//' @examplesIf require("Matrix")
-//' bppinmf_dense(rsparsematrix(nrow=20,ncol=20,nnz=10), Matrix(runif(n=200,min=0,max=2),20,10))
-// [[Rcpp::export]]
 Rcpp::List bppinmf_dense(std::vector<arma::mat> objectList, arma::uword k,
                          double lambda, arma::uword maxIter, double thresh, bool verbose = true,
                          Rcpp::Nullable<std::vector<arma::mat>> Hinit = R_NilValue,
@@ -351,8 +341,6 @@ Rcpp::List bppinmf_dense(std::vector<arma::mat> objectList, arma::uword k,
     }
 }
 
-//' @export
-// [[Rcpp::export]]
 Rcpp::List bppinmf_sparse(std::vector<arma::sp_mat> objectList, arma::uword k, double lambda,
     arma::uword maxIter, double thresh, bool verbose = true,
     Rcpp::Nullable<std::vector<arma::mat>> Hinit = R_NilValue,
@@ -370,3 +358,33 @@ Rcpp::List bppinmf_sparse(std::vector<arma::sp_mat> objectList, arma::uword k, d
                 maxIter, thresh, verbose);
     }
 }
+
+//' Block Principal Pivoted Iterative Non-Negative Matrix Factorization
+//'
+//' Use the BPP algorithm to iteratively factor the given datasets.
+//'
+//' @param Ei List of datasets in dense matrix form.
+//' @export
+//' @returns The calculated solution matrix in dense form.
+//' @examplesIf require("Matrix")
+//' bppinmf(rsparsematrix(nrow=20,ncol=20,nnz=10), Matrix(runif(n=200,min=0,max=2),20,10))
+// [[Rcpp::export]]
+Rcpp::List bppinmf(Rcpp::List objectList, const arma::uword k,
+                   const double lambda, const arma::uword maxIter,
+                   const double thresh, const bool verbose = true,
+                   Rcpp::Nullable<std::vector<arma::mat>> Hinit = R_NilValue,
+                   Rcpp::Nullable<std::vector<arma::mat>> Vinit = R_NilValue,
+                   Rcpp::Nullable<arma::mat> Winit = R_NilValue) {
+                    if (Rf_isS4(objectList[0])) {
+                      if (Rf_inherits(objectList[0], "dgCMatrix")) {
+                        bppinmf_sparse(Rcpp::as<std::vector<arma::sp_mat>>(objectList), k, lambda,
+                                       maxIter, thresh, verbose,
+                                       Hinit,Vinit,Winit);
+                      }
+                    } else {
+                      return bppinmf_dense(Rcpp::as<std::vector<arma::mat>>(objectList), k, lambda,
+                                            maxIter, thresh, verbose,
+                                            Hinit, Vinit, Winit);
+                    }
+
+                   }
