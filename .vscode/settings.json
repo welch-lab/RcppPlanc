@@ -93,6 +93,10 @@
         "locale": "cpp",
         "stack": "cpp",
         "__nullptr": "cpp",
-        "__string": "cpp"
-    }
+        "__string": "cpp",
+        "source_location": "cpp",
+        "ranges": "cpp"
+    },
+    "FSharp.suggestGitignore": false,
+    "C_Cpp.errorSquiggles": "enabled"
 }

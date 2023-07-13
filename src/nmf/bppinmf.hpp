@@ -6,11 +6,11 @@
 #include "bppnnls.hpp"
 #include "inmf.hpp"
 
-#define ONE_THREAD_MATRIX_SIZE 1000
+#define ONE_THREAD_MATRIX_SIZE 2000
 
 namespace planc {
 
-template <class T>
+template <typename T>
 class BPPINMF : public INMF<T> {
 private:
     arma::mat giventGiven;
