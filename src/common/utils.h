@@ -23,7 +23,7 @@ enum helptype { NMF, DISTNMF, NTF, DISTNTF, JOINTNMF, DISTJOINTNMF, HIERNMF };
 #include <cmath>
 #include <iostream>
 #include <vector>
-
+#include "H5Cpp.h"
 // using namespace std;
 
 #ifndef ERR

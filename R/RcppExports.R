@@ -111,3 +111,33 @@ bppinmf <- function(objectList, k, lambda, maxIter, thresh, verbose = TRUE, Hini
     .Call(`_RcppPlanc_bppinmf`, objectList, k, lambda, maxIter, thresh, verbose, Hinit, Vinit, Winit)
 }
 
+#' @export
+bppinmf_h5dense <- function(filenames, dataPath, k, lambda, maxIter, thresh, verbose = TRUE, Hinit = NULL, Vinit = NULL, Winit = NULL) {
+    .Call(`_RcppPlanc_bppinmf_h5dense`, filenames, dataPath, k, lambda, maxIter, thresh, verbose, Hinit, Vinit, Winit)
+}
+
+#' @export
+bppinmf_h5sparse <- function(filenames, rowindPath, colptrPath, valuePath, nrow, ncol, k, lambda, maxIter, thresh, verbose = TRUE, Hinit = NULL, Vinit = NULL, Winit = NULL) {
+    invisible(.Call(`_RcppPlanc_bppinmf_h5sparse`, filenames, rowindPath, colptrPath, valuePath, nrow, ncol, k, lambda, maxIter, thresh, verbose, Hinit, Vinit, Winit))
+}
+
+#' @export
+onlineINMF_dense <- function(objectList, k, lambda, maxEpoch = 5L, minibatchSize = 5000L, maxHALSIter = 1L) {
+    .Call(`_RcppPlanc_onlineINMF_dense`, objectList, k, lambda, maxEpoch, minibatchSize, maxHALSIter)
+}
+
+#' @export
+onlineINMF_sparse <- function(objectList, k, lambda, maxEpoch = 5L, minibatchSize = 5000L, maxHALSIter = 1L) {
+    .Call(`_RcppPlanc_onlineINMF_sparse`, objectList, k, lambda, maxEpoch, minibatchSize, maxHALSIter)
+}
+
+#' @export
+onlineINMF_H5Dense <- function(filenames, dataPaths, k, lambda, maxEpoch = 5L, minibatchSize = 5000L, maxHALSIter = 1L) {
+    .Call(`_RcppPlanc_onlineINMF_H5Dense`, filenames, dataPaths, k, lambda, maxEpoch, minibatchSize, maxHALSIter)
+}
+
+#' @export
+onlineINMF_H5Sparse <- function(filenames, valuePaths, rowindPaths, colptrPaths, nrows, ncols, k, lambda, maxEpoch = 5L, minibatchSize = 5000L, maxHALSIter = 1L) {
+    .Call(`_RcppPlanc_onlineINMF_H5Sparse`, filenames, valuePaths, rowindPaths, colptrPaths, nrows, ncols, k, lambda, maxEpoch, minibatchSize, maxHALSIter)
+}
+

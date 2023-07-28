@@ -117,6 +117,119 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// bppinmf_h5dense
+Rcpp::List bppinmf_h5dense(std::vector<std::string> filenames, std::vector<std::string> dataPath, arma::uword k, double lambda, arma::uword maxIter, double thresh, bool verbose, Rcpp::Nullable<std::vector<arma::mat>> Hinit, Rcpp::Nullable<std::vector<arma::mat>> Vinit, Rcpp::Nullable<arma::mat> Winit);
+RcppExport SEXP _RcppPlanc_bppinmf_h5dense(SEXP filenamesSEXP, SEXP dataPathSEXP, SEXP kSEXP, SEXP lambdaSEXP, SEXP maxIterSEXP, SEXP threshSEXP, SEXP verboseSEXP, SEXP HinitSEXP, SEXP VinitSEXP, SEXP WinitSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type filenames(filenamesSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type dataPath(dataPathSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type k(kSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type maxIter(maxIterSEXP);
+    Rcpp::traits::input_parameter< double >::type thresh(threshSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<std::vector<arma::mat>> >::type Hinit(HinitSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<std::vector<arma::mat>> >::type Vinit(VinitSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<arma::mat> >::type Winit(WinitSEXP);
+    rcpp_result_gen = Rcpp::wrap(bppinmf_h5dense(filenames, dataPath, k, lambda, maxIter, thresh, verbose, Hinit, Vinit, Winit));
+    return rcpp_result_gen;
+END_RCPP
+}
+// bppinmf_h5sparse
+void bppinmf_h5sparse(std::vector<std::string> filenames, std::vector<std::string> rowindPath, std::vector<std::string> colptrPath, std::vector<std::string> valuePath, arma::uword nrow, arma::uvec ncol, arma::uword k, double lambda, arma::uword maxIter, double thresh, bool verbose, Rcpp::Nullable<std::vector<arma::mat>> Hinit, Rcpp::Nullable<std::vector<arma::mat>> Vinit, Rcpp::Nullable<arma::mat> Winit);
+RcppExport SEXP _RcppPlanc_bppinmf_h5sparse(SEXP filenamesSEXP, SEXP rowindPathSEXP, SEXP colptrPathSEXP, SEXP valuePathSEXP, SEXP nrowSEXP, SEXP ncolSEXP, SEXP kSEXP, SEXP lambdaSEXP, SEXP maxIterSEXP, SEXP threshSEXP, SEXP verboseSEXP, SEXP HinitSEXP, SEXP VinitSEXP, SEXP WinitSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type filenames(filenamesSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type rowindPath(rowindPathSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type colptrPath(colptrPathSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type valuePath(valuePathSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type nrow(nrowSEXP);
+    Rcpp::traits::input_parameter< arma::uvec >::type ncol(ncolSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type k(kSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type maxIter(maxIterSEXP);
+    Rcpp::traits::input_parameter< double >::type thresh(threshSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<std::vector<arma::mat>> >::type Hinit(HinitSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<std::vector<arma::mat>> >::type Vinit(VinitSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<arma::mat> >::type Winit(WinitSEXP);
+    bppinmf_h5sparse(filenames, rowindPath, colptrPath, valuePath, nrow, ncol, k, lambda, maxIter, thresh, verbose, Hinit, Vinit, Winit);
+    return R_NilValue;
+END_RCPP
+}
+// onlineINMF_dense
+Rcpp::List onlineINMF_dense(std::vector<arma::mat> objectList, arma::uword k, double lambda, arma::uword maxEpoch, arma::uword minibatchSize, arma::uword maxHALSIter);
+RcppExport SEXP _RcppPlanc_onlineINMF_dense(SEXP objectListSEXP, SEXP kSEXP, SEXP lambdaSEXP, SEXP maxEpochSEXP, SEXP minibatchSizeSEXP, SEXP maxHALSIterSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<arma::mat> >::type objectList(objectListSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type k(kSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type maxEpoch(maxEpochSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type minibatchSize(minibatchSizeSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type maxHALSIter(maxHALSIterSEXP);
+    rcpp_result_gen = Rcpp::wrap(onlineINMF_dense(objectList, k, lambda, maxEpoch, minibatchSize, maxHALSIter));
+    return rcpp_result_gen;
+END_RCPP
+}
+// onlineINMF_sparse
+Rcpp::List onlineINMF_sparse(Rcpp::List objectList, arma::uword k, double lambda, arma::uword maxEpoch, arma::uword minibatchSize, arma::uword maxHALSIter);
+RcppExport SEXP _RcppPlanc_onlineINMF_sparse(SEXP objectListSEXP, SEXP kSEXP, SEXP lambdaSEXP, SEXP maxEpochSEXP, SEXP minibatchSizeSEXP, SEXP maxHALSIterSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::List >::type objectList(objectListSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type k(kSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type maxEpoch(maxEpochSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type minibatchSize(minibatchSizeSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type maxHALSIter(maxHALSIterSEXP);
+    rcpp_result_gen = Rcpp::wrap(onlineINMF_sparse(objectList, k, lambda, maxEpoch, minibatchSize, maxHALSIter));
+    return rcpp_result_gen;
+END_RCPP
+}
+// onlineINMF_H5Dense
+Rcpp::List onlineINMF_H5Dense(std::vector<std::string> filenames, std::vector<std::string> dataPaths, arma::uword k, double lambda, arma::uword maxEpoch, arma::uword minibatchSize, arma::uword maxHALSIter);
+RcppExport SEXP _RcppPlanc_onlineINMF_H5Dense(SEXP filenamesSEXP, SEXP dataPathsSEXP, SEXP kSEXP, SEXP lambdaSEXP, SEXP maxEpochSEXP, SEXP minibatchSizeSEXP, SEXP maxHALSIterSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type filenames(filenamesSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type dataPaths(dataPathsSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type k(kSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type maxEpoch(maxEpochSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type minibatchSize(minibatchSizeSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type maxHALSIter(maxHALSIterSEXP);
+    rcpp_result_gen = Rcpp::wrap(onlineINMF_H5Dense(filenames, dataPaths, k, lambda, maxEpoch, minibatchSize, maxHALSIter));
+    return rcpp_result_gen;
+END_RCPP
+}
+// onlineINMF_H5Sparse
+Rcpp::List onlineINMF_H5Sparse(std::vector<std::string> filenames, std::vector<std::string> valuePaths, std::vector<std::string> rowindPaths, std::vector<std::string> colptrPaths, arma::uvec nrows, arma::uvec ncols, arma::uword k, double lambda, arma::uword maxEpoch, arma::uword minibatchSize, arma::uword maxHALSIter);
+RcppExport SEXP _RcppPlanc_onlineINMF_H5Sparse(SEXP filenamesSEXP, SEXP valuePathsSEXP, SEXP rowindPathsSEXP, SEXP colptrPathsSEXP, SEXP nrowsSEXP, SEXP ncolsSEXP, SEXP kSEXP, SEXP lambdaSEXP, SEXP maxEpochSEXP, SEXP minibatchSizeSEXP, SEXP maxHALSIterSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type filenames(filenamesSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type valuePaths(valuePathsSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type rowindPaths(rowindPathsSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type colptrPaths(colptrPathsSEXP);
+    Rcpp::traits::input_parameter< arma::uvec >::type nrows(nrowsSEXP);
+    Rcpp::traits::input_parameter< arma::uvec >::type ncols(ncolsSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type k(kSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type maxEpoch(maxEpochSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type minibatchSize(minibatchSizeSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type maxHALSIter(maxHALSIterSEXP);
+    rcpp_result_gen = Rcpp::wrap(onlineINMF_H5Sparse(filenames, valuePaths, rowindPaths, colptrPaths, nrows, ncols, k, lambda, maxEpoch, minibatchSize, maxHALSIter));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_RcppPlanc_aoadmmnmf", (DL_FUNC) &_RcppPlanc_aoadmmnmf, 5},
@@ -126,6 +239,12 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppPlanc_bppnmf", (DL_FUNC) &_RcppPlanc_bppnmf, 5},
     {"_RcppPlanc_bppnnls", (DL_FUNC) &_RcppPlanc_bppnnls, 2},
     {"_RcppPlanc_bppinmf", (DL_FUNC) &_RcppPlanc_bppinmf, 9},
+    {"_RcppPlanc_bppinmf_h5dense", (DL_FUNC) &_RcppPlanc_bppinmf_h5dense, 10},
+    {"_RcppPlanc_bppinmf_h5sparse", (DL_FUNC) &_RcppPlanc_bppinmf_h5sparse, 14},
+    {"_RcppPlanc_onlineINMF_dense", (DL_FUNC) &_RcppPlanc_onlineINMF_dense, 6},
+    {"_RcppPlanc_onlineINMF_sparse", (DL_FUNC) &_RcppPlanc_onlineINMF_sparse, 6},
+    {"_RcppPlanc_onlineINMF_H5Dense", (DL_FUNC) &_RcppPlanc_onlineINMF_H5Dense, 7},
+    {"_RcppPlanc_onlineINMF_H5Sparse", (DL_FUNC) &_RcppPlanc_onlineINMF_H5Sparse, 11},
     {NULL, NULL, 0}
 };
 
