@@ -6,8 +6,6 @@
 #include "bppnnls.hpp"
 #include "inmf.hpp"
 
-#define ONE_THREAD_MATRIX_SIZE 1000
-
 namespace planc {
 
 template <class T>
@@ -22,7 +20,6 @@ private:
 #endif
         arma::mat* Wptr = this->W.get();
         arma::mat given(this->m, this->k);
-        // arma::mat B;
         for (int i=0; i<this->nDatasets; ++i) {
             arma::mat* Vptr = this->Vi[i].get();
             arma::mat* Hptr = this->Hi[i].get();
@@ -32,12 +29,12 @@ private:
             giventGiven += (*Vptr).t() * (*Vptr) * this->lambda;
             // giventInput = given.t() * (*Eptr);
             unsigned int dataSize = this->ncol_E[i];
-            unsigned int numChunks = dataSize / ONE_THREAD_MATRIX_SIZE;
-            if (numChunks * ONE_THREAD_MATRIX_SIZE < dataSize) numChunks++;
+            unsigned int numChunks = dataSize / INMF_CHUNK_SIZE;
+            if (numChunks * INMF_CHUNK_SIZE < dataSize) numChunks++;
 #pragma omp parallel for schedule(auto)
             for (unsigned int j = 0; j < numChunks; ++j) {
-                unsigned int spanStart = j * ONE_THREAD_MATRIX_SIZE;
-                unsigned int spanEnd = (j + 1) * ONE_THREAD_MATRIX_SIZE - 1;
+                unsigned int spanStart = j * INMF_CHUNK_SIZE;
+                unsigned int spanEnd = (j + 1) * INMF_CHUNK_SIZE - 1;
                 if (spanEnd > dataSize - 1) spanEnd = dataSize - 1;
                 arma::mat giventInput = given.t() * (*Eptr).cols(spanStart, spanEnd);
                 BPPNNLS<arma::mat, arma::vec> subProbH(giventGiven, giventInput, true);
@@ -58,7 +55,7 @@ private:
         std::cout << "--Solving V--  ";
 #endif
         arma::mat* WTptr = this->WT.get();
-        arma::mat giventInput(this->k, ONE_THREAD_MATRIX_SIZE);;
+        arma::mat giventInput(this->k, INMF_CHUNK_SIZE);;
         for (int i=0; i<this->nDatasets; ++i) {
             arma::mat* Hptr = this->Hi[i].get();\
             giventGiven = (*Hptr).t() * (*Hptr);
@@ -66,12 +63,12 @@ private:
             arma::mat* Vptr = this->Vi[i].get();
             arma::mat* VTptr = this->ViT[i].get();
             T* ETptr = this->EiT[i].get();
-            unsigned int numChunks = this->m / ONE_THREAD_MATRIX_SIZE;
-            if (numChunks * ONE_THREAD_MATRIX_SIZE < this->m) numChunks++;
+            unsigned int numChunks = this->m / INMF_CHUNK_SIZE;
+            if (numChunks * INMF_CHUNK_SIZE < this->m) numChunks++;
 #pragma omp parallel for schedule(auto)
             for (unsigned int j = 0; j < numChunks; ++j) {
-                unsigned int spanStart = j * ONE_THREAD_MATRIX_SIZE;
-                unsigned int spanEnd = (j + 1) * ONE_THREAD_MATRIX_SIZE - 1;
+                unsigned int spanStart = j * INMF_CHUNK_SIZE;
+                unsigned int spanEnd = (j + 1) * INMF_CHUNK_SIZE - 1;
                 if (spanEnd > this->m - 1) spanEnd = this->m - 1;
                 arma::mat giventInput;
                 giventInput = (*Hptr).t() * (*ETptr).cols(spanStart, spanEnd);
@@ -103,11 +100,11 @@ private:
             giventGiven += (*Hptr).t() * (*Hptr);
         }
 
-        unsigned int numChunks = this->m / ONE_THREAD_MATRIX_SIZE;
-        if (numChunks * ONE_THREAD_MATRIX_SIZE < this->m) numChunks++;
+        unsigned int numChunks = this->m / INMF_CHUNK_SIZE;
+        if (numChunks * INMF_CHUNK_SIZE < this->m) numChunks++;
         for (unsigned int i = 0; i < numChunks; ++i) {
-            unsigned int spanStart = i * ONE_THREAD_MATRIX_SIZE;
-            unsigned int spanEnd = (i + 1) * ONE_THREAD_MATRIX_SIZE - 1;
+            unsigned int spanStart = i * INMF_CHUNK_SIZE;
+            unsigned int spanEnd = (i + 1) * INMF_CHUNK_SIZE - 1;
             if (spanEnd > this->m - 1) spanEnd = this->m - 1;
             giventInput = arma::zeros<arma::mat>(this->k, spanEnd - spanStart + 1); ///
             #pragma omp parallel for schedule(auto)
@@ -153,13 +150,13 @@ public:
             << maxIter << ", thresh=" << thresh << std::endl;
 #endif
         unsigned int iter = 0;
-        double delta=100, obj;
+        double delta=100, time_total=0, obj;
         Progress p(maxIter, verbose);
         while (delta > thresh && iter < maxIter ) {
             Rcpp::checkUserInterrupt();
             if ( ! p.is_aborted() ) {
-#ifdef _VERBOSE
                 tic();
+#ifdef _VERBOSE
                 std::cout << "========Staring iteration "
                 << iter+1 << "========" << std::endl;
 #endif
@@ -170,41 +167,23 @@ public:
                 delta = abs(this->objective_err - obj) / ((this->objective_err + obj) / 2);
                 iter++;
                 this->objective_err = obj;
+                double time_iter = toc();
 #ifdef _VERBOSE
                 std::cout << "Objective:  " << obj << std::endl
                         << "Delta:      " << delta << std::endl
-                        << "Total time: " << toc() << " sec" << std::endl;
+                        << "Total time: " << time_iter << " sec" << std::endl;
 #endif
+                time_total += time_iter;
                 p.increment();
             } else {
                 break;
             }
         }
         if (verbose) {
-            std::cerr << "Finished after " << iter << " iterations." << std::endl
+            std::cerr << "Finished after " << iter << " iterations in " << time_total << " seconds." << std::endl
                 << "Final objective: " << this->objective_err << std::endl
                 << "Final delta:     " << delta << std::endl;
         }
-    }
-
-    arma::mat getHi(int i) {
-        return *(this->Hi[i].get());
-    }
-
-    std::vector<std::unique_ptr<arma::mat>> getAllH() {
-        return this->Hi;
-    }
-
-    arma::mat getVi(int i) {
-        return *(this->Vi[i].get());
-    }
-
-    std::vector<std::unique_ptr<arma::mat>> getAllV() {
-        return this->Vi;
-    }
-
-    arma::mat getW() {
-        return *(this->W.get());
     }
 };
 

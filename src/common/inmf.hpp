@@ -7,6 +7,8 @@
 #include <memory>
 #include "utils.hpp"
 
+#define INMF_CHUNK_SIZE 1000
+
 namespace planc {
 
     template <class T>
@@ -89,7 +91,7 @@ namespace planc {
         //     std::cout << "Initial objective: " << this->objective_err << std::endl;
         // }
 
-        void constructObject(std::vector<std::unique_ptr<T>>& Ei, arma::uword k, double lambda) {
+        void constructObject(std::vector<std::unique_ptr<T>>& Ei, arma::uword k, double lambda, bool makeTranspose) {
             this->Ei = std::move(Ei);
             this->k = k;
             this->m = this->Ei[0].get()->n_rows;
@@ -102,9 +104,11 @@ namespace planc {
             for (unsigned int i = 0; i < this->Ei.size(); ++i)
             {
                 T* E = this->Ei[i].get();
-                T ET = E->t();
-                std::unique_ptr<T> ETptr = std::make_unique<T>(ET);
-                this->EiT.push_back(std::move(ETptr));
+                if (makeTranspose) {
+                    T ET = E->t();
+                    std::unique_ptr<T> ETptr = std::make_unique<T>(ET);
+                    this->EiT.push_back(std::move(ETptr));
+                }
                 this->ncol_E.push_back(E->n_cols);
                 if (E->n_cols > this->nMax) {
                     this->nMax = E->n_cols;
@@ -122,8 +126,8 @@ namespace planc {
             //TODO implement common tasks i.e. norm, reg, etc
         }
     public:
-        INMF(std::vector<std::unique_ptr<T>>& Ei, arma::uword k, double lambda) {
-            this->constructObject(Ei, k, lambda);
+        INMF(std::vector<std::unique_ptr<T>>& Ei, arma::uword k, double lambda, bool makeTranspose = true) {
+            this->constructObject(Ei, k, lambda, makeTranspose);
             // this->initHWV();
         }
         // INMF(std::vector<std::unique_ptr<T>>& Ei, arma::uword k, double lambda,
@@ -223,6 +227,26 @@ namespace planc {
 
         double objErr() {
             return this->objective_err;
+        }
+
+        arma::mat getHi(int i) {
+            return *(this->Hi[i].get());
+        }
+
+        std::vector<std::unique_ptr<arma::mat>> getAllH() {
+            return this->Hi;
+        }
+
+        arma::mat getVi(int i) {
+            return *(this->Vi[i].get());
+        }
+
+        std::vector<std::unique_ptr<arma::mat>> getAllV() {
+            return this->Vi;
+        }
+
+        arma::mat getW() {
+            return *(this->W.get());
         }
 
         ~INMF() { clear(); }

@@ -45,7 +45,8 @@
                 "${workspaceFolder}/**",
                 "/Library/Frameworks/R.framework/Resources/include/**",
                 "/Library/Frameworks/R.framework/Resources/library/Rcpp/include/**",
-                "/Library/Frameworks/R.framework/Resources/library/RcppArmadillo/include/**"
+                "/Library/Frameworks/R.framework/Resources/library/RcppArmadillo/include/**",
+                "/Library/Frameworks/R.framework/Resources/library/RcppProgress/include/**"
             ],
             "defines": [],
             "compilerPath": "/usr/lib64/ccache/gcc",

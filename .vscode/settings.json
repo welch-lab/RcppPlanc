@@ -93,6 +93,7 @@
         "locale": "cpp",
         "stack": "cpp",
         "__nullptr": "cpp",
-        "__string": "cpp"
+        "__string": "cpp",
+        "filesystem": "cpp"
     }
 }
