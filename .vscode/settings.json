@@ -94,6 +94,8 @@
         "stack": "cpp",
         "__nullptr": "cpp",
         "__string": "cpp",
-        "filesystem": "cpp"
-    }
-}
+        "source_location": "cpp",
+        "ranges": "cpp"
+    },
+    "FSharp.suggestGitignore": false,
+    "C_Cpp.errorSquiggles": "enabled"

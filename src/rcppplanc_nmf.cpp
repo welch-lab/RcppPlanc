@@ -260,6 +260,108 @@ arma::mat bppnnls(const arma::mat &C, const arma::sp_mat &B) {
     return outmat;
 }
 
+template <typename T>
+std::vector<std::unique_ptr<T>> bppinmfinit(std::vector<T> objectList)
+{
+    std::vector<std::unique_ptr<T>> matPtrVec;
+    for (arma::uword i = 0; i < objectList.size(); ++i)
+    {
+        T E = T(objectList[i]);
+        std::unique_ptr<T> ptr = std::make_unique<T>(E);
+        matPtrVec.push_back(std::move(ptr));
+    }
+    return std::move(matPtrVec);
+}
+
+template <typename T>
+Rcpp::List runINMF(std::vector<T> objectList, arma::uword k, double lambda,
+                   arma::uword maxIter, double thresh, bool verbose)
+{
+    std::vector<std::unique_ptr<T>> matPtrVec;
+    matPtrVec = bppinmfinit<T>(objectList);
+    planc::BPPINMF<T> solver(matPtrVec, k, lambda);
+    solver.initH();
+    solver.initV();
+    solver.initW();
+    solver.optimizeALS(maxIter, thresh, verbose);
+    std::vector<arma::mat> HList;
+    std::vector<arma::mat> VList;
+    for (arma::uword i = 0; i < objectList.size(); ++i)
+    {
+        HList.push_back(solver.getHi(i));
+        VList.push_back(solver.getVi(i));
+    }
+    return Rcpp::List::create(
+        Rcpp::Named("H") = HList,
+        Rcpp::Named("V") = VList,
+        Rcpp::Named("W") = solver.getW(),
+        Rcpp::Named("objErr") = solver.objErr());
+}
+template <typename T>
+Rcpp::List runINMF(std::vector<T> objectList, arma::uword k, double lambda,
+                   arma::uword maxIter, double thresh, bool verbose,
+                   std::vector<arma::mat> HinitList, std::vector<arma::mat> VinitList, arma::mat Winit)
+{
+    std::vector<std::unique_ptr<T>> matPtrVec;
+    matPtrVec = bppinmfinit<T>(objectList);
+    planc::BPPINMF<T> solver(matPtrVec, k, lambda);
+    solver.initW(Winit);
+    solver.initH(HinitList);
+    solver.initV(VinitList);
+    solver.optimizeALS(maxIter, thresh, verbose);
+    std::vector<arma::mat> HList;
+    std::vector<arma::mat> VList;
+    for (arma::uword i = 0; i < objectList.size(); ++i)
+    {
+        HList.push_back(solver.getHi(i));
+        VList.push_back(solver.getVi(i));
+    }
+    return Rcpp::List::create(
+        Rcpp::Named("H") = HList,
+        Rcpp::Named("V") = VList,
+        Rcpp::Named("W") = solver.getW(),
+        Rcpp::Named("objErr") = solver.objErr());
+}
+
+Rcpp::List bppinmf_dense(std::vector<arma::mat> objectList, arma::uword k,
+                         double lambda, arma::uword maxIter, double thresh, bool verbose = true,
+                         Rcpp::Nullable<std::vector<arma::mat>> Hinit = R_NilValue,
+                         Rcpp::Nullable<std::vector<arma::mat>> Vinit = R_NilValue,
+                         Rcpp::Nullable<arma::mat> Winit = R_NilValue)
+{
+    if (Hinit.isNotNull() && Vinit.isNotNull() && Winit.isNotNull())
+    {
+        return runINMF<arma::mat>(objectList, k, lambda,
+                                     maxIter, thresh, verbose,
+                                     Rcpp::as<std::vector<arma::mat>>(Hinit),
+                                     Rcpp::as<std::vector<arma::mat>>(Vinit),
+                                     Rcpp::as<arma::mat>(Winit));
+    }
+    else
+    {
+        return runINMF<arma::mat>(objectList, k, lambda,
+                                     maxIter, thresh, verbose);
+    }
+}
+
+Rcpp::List bppinmf_sparse(std::vector<arma::sp_mat> objectList, arma::uword k, double lambda,
+    arma::uword maxIter, double thresh, bool verbose = true,
+    Rcpp::Nullable<std::vector<arma::mat>> Hinit = R_NilValue,
+    Rcpp::Nullable<std::vector<arma::mat>> Vinit = R_NilValue,
+    Rcpp::Nullable<arma::mat> Winit  = R_NilValue) {
+    if (Hinit.isNotNull() && Vinit.isNotNull() && Winit.isNotNull()) {
+        return runINMF<arma::sp_mat>(objectList, k, lambda,
+                                     maxIter, thresh, verbose,
+                                     Rcpp::as<std::vector<arma::mat>>(Hinit),
+                                     Rcpp::as<std::vector<arma::mat>>(Vinit),
+                                     Rcpp::as<arma::mat>(Winit));
+    }
+    else {
+        return runINMF<arma::sp_mat>(objectList, k, lambda,
+                maxIter, thresh, verbose);
+    }
+}
+
 //' Block Principal Pivoted Iterative Non-Negative Matrix Factorization
 //'
 //' Use the BPP algorithm to iteratively factor the given datasets.
@@ -270,107 +372,26 @@ arma::mat bppnnls(const arma::mat &C, const arma::sp_mat &B) {
 //' @examplesIf require("Matrix")
 //' bppinmf(rsparsematrix(nrow=20,ncol=20,nnz=10), Matrix(runif(n=200,min=0,max=2),20,10))
 // [[Rcpp::export]]
-Rcpp::List bppinmf(std::vector<arma::mat> objectList, arma::uword k,
-    double lambda, arma::uword maxIter, double thresh, bool verbose = true) {
-    // std::vector<arma::mat> matVec;
-    // std::vector<std::unique_ptr<arma::mat>> matPtrVec;
-    // for (arma::uword i = 0; i < objectList.size(); ++i) {
-    //     matVec.push_back(arma::mat(objectList[i].begin(), objectList[i].nrow(), objectList[i].ncol(), false));
-    // }
-    // for (arma::uword i = 0; i < objectList.size(); ++i)
-    // {
-    //     matPtrVec.push_back(std::unique_ptr<arma::mat>(&matVec[i]));
-    // }
-
-
-    std::vector<std::unique_ptr<arma::mat>> matPtrVec;
-    for (arma::uword i = 0; i < objectList.size(); ++i)
-    {
-        arma::mat E = arma::mat(objectList[i].begin(), objectList[i].n_rows, objectList[i].n_cols, false, true);
-        std::unique_ptr<arma::mat> ptr = std::make_unique<arma::mat>(E);
-        matPtrVec.push_back(std::move(ptr));
-    }
-    planc::BPPINMF<arma::mat> solver(matPtrVec, k, lambda);
-    solver.optimizeALS(maxIter, thresh, verbose);
-    std::cout << "iNMF finished" << std::endl;
-    Rcpp::List HList = Rcpp::List::create();
-    Rcpp::List VList = Rcpp::List::create();
-    for (arma::uword i = 0; i < objectList.size(); ++i) {
-        HList.push_back(solver.getHi(i));
-        VList.push_back(solver.getVi(i));
-    }
-    // return HList;
-    return Rcpp::List::create(
-        Rcpp::Named("H") = HList,
-        Rcpp::Named("V") = VList,
-        Rcpp::Named("W") = solver.getW()
-    );
-}
-
-//' @export
-// [[Rcpp::export]]
-Rcpp::List bppinmf_sparse(Rcpp::List objectList, arma::uword k, double lambda,
-    arma::uword maxIter, double thresh, bool verbose = true,
-    Rcpp::Nullable<std::vector<arma::mat>> Hinit = R_NilValue,
-    Rcpp::Nullable<std::vector<arma::mat>> Vinit = R_NilValue,
-    Rcpp::Nullable<arma::mat> Winit  = R_NilValue) {
-    std::vector<std::unique_ptr<arma::sp_mat>> matPtrVec;
-    for (arma::uword i = 0; i < objectList.size(); ++i)
-    {
-        arma::sp_mat E = arma::sp_mat(objectList[i]);
-        std::unique_ptr<arma::sp_mat> ptr = std::make_unique<arma::sp_mat>(E);
-        matPtrVec.push_back(std::move(ptr));
-    }
-
-    planc::BPPINMF<arma::sp_mat> solver(matPtrVec, k, lambda);// , HPtrVec, VPtrVec, W);
-
-    if (Hinit.isNotNull()) {
-        std::vector<arma::mat> HinitList = Rcpp::as<std::vector<arma::mat>>(Hinit);
-        // for (arma::uword i = 0; i < HinitList.size(); ++i)
-        // {
-        //     arma::mat H = arma::mat(HinitList[i].begin(), HinitList[i].n_rows, HinitList[i].n_cols, false, true);
-        //     std::unique_ptr<arma::mat> ptr = std::make_unique<arma::mat>(H);
-        //     HPtrVec.push_back(std::move(ptr));
-        // }
-        solver.initH(HinitList);
-    } else {
-        solver.initH();
-    }
-
-    if (Vinit.isNotNull()) {
-        std::vector<arma::mat> VinitList = Rcpp::as<std::vector<arma::mat>>(Vinit);
-        // for (arma::uword i = 0; i < VinitList.size(); ++i)
-        // {
-        //     arma::mat V = arma::mat(VinitList[i].begin(), VinitList[i].n_rows, VinitList[i].n_cols, false, true);
-        //     std::unique_ptr<arma::mat> ptr = std::make_unique<arma::mat>(V);
-        //     VPtrVec.push_back(std::move(ptr));
-        // }
-        solver.initV(VinitList);
-    } else {
-        solver.initV();
-    }
-
-    if (Winit.isNotNull()) {
-        arma::mat W = Rcpp::as<arma::mat>(Winit);
-        solver.initW(W);
-    } else {
-        solver.initW();
-    }
-
-    solver.optimizeALS(maxIter, thresh, verbose);
-    Rcpp::List HList = Rcpp::List::create();
-    Rcpp::List VList = Rcpp::List::create();
-    for (arma::uword i = 0; i < objectList.size(); ++i) {
-        HList.push_back(solver.getHi(i));
-        VList.push_back(solver.getVi(i));
-    }
-    return Rcpp::List::create(
-        Rcpp::Named("H") = HList,
-        Rcpp::Named("V") = VList,
-        Rcpp::Named("W") = solver.getW(),
-        Rcpp::Named("objErr") = solver.objErr()
-    );
-}
+Rcpp::List bppinmf(Rcpp::List objectList, const arma::uword k,
+                   const double lambda, const arma::uword maxIter,
+                   const double thresh, const bool verbose = true,
+                   Rcpp::Nullable<std::vector<arma::mat>> Hinit = R_NilValue,
+                   Rcpp::Nullable<std::vector<arma::mat>> Vinit = R_NilValue,
+                   Rcpp::Nullable<arma::mat> Winit = R_NilValue) {
+                    if (Rf_isS4(objectList[0])) {
+                      // warning: non-void function does not return a value in all control paths
+                      if (Rf_inherits(objectList[0], "dgCMatrix")) {
+                        bppinmf_sparse(Rcpp::as<std::vector<arma::sp_mat>>(objectList), k, lambda,
+                                       maxIter, thresh, verbose,
+                                       Hinit,Vinit,Winit);
+                      }
+                      // warning: non-void function does not return a value in all control paths
+                    } else {
+                      return bppinmf_dense(Rcpp::as<std::vector<arma::mat>>(objectList), k, lambda,
+                                            maxIter, thresh, verbose,
+                                            Hinit, Vinit, Winit);
+                    }
+                   }
 
 //' @export
 // [[Rcpp::export]]

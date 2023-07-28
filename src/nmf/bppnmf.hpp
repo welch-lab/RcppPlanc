@@ -16,7 +16,7 @@
 
 namespace planc {
 
-template <class T>
+template <typename T>
 class BPPNMF : public NMF<T> {
  private:
   T At;

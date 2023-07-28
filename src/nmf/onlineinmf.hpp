@@ -15,7 +15,7 @@ namespace planc {
 // T1: Input data type, one of arma::mat, arma::sp_mat, H5Mat or H5SpMat
 // T2: in-memory minibatch data type, matching T1,
 // has to be arma::mat, arma::sp_mat, arma::mat or arma::sp_mat, respectively
-template <class T1, class T2>
+template <typename T1, typename T2>
 class ONLINEINMF : public INMF<T1> {
 private:
 

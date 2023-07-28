@@ -8,7 +8,7 @@
 
 namespace planc {
 
-template <class T>
+template <typename T>
 class BPPINMF : public INMF<T> {
 private:
     arma::mat giventGiven;

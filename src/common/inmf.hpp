@@ -11,7 +11,7 @@
 
 namespace planc {
 
-    template <class T>
+    template <typename T>
     class INMF {
     protected:
         arma::uword m, k, nDatasets, nMax, nSum;
