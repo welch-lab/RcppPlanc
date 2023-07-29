@@ -568,7 +568,7 @@ Rcpp::List onlineINMF_sparse(Rcpp::List objectList, arma::uword k,
     std::vector<std::unique_ptr<arma::sp_mat>> matPtrVec;
     for (arma::uword i = 0; i < objectList.size(); ++i)
     {
-        arma::sp_mat E = arma::sp_mat(objectList[i]);
+        arma::sp_mat E = objectList[i];
         std::unique_ptr<arma::sp_mat> ptr = std::make_unique<arma::sp_mat>(E);
         matPtrVec.push_back(std::move(ptr));
     }

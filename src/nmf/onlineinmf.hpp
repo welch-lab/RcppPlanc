@@ -5,9 +5,7 @@
 #endif
 #include "bppnnls.hpp"
 #include "inmf.hpp"
-// [[Rcpp::depends(RcppArmadillo)]]
 
-#include <RcppArmadilloExtensions/sample.h>
 #define CHUNK_SIZE 1000
 
 namespace planc {

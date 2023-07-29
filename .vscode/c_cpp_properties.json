@@ -16,7 +16,7 @@
                 "C:/Users/andrew/AppData/Local/R/win-library/4.2/Rcpp/include",
                 "C:/Users/andrew/AppData/Local/R/win-library/4.2/RcppArmadillo/include",
                 "C:/Users/andrew/AppData/Local/R/win-library/4.2/RcppProgress/include"
-                        ],
+            ],
             "compilerPath": "C:\\Rtools42\\X86_64~1.POS\\bin\\g++.exe",
             "cStandard": "c17",
             "cppStandard": "gnu++17",
@@ -46,7 +46,8 @@
                 "/Library/Frameworks/R.framework/Resources/include/**",
                 "/Library/Frameworks/R.framework/Resources/library/Rcpp/include/**",
                 "/Library/Frameworks/R.framework/Resources/library/RcppArmadillo/include/**",
-                "/Library/Frameworks/R.framework/Resources/library/RcppProgress/include/**"
+                "/Library/Frameworks/R.framework/Resources/library/RcppProgress/include/**",
+                "/opt/homebrew/Cellar/hdf5/1.14.1/include/**"
             ],
             "defines": [],
             "compilerPath": "/usr/lib64/ccache/gcc",
