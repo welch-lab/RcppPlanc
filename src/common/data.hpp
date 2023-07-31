@@ -1,6 +1,7 @@
 #pragma once
 
 #include "utils.hpp"
+#include "H5Cpp.h"
 
 namespace planc {
 
