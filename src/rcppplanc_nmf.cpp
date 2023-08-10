@@ -233,6 +233,7 @@ Rcpp::List bppnmf(const arma::sp_mat & x, const int & k, const int & niter,
 arma::mat bppnnls(const arma::mat &C, const arma::sp_mat &B) {
     arma::uword m_n = B.n_cols;
     arma::uword m_k = C.n_cols;
+    arma::mat CtC = C.t() * C;
     arma::mat outmat = arma::zeros<arma::mat>(m_k, m_n);
     arma::mat *outmatptr;
     outmatptr = &outmat;
@@ -244,7 +245,9 @@ arma::mat bppnnls(const arma::mat &C, const arma::sp_mat &B) {
         unsigned int spanEnd = (i + 1) * ONE_THREAD_MATRIX_SIZE - 1;
         if (spanEnd > m_n - 1) spanEnd = m_n - 1;
         // double start = omp_get_wtime();
-        BPPNNLS<arma::mat, arma::vec> solveProblem(C, (arma::mat)B.cols(spanStart, spanEnd));
+        arma::mat CtBChunk = C.t() * B.cols(spanStart, spanEnd);
+        BPPNNLS<arma::mat, arma::vec> solveProblem(CtC, CtBChunk, true);
+        // BPPNNLS<arma::mat, arma::vec> solveProblem(C, (arma::mat)B.cols(spanStart, spanEnd));
         solveProblem.solveNNLS();
         // double end = omp_get_wtime();
       // titer = end - start;
@@ -538,7 +541,7 @@ Rcpp::List onlineINMF_dense(std::vector<arma::mat> objectList, arma::uword k,
         matPtrVec.push_back(std::move(ptr));
     }
     planc::ONLINEINMF<arma::mat, arma::mat> solver(matPtrVec, k, lambda);
-    solver.runScenario1(minibatchSize, maxEpoch, maxHALSIter);
+    solver.runOnlineINMF(minibatchSize, maxEpoch, maxHALSIter);
     Rcpp::List HList = Rcpp::List::create();
     Rcpp::List VList = Rcpp::List::create();
     Rcpp::List AList = Rcpp::List::create();
@@ -573,7 +576,7 @@ Rcpp::List onlineINMF_sparse(Rcpp::List objectList, arma::uword k,
         matPtrVec.push_back(std::move(ptr));
     }
     planc::ONLINEINMF<arma::sp_mat, arma::sp_mat> solver(matPtrVec, k, lambda);
-    solver.runScenario1(minibatchSize, maxEpoch, maxHALSIter);
+    solver.runOnlineINMF(minibatchSize, maxEpoch, maxHALSIter);
 
     Rcpp::List HList = Rcpp::List::create();
     Rcpp::List VList = Rcpp::List::create();
@@ -609,7 +612,7 @@ Rcpp::List onlineINMF_H5Dense(std::vector<std::string> filenames,
         matPtrVec.push_back(std::move(ptr));
     }
     planc::ONLINEINMF<planc::H5Mat, arma::mat> solver(matPtrVec, k, lambda);
-    solver.runScenario1(minibatchSize, maxEpoch, maxHALSIter);
+    solver.runOnlineINMF(minibatchSize, maxEpoch, maxHALSIter);
 
     Rcpp::List HList = Rcpp::List::create();
     Rcpp::List VList = Rcpp::List::create();
@@ -651,7 +654,7 @@ Rcpp::List onlineINMF_H5Sparse(
         matPtrVec.push_back(std::move(ptr));
     }
     planc::ONLINEINMF<planc::H5SpMat, arma::sp_mat> solver(matPtrVec, k, lambda);
-    solver.runScenario1(minibatchSize, maxEpoch, maxHALSIter);
+    solver.runOnlineINMF(minibatchSize, maxEpoch, maxHALSIter);
 
     Rcpp::List HList = Rcpp::List::create();
     Rcpp::List VList = Rcpp::List::create();
@@ -671,4 +674,67 @@ Rcpp::List onlineINMF_H5Sparse(
         Rcpp::Named("A") = AList,
         Rcpp::Named("B") = BList
     );
+}
+
+//' @export
+// [[Rcpp::export]]
+Rcpp::List onlineINMF_Xnew_sparse(
+    std::vector<arma::sp_mat> objectList,
+    std::vector<arma::mat>& Vinit, arma::mat& Winit,
+    std::vector<arma::mat>& Ainit, std::vector<arma::mat>& Binit,
+    std::vector<arma::sp_mat> objectListNew,
+    arma::uword k, double lambda, bool project = false, arma::uword maxEpoch = 5,
+    arma::uword minibatchSize = 5000, arma::uword maxHALSIter = 1, bool verbose = true) {
+    std::vector<std::unique_ptr<arma::sp_mat>> matPtrVec;
+    for (arma::uword i = 0; i < objectList.size(); ++i)
+    {
+        arma::sp_mat E = objectList[i];
+        std::unique_ptr<arma::sp_mat> ptr = std::make_unique<arma::sp_mat>(E);
+        matPtrVec.push_back(std::move(ptr));
+    }
+
+    std::vector<std::unique_ptr<arma::sp_mat>> matPtrVecNew;
+    for (arma::uword i = 0; i < objectListNew.size(); ++i)
+    {
+        arma::sp_mat E_new = objectListNew[i];
+        std::unique_ptr<arma::sp_mat> ptr = std::make_unique<arma::sp_mat>(E_new);
+        matPtrVecNew.push_back(std::move(ptr));
+    }
+    planc::ONLINEINMF<arma::sp_mat, arma::sp_mat> solver(matPtrVec, k, lambda);
+    solver.initV(Vinit, false);
+    solver.initW(Winit, false);
+    solver.initA(Ainit);
+    solver.initB(Binit);
+    solver.runOnlineINMF(matPtrVecNew, project, minibatchSize, maxEpoch, maxHALSIter, verbose);
+
+    if (!project) {
+        // Scenario 2
+        Rcpp::List HList = Rcpp::List::create();
+        Rcpp::List VList = Rcpp::List::create();
+        Rcpp::List AList = Rcpp::List::create();
+        Rcpp::List BList = Rcpp::List::create();
+        for (arma::uword i = 0; i < objectList.size() + objectListNew.size(); ++i) {
+            HList.push_back(solver.getHi(i));
+            VList.push_back(solver.getVi(i));
+            AList.push_back(solver.getAi(i));
+            BList.push_back(solver.getBi(i));
+        }
+        return Rcpp::List::create(
+            Rcpp::Named("H") = HList,
+            Rcpp::Named("V") = VList,
+            Rcpp::Named("W") = solver.getW(),
+            Rcpp::Named("A") = AList,
+            Rcpp::Named("B") = BList
+        );
+    } else {
+        // Scenario 3
+        Rcpp::List HList = Rcpp::List::create();
+        for (arma::uword i = 0; i < objectListNew.size(); ++i) {
+            HList.push_back(solver.getHi(i));
+        }
+        return Rcpp::List::create(
+            Rcpp::Named("H") = HList
+        );
+    }
+
 }

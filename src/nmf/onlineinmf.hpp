@@ -34,6 +34,8 @@ private:
     int maxEpochs;                                 // The maximum number of epochs allowed to run
     std::vector<T2> E_mini;                 // contains the minibatches for each dataset, each of size m x minibatchSizes[i]
 
+    // %%%%%%%%%%%%%%% Iteration helper functions %%%%%%%%%%%%%%%%%%%%%%%
+
     bool next() {
         // Update minibatchIdx and decide whether to stop the while loop
         // `minibatchIdx` collects the sample points to be used for an iteration
@@ -77,7 +79,7 @@ private:
             }
         }
         // Return bool value to indicate whether to stop the while loop
-        if (this->minibatchSizes[0] != this->minibatchIdx[0].size()) {
+        if (this->minibatchSizes[this->dataIdxNew[0]] != this->minibatchIdx[this->dataIdxNew[0]].size()) {
             // This is the very last iteration within maxEpoch, if it is not as large as minibatchSize
             // then we just ignore it
             return false;
@@ -140,9 +142,10 @@ private:
             this->minibatchIdx[i] = arma::zeros<arma::uvec>(1);
         }
         arma::uword idx;
+        this->minibatchSizes.resize(this->nDatasets);
         for (arma::uword i = 0; i < this->dataIdxNew.size(); ++i) {
             idx = this->dataIdxNew[i];
-            double ratio = (double)this->ncol_E[idx] / (double)this->nSum;
+            double ratio = (double)this->ncol_E[idx] / (double)arma::accu(this->nCellsNew);
             this->minibatchSizes[idx] = round(ratio * minibatchSize);
             if (this->minibatchSizes[idx] < 1) {
                 throw std::invalid_argument("Please set a larger `minibatchSize`.");
@@ -159,14 +162,95 @@ private:
         this->E_mini[idx] = Eptr->cols(this->minibatchIdx[idx]);
     }
 
-    double scaleParam(arma::uword i) {
-        if (arma::any(this->dataIdxPrev == i)) return 0;
-        else {
-            if (this->iter == 1) return 0;
-            if (this->iter == 2) return 1 / (double)this->minibatchSizes[i];
-            else return (double)(this->iter - 2) / (double)(this->iter - 1);
+    // %%%%%%%%%%%%%%% Matrix Initiation %%%%%%%%%%%%%%%%%%%%%%%
+
+    void initH() {
+        // Generate place holder of H matrices for all datasets (S1)
+#ifdef _VERBOSE
+        std::cout << "Initializing empty H matrices" << std::endl;
+#endif
+        std::unique_ptr<arma::mat> H;
+        for (arma::uword i = 0; i < this->nDatasets; ++i) {
+            H = std::unique_ptr<arma::mat>(new arma::mat);
+            *H = arma::zeros<arma::mat>(this->ncol_E[i], this->k);
+            this->Hi.push_back(std::move(H));
         }
     }
+
+    void initNewH() {
+        // Generate place holder of H matrices only for new datasets (S2&3)
+#ifdef _VERBOSE
+        std::cout << "Initializing empty H matrices only for new datasets" << std::endl;
+#endif
+        std::unique_ptr<arma::mat> H;
+        unsigned int idx;
+        for (arma::uword i = 0; i < this->dataIdxNew.size(); ++i) {
+            idx = this->dataIdxNew[i];
+            H = std::unique_ptr<arma::mat>(new arma::mat);
+            *H = arma::zeros<arma::mat>(this->ncol_E[idx], this->k);
+            this->Hi.push_back(std::move(H));
+        }
+    }
+
+    void sampleV() {
+#ifdef _VERBOSE
+            std::cout << "Initializing V matrices by sampling from input" << std::endl;
+#endif
+        std::unique_ptr<arma::mat> V;
+        std::unique_ptr<arma::mat> VT;
+        arma::uword idx;
+        for (arma::uword i = 0; i < this->dataIdxNew.size(); ++i) {
+            idx = this->dataIdxNew[i];
+            V = std::unique_ptr<arma::mat>(new arma::mat);
+            // *V taken from random sampled columns of Ei[i]
+            arma::uvec indices = arma::randperm(this->ncol_E[idx]).head(this->k);
+            *V = this->Ei[idx]->cols(indices);
+            for (arma::uword j = 0; j < this->k; ++j) {
+                V->col(j) /= arma::norm(V->col(j), 2);
+            }
+            this->Vi.push_back(std::move(V));
+        }
+    }
+
+    void initW2() {
+        // Initialization is different than regular iNMF, so "2"
+#ifdef _VERBOSE
+        std::cout << "Randomly initializing W matrix" << std::endl;
+#endif
+        // For scenario 1.
+        // When scenario 2, call .initW(givenW, false) in wrapper
+        this->W = std::unique_ptr<arma::mat>(new arma::mat);
+        *this->W = arma::randu<arma::mat>(this->m, this->k, arma::distr_param(0, 2));
+        for (arma::uword i = 0; i < this->k; ++i) {
+            this->W->col(i) /= arma::norm(this->W->col(i), 2);
+        }
+    }
+
+    void initA() {
+        std::unique_ptr<arma::mat> A, Aold;
+        for (arma::uword i = 0; i < this->dataIdxNew.size(); ++i) {
+            A = std::unique_ptr<arma::mat>(new arma::mat);
+            Aold = std::unique_ptr<arma::mat>(new arma::mat);
+            *A = arma::zeros<arma::mat>(this->k, this->k);
+            *Aold = arma::zeros<arma::mat>(this->k, this->k);
+            this->Ai.push_back(std::move(A));
+            this->Ai_old.push_back(std::move(Aold));
+        }
+    }
+
+    void initB() {
+        std::unique_ptr<arma::mat> B, Bold;
+        for (arma::uword i = 0; i < this->dataIdxNew.size(); ++i) {
+            B = std::unique_ptr<arma::mat>(new arma::mat);
+            Bold = std::unique_ptr<arma::mat>(new arma::mat);
+            *B = arma::zeros<arma::mat>(this->m, this->k);
+            *Bold = arma::zeros<arma::mat>(this->m, this->k);
+            this->Bi.push_back(std::move(B));
+            this->Bi_old.push_back(std::move(Bold));
+        }
+    }
+
+    // %%%%%%%%%%%%%%% Main calculation %%%%%%%%%%%%%%%%%%%%%%%
 
     void solveHmini() {
         tic();
@@ -179,13 +263,11 @@ private:
         for (int i=0; i<this->dataIdxNew.size(); ++i) {
             idx = this->dataIdxNew[i];
             arma::mat* Vptr = this->Vi[idx].get();
-            arma::mat* Hminiptr = this->miniHi[idx].get();
-            // T1* Eptr = this->Ei[idx].get();
+            arma::mat* Hminiptr = this->miniHi[idx].get(); // `i` but not `idx`, nothing init for prev data
             T2 Emini = this->E_mini[idx];
             given = *Wptr + *Vptr;
             giventGiven = given.t() * given;
             giventGiven += (*Vptr).t() * (*Vptr) * this->lambda;
-            // arma::mat giventInput = given.t() * Eptr->cols(this->minibatchIdx[idx]);
             arma::mat giventInput = given.t() * Emini;
             BPPNNLS<arma::mat, arma::vec> subProbH(giventGiven, giventInput, true);
             subProbH.solveNNLS();
@@ -196,6 +278,16 @@ private:
 #ifdef _VERBOSE
         std::cout << toc() << " sec" << std::endl;
 #endif
+    }
+
+    double scaleParam(arma::uword i) {
+        // Helper used in .updateAandB()
+        if (arma::any(this->dataIdxPrev == i)) return 0;
+        else {
+            if (this->iter == 1) return 0;
+            if (this->iter == 2) return 1 / (double)this->minibatchSizes[i];
+            else return (double)(this->iter - 2) / (double)(this->iter - 1);
+        }
     }
 
     void updateAandB() {
@@ -210,7 +302,7 @@ private:
             arma::mat* Aoldptr = this->Ai_old[idx].get();
             arma::mat* Bptr = this->Bi[idx].get();
             arma::mat* Boldptr = this->Bi_old[idx].get();
-            arma::mat* Hminiptr = this->miniHi[idx].get();
+            arma::mat* Hminiptr = this->miniHi[idx].get(); // `i` but not `idx`, nothing init for prev data
             // T1* Eptr = this->Ei[idx].get();
             T2 Emini = this->E_mini[idx];
             if (this->epoch[this->dataIdxNew[0]] > 0 && this->epochNext) {
@@ -233,7 +325,6 @@ private:
             // XiHit
             *Bptr *= this->scaleParam(idx);
             *Bptr += Emini * *Hminiptr / this->minibatchSizes[idx];
-            // *Bptr += Eptr->cols(this->minibatchIdx[idx]) * *Hminiptr / this->minibatchSizes[idx];
         }
 #ifdef _VERBOSE
         std::cout << toc() << " sec" << std::endl;
@@ -292,6 +383,7 @@ private:
     }
 
     void solveH() {
+        // Solve H for all datasets (S1)
         tic();
 #ifdef _VERBOSE
         std::cout << "--Solving H--  ";
@@ -327,6 +419,110 @@ private:
 #endif
     }
 
+    // %%%%%%%%%%%%%%% Main loop functions %%%%%%%%%%%%%%%%%%%%%%%
+
+    void solveHALS(arma::uword minibatchSize = 5000, arma::uword maxEpochs = 5,
+                   arma::uword maxHALSIter = 1, bool verbose = true) {
+        // Main loop of online updating algorithm (S1&2)
+        // Universal initialization
+        this->maxEpochs = maxEpochs;
+        this->iter = 0;
+        this->sampleV();
+        this->initH();
+        this->initA();
+        this->initB();
+        this->checkK();
+        this->initMinibatch(minibatchSize);
+        // Initialize miniHi
+        std::unique_ptr<arma::mat> miniH;
+        for (arma::uword i = 0; i < this->nDatasets; ++i) {
+            miniH = std::unique_ptr<arma::mat>(new arma::mat(this->minibatchSizes[i], this->k));
+            this->miniHi.push_back(std::move(miniH));
+        }
+        // Setup the progress bar
+        int totalIters = arma::accu(this->nCellsNew) * maxEpochs / minibatchSize;
+        Progress p(totalIters, verbose);
+        // Initial shuffling
+
+        for (arma::uword i = 0; i < this->dataIdxNew.size(); ++i) {
+            int idx = dataIdxNew[i];
+            this->permuteChunkIdx(idx);
+        }
+        // Start the main loop
+        auto start = std::chrono::high_resolution_clock::now();
+        while (this->next()) {
+            if (this->iter % 5 == 0) Rcpp::checkUserInterrupt();
+            // The `next()` function does:
+            // 1. update the minibatch idx to be used for current iteration
+            // 2. decide whether to stop the while loop
+            // 3. prepare the in-memory minibatch data
+            // Step 1: Solve H for the minibatches
+            this->solveHmini();
+            // Step 2: Update A and B
+            this->updateAandB();
+            // Step 3: Solve V and W with HALS
+            for (arma::uword i = 0; i < maxHALSIter; ++i) {
+                this->updateW();
+                this->updateV();
+            }
+            // Reset epoch change indicator
+            this->epochNext = false;
+
+            if (!p.is_aborted()) p.increment();
+            else break;
+        }
+        this->solveH();
+        double obj = this->computeObjectiveError();
+        auto end = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::seconds>(end - start);
+        if (verbose) {
+            std::cout << "Total interations: " << totalIters << std::endl;
+            std::cout << "Total time:        " << duration.count() << std::endl;
+            std::cout << "Objective:         " << obj << std::endl;
+        }
+    }
+
+    void projectNewData() {
+        // Main loop of online updating algorithm (S3)
+        tic();
+#ifdef _VERBOSE
+        std::cout << "--Solving H with only W--  ";
+#endif
+        this->initNewH();
+        arma::mat* Wptr = this->W.get();
+        arma::mat given(this->m, this->k);
+        unsigned int idx;
+        for (unsigned int i = 0; i < this->dataIdxNew.size(); ++i) {
+            idx = this->dataIdxNew[i];
+            arma::mat* Hptr = this->Hi[i].get(); // `i` but not `idx`, nothing init for prev data
+            T1* Eptr = this->Ei[idx].get();
+            giventGiven = (*Wptr).t() * (*Wptr);
+            unsigned int dataSize = this->ncol_E[idx];
+            unsigned int numChunks = dataSize / INMF_CHUNK_SIZE;
+            if (numChunks * INMF_CHUNK_SIZE < dataSize) numChunks++;
+#pragma omp parallel for schedule(auto)
+            for (unsigned int j = 0; j < numChunks; ++j) {
+                unsigned int spanStart = j * INMF_CHUNK_SIZE;
+                unsigned int spanEnd = (j + 1) * INMF_CHUNK_SIZE - 1;
+                if (spanEnd > dataSize - 1) spanEnd = dataSize - 1;
+                arma::mat giventInput = (*Wptr).t() * (*Eptr).cols(spanStart, spanEnd);
+                BPPNNLS<arma::mat, arma::vec> subProbH(giventGiven, giventInput, true);
+                subProbH.solveNNLS();
+                (*Hptr).rows(spanStart, spanEnd) = subProbH.getSolutionMatrix().t();
+                giventInput.clear();
+            }
+            // iNMF is basically (W + V) * HT = E, now we solved W * HT = E, so V = 0
+            std::unique_ptr<arma::mat> V;
+            V = std::unique_ptr<arma::mat>(new arma::mat);
+            *V = arma::zeros<arma::mat>(this->m, this->k);
+            this->Vi.push_back(std::move(V));
+        }
+        giventGiven.clear();
+#ifdef _VERBOSE
+        std::cout << toc() << " sec" << std::endl;
+#endif
+    }
+
 public:
     ONLINEINMF(std::vector<std::unique_ptr<T1>>& Ei, arma::uword k, double lambda) : INMF<T1>(Ei, k, lambda, false) {
         this->dataIdx = arma::linspace<arma::uvec>(0, this->nDatasets - 1, this->nDatasets);
@@ -339,146 +535,120 @@ public:
         }
     }
 
-    void initH() {
-#ifdef _VERBOSE
-        std::cout << "Initializing empty H matrices" << std::endl;
-#endif
-        std::unique_ptr<arma::mat> H;
-        for (arma::uword i = 0; i < this->nDatasets; ++i) {
-            H = std::unique_ptr<arma::mat>(new arma::mat);
-            *H = arma::zeros<arma::mat>(this->ncol_E[i], this->k);
-            this->Hi.push_back(std::move(H));
-        }
-    }
-
-    void initV() {
-#ifdef _VERBOSE
-            std::cout << "Initializing V matrices by sampling from input" << std::endl;
-#endif
-        std::unique_ptr<arma::mat> V;
-        std::unique_ptr<arma::mat> VT;
-        for (arma::uword i = 0; i < this->nDatasets; ++i) {
-            V = std::unique_ptr<arma::mat>(new arma::mat);
-            VT = std::unique_ptr<arma::mat>(new arma::mat);
-            // *V taken from random sampled columns of Ei[i]
-            arma::uvec indices = arma::randperm(this->ncol_E[i]).head(this->k);
-            *V = this->Ei[i]->cols(indices);
-            for (arma::uword j = 0; j < this->k; ++j) {
-                V->col(j) /= arma::norm(V->col(j), 2);
-            }
-            *VT = (*V).t();
-            this->Vi.push_back(std::move(V));
-            this->ViT.push_back(std::move(VT));
-        }
-    }
-
-    void initW() {
-#ifdef _VERBOSE
-        std::cout << "Randomly initializing W matrix" << std::endl;
-#endif
-        this->W = std::unique_ptr<arma::mat>(new arma::mat);
-        this->WT = std::unique_ptr<arma::mat>(new arma::mat);
-        *this->W = arma::randu<arma::mat>(this->m, this->k, arma::distr_param(0, 2));
-        for (arma::uword i = 0; i < this->k; ++i) {
-            this->W->col(i) /= arma::norm(this->W->col(i), 2);
-        }
-        *this->WT = (*this->W).t();
-    }
-
+    // %%%%%%%%%%%%%%% Public initializers %%%%%%%%%%%%%%%%%%%%%%%
     void initA(std::vector<arma::mat>& Ainit) {
-        // TODO
-    }
-
-    void initA() {
-        std::unique_ptr<arma::mat> A, Aold;
+        // Set A matrices for existing datasets (S2)
+#ifdef _VERBOSE
+        std::cout << "Taking initialized A matrices" << std::endl;
+#endif
+        std::unique_ptr<arma::mat> A;
+        std::unique_ptr<arma::mat> Aold;
+        if (Ainit.size() != this->nDatasets) {
+            std::string msg = "Must provide " +
+                              std::string(std::to_string(this->nDatasets)) +
+                              " A matrices";
+            throw std::invalid_argument(msg);
+        }
         for (arma::uword i = 0; i < this->nDatasets; ++i) {
+            if (Ainit[i].n_rows != this->k || Ainit[i].n_cols != this->k) {
+                std::string msg = "Given As must all be of size " +
+                                  std::string(std::to_string(this->k)) + " x " +
+                                    std::string(std::to_string(this->k));
+                throw std::invalid_argument(msg);
+            }
             A = std::unique_ptr<arma::mat>(new arma::mat);
             Aold = std::unique_ptr<arma::mat>(new arma::mat);
-            *A = arma::zeros<arma::mat>(this->k, this->k);
-            *Aold = arma::zeros<arma::mat>(this->k, this->k);
+            *A = Ainit[i];
             this->Ai.push_back(std::move(A));
             this->Ai_old.push_back(std::move(Aold));
         }
     }
 
     void initB(std::vector<arma::mat>& Binit) {
-        // TODO
-    }
-
-    void initB() {
-        std::unique_ptr<arma::mat> B, Bold;
+        // Set B matrices for existing datasets (S2)
+#ifdef _VERBOSE
+    std::cout << "Taking initialized B matrices" << std::endl;
+#endif
+        if (Binit.size() != this->nDatasets) {
+            std::string msg = "Must provide " +
+                              std::string(std::to_string(this->nDatasets)) +
+                              " B matrices";
+            throw std::invalid_argument(msg);
+        }
+        std::unique_ptr<arma::mat> B;
+        std::unique_ptr<arma::mat> Bold;
         for (arma::uword i = 0; i < this->nDatasets; ++i) {
+            if (Binit[i].n_rows != this->m || Binit[i].n_cols != this->k) {
+                std::string msg = "Given Bs must all be of size " +
+                                  std::string(std::to_string(this->m)) + " x " +
+                                    std::string(std::to_string(this->k));
+                throw std::invalid_argument(msg);
+            }
             B = std::unique_ptr<arma::mat>(new arma::mat);
             Bold = std::unique_ptr<arma::mat>(new arma::mat);
-            *B = arma::zeros<arma::mat>(this->m, this->k);
-            *Bold = arma::zeros<arma::mat>(this->m, this->k);
+            *B = Binit[i];
             this->Bi.push_back(std::move(B));
             this->Bi_old.push_back(std::move(Bold));
         }
     }
+    // For setting W and V for existing datasets in S2, use
+    // .initW(W, false) and .initV(Vs, false) inherited from INMF class
+    // (`false` for no transposition)
 
-    void runScenario1(arma::uword minibatchSize = 5000, arma::uword maxEpochs = 5, arma::uword maxHALSIter = 1) {
-        // Leave dataIdxPrev as empty
-        std::cout << "Starting online iNMF scenario 1" << std::endl;
-        this->maxEpochs = maxEpochs;
-        this->iter = 0;
+    // Scenario 1: Online iNMF on all data as new factorization
+    void runOnlineINMF(arma::uword minibatchSize = 5000, arma::uword maxEpochs = 5,
+                       arma::uword maxHALSIter = 1, bool verbose = true) {
+        if (verbose) {
+            std::cout << "Starting online iNMF scenario 1, factorize all datasets" << std::endl;
+        }
         this->dataIdxNew = this->dataIdx;
         this->nCellsNew = this->ncol_E;
-        this->initMinibatch(minibatchSize);
-        this->initW();
-        this->initV();
-        this->initH();
-        this->initA();
-        this->initB();
-        // Initialize miniHi
-        std::unique_ptr<arma::mat> miniH;
-        for (arma::uword i = 0; i < this->dataIdxNew.size(); ++i) {
-            int idx = this->dataIdxNew[i];
-            miniH = std::unique_ptr<arma::mat>(new arma::mat(this->minibatchSizes[idx], this->k));
-            this->miniHi.push_back(std::move(miniH));
-        }
-        // Setup the progress bar
-        int totalIters = arma::accu(this->nCellsNew) * maxEpochs / minibatchSize;
-        Progress p(totalIters, true);
-        // Initial shuffling
-        for (arma::uword i = 0; i < this->dataIdxNew.size(); ++i) {
-            this->permuteChunkIdx(this->dataIdxNew[i]);
-        }
-        // Start the main loop
-        auto start = std::chrono::high_resolution_clock::now();
-        while (this->next()) {
-            // The `next()` function will also update the minibatch idx to be
-            // used for current iteration, and decide whether to stop the while loop
-            // And also prepares the in-memory minibatch data
+        this->initW2();
+        this->solveHALS(minibatchSize, maxEpochs, maxHALSIter);
+    }
 
-            // Step 1: Solve H for the minibatches
-            this->solveHmini();
-            // Step 2: Update A and B
-            this->updateAandB();
-            // Step 3: Solve V and W with HALS
-            for (arma::uword i = 0; i < maxHALSIter; ++i) {
-                this->updateW();
-                this->updateV();
+    // Scenario 2, project == false (default): Online iNMF on new data, factorized upon existing factorization
+    // Scenario 3, project == true:  Project new datasets without updating existing factorization
+    void runOnlineINMF(std::vector<std::unique_ptr<T1>>& E_new, bool project = false,
+                       arma::uword minibatchSize = 5000, arma::uword maxEpochs = 5,
+                       arma::uword maxHALSIter = 1, bool verbose = true) {
+        // Move new Es into Ei, and manage dataIdxNew, Prev, and nCellsNew
+        this->dataIdxPrev = this->dataIdx;
+        this->dataIdxNew = arma::linspace<arma::uvec>(this->nDatasets,
+                                                      this->nDatasets + E_new.size() - 1,
+                                                      E_new.size());
+        this->nCellsNew = arma::zeros<arma::uvec>(E_new.size());
+        for (int i = 0; i < E_new.size(); i++) {
+            T1* EnewPtr = E_new[i].get();
+            this->nCellsNew[i] = EnewPtr->n_cols;
+            this->ncol_E.push_back(EnewPtr->n_cols);
+            this->samplingIdx.push_back(arma::zeros<arma::uvec>(EnewPtr->n_cols));
+            this->Ei.push_back(std::move(E_new[i]));
+            this->nDatasets++;
+        }
+        this->epoch = arma::zeros<arma::uvec>(this->nDatasets);
+        this->epochPrev = arma::zeros<arma::uvec>(this->nDatasets);
+        this->dataIdx = arma::join_cols(this->dataIdxPrev, this->dataIdxNew);
+        assert(this->dataIdx.size() == this->nDatasets);
+        assert(arma::all(this->dataIdx == arma::linspace<arma::uvec>(0,
+                                                                     this->nDatasets - 1,
+                                                                     this->nDatasets)));
+        if (!project) {
+            if (verbose) {
+                std::cout << "Starting online iNMF scenario 2, " <<
+                "update factorization with new datasets" << std::endl;
             }
-            // Reset epoch change indicator
-            this->epochNext = false;
-            p.increment();
+            this->solveHALS(minibatchSize, maxEpochs, maxHALSIter, verbose);
+        } else {
+            if (verbose) {
+                std::cout << "Starting online iNMF scenario 3, " <<
+                "project new datasets without updating existing factorization" << std::endl;
+            }
+            this->projectNewData();
         }
-        auto end = std::chrono::high_resolution_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-        std::cout << "Average time per iteration: " << duration.count() / totalIters / 1e6 << " sec" << std::endl;
-
-        this->solveH();
     }
 
-    void scenario2() {
-
-    }
-
-    void scenario3() {
-
-    }
-
+    // %%%%%%%%%%%%%%% Results Getters %%%%%%%%%%%%%%%%%%%%%%%
     arma::mat getAi(int i) {
         return *(this->Ai[i].get());
     }
@@ -494,6 +664,8 @@ public:
     std::vector<std::unique_ptr<arma::mat>> getAllB() {
         return this->Bi;
     }
+    // For getting H, W and V, use .getHi(), .getW(), .getVi() inherited from INMF class
+
 }; // class ONLINEINMF
 
 template<>

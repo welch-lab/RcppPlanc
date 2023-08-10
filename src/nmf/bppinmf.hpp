@@ -132,14 +132,8 @@ public:
     BPPINMF(std::vector<std::unique_ptr<T>>& Ei, arma::uword k, double lambda) : INMF<T>(Ei, k, lambda) {
 
     }
-    // BPPINMF(std::vector<std::unique_ptr<T>>& Ei, arma::uword k, double lambda,
-    //         std::vector<std::unique_ptr<arma::mat>>& Hinit,
-    //         std::vector<std::unique_ptr<arma::mat>>& Vinit,
-    //         arma::mat& Winit) : INMF<T>(Ei, k, lambda, Hinit, Vinit, Winit) {
 
-    // }
-
-    void optimizeALS(int maxIter, const double thresh, bool verbose) {
+    void optimizeALS(int maxIter, const double thresh, bool verbose = true) {
         // execute private functions here
         if (verbose) {
             std::cerr << "BPPINMF optimizeALS started, maxIter="
@@ -154,33 +148,31 @@ public:
         Progress p(maxIter, verbose);
         while (delta > thresh && iter < maxIter ) {
             Rcpp::checkUserInterrupt();
-            if ( ! p.is_aborted() ) {
-                tic();
+            tic();
 #ifdef _VERBOSE
-                std::cout << "========Staring iteration "
-                << iter+1 << "========" << std::endl;
+            std::cout << "========Staring iteration "
+            << iter+1 << "========" << std::endl;
 #endif
-                solveH();
-                solveV();
-                solveW();
-                obj = this->computeObjectiveError();
-                delta = abs(this->objective_err - obj) / ((this->objective_err + obj) / 2);
-                iter++;
-                this->objective_err = obj;
-                double time_iter = toc();
+            solveH();
+            solveV();
+            solveW();
+            obj = this->computeObjectiveError();
+            delta = abs(this->objective_err - obj) / ((this->objective_err + obj) / 2);
+            iter++;
+            this->objective_err = obj;
+            double time_iter = toc();
 #ifdef _VERBOSE
-                std::cout << "Objective:  " << obj << std::endl
-                        << "Delta:      " << delta << std::endl
-                        << "Total time: " << time_iter << " sec" << std::endl;
+            std::cout << "Objective:  " << obj << std::endl
+                    << "Delta:      " << delta << std::endl
+                    << "Total time: " << time_iter << " sec" << std::endl;
 #endif
-                time_total += time_iter;
-                p.increment();
-            } else {
-                break;
-            }
+            time_total += time_iter;
+
+            if ( ! p.is_aborted() ) p.increment();
+            else break;
         }
         if (verbose) {
-            std::cerr << "Finished after " << iter << " iterations in " << time_total << " seconds." << std::endl
+            std::cout << "Finished after " << iter << " iterations in " << time_total << " seconds." << std::endl
                 << "Final objective: " << this->objective_err << std::endl
                 << "Final delta:     " << delta << std::endl;
         }

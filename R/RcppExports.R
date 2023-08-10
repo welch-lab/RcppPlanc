@@ -141,3 +141,8 @@ onlineINMF_H5Sparse <- function(filenames, valuePaths, rowindPaths, colptrPaths,
     .Call(`_RcppPlanc_onlineINMF_H5Sparse`, filenames, valuePaths, rowindPaths, colptrPaths, nrows, ncols, k, lambda, maxEpoch, minibatchSize, maxHALSIter)
 }
 
+#' @export
+onlineINMF_Xnew_sparse <- function(objectList, Vinit, Winit, Ainit, Binit, objectListNew, k, lambda, project = FALSE, maxEpoch = 5L, minibatchSize = 5000L, maxHALSIter = 1L, verbose = TRUE) {
+    .Call(`_RcppPlanc_onlineINMF_Xnew_sparse`, objectList, Vinit, Winit, Ainit, Binit, objectListNew, k, lambda, project, maxEpoch, minibatchSize, maxHALSIter, verbose)
+}
+

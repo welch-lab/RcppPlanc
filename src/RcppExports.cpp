@@ -230,6 +230,29 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// onlineINMF_Xnew_sparse
+Rcpp::List onlineINMF_Xnew_sparse(std::vector<arma::sp_mat> objectList, std::vector<arma::mat>& Vinit, arma::mat& Winit, std::vector<arma::mat>& Ainit, std::vector<arma::mat>& Binit, std::vector<arma::sp_mat> objectListNew, arma::uword k, double lambda, bool project, arma::uword maxEpoch, arma::uword minibatchSize, arma::uword maxHALSIter, bool verbose);
+RcppExport SEXP _RcppPlanc_onlineINMF_Xnew_sparse(SEXP objectListSEXP, SEXP VinitSEXP, SEXP WinitSEXP, SEXP AinitSEXP, SEXP BinitSEXP, SEXP objectListNewSEXP, SEXP kSEXP, SEXP lambdaSEXP, SEXP projectSEXP, SEXP maxEpochSEXP, SEXP minibatchSizeSEXP, SEXP maxHALSIterSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<arma::sp_mat> >::type objectList(objectListSEXP);
+    Rcpp::traits::input_parameter< std::vector<arma::mat>& >::type Vinit(VinitSEXP);
+    Rcpp::traits::input_parameter< arma::mat& >::type Winit(WinitSEXP);
+    Rcpp::traits::input_parameter< std::vector<arma::mat>& >::type Ainit(AinitSEXP);
+    Rcpp::traits::input_parameter< std::vector<arma::mat>& >::type Binit(BinitSEXP);
+    Rcpp::traits::input_parameter< std::vector<arma::sp_mat> >::type objectListNew(objectListNewSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type k(kSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< bool >::type project(projectSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type maxEpoch(maxEpochSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type minibatchSize(minibatchSizeSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type maxHALSIter(maxHALSIterSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(onlineINMF_Xnew_sparse(objectList, Vinit, Winit, Ainit, Binit, objectListNew, k, lambda, project, maxEpoch, minibatchSize, maxHALSIter, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_RcppPlanc_aoadmmnmf", (DL_FUNC) &_RcppPlanc_aoadmmnmf, 5},
@@ -245,6 +268,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppPlanc_onlineINMF_sparse", (DL_FUNC) &_RcppPlanc_onlineINMF_sparse, 6},
     {"_RcppPlanc_onlineINMF_H5Dense", (DL_FUNC) &_RcppPlanc_onlineINMF_H5Dense, 7},
     {"_RcppPlanc_onlineINMF_H5Sparse", (DL_FUNC) &_RcppPlanc_onlineINMF_H5Sparse, 11},
+    {"_RcppPlanc_onlineINMF_Xnew_sparse", (DL_FUNC) &_RcppPlanc_onlineINMF_Xnew_sparse, 13},
     {NULL, NULL, 0}
 };
 
