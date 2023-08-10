@@ -654,7 +654,6 @@ PKG_CXXFLAGS
 PKG_LIBS
 PKG_CPPFLAGS
 HAVE_CXX17
-HDF5_TYPE
 HDF5_FLIBS
 HDF5_FFLAGS
 HDF5_FC
@@ -663,6 +662,9 @@ HDF5_LDFLAGS
 HDF5_CPPFLAGS
 HDF5_CFLAGS
 HDF5_CC
+HDF5_REVISION_VERSION
+HDF5_MINOR_VERSION
+HDF5_MAJOR_VERSION
 HDF5_VERSION
 H5FC
 H5CC
@@ -3472,7 +3474,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 # ===========================================================================
-#       https://www.gnu.org/software/autoconf-archive/ax_lib_hdf5.html
+#        http://www.gnu.org/software/autoconf-archive/ax_lib_hdf5.html
 # ===========================================================================
 #
 # SYNOPSIS
@@ -3506,12 +3508,11 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 #     AC_SUBST(HDF5_FC)
 #     AC_SUBST(HDF5_FFLAGS)
 #     AC_SUBST(HDF5_FLIBS)
-#     AC_SUBST(HDF5_TYPE)
 #     AC_DEFINE(HAVE_HDF5)
 #
 #   and sets with_hdf5="yes".  Additionally, the macro sets
 #   with_hdf5_fortran="yes" if a matching Fortran wrapper script is found.
-#   Note that Autoconf's Fortran support is not used to perform this check.
+#   Note that Autconf's Fortran support is not used to perform this check.
 #   H5CC and H5FC will contain the appropriate serial or parallel HDF5
 #   wrapper script locations.
 #
@@ -3548,9 +3549,6 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 #             AC_MSG_ERROR([Unable to find HDF5, we need parallel HDF5.])
 #     fi
 #
-#   The HDF5_TYPE environment variable returns "parallel" or "serial",
-#   depending on which type of library is found.
-#
 # LICENSE
 #
 #   Copyright (c) 2009 Timothy Brown <tbrown@freeshell.org>
@@ -3561,7 +3559,14 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 #   and this notice are preserved. This file is offered as-is, without any
 #   warranty.
 
-#serial 20
+#serial 12
+
+# This code was adapted by Holger Hoefling on May 2nd 2016 to also
+# substitute variables HDF5_MAJOR_VERSION, HDF5_MINOR_VERSION
+# as well as HDF5_REVISION_VERSION so that the 3 parts of the
+# version number are available separately for testing
+# Also changed to check for hdf5_hl header library existence
+
 
 
 
@@ -4121,11 +4126,11 @@ if test x$ac_prog_cxx_stdcxx = xno
 then :
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $CXX option to enable C++11 features" >&5
 printf %s "checking for $CXX option to enable C++11 features... " >&6; }
-if test ${ac_cv_prog_cxx_11+y}
+if test ${ac_cv_prog_cxx_cxx11+y}
 then :
   printf %s "(cached) " >&6
 else $as_nop
-  ac_cv_prog_cxx_11=no
+  ac_cv_prog_cxx_cxx11=no
 ac_save_CXX=$CXX
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -4167,11 +4172,11 @@ if test x$ac_prog_cxx_stdcxx = xno
 then :
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $CXX option to enable C++98 features" >&5
 printf %s "checking for $CXX option to enable C++98 features... " >&6; }
-if test ${ac_cv_prog_cxx_98+y}
+if test ${ac_cv_prog_cxx_cxx98+y}
 then :
   printf %s "(cached) " >&6
 else $as_nop
-  ac_cv_prog_cxx_98=no
+  ac_cv_prog_cxx_cxx98=no
 ac_save_CXX=$CXX
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -4621,11 +4626,11 @@ if test x$ac_prog_cxx_stdcxx = xno
 then :
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $CXX option to enable C++11 features" >&5
 printf %s "checking for $CXX option to enable C++11 features... " >&6; }
-if test ${ac_cv_prog_cxx_11+y}
+if test ${ac_cv_prog_cxx_cxx11+y}
 then :
   printf %s "(cached) " >&6
 else $as_nop
-  ac_cv_prog_cxx_11=no
+  ac_cv_prog_cxx_cxx11=no
 ac_save_CXX=$CXX
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -4667,11 +4672,11 @@ if test x$ac_prog_cxx_stdcxx = xno
 then :
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $CXX option to enable C++98 features" >&5
 printf %s "checking for $CXX option to enable C++98 features... " >&6; }
-if test ${ac_cv_prog_cxx_98+y}
+if test ${ac_cv_prog_cxx_cxx98+y}
 then :
   printf %s "(cached) " >&6
 else $as_nop
-  ac_cv_prog_cxx_98=no
+  ac_cv_prog_cxx_cxx98=no
 ac_save_CXX=$CXX
 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
@@ -8262,7 +8267,6 @@ HDF5_LIBS=""
 HDF5_FC=""
 HDF5_FFLAGS=""
 HDF5_FLIBS=""
-HDF5_TYPE=""
 
 if test "$with_hdf5" = "yes"; then
     if test -z "$H5CC"; then
@@ -8322,18 +8326,6 @@ printf %s "checking Using provided HDF5 C wrapper... " >&6; }
         { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $H5CC" >&5
 printf "%s\n" "$H5CC" >&6; }
     fi
-    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for HDF5 type" >&5
-printf %s "checking for HDF5 type... " >&6; }
-    case $H5CC in #(
-  *h5pcc) :
-    HDF5_TYPE=parallel ;; #(
-  *h5cc) :
-    HDF5_TYPE=serial ;; #(
-  *) :
-    HDF5_TYPE=neither ;;
-esac
-    { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $HDF5_TYPE" >&5
-printf "%s\n" "$HDF5_TYPE" >&6; }
     { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for HDF5 libraries" >&5
 printf %s "checking for HDF5 libraries... " >&6; }
     if test ! -f "$H5CC" || test ! -x "$H5CC"; then
@@ -8354,14 +8346,17 @@ HDF5 support is being disabled (equivalent to --with-hdf5=no).
     else
                 HDF5_SHOW=$(eval $H5CC -show)
 
-                HDF5_CC=$(eval $H5CC -show | head -n 1 | $AWK '{print $1}')
+                HDF5_CC=$(eval $H5CC -show | $AWK '{print $1}')
         if test "$HDF5_CC" = "ccache"; then
-            HDF5_CC=$(eval $H5CC -show | head -n 1 | $AWK '{print $2}')
+            HDF5_CC=$(eval $H5CC -show | $AWK '{print $2}')
         fi
 
 
                 HDF5_VERSION=$(eval $H5CC -showconfig | $GREP 'HDF5 Version:' \
             | $AWK '{print $3}')
+        HDF5_MAJOR_VERSION=$(echo $HDF5_VERSION | $AWK -F \. '{print $1}')
+        HDF5_MINOR_VERSION=$(echo $HDF5_VERSION | $AWK -F \. {'print $2'})
+        HDF5_REVISION_VERSION=$(echo $HDF5_VERSION | $AWK -F \. {'print $3'})
 
                                                                                 HDF5_tmp_flags=$(eval $H5CC -showconfig \
             | $GREP 'FLAGS\|Extra libraries:' \
@@ -8376,18 +8371,18 @@ HDF5 support is being disabled (equivalent to --with-hdf5=no).
                 for arg in $HDF5_SHOW $HDF5_tmp_flags ; do
           case "$arg" in
             -I*) echo $HDF5_CPPFLAGS | $GREP -e "$arg" 2>&1 >/dev/null \
-                  || HDF5_CPPFLAGS="$HDF5_CPPFLAGS $arg"
+                  || HDF5_CPPFLAGS="$arg $HDF5_CPPFLAGS"
               ;;
             -L*) echo $HDF5_LDFLAGS | $GREP -e "$arg" 2>&1 >/dev/null \
-                  || HDF5_LDFLAGS="$HDF5_LDFLAGS $arg"
+                  || HDF5_LDFLAGS="$arg $HDF5_LDFLAGS"
               ;;
             -l*) echo $HDF5_LIBS | $GREP -e "$arg" 2>&1 >/dev/null \
-                  || HDF5_LIBS="$HDF5_LIBS $arg"
+                  || HDF5_LIBS="$arg $HDF5_LIBS"
               ;;
           esac
         done
 
-        HDF5_LIBS="-lhdf5 $HDF5_LIBS"
+        HDF5_LIBS="$HDF5_LIBS -lhdf5"
         { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: yes (version $HDF5_VERSION)" >&5
 printf "%s\n" "yes (version $HDF5_VERSION)" >&6; }
 
@@ -8467,6 +8462,69 @@ fi
           { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: Unable to compile HDF5 test program" >&5
 printf "%s\n" "$as_me: WARNING: Unable to compile HDF5 test program" >&2;}
         fi
+        ac_fn_c_check_header_compile "$LINENO" "hdf5_hl.h" "ac_cv_header_hdf5_hl_h" "#include <hdf5.h>
+"
+if test "x$ac_cv_header_hdf5_hl_h" = xyes
+then :
+  ac_cv_hadf5_hl_h=yes
+else $as_nop
+  ac_cv_hadf5_hl_h=no
+fi
+
+        { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for H5LTpath_valid in -lhdf5_hl" >&5
+printf %s "checking for H5LTpath_valid in -lhdf5_hl... " >&6; }
+if test ${ac_cv_lib_hdf5_hl_H5LTpath_valid+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lhdf5_hl  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+char H5LTpath_valid ();
+#ifdef F77_DUMMY_MAIN
+
+#  ifdef __cplusplus
+     extern "C"
+#  endif
+   int F77_DUMMY_MAIN() { return 1; }
+
+#endif
+int
+main (void)
+{
+return H5LTpath_valid ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"
+then :
+  ac_cv_lib_hdf5_hl_H5LTpath_valid=yes
+else $as_nop
+  ac_cv_lib_hdf5_hl_H5LTpath_valid=no
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.beam \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_hdf5_hl_H5LTpath_valid" >&5
+printf "%s\n" "$ac_cv_lib_hdf5_hl_H5LTpath_valid" >&6; }
+if test "x$ac_cv_lib_hdf5_hl_H5LTpath_valid" = xyes
+then :
+  ac_cv_libhdf5_hl=yes
+else $as_nop
+  ac_cv_libhdf5_hl=no
+fi
+
+        if test "$ac_cv_hadf5_hl_h" = "no" && test "$ac_cv_libhdf5_hl" = "no"; then
+          { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: Unable to compile HDF5_HL test program" >&5
+printf "%s\n" "$as_me: WARNING: Unable to compile HDF5_HL test program" >&2;}
+        fi
                 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for main in -lhdf5_hl" >&5
 printf %s "checking for main in -lhdf5_hl... " >&6; }
 if test ${ac_cv_lib_hdf5_hl_main+y}
@@ -8509,9 +8567,8 @@ fi
 printf "%s\n" "$ac_cv_lib_hdf5_hl_main" >&6; }
 if test "x$ac_cv_lib_hdf5_hl_main" = xyes
 then :
-  HDF5_LIBS="-lhdf5_hl $HDF5_LIBS"
+  HDF5_LIBS="$HDF5_LIBS -lhdf5_hl"
 fi
-ac_cv_lib_hdf5_hl=ac_cv_lib_hdf5_hl_main
 
 
         CC=$ax_lib_hdf5_save_CC
@@ -8538,12 +8595,12 @@ printf "%s\n" "$H5FC" >&6; }
             do
               case "$arg" in #(
                 -I*) echo $HDF5_FFLAGS | $GREP -e "$arg" >/dev/null \
-                      || HDF5_FFLAGS="$HDF5_FFLAGS $arg"
+                      || HDF5_FFLAGS="$arg $HDF5_FFLAGS"
                   ;;#(
                 -L*) echo $HDF5_FFLAGS | $GREP -e "$arg" >/dev/null \
-                      || HDF5_FFLAGS="$HDF5_FFLAGS $arg"
+                      || HDF5_FFLAGS="$arg $HDF5_FFLAGS"
                                                                echo $HDF5_FFLAGS | $GREP -e "-I${arg#-L}" >/dev/null \
-                      || HDF5_FFLAGS="$HDF5_FFLAGS -I${arg#-L}"
+                      || HDF5_FFLAGS="-I${arg#-L} $HDF5_FFLAGS"
                   ;;
               esac
             done
@@ -8564,6 +8621,8 @@ printf "%s\n" "$H5FC" >&6; }
 printf "%s\n" "no" >&6; }
             with_hdf5_fortran="no"
         fi
+
+
 
 
 
@@ -11254,7 +11313,7 @@ PKG_LIBS="\$(SHLIB_OPENMP_CXXFLAGS) $LAPACK_LIBS $BLAS_LIBS $FLIBS $HDF5_LDFLAGS
 # Write the flags into the src/Makevars file.
 PKG_CPPFLAGS="${CPPFLAGS} ${PKG_CPPFLAGS}"
 
-PKG_LIBS="${LIBS} ${PKG_LIBS}"
+PKG_LIBS="${LIBS} $LDFLAGS ${PKG_LIBS}"
 
 PKG_CXXFLAGS="${X86_FEATURE_CFLAGS} ${PKG_CXXFLAGS}"
 
