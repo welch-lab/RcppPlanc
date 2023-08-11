@@ -3583,6 +3583,8 @@ CPPFLAGS="`"${R_HOME}/bin/R" CMD config CPPFLAGS`"
 FC=`"${R_HOME}/bin/R" CMD config FC`
 FLIBS=`"${R_HOME}/bin/R" CMD config FLIBS`
 
+: ${LDFLAGS=`echo $LDFLAGS`}
+
 #get compilers
 
 ac_ext=cpp
@@ -11313,7 +11315,7 @@ PKG_LIBS="\$(SHLIB_OPENMP_CXXFLAGS) $LAPACK_LIBS $BLAS_LIBS $FLIBS $HDF5_LDFLAGS
 # Write the flags into the src/Makevars file.
 PKG_CPPFLAGS="${CPPFLAGS} ${PKG_CPPFLAGS}"
 
-PKG_LIBS="${LIBS} $LDFLAGS ${PKG_LIBS}"
+PKG_LIBS="${LIBS} ${LDFLAGS} ${PKG_LIBS}"
 
 PKG_CXXFLAGS="${X86_FEATURE_CFLAGS} ${PKG_CXXFLAGS}"
 

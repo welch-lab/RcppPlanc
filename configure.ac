@@ -23,6 +23,8 @@ CPPFLAGS="`"${R_HOME}/bin/R" CMD config CPPFLAGS`"
 FC=`"${R_HOME}/bin/R" CMD config FC`
 FLIBS=`"${R_HOME}/bin/R" CMD config FLIBS`
 
+: ${LDFLAGS=`echo $LDFLAGS`}
+
 #get compilers
 
 AC_LANG(C++)
@@ -78,7 +80,7 @@ PKG_LIBS="\$(SHLIB_OPENMP_CXXFLAGS) $LAPACK_LIBS $BLAS_LIBS $FLIBS $HDF5_LDFLAGS
 
 # Write the flags into the src/Makevars file.
 AC_SUBST([PKG_CPPFLAGS], ["${CPPFLAGS} ${PKG_CPPFLAGS}"])
-AC_SUBST([PKG_LIBS], ["${LIBS} $LDFLAGS ${PKG_LIBS}"])
+AC_SUBST([PKG_LIBS], ["${LIBS} ${LDFLAGS} ${PKG_LIBS}"])
 AC_SUBST([PKG_CXXFLAGS], ["${X86_FEATURE_CFLAGS} ${PKG_CXXFLAGS}"])
 AC_CONFIG_FILES([src/Makevars])
 AC_OUTPUT
