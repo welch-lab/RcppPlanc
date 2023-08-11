@@ -3584,7 +3584,7 @@ FC=`"${R_HOME}/bin/R" CMD config FC`
 FLIBS=`"${R_HOME}/bin/R" CMD config FLIBS`
 
 : ${LDFLAGS=`echo $LDFLAGS`}
-: ${CXXFLAGSENV=`echo $CXXFLAGSENV}
+: ${CXXFLAGSENV=`echo $CXXFLAGSENV`}
 #get compilers
 
 ac_ext=cpp
@@ -12022,7 +12022,7 @@ cat >>$CONFIG_STATUS <<\_ACEOF || ac_write_fail=1
 for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
-    "src/Makevars.ucrt") CONFIG_FILES="$CONFIG_FILES src/Makevars.ucrt" ;;
+    "src/Makevars.ucrt") CONFIG_FILES="$CONFIG_FILES src/Makevars" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

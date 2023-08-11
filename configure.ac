@@ -24,7 +24,7 @@ FC=`"${R_HOME}/bin/R" CMD config FC`
 FLIBS=`"${R_HOME}/bin/R" CMD config FLIBS`
 
 : ${LDFLAGS=`echo $LDFLAGS`}
-: ${CXXFLAGSENV=`echo $CXXFLAGSENV}
+: ${CXXFLAGSENV=`echo $CXXFLAGSENV`}
 #get compilers
 
 AC_LANG(C++)
