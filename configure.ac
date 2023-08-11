@@ -24,7 +24,7 @@ FC=`"${R_HOME}/bin/R" CMD config FC`
 FLIBS=`"${R_HOME}/bin/R" CMD config FLIBS`
 
 : ${LDFLAGS=`echo $LDFLAGS`}
-
+: ${CXXFLAGSENV=`echo $CXXFLAGSENV}
 #get compilers
 
 AC_LANG(C++)
@@ -75,7 +75,7 @@ AC_TYPE_UINT64_T
 #AC_CHECK_FUNCS([floor pow sqrt])
 
 PKG_CPPFLAGS="-Inmf -Innls -Icommon -DBUILD_SPARSE $HDF5_CPPFLAGS"
-PKG_CXXFLAGS="\$(SHLIB_OPENMP_CXXFLAGS) $HDF5_CFLAGS"
+PKG_CXXFLAGS="\$CXXFLAGSENV \$(SHLIB_OPENMP_CXXFLAGS) $HDF5_CFLAGS"
 PKG_LIBS="\$(SHLIB_OPENMP_CXXFLAGS) $LAPACK_LIBS $BLAS_LIBS $FLIBS $HDF5_LDFLAGS $HDF5_LIBS -lhdf5_cpp -lhdf5_hl_cpp"
 
 # Write the flags into the src/Makevars file.
