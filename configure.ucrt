@@ -3584,7 +3584,7 @@ FC=`"${R_HOME}/bin/R" CMD config FC`
 FLIBS=`"${R_HOME}/bin/R" CMD config FLIBS`
 
 : ${LDFLAGS=`echo $LDFLAGS`}
-: ${CXXFLAGSENV=`echo $CXXFLAGSENV`}
+: ${CXXFLAGSENV=`echo $CXXFLAGS`}
 #get compilers
 
 ac_ext=cpp
@@ -11309,7 +11309,7 @@ printf "%s\n" "#define uint64_t $ac_cv_c_uint64_t" >>confdefs.h
 #AC_CHECK_FUNCS([floor pow sqrt])
 
 PKG_CPPFLAGS="-Inmf -Innls -Icommon -DBUILD_SPARSE $HDF5_CPPFLAGS"
-PKG_CXXFLAGS="\$CXXFLAGSENV \$(SHLIB_OPENMP_CXXFLAGS) $HDF5_CFLAGS"
+PKG_CXXFLAGS="\${CXXFLAGSENV} \$(SHLIB_OPENMP_CXXFLAGS) $HDF5_CFLAGS"
 PKG_LIBS="\$(SHLIB_OPENMP_CXXFLAGS) $LAPACK_LIBS $BLAS_LIBS $FLIBS $HDF5_LDFLAGS $HDF5_LIBS -lhdf5_cpp -lhdf5_hl_cpp"
 
 # Write the flags into the src/Makevars.ucrt file.
