@@ -1,4 +1,5 @@
 #!/bin/sh
 
-rm -f config.log config.status confdefs.h src/*.o src/*.dll src/symbols.rds src/Makevars.ucrt
-rm -rf autom4te.cache
+rm -f src/*.o src/*.dll src/symbols.rds src/Makefile src/*.cmake src/CMakeCache.txt
+rm -rf src/CMakefiles src/CPM_modules
+
