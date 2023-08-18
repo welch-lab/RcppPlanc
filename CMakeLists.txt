@@ -13,7 +13,6 @@ find_package(LAPACK REQUIRED)
 find_package(OpenMP)
 
 
-
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_FLAGS_RELEASE "")
 set(CMAKE_CXX_FLAGS_RELEASE "")
@@ -27,6 +26,7 @@ PRIVATE "${PROJECT_SOURCE_DIR}/src/common;${PROJECT_SOURCE_DIR}/src/nnls;${PROJE
 find_r_module(Rcpp)
 find_r_module(RcppArmadillo)
 find_r_module(RcppProgress)
+find_r_module(BH)
 
 if(R_RCPP)
 target_include_directories(RcppPlanc PRIVATE "${R_RCPP}/include")
@@ -38,14 +38,25 @@ target_include_directories(RcppPlanc PRIVATE "${R_RCPPARMADILLO}/include")
 else()
 message(FATAL_ERROR "missing RcppArmadillo")
 endif()
-
 if(R_RCPPPROGRESS)
 target_include_directories(RcppPlanc PRIVATE "${R_RCPPPROGRESS}/include")
 else()
 message(FATAL_ERROR "missing RcppProgress")
 endif()
+if(R_BH)
+target_include_directories(RcppPlanc PRIVATE "${R_BH}/include")
+target_compile_options(RcppPlanc PRIVATE "-D_HAS_AUTO_PTR_ETC=0")
+else()
+message(FATAL_ERROR "missing BH")
+endif()
 
-target_link_libraries(RcppPlanc PUBLIC hdf5::hdf5_cpp BLAS::BLAS LAPACK::LAPACK)
+CPMAddPackage(NAME HighFive
+              VERSION 2.7.1
+              GITHUB_REPOSITORY BlueBrain/HighFive
+              OPTIONS "HIGHFIVE_EXAMPLES OFF" "HIGHFIVE_BUILD_DOCS OFF")
+
+
+target_link_libraries(RcppPlanc PUBLIC hdf5::hdf5_cpp BLAS::BLAS LAPACK::LAPACK HighFive)
 
 if(OpenMP_CXX_FOUND)
 target_compile_options(RcppPlanc PRIVATE ${OpenMP_CXX_FLAGS})

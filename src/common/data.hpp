@@ -2,6 +2,7 @@
 
 #include "utils.hpp"
 #include "H5Cpp.h"
+#include <highfive/H5File.hpp>
 
 namespace planc {
 
