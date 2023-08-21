@@ -24,18 +24,7 @@
         },
         {
             "name": "Linux",
-            "includePath": [
-                "${workspaceFolder}/**",
-                "/usr/local/lib/R/library/RcppArmadillo/include/**",
-                "/usr/local/lib/R/library/RcppProgress/include/**",
-                "/usr/lib64/R/library/Rcpp/include/**",
-                "/usr/lib64/R/include/**",
-                "/home/andrew/R/x86_64-redhat-linux-gnu-library/4.3/RcppSparse/include/**"
-            ],
-            "defines": [
-                "HAVE_FLEXIBLAS_CBLAS_H"
-            ],
-            "compilerPath": "/usr/bin/g++",
+
             "cStandard": "c17",
             "cppStandard": "c++17",
             "intelliSenseMode": "linux-gcc-x64",

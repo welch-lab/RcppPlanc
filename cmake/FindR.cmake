@@ -36,8 +36,22 @@ find_program(RSCRIPT_EXECUTABLE Rscript DOC "Rscript executable.")
 
 set(CMAKE_FIND_APPBUNDLE ${TEMP_CMAKE_FIND_APPBUNDLE})
 
+# Search for non-standard R.h include path if header missing
+CHECK_INCLUDE_FILE("R.h" _haveR_h)
+if(NOT _haveR_h)
+execute_process(COMMAND ${RSCRIPT_EXECUTABLE} "-e" "R.home('include')"
+    RESULT_VARIABLE _haveR_h
+    OUTPUT_VARIABLE _R_INCLUDE_location
+    ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+    # Some cleanup in location of R.
+    string(REGEX MATCHALL "\".*\"" _R_INCLUDE_location "${_R_INCLUDE_location}")
+    string(REGEX REPLACE "\"" "" _R_INCLUDE_location "${_R_INCLUDE_location}")
+    set(R_INCLUDE_DIR ${_R_INCLUDE_location})
+endif()
+
 mark_as_advanced(RSCRIPT_EXECUTABLE R_EXECUTABLE)
-set(_REQUIRED_R_VARIABLES R_EXECUTABLE)
+set(_REQUIRED_R_VARIABLES R_EXECUTABLE RSCRIPT_EXECUTABLE R_INCLUDE_DIR)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
