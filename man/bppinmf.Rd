@@ -7,9 +7,9 @@
 bppinmf(
   objectList,
   k,
-  lambda,
-  maxIter,
-  thresh,
+  lambda = 5,
+  maxIter = 30L,
+  thresh = 1e-06,
   verbose = TRUE,
   Hinit = NULL,
   Vinit = NULL,

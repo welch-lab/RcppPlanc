@@ -376,15 +376,15 @@ Rcpp::List bppinmf_sparse(std::vector<arma::sp_mat> objectList, arma::uword k, d
 //' bppinmf(rsparsematrix(nrow=20,ncol=20,nnz=10), Matrix(runif(n=200,min=0,max=2),20,10))
 // [[Rcpp::export]]
 Rcpp::List bppinmf(Rcpp::List objectList, const arma::uword k,
-                   const double lambda, const arma::uword maxIter,
-                   const double thresh, const bool verbose = true,
+                   const double lambda = 5, const arma::uword maxIter = 30,
+                   const double thresh = 1e-6, const bool verbose = true,
                    Rcpp::Nullable<std::vector<arma::mat>> Hinit = R_NilValue,
                    Rcpp::Nullable<std::vector<arma::mat>> Vinit = R_NilValue,
                    Rcpp::Nullable<arma::mat> Winit = R_NilValue) {
                     if (Rf_isS4(objectList[0])) {
                       // warning: non-void function does not return a value in all control paths
                       if (Rf_inherits(objectList[0], "dgCMatrix")) {
-                        bppinmf_sparse(Rcpp::as<std::vector<arma::sp_mat>>(objectList), k, lambda,
+                        return bppinmf_sparse(Rcpp::as<std::vector<arma::sp_mat>>(objectList), k, lambda,
                                        maxIter, thresh, verbose,
                                        Hinit,Vinit,Winit);
                       }

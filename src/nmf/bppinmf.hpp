@@ -144,9 +144,10 @@ public:
             << maxIter << ", thresh=" << thresh << std::endl;
 #endif
         unsigned int iter = 0;
-        double delta=100, time_total=0, obj;
+        double time_total=0;//, obj, delta=100, ;
         Progress p(maxIter, verbose);
-        while (delta > thresh && iter < maxIter ) {
+        while (iter < maxIter ) {
+        // while (delta > thresh && iter < maxIter ) {
             Rcpp::checkUserInterrupt();
             tic();
 #ifdef _VERBOSE
@@ -156,10 +157,10 @@ public:
             solveH();
             solveV();
             solveW();
-            obj = this->computeObjectiveError();
-            delta = abs(this->objective_err - obj) / ((this->objective_err + obj) / 2);
+            // obj = this->computeObjectiveError();
+            // delta = abs(this->objective_err - obj) / ((this->objective_err + obj) / 2);
             iter++;
-            this->objective_err = obj;
+            // this->objective_err = obj;
             double time_iter = toc();
 #ifdef _VERBOSE
             std::cout << "Objective:  " << obj << std::endl
@@ -172,9 +173,9 @@ public:
             else break;
         }
         if (verbose) {
-            std::cout << "Finished after " << iter << " iterations in " << time_total << " seconds." << std::endl
-                << "Final objective: " << this->objective_err << std::endl
-                << "Final delta:     " << delta << std::endl;
+            std::cout << "Finished after " << iter << " iterations in " << time_total << " seconds." << std::endl;
+                // << "Final objective: " << this->objective_err << std::endl
+                // << "Final delta:     " << delta << std::endl;
         }
     }
 };
