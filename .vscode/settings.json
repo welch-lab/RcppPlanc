@@ -95,7 +95,9 @@
         "__nullptr": "cpp",
         "__string": "cpp",
         "source_location": "cpp",
-        "ranges": "cpp"
+        "ranges": "cpp",
+        "regex": "cpp",
+        "future": "cpp"
     },
     "FSharp.suggestGitignore": false,
     "C_Cpp.errorSquiggles": "enabled",

@@ -53,7 +53,7 @@ message(FATAL_ERROR "missing RcppProgress")
 endif()
 
 CPMAddPackage(NAME HighFive
-              VERSION 2.7.1
+              GIT_TAG master
               GITHUB_REPOSITORY BlueBrain/HighFive
               OPTIONS "HIGHFIVE_EXAMPLES OFF" "HIGHFIVE_BUILD_DOCS OFF" "HIGHFIVE_USE_BOOST OFF")
 
