@@ -172,9 +172,10 @@ public:
             if ( ! p.is_aborted() ) p.increment();
             else break;
         }
+        this->objective_err = this->computeObjectiveError();
         if (verbose) {
-            std::cout << "Finished after " << iter << " iterations in " << time_total << " seconds." << std::endl;
-                // << "Final objective: " << this->objective_err << std::endl
+            std::cout << "Finished after " << iter << " iterations in " << time_total << " seconds." << std::endl
+                << "Final objective: " << this->objective_err << std::endl;
                 // << "Final delta:     " << delta << std::endl;
         }
     }
