@@ -6,6 +6,19 @@
 #include <highfive/H5DataSet.hpp>
 #include <highfive/H5DataSpace.hpp>
 
+class scratchH5 : HighFive::File {
+    public:
+    scratchH5(std::string filename, uint openflags) : HighFive::File (filename, openflags) {
+
+    }
+    HighFive::DataSet createDataSet(const std::string &dataset_name, const HighFive::DataSpace &space,
+    const HighFive::DataSetCreateProps &createProps = HighFive::DataSetCreateProps::Default(),
+    const HighFive::DataSetAccessProps &accessProps = HighFive::DataSetAccessProps::Default(),
+    bool parents = true){
+        return this->createDataSet(dataset_name, space, createProps, accessProps, parents);
+    };
+};
+
 namespace planc {
 
     class H5Mat : HighFive::File {
@@ -88,7 +101,7 @@ namespace planc {
             count[0] = end - start + 1;
             count[1] = this->n_rows;
             HighFive::HyperSlab ds_hyperslab(HighFive::RegularHyperSlab(offset, count));
-            HighFive::DataSpace memspace(2, count);
+            HighFive::DataSpace memspace({std::vector<size_t>(2)}, count);
             HighFive::Selection selected = this->H5D.select(ds_hyperslab, memspace);
             selected.read<double>(chunk.memptr());
             // dataspace.close();
@@ -153,19 +166,12 @@ namespace planc {
             std::string tempPath = this->increUniqName(this->datapath + "_transposed_");
             // this->tempPath = tempPath;
             // Set specified chunk dimension for the new dataset
-            std::vector<hsize_t> chunk_dims_new;
-            chunk_dims_new[0] = this->colChunkSize;
-            chunk_dims_new[1] = this->n_cols;
-            HighFive::Chunking newChunks(2, chunk_dims_new);
+            HighFive::Chunking newChunks(this->n_cols, this->colChunkSize);
             HighFive::DataSetCreateProps cparms_new;
             cparms_new.add(newChunks);
-
-            std::vector<size_t> fdim;
-            fdim[0] = this->n_rows;
-            fdim[1] = this->n_cols;
-            HighFive::DataSpace fspace(2, fdim);
+            HighFive::DataSpace fspace(this->n_rows, this->n_cols);
             std::cout << "Creating transposed data at " << tempPath << std::endl;
-            HighFive::File H5FT(tempPath, HighFive::File::ReadWrite);
+            scratchH5 H5FT(tempPath, HighFive::File::ReadWrite);
             HighFive::DataSet H5DT = H5FT.createDataSet(datapath, fspace, cparms_new);
             //cparms_new.close();
 
@@ -184,9 +190,9 @@ namespace planc {
                 count[1] = this->n_cols;
                 HighFive::HyperSlab fs_hyperslab(HighFive::RegularHyperSlab(offset, count));
                 // Write the chunk to dataspace
-                HighFive::DataSpace memspace(2, count);
+                HighFive::DataSpace memspace({std::vector<size_t>(2)}, count);
                 HighFive::Selection selected = H5DT.select(fs_hyperslab, memspace);
-                selected.write<HighFive::File>(H5FT); // i don't know that this works
+                selected.write<scratchH5>(H5FT); // i don't know that this works
                 // memspace.close();
             }
             // fspace.close();
@@ -209,9 +215,9 @@ namespace planc {
         arma::uvec getPByRange(arma::uword start, arma::uword end) {
             arma::uvec p(end - start + 1);
             std::vector<size_t> p_start;
-            size_t p_start[1] = {start};
+            p_start[1] = {start};
             std::vector<size_t> p_count;
-            size_t p_count[1] = {end - start + 1};
+            p_count[1] = {end - start + 1};
             HighFive::DataSpace pDataspace = H5D_P.getSpace();
             HighFive::HyperSlab pds_hyperslab(HighFive::RegularHyperSlab(p_start, p_count));
             HighFive::DataSpace pMemspace(1, p_count);
@@ -225,9 +231,9 @@ namespace planc {
         arma::uvec getIByRange(arma::uword start, arma::uword end) {
             arma::uvec i(end - start + 1);
             std::vector<size_t> i_start;
-            size_t i_start[1] = {start};
+            i_start[1] = {start};
             std::vector<size_t> i_count;
-            size_t i_count[1] = {end - start + 1};
+            i_count[1] = {end - start + 1};
             HighFive::DataSpace iDataspace = H5D_I.getSpace();
             HighFive::HyperSlab ids_hyperslab(HighFive::RegularHyperSlab(i_start, i_count));
             HighFive::DataSpace iMemspace(1, i_count);
@@ -241,9 +247,9 @@ namespace planc {
         arma::vec getXByRange(arma::uword start, arma::uword end) {
             arma::vec x(end - start + 1);
             std::vector<size_t> x_start;
-            size_t x_start[1] = {start};
+            x_start[1] = {start};
             std::vector<size_t> x_count;
-            size_t x_count[1] = {end - start + 1};
+            x_count[1] = {end - start + 1};
             HighFive::DataSpace xDataspace = H5D_X.getSpace();
             HighFive::HyperSlab xds_hyperslab(HighFive::RegularHyperSlab(x_start, x_count));
             HighFive::DataSpace xMemspace(1, x_count);
@@ -396,15 +402,13 @@ namespace planc {
 
             // Write colptrT to HDF5 file
             std::string ptempPath = this->increUniqName(this->pPath + "_transposed_");
-            std::vector<hsize_t> pChunk;
-            pChunk[1] = {this->p_chunksize};
-            HighFive::Chunking p_newChunks(1, pChunk);
+            HighFive::Chunking p_newChunks(1, this->p_chunksize);
             HighFive::DataSetCreateProps p_cparms_new;
             p_cparms_new.add(p_newChunks);
             std::vector<size_t> p_new_memspacesize;
             p_new_memspacesize[1] = { this->n_rows + 1 };
             HighFive::DataSpace p_new_dataspace(1, p_new_memspacesize);
-            HighFive::File H5F_PT(ptempPath, HighFive::File::ReadWrite);
+            scratchH5 H5F_PT(ptempPath, HighFive::File::ReadWrite);
             HighFive::DataSet H5D_PT = H5F_PT.createDataSet(ptempPath, p_new_dataspace, p_cparms_new);
             // p_cparms_new.close();
             std::vector<size_t> offset;
@@ -412,7 +416,7 @@ namespace planc {
             HighFive::HyperSlab pfs_hyperslab(HighFive::RegularHyperSlab(offset, p_new_memspacesize));
             HighFive::DataSpace p_new_memspace(1, p_new_memspacesize);
             HighFive::Selection p_selected = H5D_PT.select(pfs_hyperslab, p_new_memspace);
-            p_selected.write<HighFive::File>(H5F_PT); // i don't know that this works
+            p_selected.write<scratchH5>(H5F_PT); // i don't know that this works
                    // Write the chunk to dataspace
             // p_new_dataspace.close();
             // p_new_memspace.close();
@@ -423,26 +427,22 @@ namespace planc {
             // Pre-create the rowind and value of the transposed matrix
             // Create rowind.T
             std::string itempPath = this->increUniqName(this->iPath + "_transposed_");
-            std::vector<hsize_t> iChunk;
-            iChunk[1] = { this->i_chunksize };
-            HighFive::Chunking i_newChunks(1, iChunk);
+            HighFive::Chunking i_newChunks(1, this->i_chunksize);
             HighFive::DataSetCreateProps i_cparms_new;
             i_cparms_new.add(i_newChunks);
             std::vector<size_t> i_new_memspacesize;
             i_new_memspacesize[1] = { this->nnz };
             HighFive::DataSpace i_new_dataspace(1, i_new_memspacesize); // Gonna be used later for writing
-            HighFive::File H5F_IT(itempPath, HighFive::File::ReadWrite);
+            scratchH5 H5F_IT(itempPath, HighFive::File::ReadWrite);
             HighFive::DataSet H5D_IT = H5F_IT.createDataSet(itempPath,i_new_dataspace, i_cparms_new);
             // i_cparms_new.close();
             // Create value.T
             std::string xtempPath = this->increUniqName(this->xPath + "_transposed_");
-            std::vector<hsize_t> xChunk;
-            xChunk[1] = { this->x_chunksize };
-            HighFive::Chunking x_newChunks(1, xChunk);
+            HighFive::Chunking x_newChunks(1, this->x_chunksize);
             HighFive::DataSetCreateProps x_cparms_new;
-            hsize_t x_new_memspacesize[1] = { this->nnz };
-            HighFive::DataSpace x_new_dataspace(1, x_new_memspacesize); // Gonna be used later for writing
-            HighFive::File H5F_XT(xtempPath, HighFive::File::ReadWrite);
+            size_t x_new_memspacesize = { this->nnz };
+            HighFive::DataSpace x_new_dataspace(x_new_memspacesize); // Gonna be used later for writing
+            scratchH5 H5F_XT(xtempPath, HighFive::File::ReadWrite);
             HighFive::DataSet H5D_XT = H5F_XT.createDataSet(xtempPath, x_new_dataspace, x_cparms_new);
             // x_cparms_new.close();
 
@@ -467,9 +467,9 @@ namespace planc {
 
                 std::vector<size_t> coord;
                 for (arma::uword j = 0; j < nnz_idx_size; j++) {
-                    coord[j] = nnz_idx[j];
+                    coord.push_back(nnz_idx[j]);
                 }
-                size_t count[1] = { nnz_idx_size };
+                size_t count = nnz_idx_size;
                 HighFive::DataSpace xt_writeDataSpace(1, count);
                 HighFive::DataSpace it_writeDataSpace(1, count);
 
