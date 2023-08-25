@@ -10,8 +10,9 @@ include(cmake/FindRModule.cmake)
 find_package(HDF5 COMPONENTS CXX REQUIRED)
 find_package(BLAS REQUIRED)
 find_package(LAPACK REQUIRED)
+if(NOT (APPLE AND (CMAKE_HOST_SYSTEM_PROCESSOR MATCHES arm64)))
 find_package(OpenMP)
-
+endif()
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_FLAGS_RELEASE "")
@@ -20,13 +21,15 @@ set(CMAKE_VERBOSE_MAKEFILE TRUE)
 
 add_library(RcppPlanc SHARED "${PROJECT_SOURCE_DIR}/src/rcppplanc_nmf.cpp" "${PROJECT_SOURCE_DIR}/src/RcppExports.cpp")
 set_target_properties(RcppPlanc PROPERTIES PREFIX "")
+if(APPLE)
+set_target_properties(RcppPlanc PROPERTIES SUFFIX "so")
+endif()
 target_include_directories(RcppPlanc
 PRIVATE "${PROJECT_SOURCE_DIR}/src/common;${PROJECT_SOURCE_DIR}/src/nnls;${PROJECT_SOURCE_DIR}/src/nmf")
 
 find_r_module(Rcpp)
 find_r_module(RcppArmadillo)
 find_r_module(RcppProgress)
-find_r_module(BH)
 
 if(R_INCLUDE_DIR)
 target_include_directories(RcppPlanc PRIVATE "${R_INCLUDE_DIR}")
@@ -48,17 +51,11 @@ target_include_directories(RcppPlanc PRIVATE "${R_RCPPPROGRESS}/include")
 else()
 message(FATAL_ERROR "missing RcppProgress")
 endif()
-if(R_BH)
-target_include_directories(RcppPlanc PRIVATE "${R_BH}/include")
-target_compile_options(RcppPlanc PRIVATE "-D_HAS_AUTO_PTR_ETC=0")
-else()
-message(FATAL_ERROR "missing BH")
-endif()
 
 CPMAddPackage(NAME HighFive
               VERSION 2.7.1
               GITHUB_REPOSITORY BlueBrain/HighFive
-              OPTIONS "HIGHFIVE_EXAMPLES OFF" "HIGHFIVE_BUILD_DOCS OFF")
+              OPTIONS "HIGHFIVE_EXAMPLES OFF" "HIGHFIVE_BUILD_DOCS OFF" "HIGHFIVE_USE_BOOST OFF")
 
 
 target_link_libraries(RcppPlanc PUBLIC hdf5::hdf5_cpp BLAS::BLAS LAPACK::LAPACK HighFive)
@@ -93,7 +90,7 @@ if(RECIPROCAL_MATH)
     target_compile_options(RcppPlanc PRIVATE "-freciprocal-math")
 endif()
 
-
+if(NOT APPLE)
 check_include_file("cblas.h" CBLAS_HEADER)
 if(CBLAS_HEADER)
 else()
@@ -106,6 +103,7 @@ if(OPENBLAS_HEADER)
 target_compile_definitions(RcppPlanc PRIVATE "HAVE_OPENBLAS_CBLAS_H")
 else()
 message(FATAL_ERROR "no cblas header")
+endif()
 endif()
 endif()
 endif()
