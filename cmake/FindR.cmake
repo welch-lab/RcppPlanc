@@ -38,7 +38,9 @@ set(CMAKE_FIND_APPBUNDLE ${TEMP_CMAKE_FIND_APPBUNDLE})
 
 # Search for non-standard R.h include path if header missing
 CHECK_INCLUDE_FILE("R.h" _haveR_h)
-if(NOT _haveR_h)
+if(_haveR_h)
+    set(R_INCLUDE_DIR ${_haveR_H})
+else()
 execute_process(COMMAND ${RSCRIPT_EXECUTABLE} "-e" "R.home('include')"
     RESULT_VARIABLE _haveR_h
     OUTPUT_VARIABLE _R_INCLUDE_location
