@@ -287,16 +287,16 @@ Rcpp::List runINMF(std::vector<T> objectList, arma::uword k, double lambda,
     solver.initV();
     solver.initW();
     solver.optimizeALS(niter, verbose);
-    std::vector<arma::mat> HList;
-    std::vector<arma::mat> VList;
+    std::vector<Rcpp::NumericMatrix> HList;
+    std::vector<Rcpp::NumericMatrix> VList;
     for (arma::uword i = 0; i < objectList.size(); ++i)
     {
-        HList.push_back(solver.getHi(i));
-        VList.push_back(solver.getVi(i));
+        HList.push_back(Rcpp::wrap(solver.getHi(i)));
+        VList.push_back(Rcpp::wrap(solver.getVi(i)));
     }
     return Rcpp::List::create(
-        Rcpp::Named("H") = HList,
-        Rcpp::Named("V") = VList,
+        Rcpp::Named("H") = Rcpp::wrap(HList),
+        Rcpp::Named("V") = Rcpp::wrap(VList),
         Rcpp::Named("W") = solver.getW(),
         Rcpp::Named("objErr") = solver.objErr());
 }

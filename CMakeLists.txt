@@ -22,7 +22,7 @@ set(CMAKE_VERBOSE_MAKEFILE TRUE)
 add_library(RcppPlanc SHARED "${PROJECT_SOURCE_DIR}/src/rcppplanc_nmf.cpp" "${PROJECT_SOURCE_DIR}/src/RcppExports.cpp")
 set_target_properties(RcppPlanc PROPERTIES PREFIX "")
 if(APPLE)
-set_target_properties(RcppPlanc PROPERTIES SUFFIX "so")
+set_target_properties(RcppPlanc PROPERTIES SUFFIX ".so")
 endif()
 target_include_directories(RcppPlanc
 PRIVATE "${PROJECT_SOURCE_DIR}/src/common;${PROJECT_SOURCE_DIR}/src/nnls;${PROJECT_SOURCE_DIR}/src/nmf")

@@ -107,18 +107,18 @@ bppnnls <- function(C, B) {
 #' @returns The calculated solution matrix in dense form.
 #' @examplesIf require("Matrix")
 #' bppinmf(rsparsematrix(nrow=20,ncol=20,nnz=10), Matrix(runif(n=200,min=0,max=2),20,10))
-bppinmf <- function(objectList, k, lambda = 5, maxIter = 30L, thresh = 1e-6, verbose = TRUE, Hinit = NULL, Vinit = NULL, Winit = NULL) {
-    .Call(`_RcppPlanc_bppinmf`, objectList, k, lambda, maxIter, thresh, verbose, Hinit, Vinit, Winit)
+bppinmf <- function(objectList, k, lambda = 5, niter = 30L, verbose = TRUE, Hinit = NULL, Vinit = NULL, Winit = NULL) {
+    .Call(`_RcppPlanc_bppinmf`, objectList, k, lambda, niter, verbose, Hinit, Vinit, Winit)
 }
 
 #' @export
-bppinmf_h5dense <- function(filenames, dataPath, k, lambda, maxIter, thresh, verbose = TRUE, Hinit = NULL, Vinit = NULL, Winit = NULL) {
-    .Call(`_RcppPlanc_bppinmf_h5dense`, filenames, dataPath, k, lambda, maxIter, thresh, verbose, Hinit, Vinit, Winit)
+bppinmf_h5dense <- function(filenames, dataPath, k, lambda, niter, verbose = TRUE, Hinit = NULL, Vinit = NULL, Winit = NULL) {
+    .Call(`_RcppPlanc_bppinmf_h5dense`, filenames, dataPath, k, lambda, niter, verbose, Hinit, Vinit, Winit)
 }
 
 #' @export
-bppinmf_h5sparse <- function(filenames, rowindPath, colptrPath, valuePath, nrow, ncol, k, lambda, maxIter, thresh, verbose = TRUE, Hinit = NULL, Vinit = NULL, Winit = NULL) {
-    invisible(.Call(`_RcppPlanc_bppinmf_h5sparse`, filenames, rowindPath, colptrPath, valuePath, nrow, ncol, k, lambda, maxIter, thresh, verbose, Hinit, Vinit, Winit))
+bppinmf_h5sparse <- function(filenames, rowindPath, colptrPath, valuePath, nrow, ncol, k, lambda, niter, verbose = TRUE, Hinit = NULL, Vinit = NULL, Winit = NULL) {
+    invisible(.Call(`_RcppPlanc_bppinmf_h5sparse`, filenames, rowindPath, colptrPath, valuePath, nrow, ncol, k, lambda, niter, verbose, Hinit, Vinit, Winit))
 }
 
 #' @export
