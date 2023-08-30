@@ -133,23 +133,18 @@ public:
 
     }
 
-    void optimizeALS(int maxIter, const double thresh, bool verbose = true) {
+    void optimizeALS(int niter, bool verbose = true) {
         // execute private functions here
         if (verbose) {
-            std::cerr << "BPPINMF optimizeALS started, maxIter="
-                << maxIter << ", thresh=" << thresh << std::endl;
+            std::cerr << "BPPINMF optimizeALS started, niter=" << niter << std::endl;
         }
-#ifdef _VERBOSE
-        std::cout << "BPPINMF optimizeALS started, maxIter="
-            << maxIter << ", thresh=" << thresh << std::endl;
-#endif
         unsigned int iter = 0;
         double time_total=0;//, obj, delta=100, ;
-        Progress p(maxIter, verbose);
-        while (iter < maxIter ) {
-        // while (delta > thresh && iter < maxIter ) {
+        Progress p(niter, verbose);
+        while (iter < niter ) {
+        // while (delta > thresh && iter < niter ) {
             Rcpp::checkUserInterrupt();
-            tic();
+            // tic();
 #ifdef _VERBOSE
             std::cout << "========Staring iteration "
             << iter+1 << "========" << std::endl;
@@ -161,21 +156,21 @@ public:
             // delta = abs(this->objective_err - obj) / ((this->objective_err + obj) / 2);
             iter++;
             // this->objective_err = obj;
-            double time_iter = toc();
+            // double time_iter = toc();
 #ifdef _VERBOSE
             std::cout << "Objective:  " << obj << std::endl
                     << "Delta:      " << delta << std::endl
                     << "Total time: " << time_iter << " sec" << std::endl;
 #endif
-            time_total += time_iter;
+            // time_total += time_iter;
 
             if ( ! p.is_aborted() ) p.increment();
             else break;
         }
         this->objective_err = this->computeObjectiveError();
         if (verbose) {
-            std::cout << "Finished after " << iter << " iterations in " << time_total << " seconds." << std::endl
-                << "Final objective: " << this->objective_err << std::endl;
+            // std::cout << "Finished after " << iter << " iterations in " << time_total << " seconds." << std::endl
+            std::cout << "Final objective: " << this->objective_err << std::endl;
                 // << "Final delta:     " << delta << std::endl;
         }
     }
