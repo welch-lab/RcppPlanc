@@ -29,7 +29,7 @@ namespace planc {
         };
 
         public:
-            H5Mat(std::string filename, std::string datapath) : HighFive::File(filename, uint(HighFive::File::ReadWrite))
+            H5Mat(std::string filename, std::string datapath) : HighFive::File(filename, HighFive::File::ReadWrite)
 
             {
             HighFive::DataSet H5DS = this->getDataSet(datapath);
@@ -264,7 +264,7 @@ namespace planc {
         public:
         H5SpMat(std::string filename, std::string iPath, std::string pPath,
                 std::string xPath, arma::uword n_rows, arma::uword n_cols) :
-                HighFive::File(filename, uint(HighFive::File::ReadWrite)) {
+                HighFive::File(filename, HighFive::File::ReadWrite) {
             HighFive::DataSet H5D_XS = this->getDataSet(xPath);
             this->H5D_X = &H5D_XS;
             HighFive::DataSetCreateProps x_cparms = H5D_X->getCreatePropertyList();
@@ -401,14 +401,14 @@ namespace planc {
             std::vector<size_t> p_new_memspacesize;
             p_new_memspacesize[1] = { this->n_rows + 1 };
             HighFive::DataSpace p_new_dataspace(std::vector<size_t>(1), p_new_memspacesize);
-            HighFive::DataSet H5D_PT = this->createDataSet<uint>(ptempPath, p_new_dataspace, p_cparms_new);
+            HighFive::DataSet H5D_PT = this->createDataSet<arma::uword>(ptempPath, p_new_dataspace, p_cparms_new);
             // p_cparms_new.close();
             std::vector<size_t> offset;
             offset[1] = { 0 };
             HighFive::HyperSlab pfs_hyperslab(HighFive::RegularHyperSlab(offset, p_new_memspacesize));
             HighFive::DataSpace p_new_memspace(std::vector<size_t>(1), p_new_memspacesize);
             HighFive::Selection p_selected = H5D_PT.select(pfs_hyperslab, p_new_memspace);
-            p_selected.write<uint*>(colptrT.memptr()); // i don't know that this works
+            p_selected.write<arma::uword*>(colptrT.memptr()); // i don't know that this works
                    // Write the chunk to dataspace
             // p_new_dataspace.close();
             // p_new_memspace.close();
@@ -425,7 +425,7 @@ namespace planc {
             std::vector<size_t> i_new_memspacesize;
             i_new_memspacesize[1] = { this->nnz };
             HighFive::DataSpace i_new_dataspace(std::vector<size_t>(1), i_new_memspacesize); // Gonna be used later for writing
-            HighFive::DataSet H5D_IT = this->createDataSet<uint>(itempPath,i_new_dataspace, i_cparms_new);
+            HighFive::DataSet H5D_IT = this->createDataSet<arma::uword>(itempPath,i_new_dataspace, i_cparms_new);
             // i_cparms_new.close();
             // Create value.T
             std::string xtempPath = this->increUniqName(this->xPath + "_transposed_");
@@ -466,7 +466,7 @@ namespace planc {
                 HighFive::Selection i_selected = H5D_PT.select(coord);
                 HighFive::Selection x_selected = H5D_PT.select(coord);
 
-                i_selected.write<uint*>(it_value.memptr());
+                i_selected.write<arma::uword*>(it_value.memptr());
                 x_selected.write<double*>(value_ori_col.memptr());
 
                 // Increment it, so that next time when fetching the number `nnz_idx` of the same new-column/old-row,

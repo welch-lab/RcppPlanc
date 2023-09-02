@@ -6,11 +6,11 @@ include(cmake/CPM.cmake)
 include(cmake/FindR.cmake)
 include(cmake/FindRModule.cmake)
 
-
-find_package(HDF5 COMPONENTS CXX REQUIRED)
-find_package(BLAS REQUIRED)
+if(NOT WIN32)
+find_package(BLAS  REQUIRED)
 find_package(LAPACK REQUIRED)
-if(NOT (APPLE AND (CMAKE_HOST_SYSTEM_PROCESSOR MATCHES arm64)))
+endif()
+if(NOT (APPLE AND (CMAKE_HOST_SYSTEM_PROCESSOR MATCHES arm64) AND NOT WIN32))
 find_package(OpenMP)
 endif()
 
@@ -55,10 +55,16 @@ endif()
 CPMAddPackage(NAME HighFive
               GIT_TAG master
               GITHUB_REPOSITORY BlueBrain/HighFive
-              OPTIONS "HIGHFIVE_EXAMPLES OFF" "HIGHFIVE_BUILD_DOCS OFF" "HIGHFIVE_USE_BOOST OFF")
+              OPTIONS "HIGHFIVE_EXAMPLES OFF" "HIGHFIVE_BUILD_DOCS OFF" "HIGHFIVE_USE_BOOST OFF"
+              DOWNLOAD_ONLY TRUE)
 
-
-target_link_libraries(RcppPlanc PUBLIC hdf5::hdf5_cpp BLAS::BLAS LAPACK::LAPACK HighFive)
+if(WIN32)
+    target_include_directories(RcppPlanc PRIVATE "${PROJECT_SOURCE_DIR}/src/_deps/HighFive-src/include")
+    target_link_libraries(RcppPlanc PRIVATE -lhdf5 -lsz -lz -lopenblas -lgfortran -lgomp -lpthread -ldl -lm -lquadmath "${R_HOME}/bin/x64/R.dll")
+else()
+    find_package(HighFive REQUIRED)
+    target_link_libraries(RcppPlanc PUBLIC BLAS::BLAS LAPACK::LAPACK HighFive)
+endif()
 
 if(OpenMP_CXX_FOUND)
 target_compile_options(RcppPlanc PRIVATE ${OpenMP_CXX_FLAGS})

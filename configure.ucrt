@@ -15,15 +15,18 @@ CFLAGS=`"${R_HOME}/bin/R" CMD config CFLAGS`
 CPPFLAGS=`"${R_HOME}/bin/R" CMD config --cppflags`
 CXXFLAGS=`"${R_HOME}/bin/R" CMD config CXXFLAGS`
 LDFLAGS=`"${R_HOME}/bin/R" CMD config --ldflags`
-FC=`"${R_HOME}/bin/R" CMD config FC`
 FLIBS=`"${R_HOME}/bin/R" CMD config FLIBS`
 
 CFLAGS="$CPPFLAGS $CFLAGS"
 CXXFLAGS="$CPPFLAGS $CXXFLAGS"
 
+RTOOLS=`"${R_HOME}/bin/R" CMD config R_TOOLS_SOFT`
+FC="$RTOOLS"/bin/gfortran.exe
+
 cd src
 cmake .. \
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_POSITION_INDEPENDENT_CODE:bool=ON \
-  -DR_HOME="$R_HOME"\
-  -DCMAKE_FORTRAN_COMPILER="$FC"
+  -DR_HOME="$R_HOME"
+
+mv Makefile Makefile.ucrt
