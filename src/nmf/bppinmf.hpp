@@ -170,7 +170,7 @@ public:
         this->objective_err = this->computeObjectiveError();
         if (verbose) {
             // std::cout << "Finished after " << iter << " iterations in " << time_total << " seconds." << std::endl
-            std::cout << "Final objective: " << this->objective_err << std::endl;
+            std::cerr << "Final objective: " << this->objective_err << std::endl;
                 // << "Final delta:     " << delta << std::endl;
         }
     }

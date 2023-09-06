@@ -250,6 +250,22 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// uinmf
+Rcpp::List uinmf(Rcpp::List objectList, Rcpp::List unsharedList, const arma::uword k, const double lambda, const arma::uword niter, const bool verbose);
+RcppExport SEXP _RcppPlanc_uinmf(SEXP objectListSEXP, SEXP unsharedListSEXP, SEXP kSEXP, SEXP lambdaSEXP, SEXP niterSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::List >::type objectList(objectListSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type unsharedList(unsharedListSEXP);
+    Rcpp::traits::input_parameter< const arma::uword >::type k(kSEXP);
+    Rcpp::traits::input_parameter< const double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< const arma::uword >::type niter(niterSEXP);
+    Rcpp::traits::input_parameter< const bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(uinmf(objectList, unsharedList, k, lambda, niter, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_RcppPlanc_aoadmmnmf", (DL_FUNC) &_RcppPlanc_aoadmmnmf, 5},
@@ -266,6 +282,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppPlanc_onlineINMF_H5Dense", (DL_FUNC) &_RcppPlanc_onlineINMF_H5Dense, 7},
     {"_RcppPlanc_onlineINMF_H5Sparse", (DL_FUNC) &_RcppPlanc_onlineINMF_H5Sparse, 11},
     {"_RcppPlanc_onlineINMF_Xnew_sparse", (DL_FUNC) &_RcppPlanc_onlineINMF_Xnew_sparse, 13},
+    {"_RcppPlanc_uinmf", (DL_FUNC) &_RcppPlanc_uinmf, 6},
     {NULL, NULL, 0}
 };
 

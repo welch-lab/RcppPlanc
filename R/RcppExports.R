@@ -146,3 +146,25 @@ onlineINMF_Xnew_sparse <- function(objectList, Vinit, Winit, Ainit, Binit, objec
     .Call(`_RcppPlanc_onlineINMF_Xnew_sparse`, objectList, Vinit, Winit, Ainit, Binit, objectListNew, k, lambda, project, maxEpoch, minibatchSize, maxHALSIter, verbose)
 }
 
+#' Block Principal Pivoted Itegrative Non-Negative Matrix Factorization with Unshared features
+#'
+#' Use the BPP algorithm to iteratively factor the given datasets.
+#' @param objectList List of matrices of datasets. Can be of class matrix or dgCMatrix.
+#' All should have the same number of rows.
+#' @param unsharedList List of matrices of unshared features. Should have the same
+#' number of matrices as \code{objectList}. The number of columns should match the
+#' number of columns in the corresponding matrix in \code{objectList}. Matrix with
+#' zero number of rows is allowed. The class of the matrices should be the same as
+#' the matrices in \code{objectList}.
+#' @param k Number of factors to factorize the matrices into.
+#' @param lambda Regularization parameter. Default \code{5}
+#' @param niter Number of ANLS iterations to run. Default \code{30}
+#' @param verbose Logical,. Whether to print the progress of the algorithm. Default \code{TRUE}
+#' @export
+#' @returns A list of factorization result matrices, including the elements:
+#' \code{H} list of H matrices, \code{V} list of V matrices, \code{W} W matrix,
+#' \code{U} list of U matrices, \code{objErr} objective error.
+uinmf <- function(objectList, unsharedList, k, lambda = 5, niter = 30L, verbose = TRUE) {
+    .Call(`_RcppPlanc_uinmf`, objectList, unsharedList, k, lambda, niter, verbose)
+}
+

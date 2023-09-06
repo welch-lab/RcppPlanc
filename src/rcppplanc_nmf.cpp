@@ -12,7 +12,7 @@
 #include "mu.hpp"
 #include "data.hpp"
 #include "onlineinmf.hpp"
-
+#include "uinmf.hpp"
 // via the depends attribute we tell Rcpp to create hooks for
 // RcppArmadillo so that the build process will know what to do
 //
@@ -381,18 +381,18 @@ Rcpp::List bppinmf(Rcpp::List objectList, const arma::uword k,
                    Rcpp::Nullable<std::vector<arma::mat>> Hinit = R_NilValue,
                    Rcpp::Nullable<std::vector<arma::mat>> Vinit = R_NilValue,
                    Rcpp::Nullable<arma::mat> Winit = R_NilValue) {
-                    if (Rf_isS4(objectList[0])) {
-                      // warning: non-void function does not return a value in all control paths
-                      if (Rf_inherits(objectList[0], "dgCMatrix")) {
-                        return bppinmf_sparse(Rcpp::as<std::vector<arma::sp_mat>>(objectList), k, lambda,
-                                       niter, verbose, Hinit, Vinit, Winit);
-                      }
-                      // warning: non-void function does not return a value in all control paths
-                    } else {
-                      return bppinmf_dense(Rcpp::as<std::vector<arma::mat>>(objectList), k, lambda,
-                                            niter, verbose, Hinit, Vinit, Winit);
-                    }
-                   }
+    if (Rf_isS4(objectList[0])) {
+        // warning: non-void function does not return a value in all control paths
+        if (Rf_inherits(objectList[0], "dgCMatrix")) {
+        return bppinmf_sparse(Rcpp::as<std::vector<arma::sp_mat>>(objectList), k, lambda,
+                        niter, verbose, Hinit, Vinit, Winit);
+        }
+        // warning: non-void function does not return a value in all control paths
+    } else {
+        return bppinmf_dense(Rcpp::as<std::vector<arma::mat>>(objectList), k, lambda,
+                            niter, verbose, Hinit, Vinit, Winit);
+    }
+}
 
 //' @export
 // [[Rcpp::export]]
@@ -669,7 +669,8 @@ Rcpp::List onlineINMF_H5Sparse(
         Rcpp::Named("V") = VList,
         Rcpp::Named("W") = solver.getW(),
         Rcpp::Named("A") = AList,
-        Rcpp::Named("B") = BList
+        Rcpp::Named("B") = BList,
+        Rcpp::Named("objErr") = solver.objErr()
     );
 }
 
@@ -734,4 +735,71 @@ Rcpp::List onlineINMF_Xnew_sparse(
         );
     }
 
+}
+
+
+template <typename T>
+Rcpp::List runUINMF(std::vector<T> objectList,
+                    std::vector<T> unsharedList,
+                    arma::uword k, double lambda,
+                    arma::uword niter, bool verbose)
+{
+    std::vector<std::unique_ptr<T>> matPtrVec;
+    std::vector<std::unique_ptr<T>> unsharedPtrVec;
+    matPtrVec = bppinmfinit<T>(objectList);
+    unsharedPtrVec = bppinmfinit<T>(unsharedList);
+    planc::UINMF<T> solver(matPtrVec, unsharedPtrVec, k, lambda);
+    solver.optimizeUANLS(niter, verbose);
+
+    Rcpp::List HList(objectList.size());
+    Rcpp::List UList(objectList.size());
+    Rcpp::List VList(objectList.size());
+    for (arma::uword i = 0; i < objectList.size(); ++i)
+    {
+        HList[i] = solver.getHi(i);
+        VList[i] = solver.getVi(i);
+        UList[i] = solver.getUi(i);
+    }
+    Rcpp::List output = Rcpp::List::create(
+        Rcpp::Named("H") = Rcpp::wrap(HList),
+        Rcpp::Named("V") = Rcpp::wrap(VList),
+        Rcpp::Named("W") = Rcpp::wrap(solver.getW()),
+        Rcpp::Named("U") = Rcpp::wrap(UList),
+        Rcpp::Named("objErr") = Rcpp::wrap(solver.objErr())
+    );
+    return output;
+}
+
+//' Block Principal Pivoted Itegrative Non-Negative Matrix Factorization with Unshared features
+//'
+//' Use the BPP algorithm to iteratively factor the given datasets.
+//' @param objectList List of matrices of datasets. Can be of class matrix or dgCMatrix.
+//' All should have the same number of rows.
+//' @param unsharedList List of matrices of unshared features. Should have the same
+//' number of matrices as \code{objectList}. The number of columns should match the
+//' number of columns in the corresponding matrix in \code{objectList}. The class of
+//' the matrices should be the same as the matrices in \code{objectList}. For datasets
+//' without unshared features, a matrix of zero number of rows and a proper number of
+//' columns should be set at the corresponding place.
+//' @param k Number of factors to factorize the matrices into.
+//' @param lambda Regularization parameter. Default \code{5}
+//' @param niter Number of ANLS iterations to run. Default \code{30}
+//' @param verbose Logical,. Whether to print the progress of the algorithm. Default \code{TRUE}
+//' @export
+//' @returns A list of factorization result matrices, including the elements:
+//' \code{H} list of H matrices, \code{V} list of V matrices, \code{W} W matrix,
+//' \code{U} list of U matrices, \code{objErr} objective error.
+// [[Rcpp::export]]
+Rcpp::List uinmf(Rcpp::List objectList, Rcpp::List unsharedList,
+                 const arma::uword k, const double lambda = 5,
+                 const arma::uword niter = 30, const bool verbose = true) {
+    if (Rf_isS4(objectList[0])) {
+        return runUINMF<arma::sp_mat>(Rcpp::as<std::vector<arma::sp_mat>>(objectList),
+                                      Rcpp::as<std::vector<arma::sp_mat>>(unsharedList),
+                                      k, lambda, niter, verbose);
+    } else {
+        return runUINMF<arma::mat>(Rcpp::as<std::vector<arma::mat>>(objectList),
+                                   Rcpp::as<std::vector<arma::mat>>(unsharedList),
+                                   k, lambda, niter, verbose);
+    }
 }

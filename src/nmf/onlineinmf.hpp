@@ -472,13 +472,13 @@ private:
             else break;
         }
         this->solveH();
-        double obj = this->computeObjectiveError();
+        this->objective_err = this->computeObjectiveError();
         auto end = std::chrono::high_resolution_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::seconds>(end - start);
         if (verbose) {
             std::cout << "Total interations: " << totalIters << std::endl;
             std::cout << "Total time:        " << duration.count() << std::endl;
-            std::cout << "Objective:         " << obj << std::endl;
+            std::cout << "Objective:         " << this->objective_err << std::endl;
         }
     }
 
@@ -646,6 +646,7 @@ public:
             }
             this->projectNewData();
         }
+        this->objective_err = this->computeObjectiveError();
     }
 
     // %%%%%%%%%%%%%%% Results Getters %%%%%%%%%%%%%%%%%%%%%%%
