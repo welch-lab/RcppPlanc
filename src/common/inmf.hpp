@@ -283,6 +283,9 @@ namespace planc {
             if (!this->cleared) {
                 for (unsigned int i = 0; i < Ei.size(); ++i) {
                     Ei[i].reset();
+                    // EiT[i].reset();
+                }
+                for (unsigned int i = 0; i < EiT.size(); ++i) {
                     EiT[i].reset();
                 }
                 for (unsigned int i = 0; i < Hi.size(); ++i) {
@@ -290,10 +293,12 @@ namespace planc {
                 }
                 for (unsigned int i = 0; i < Vi.size(); ++i) {
                     Vi[i].reset();
+                }
+                for (unsigned int i = 0; i < ViT.size(); ++i) {
                     ViT[i].reset();
                 }
                 this->W.reset();
-                this->WT.reset();
+                if (this->WT.get() != nullptr) this->WT.reset();
             }
             this->cleared = true;
         }

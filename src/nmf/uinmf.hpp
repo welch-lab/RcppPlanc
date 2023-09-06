@@ -15,6 +15,7 @@ private:
     std::vector<std::unique_ptr<T>> ulist;
     std::vector<std::unique_ptr<arma::mat>> Ui;
     arma::uvec u;
+    bool uinmf_cleared = false;
 
     void sampleUandV() {
         // U and V must be sampled from the same random set of cells, thus put together
@@ -312,9 +313,12 @@ public:
     }
 
     ~UINMF() {
-        for (unsigned int i = 0; i < this->Ui.size(); ++i) {
-            this->Ui[i].reset();
-            this->ulist[i].reset();
+        if (!this->uinmf_cleared) {
+            for (unsigned int i = 0; i < this->Ui.size(); ++i) {
+                this->Ui[i].reset();
+                this->ulist[i].reset();
+            }
+            this->cleared = true;
         }
      }
 }; // class UINMF
