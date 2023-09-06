@@ -191,7 +191,6 @@ namespace planc {
     class H5SpMat : public HighFive::File  {
         protected:
         std::string filename, xPath, iPath, pPath;
-        HighFive::DataSet* H5D_X, *H5D_I, *H5D_P;
         arma::uword x_chunksize, i_chunksize, p_chunksize;
 
         private:
@@ -200,13 +199,11 @@ namespace planc {
         arma::uvec getPByRange(arma::uword start, arma::uword end) {
             arma::uvec p(end - start + 1);
             std::vector<size_t> p_start;
-            p_start[1] = {start};
+            p_start.push_back(start);
             std::vector<size_t> p_count;
-            p_count[1] = {end - start + 1};
-            HighFive::DataSpace pDataspace = H5D_P->getSpace();
-            HighFive::HyperSlab pds_hyperslab(HighFive::RegularHyperSlab(p_start, p_count));
-            HighFive::DataSpace pMemspace(std::vector<size_t>(1), p_count);
-            HighFive::Selection selected_p = H5D_P->select(pds_hyperslab, pMemspace);
+            p_count.push_back(end - start + 1);
+            HighFive::DataSet H5D_P = this->getDataSet(pPath);
+            HighFive::Selection selected_p = H5D_P.select(p_start, p_count);
             selected_p.read<arma::uword>(p.memptr());
             // pDataspace.close();
             // pMemspace.close();
@@ -219,10 +216,8 @@ namespace planc {
             i_start[1] = {start};
             std::vector<size_t> i_count;
             i_count[1] = {end - start + 1};
-            HighFive::DataSpace iDataspace = H5D_I->getSpace();
-            HighFive::HyperSlab ids_hyperslab(HighFive::RegularHyperSlab(i_start, i_count));
-            HighFive::DataSpace iMemspace(std::vector<size_t>(1), i_count);
-            HighFive::Selection selected_i = H5D_I->select(ids_hyperslab, iMemspace);
+            HighFive::DataSet H5D_I = this->getDataSet(iPath);
+            HighFive::Selection selected_i = H5D_I.select(i_start, i_count);
             selected_i.read<arma::uword>(i.memptr());
             // iDataspace.close();
             // iMemspace.close();
@@ -235,10 +230,8 @@ namespace planc {
             x_start[1] = {start};
             std::vector<size_t> x_count;
             x_count[1] = {end - start + 1};
-            HighFive::DataSpace xDataspace = H5D_X->getSpace();
-            HighFive::HyperSlab xds_hyperslab(HighFive::RegularHyperSlab(x_start, x_count));
-            HighFive::DataSpace xMemspace(std::vector<size_t>(1), x_count);
-            HighFive::Selection selected_x = H5D_X->select(xds_hyperslab, xMemspace);
+            HighFive::DataSet H5D_X = this->getDataSet(xPath);
+            HighFive::Selection selected_x = H5D_X.select(x_start, x_count);
             selected_x.read<double>(x.memptr());
             // xDataspace.close();
             // xMemspace.close();
@@ -259,28 +252,25 @@ namespace planc {
         H5SpMat(std::string filename, std::string iPath, std::string pPath,
                 std::string xPath, arma::uword n_rows, arma::uword n_cols) :
                 HighFive::File(filename, HighFive::File::ReadWrite) {
-            HighFive::DataSet H5D_XS = this->getDataSet(xPath);
-            this->H5D_X = &H5D_XS;
-            HighFive::DataSetCreateProps x_cparms = H5D_X->getCreatePropertyList();
+            HighFive::DataSet H5D_X = this->getDataSet(xPath);
+            HighFive::DataSetCreateProps x_cparms = H5D_X.getCreatePropertyList();
             std::vector<hsize_t> x_chunkdim = HighFive::Chunking(x_cparms).getDimensions();
             this->x_chunksize = x_chunkdim[0];
             // x_cparms.close();
 
-            HighFive::DataSpace xDataspace = H5D_X->getSpace();
+            HighFive::DataSpace xDataspace = H5D_X.getSpace();
             std::vector<size_t> xDims;
             xDims = xDataspace.getDimensions();
             // xDataspace.close();
             this->nnz = xDims[0];
 
-            HighFive::DataSet H5D_IS = this->getDataSet(iPath);
-            this->H5D_I = &H5D_IS;
-            HighFive::DataSetCreateProps i_cparms = H5D_I->getCreatePropertyList();
+            HighFive::DataSet H5D_I = this->getDataSet(iPath);
+            HighFive::DataSetCreateProps i_cparms = H5D_I.getCreatePropertyList();
             std::vector<hsize_t> i_chunkdim = HighFive::Chunking(i_cparms).getDimensions();
             this->i_chunksize = i_chunkdim[0];
             // i_cparms.close();
-            HighFive::DataSet H5D_PS = this->getDataSet(pPath);
-            this->H5D_P = &H5D_PS;
-            HighFive::DataSetCreateProps p_cparms = H5D_P->getCreatePropertyList();
+            HighFive::DataSet H5D_P = this->getDataSet(pPath);
+            HighFive::DataSetCreateProps p_cparms = H5D_P.getCreatePropertyList();
             std::vector<hsize_t> p_chunkdim = HighFive::Chunking(p_cparms).getDimensions();
             this->p_chunksize = p_chunkdim[0];
             // p_cparms.close();
@@ -398,12 +388,9 @@ namespace planc {
             HighFive::DataSet H5D_PT = this->createDataSet<arma::uword>(ptempPath, p_new_dataspace, p_cparms_new);
             // p_cparms_new.close();
             std::vector<size_t> offset;
-            offset[1] = { 0 };
-            HighFive::HyperSlab pfs_hyperslab(HighFive::RegularHyperSlab(offset, p_new_memspacesize));
-            HighFive::DataSpace p_new_memspace(std::vector<size_t>(1), p_new_memspacesize);
-            HighFive::Selection p_selected = H5D_PT.select(pfs_hyperslab, p_new_memspace);
+            offset.push_back(0);
+            HighFive::Selection p_selected = H5D_PT.select(offset, p_new_memspacesize);
             p_selected.write<arma::uword*>(colptrT.memptr()); // i don't know that this works
-                   // Write the chunk to dataspace
             // p_new_dataspace.close();
             // p_new_memspace.close();
             // H5D_PT.close();
