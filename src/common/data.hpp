@@ -82,7 +82,6 @@ namespace planc {
             }
             arma::mat chunk(this->n_rows, end - start + 1);
             HighFive::DataSet H5D = this->getDataSet(datapath);
-            HighFive::DataSpace dataspace = H5D.getSpace();
             std::vector<size_t> offset;
             offset.push_back(start);
             offset.push_back(0);
@@ -133,7 +132,6 @@ namespace planc {
             }
             arma::mat chunk(end - start + 1, this->n_cols);
             HighFive::DataSet H5D = this->getDataSet(datapath);
-            HighFive::DataSpace dataspace = H5D.getSpace();
             std::vector<size_t> offset;
             offset.push_back(0);
             offset.push_back(start);
