@@ -55,6 +55,14 @@
             "pid": "${command:pickProcess}"
         },
         {
+            "type": "lldb",
+            "request": "attach",
+            "name": "attach lldb macOS",
+            "stopOnEntry": false,
+            "program": "/usr/bin/lldb",
+            "pid": "${command:pickProcess}"
+        },
+        {
             "type": "R-Debugger",
             "name": "Launch R-Workspace",
             "request": "launch",
