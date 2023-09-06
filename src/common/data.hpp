@@ -135,14 +135,12 @@ namespace planc {
             HighFive::DataSet H5D = this->getDataSet(datapath);
             HighFive::DataSpace dataspace = H5D.getSpace();
             std::vector<size_t> offset;
-            offset[0] = 0;
-            offset[1] = start;
+            offset.push_back(0);
+            offset.push_back(start);
             std::vector<size_t> count;
-            count[0] = this->n_cols;
-            count[1] = end - start + 1;
-            HighFive::HyperSlab ds_hyperslab(HighFive::RegularHyperSlab(offset, count));
-            HighFive::DataSpace memspace(std::vector<size_t>(2), count);
-            HighFive::Selection selected = H5D.select(ds_hyperslab, memspace);
+            count.push_back(this->n_cols);
+            count.push_back(end - start + 1);
+            HighFive::Selection selected = H5D.select(offset, count);
             selected.read<double>(chunk.memptr());
             // dataspace.close();
             // memspace.close();
@@ -173,16 +171,13 @@ namespace planc {
                 // Read row slices of the current H5D dataset and write to column chunks of the new dataset
                 arma::mat chunk = this->rows(start, end).t();
                 std::vector<size_t> offset;
-                offset[0] = start;
-                offset[1] = 0;
+                offset.push_back(start);
+                offset.push_back(0);
                 std::vector<size_t> count;
-                count[0] = end - start + 1;
-                count[1] = this->n_cols;
-                HighFive::HyperSlab fs_hyperslab(HighFive::RegularHyperSlab(offset, count));
-                // Write the chunk to dataspace
-                HighFive::DataSpace memspace({std::vector<size_t>(2)}, count);
-                HighFive::Selection selected = H5DT.select(fs_hyperslab, memspace);
-                selected.write<double*>(chunk.memptr()); // i don't know that this works
+                count.push_back(end - start + 1);
+                count.push_back(this->n_cols);
+                HighFive::Selection selected = H5DT.select(offset, count);
+                selected.write<double*>(chunk.memptr());
                 // memspace.close();
             }
             // fspace.close();
