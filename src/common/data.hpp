@@ -8,13 +8,12 @@
 
 namespace planc {
 
-    class H5Mat : HighFive::File {
+    class H5Mat : public HighFive::File {
         // A contatiner only for a 2D dense matrix stored in an HDF5 file
         // with accessor function to columns of the matrix that reads and
         // returns a specified chunk of the matrix into memory
         protected:
         std::string filename, datapath;//, tempPath;
-        HighFive::DataSet* H5D;
         std::vector<hsize_t> chunk_dims;
 
         private:
@@ -32,9 +31,9 @@ namespace planc {
             H5Mat(std::string filename, std::string datapath) : HighFive::File(filename, HighFive::File::ReadWrite)
 
             {
-            HighFive::DataSet H5DS = this->getDataSet(datapath);
-            this->H5D = &H5DS;
-            HighFive::DataSpace dataspace = H5D->getSpace();
+            this->datapath = datapath;
+            HighFive::DataSet H5D = this->getDataSet(datapath);
+            HighFive::DataSpace dataspace = H5D.getSpace();
             // Get the rank (number of dimensions) of the H5D
             int rank = dataspace.getNumberDimensions();
 
@@ -47,7 +46,7 @@ namespace planc {
             this->n_cols = dims[0];
             this->n_rows = dims[1];
 
-            HighFive::DataSetCreateProps cparms = H5D->getCreatePropertyList();
+            HighFive::DataSetCreateProps cparms = H5D.getCreatePropertyList();
             this->chunk_dims = HighFive::Chunking(cparms).getDimensions();
 
             this->colChunkSize = chunk_dims[0];
@@ -82,16 +81,15 @@ namespace planc {
                 throw std::invalid_argument("`end` must be less than the number of columns, got (" + std::to_string(start) + ", " + std::to_string(end) + ").");
             }
             arma::mat chunk(this->n_rows, end - start + 1);
-            HighFive::DataSpace dataspace = H5D->getSpace();
+            HighFive::DataSet H5D = this->getDataSet(datapath);
+            HighFive::DataSpace dataspace = H5D.getSpace();
             std::vector<size_t> offset;
-            offset[0] = start;
-            offset[1] = 0;
+            offset.push_back(start);
+            offset.push_back(0);
             std::vector<size_t> count;
-            count[0] = end - start + 1;
-            count[1] = this->n_rows;
-            HighFive::HyperSlab ds_hyperslab(HighFive::RegularHyperSlab(offset, count));
-            HighFive::DataSpace memspace({std::vector<size_t>(2)}, count);
-            HighFive::Selection selected = H5D->select(ds_hyperslab, memspace);
+            count.push_back(end - start + 1);
+            count.push_back(this->n_rows);
+            HighFive::Selection selected = H5D.select(offset, count);
             selected.read<double>(chunk.memptr());
             // dataspace.close();
             // memspace.close();
@@ -134,7 +132,8 @@ namespace planc {
                 throw std::invalid_argument("`end` must be less than the number of rows, got (" + std::to_string(start) + ", " + std::to_string(end) + ").");
             }
             arma::mat chunk(end - start + 1, this->n_cols);
-            HighFive::DataSpace dataspace = H5D->getSpace();
+            HighFive::DataSet H5D = this->getDataSet(datapath);
+            HighFive::DataSpace dataspace = H5D.getSpace();
             std::vector<size_t> offset;
             offset[0] = 0;
             offset[1] = start;
@@ -143,7 +142,7 @@ namespace planc {
             count[1] = end - start + 1;
             HighFive::HyperSlab ds_hyperslab(HighFive::RegularHyperSlab(offset, count));
             HighFive::DataSpace memspace(std::vector<size_t>(2), count);
-            HighFive::Selection selected = H5D->select(ds_hyperslab, memspace);
+            HighFive::Selection selected = H5D.select(ds_hyperslab, memspace);
             selected.read<double>(chunk.memptr());
             // dataspace.close();
             // memspace.close();
@@ -194,7 +193,7 @@ namespace planc {
 
     }; // End of class H5Mat
 
-    class H5SpMat : HighFive::File  {
+    class H5SpMat : public HighFive::File  {
         protected:
         std::string filename, xPath, iPath, pPath;
         HighFive::DataSet* H5D_X, *H5D_I, *H5D_P;
