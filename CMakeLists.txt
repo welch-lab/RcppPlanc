@@ -58,12 +58,12 @@ CPMAddPackage(NAME HighFive
               OPTIONS "HIGHFIVE_EXAMPLES OFF" "HIGHFIVE_BUILD_DOCS OFF" "HIGHFIVE_USE_BOOST OFF"
               DOWNLOAD_ONLY TRUE)
 
+target_include_directories(RcppPlanc PRIVATE "${HighFive_SOURCE_DIR}/include")
 if(WIN32)
-    target_include_directories(RcppPlanc PRIVATE "${PROJECT_SOURCE_DIR}/src/_deps/HighFive-src/include")
     target_link_libraries(RcppPlanc PRIVATE -lhdf5 -lsz -lz -lopenblas -lgfortran -lgomp -lpthread -ldl -lm -lquadmath "${R_HOME}/bin/x64/R.dll")
 else()
-    find_package(HighFive REQUIRED)
-    target_link_libraries(RcppPlanc PUBLIC BLAS::BLAS LAPACK::LAPACK HighFive)
+    find_package(HDF5 REQUIRED)
+    target_link_libraries(RcppPlanc PUBLIC BLAS::BLAS LAPACK::LAPACK hdf5::hdf5)
 endif()
 
 if(OpenMP_CXX_FOUND)
