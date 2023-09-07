@@ -211,9 +211,9 @@ namespace planc {
         arma::uvec getIByRange(arma::uword start, arma::uword end) {
             arma::uvec i(end - start + 1);
             std::vector<size_t> i_start;
-            i_start[1] = {start};
+            i_start.push_back(start);
             std::vector<size_t> i_count;
-            i_count[1] = {end - start + 1};
+            i_count.push_back(end - start + 1);
             HighFive::DataSet H5D_I = this->getDataSet(iPath);
             HighFive::Selection selected_i = H5D_I.select(i_start, i_count);
             selected_i.read<arma::uword>(i.memptr());
@@ -225,9 +225,9 @@ namespace planc {
         arma::vec getXByRange(arma::uword start, arma::uword end) {
             arma::vec x(end - start + 1);
             std::vector<size_t> x_start;
-            x_start[1] = {start};
+            x_start.push_back(start);
             std::vector<size_t> x_count;
-            x_count[1] = {end - start + 1};
+            x_count.push_back(end - start + 1);
             HighFive::DataSet H5D_X = this->getDataSet(xPath);
             HighFive::Selection selected_x = H5D_X.select(x_start, x_count);
             selected_x.read<double>(x.memptr());
@@ -250,6 +250,12 @@ namespace planc {
         H5SpMat(std::string filename, std::string iPath, std::string pPath,
                 std::string xPath, arma::uword n_rows, arma::uword n_cols) :
                 HighFive::File(filename, HighFive::File::ReadWrite) {
+            this->filename = filename;
+            this->iPath = iPath;
+            this->pPath = pPath;
+            this->xPath = xPath;
+            this->n_rows = n_rows;
+            this->n_cols = n_cols;
             HighFive::DataSet H5D_X = this->getDataSet(xPath);
             HighFive::DataSetCreateProps x_cparms = H5D_X.getCreatePropertyList();
             std::vector<hsize_t> x_chunkdim = HighFive::Chunking(x_cparms).getDimensions();
