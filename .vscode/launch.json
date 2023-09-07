@@ -29,9 +29,9 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "C:/Program Files/R/R-4.2.3/bin/x64/Rterm.exe",
+            "program": "C:/Program Files/R/R-4.3.1/bin/x64/Rterm.exe",
             "MIMode": "gdb",
-            "miDebuggerPath": "C:/rtools42/usr/bin/gdb.exe",
+            "miDebuggerPath": "C:/rtools43/usr/bin/gdb.exe",
             "cwd": "C:/Users/andrew/source/repos/theAeon/RcppPlanc",
             "setupCommands": [
                 {
@@ -51,7 +51,7 @@
             "request": "attach",
             "name": "attach lldb",
             "stopOnEntry": false,
-            "program": "C:/Program Files/R/R-4.2.3/bin/x64/Rterm.exe",
+            "program": "C:/Program Files/R/R-4.3.1/bin/x64/Rterm.exe",
             "pid": "${command:pickProcess}"
         },
         {
