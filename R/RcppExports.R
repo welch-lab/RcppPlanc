@@ -153,9 +153,10 @@ onlineINMF_Xnew_sparse <- function(objectList, Vinit, Winit, Ainit, Binit, objec
 #' All should have the same number of rows.
 #' @param unsharedList List of matrices of unshared features. Should have the same
 #' number of matrices as \code{objectList}. The number of columns should match the
-#' number of columns in the corresponding matrix in \code{objectList}. Matrix with
-#' zero number of rows is allowed. The class of the matrices should be the same as
-#' the matrices in \code{objectList}.
+#' number of columns in the corresponding matrix in \code{objectList}. The class of
+#' the matrices should be the same as the matrices in \code{objectList}. For datasets
+#' without unshared features, a matrix of zero number of rows and a proper number of
+#' columns should be set at the corresponding place.
 #' @param k Number of factors to factorize the matrices into.
 #' @param lambda Regularization parameter. Default \code{5}
 #' @param niter Number of ANLS iterations to run. Default \code{30}

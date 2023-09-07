@@ -28,6 +28,7 @@ namespace planc {
         };
 
         public:
+        //not thread safe
             H5Mat(std::string filename, std::string datapath) : HighFive::File(filename, HighFive::File::ReadWrite)
 
             {
@@ -62,6 +63,7 @@ namespace planc {
         }
 
         ~H5Mat() {
+            this->flush();
             // this->H5D.close();
             // this->H5F.unlink(this->tempPath);
             // TODO: Have to find a way to unlink the temp transposed matrix
@@ -81,15 +83,18 @@ namespace planc {
                 throw std::invalid_argument("`end` must be less than the number of columns, got (" + std::to_string(start) + ", " + std::to_string(end) + ").");
             }
             arma::mat chunk(this->n_rows, end - start + 1);
-            HighFive::DataSet H5D = this->getDataSet(datapath);
             std::vector<size_t> offset;
             offset.push_back(start);
             offset.push_back(0);
             std::vector<size_t> count;
             count.push_back(end - start + 1);
             count.push_back(this->n_rows);
+            #pragma omp critical
+            {
+            HighFive::DataSet H5D = this->getDataSet(datapath);
             HighFive::Selection selected = H5D.select(offset, count);
             selected.read<double>(chunk.memptr());
+            }
             // dataspace.close();
             // memspace.close();
             return chunk;
@@ -131,20 +136,23 @@ namespace planc {
                 throw std::invalid_argument("`end` must be less than the number of rows, got (" + std::to_string(start) + ", " + std::to_string(end) + ").");
             }
             arma::mat chunk(end - start + 1, this->n_cols);
-            HighFive::DataSet H5D = this->getDataSet(datapath);
             std::vector<size_t> offset;
             offset.push_back(0);
             offset.push_back(start);
             std::vector<size_t> count;
             count.push_back(this->n_cols);
             count.push_back(end - start + 1);
+            #pragma omp critical
+            {
+            HighFive::DataSet H5D = this->getDataSet(datapath);
             HighFive::Selection selected = H5D.select(offset, count);
             selected.read<double>(chunk.memptr());
+            }
             // dataspace.close();
             // memspace.close();
             return chunk;
         }
-
+// not thread-safe
         H5Mat t() {
             // Create new H5 dataset at a unique temporary path, with incrementing suffix
             std::string tempPath = this->increUniqName(this->datapath + "_transposed_");
@@ -200,9 +208,12 @@ namespace planc {
             p_start.push_back(start);
             std::vector<size_t> p_count;
             p_count.push_back(end - start + 1);
+            #pragma omp critical
+            {
             HighFive::DataSet H5D_P = this->getDataSet(pPath);
             HighFive::Selection selected_p = H5D_P.select(p_start, p_count);
             selected_p.read<arma::uword>(p.memptr());
+            }
             // pDataspace.close();
             // pMemspace.close();
             return p;
@@ -214,9 +225,12 @@ namespace planc {
             i_start.push_back(start);
             std::vector<size_t> i_count;
             i_count.push_back(end - start + 1);
+            #pragma omp critial
+            {
             HighFive::DataSet H5D_I = this->getDataSet(iPath);
             HighFive::Selection selected_i = H5D_I.select(i_start, i_count);
             selected_i.read<arma::uword>(i.memptr());
+            }
             // iDataspace.close();
             // iMemspace.close();
             return i;
@@ -228,9 +242,12 @@ namespace planc {
             x_start.push_back(start);
             std::vector<size_t> x_count;
             x_count.push_back(end - start + 1);
+            #pragma omp critical
+            {
             HighFive::DataSet H5D_X = this->getDataSet(xPath);
             HighFive::Selection selected_x = H5D_X.select(x_start, x_count);
             selected_x.read<double>(x.memptr());
+            }
             // xDataspace.close();
             // xMemspace.close();
             return x;
@@ -247,6 +264,7 @@ namespace planc {
         }
 
         public:
+// not thread safe
         H5SpMat(std::string filename, std::string iPath, std::string pPath,
                 std::string xPath, arma::uword n_rows, arma::uword n_cols) :
                 HighFive::File(filename, HighFive::File::ReadWrite) {
@@ -287,7 +305,14 @@ namespace planc {
                 << "Dimension: " << n_rows << " x " << n_cols << std::endl;
 // #endif
         }
-
+        ~H5SpMat()
+        {
+            this->flush();
+            // this->H5D.close();
+            // this->H5F.unlink(this->tempPath);
+            // TODO: Have to find a way to unlink the temp transposed matrix
+            // this->H5F.close();
+        }
         arma::uword n_rows, n_cols, nnz;
 
         arma::sp_mat cols(arma::uword start, arma::uword end) {
@@ -357,7 +382,7 @@ namespace planc {
         //     }
         //     return out;
         // }
-
+// not thread safe
         H5SpMat t() {
             // ================= Create the colptr of the transposed matrix =================
             // Read all colptr into memory, it's not big :)
