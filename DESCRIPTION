@@ -12,7 +12,7 @@ Imports:
     Rcpp
 Suggests:
     Matrix
-LinkingTo: Rcpp, RcppArmadillo, RcppProgress, BH
+LinkingTo: Rcpp, RcppArmadillo, RcppProgress
 License: GPL (>= 2)
 RoxygenNote: 7.2.3
 SystemRequirements: C++17

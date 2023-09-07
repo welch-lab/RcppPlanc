@@ -6,10 +6,10 @@ include(cmake/CPM.cmake)
 include(cmake/FindR.cmake)
 include(cmake/FindRModule.cmake)
 
-
-find_package(HDF5 COMPONENTS CXX REQUIRED)
-find_package(BLAS REQUIRED)
+if(NOT WIN32)
+find_package(BLAS  REQUIRED)
 find_package(LAPACK REQUIRED)
+endif()
 if(NOT (APPLE AND (CMAKE_HOST_SYSTEM_PROCESSOR MATCHES arm64)))
 find_package(OpenMP)
 endif()
@@ -53,12 +53,18 @@ message(FATAL_ERROR "missing RcppProgress")
 endif()
 
 CPMAddPackage(NAME HighFive
-              VERSION 2.7.1
+              GIT_TAG master
               GITHUB_REPOSITORY BlueBrain/HighFive
-              OPTIONS "HIGHFIVE_EXAMPLES OFF" "HIGHFIVE_BUILD_DOCS OFF" "HIGHFIVE_USE_BOOST OFF")
+              OPTIONS "HIGHFIVE_EXAMPLES OFF" "HIGHFIVE_BUILD_DOCS OFF" "HIGHFIVE_USE_BOOST OFF"
+              DOWNLOAD_ONLY TRUE)
 
-
-target_link_libraries(RcppPlanc PUBLIC hdf5::hdf5_cpp BLAS::BLAS LAPACK::LAPACK HighFive)
+target_include_directories(RcppPlanc PRIVATE "${HighFive_SOURCE_DIR}/include")
+if(WIN32)
+    target_link_libraries(RcppPlanc PRIVATE -lhdf5 -lsz -lz -lopenblas -lgfortran -lgomp -lpthread -ldl -lm -lquadmath "${R_HOME}/bin/x64/R.dll")
+else()
+    find_package(HDF5 REQUIRED)
+    target_link_libraries(RcppPlanc PUBLIC BLAS::BLAS LAPACK::LAPACK hdf5::hdf5)
+endif()
 
 if(OpenMP_CXX_FOUND)
 target_compile_options(RcppPlanc PRIVATE ${OpenMP_CXX_FLAGS})

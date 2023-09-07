@@ -1,5 +1,5 @@
 {
-    "r.rpath.windows": "C:\\Program Files\\R\\R-4.2.3\\bin\\x64\\R.exe",
+    "r.rpath.windows": "C:\\Program Files\\R\\R-4.3.1\\bin\\x64\\R.exe",
     "files.associations": {
         "NAMESPACE": "r",
         "armadillo": "cpp",
@@ -95,12 +95,23 @@
         "__nullptr": "cpp",
         "__string": "cpp",
         "source_location": "cpp",
-        "ranges": "cpp"
+        "ranges": "cpp",
+        "regex": "cpp",
+        "future": "cpp"
     },
     "FSharp.suggestGitignore": false,
     "C_Cpp.errorSquiggles": "enabled",
     "r.rpath.linux": "/usr/lib64/R/bin/R",
     "C_Cpp.inlayHints.autoDeclarationTypes.enabled": true,
     "cmake.languageSupport.enableFileAPI": true,
-    "cmake.useProjectStatusView": true
+    "cmake.useProjectStatusView": true,
+    "cmake.ignoreCMakeListsMissing": false,
+    "cmake.platform": "",
+    "cmake.cmakePath": "C:\\Rtools43\\MINGW64\\bin\\cmake.exe",
+    "cmake.generator": "Ninja",
+    "cmake.configureArgs": [
+        "-DCMAKE_MAKE_PROGRAM=C:\\Rtools43\\mingw64\\bin\\ninja.exe",
+        "-DR_EXECUTABLE=C:\\Program Files\\R\\R-4.3.1\\bin\\x64\\R.exe",
+    ],
+    "terminal.integrated.env.windows": {}
 }
