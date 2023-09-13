@@ -27,7 +27,6 @@ namespace planc {
         bool cleared;
 
         double computeObjectiveError() {
-            tic();
 #ifdef _VERBOSE
             std::cout << "--calc  obj--  ";
 #endif

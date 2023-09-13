@@ -13,8 +13,10 @@ class UINMF : public INMF<T> {
 private:
     arma::mat giventGiven;
     std::vector<std::unique_ptr<T>> ulist;
+    std::vector<std::unique_ptr<T>> ulistT;
     std::vector<std::unique_ptr<arma::mat>> Ui;
     arma::uvec u;
+    arma::vec lambda_i;
     bool uinmf_cleared = false;
 
     void sampleUandV() {
@@ -93,7 +95,7 @@ private:
                 errMat = arma::join_cols(*Vptr, *Uptr) * arma::mat(Hptr->t()).cols(spanStart, spanEnd);
                 norm = arma::norm<arma::mat>(errMat, "fro");
                 norm *= norm;
-                obj += this->lambda * norm;
+                obj += this->lambda_i[i] * norm;
             }
         }
 #ifdef _VERBOSE
@@ -120,8 +122,8 @@ private:
             T* usptr = this->ulist[i].get();
             arma::mat WV = *Wptr + *Vptr;
             giventGiven = WV.t() * WV;
-            giventGiven += (*Vptr).t() * (*Vptr) * this->lambda;
-            if (this->u[i] > 0) giventGiven += (*Uptr).t() * (*Uptr) * (1 + this->lambda);
+            giventGiven += (*Vptr).t() * (*Vptr) * this->lambda_i[i];
+            if (this->u[i] > 0) giventGiven += (*Uptr).t() * (*Uptr) * (1 + this->lambda_i[i]);
 
             unsigned int dataSize = this->ncol_E[i];
             unsigned int numChunks = dataSize / INMF_CHUNK_SIZE;
@@ -158,7 +160,7 @@ private:
         for (int i=0; i<this->nDatasets; ++i) {
             arma::mat* Hptr = this->Hi[i].get();\
             giventGiven = (*Hptr).t() * (*Hptr);
-            giventGiven *= 1 + this->lambda;
+            giventGiven *= 1 + this->lambda_i[i];
             arma::mat* Vptr = this->Vi[i].get();
             T* ETptr = this->EiT[i].get();
             unsigned int numChunks = this->m / INMF_CHUNK_SIZE;
@@ -196,8 +198,9 @@ private:
             arma::mat* Hptr = this->Hi[i].get();
             arma::mat* Uptr = this->Ui[i].get();
             giventGiven = (*Hptr).t() * (*Hptr);
-            giventGiven *= 1 + this->lambda;
-            T* USptr = this->ulist[i].get();
+            giventGiven *= 1 + this->lambda_i[i];
+            // T* USptr = this->ulist[i].get();
+            T* USTptr = this->ulistT[i].get();
             unsigned int numChunks = this->u[i] / INMF_CHUNK_SIZE;
             if (numChunks * INMF_CHUNK_SIZE < this->u[i]) numChunks++;
 #pragma omp parallel for schedule(auto)
@@ -206,7 +209,7 @@ private:
                 unsigned int spanEnd = (j + 1) * INMF_CHUNK_SIZE - 1;
                 if (spanEnd > this->u[i] - 1) spanEnd = this->u[i] - 1;
                 arma::mat giventInput;
-                giventInput = (*Hptr).t() * USptr->rows(spanStart, spanEnd).t();
+                giventInput = (*Hptr).t() * USTptr->cols(spanStart, spanEnd);
                 BPPNNLS<arma::mat, arma::vec> subProbU(giventGiven, giventInput, true);
                 subProbU.solveNNLS();
                 (*Uptr).rows(spanStart, spanEnd) = subProbU.getSolutionMatrix().t();
@@ -267,11 +270,16 @@ private:
 public:
     UINMF(std::vector<std::unique_ptr<T>>& Ei,
           std::vector<std::unique_ptr<T>>& ulist,
-          arma::uword k, double lambda) : INMF<T>(Ei, k, lambda) {
+          arma::uword k, arma::vec lambda) : INMF<T>(Ei, k, 0, true) {
         this->ulist = std::move(ulist);
+        this->lambda_i = lambda;
         u = arma::zeros<arma::uvec>(this->nDatasets);
         for (int i=0; i<this->nDatasets; ++i) {
             u[i] = this->ulist[i]->n_rows;
+            T* us = this->ulist[i].get();
+            T ut = us->t();
+            std::unique_ptr<T> USTptr = std::make_unique<T>(ut);
+            this->ulistT.push_back(std::move(USTptr));
         }
     }
 
@@ -279,28 +287,26 @@ public:
         if (verbose) {
             std::cerr << "UINMF optimizeUANLS started, niter=" << niter << std::endl;
         }
+        auto start = std::chrono::high_resolution_clock::now();
         this->sampleUandV();
         this->initW2();
         this->initH();
         Progress p(niter, verbose);
         for (int iter=0; iter<niter; iter++) {
             Rcpp::checkUserInterrupt();
-            // std::chrono::system_clock::time_point iter_start_time = std::chrono::system_clock::now();
-
             this->solveH();
             this->solveV();
             this->solveU();
             this->solveW();
-
-            // std::chrono::system_clock::time_point iter_end_time = std::chrono::system_clock::now();
-            // std::chrono::duration<double> elapsed_seconds = iter_end_time - iter_start_time;
-            // std::cout << "Iteration " << iter << " took " << elapsed_seconds.count() << " sec" << std::endl;
             if ( ! p.is_aborted() ) p.increment();
             else break;
         }
         this->objective_err = this->computeObjectiveError();
+        auto end = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::seconds>(end - start);
         if (verbose) {
-            std::cerr << "Final objective: " << this->objective_err << std::endl;
+            std::cerr << "Total time:      " << duration.count() << " sec" << std::endl;
+            std::cerr << "Objective error: " << this->objective_err << std::endl;
         }
     }
 

@@ -13,25 +13,26 @@ namespace planc {
         // with accessor function to columns of the matrix that reads and
         // returns a specified chunk of the matrix into memory
         protected:
-        std::string filename, datapath;//, tempPath;
+        std::string filename, datapath;
         std::vector<hsize_t> chunk_dims;
 
         private:
         std::string increUniqName(std::string base) {
             int suffix = 0;
-            std::string tempPath = base + std::to_string(suffix);
+            std::string tempPath = base + std::to_string(suffix) + ".h5";
             while (std::filesystem::exists(tempPath)) {
                 suffix++;
-                tempPath = base + std::to_string(suffix);
+                tempPath = base + std::to_string(suffix) + ".h5";
             }
             return tempPath;
         };
 
         public:
         //not thread safe
-            H5Mat(std::string filename, std::string datapath) : HighFive::File(filename, HighFive::File::ReadWrite)
+            H5Mat(std::string filename, std::string datapath) : HighFive::File(filename, HighFive::File::ReadOnly)
 
             {
+            this->filename = filename;
             this->datapath = datapath;
             HighFive::DataSet H5D = this->getDataSet(datapath);
             HighFive::DataSpace dataspace = H5D.getSpace();
@@ -56,9 +57,9 @@ namespace planc {
 
 //#ifdef _VERBOSE
             std::cout << "==H5Mat constructed==" << std::endl
-                << "H5File:    " << filename << std::endl
-                << "Mat path:  " << datapath << std::endl
-                << "Dimension: " << n_rows << " x " << n_cols << std::endl;
+                << "H5File:    " << this->filename << std::endl
+                << "Mat path:  " << this->datapath << std::endl
+                << "Dimension: " << this->n_rows << " x " << this->n_cols << std::endl;
 //#endif
         }
 
@@ -154,23 +155,29 @@ namespace planc {
         }
 // not thread-safe
         H5Mat t() {
-            // Create new H5 dataset at a unique temporary path, with incrementing suffix
-            std::string tempPath = this->increUniqName(this->datapath + "_transposed_");
-            // this->tempPath = tempPath;
+            // Create new H5 FILE with only the transposed dataset
+            std::string tmpfilename = this->increUniqName(this->filename + ".dense_transposed.");
+            HighFive::File tmpfile(tmpfilename, HighFive::File::ReadWrite | HighFive::File::Create | HighFive::File::Truncate);
             // Set specified chunk dimension for the new dataset
-            HighFive::Chunking newChunks(this->chunk_dims);
+            std::vector<hsize_t> chunk_dims_new;
+            chunk_dims_new.push_back(this->chunk_dims[0]); // Typically, the "1000"
+            chunk_dims_new.push_back(this->n_cols);
+            HighFive::Chunking newChunks(chunk_dims_new);
             HighFive::DataSetCreateProps cparms_new;
             cparms_new.add(newChunks);
             std::array<size_t, 2> tDims;
-            tDims[0] = this-> n_rows;
-            tDims[1] = this-> n_cols;
+            tDims[0] = this->n_rows;
+            tDims[1] = this->n_cols;
             HighFive::DataSpace fspace(tDims);
-            std::cout << "Creating transposed data at " << tempPath << std::endl;
-            HighFive::DataSet H5DT = this->createDataSet<double>(tempPath, fspace, cparms_new);
+            std::cout << "Creating transposed data at "
+                << tmpfilename << ":data" << std::endl;
+            HighFive::DataSet H5DT = tmpfile.createDataSet<double>("data", fspace, cparms_new);
+            // HighFive::DataSet H5DT = this->createDataSet<double>(tempPath, fspace, cparms_new);
             //cparms_new.close();
-
             // H5::DataSpace dataspace = H5DT.getSpace();
-            for (int i=0; i < this->n_rows / this->colChunkSize; ++i) {
+            int nChunks = this->n_rows / this->colChunkSize;
+            if (nChunks * this->colChunkSize < this->n_rows) nChunks++;
+            for (int i=0; i < nChunks; ++i) {
                 arma::uword start = i * this->colChunkSize;
                 arma::uword end = (i + 1) * this->colChunkSize - 1;
                 if (end > this->n_rows - 1) end = this->n_rows - 1;
@@ -182,13 +189,15 @@ namespace planc {
                 std::vector<size_t> count;
                 count.push_back(end - start + 1);
                 count.push_back(this->n_cols);
+                // H5DT.select(offset, count).write<double>(*chunk.memptr());
                 HighFive::Selection selected = H5DT.select(offset, count);
-                selected.write<double*>(chunk.memptr());
+                selected.write_raw<double>(chunk.memptr());
                 // memspace.close();
             }
             // fspace.close();
             // H5DT.close();
-            H5Mat transposedMat(this->filename, tempPath);
+            tmpfile.flush();
+            H5Mat transposedMat(tmpfilename, "data");
             return transposedMat;
         } // End of H5Mat.t()
 
@@ -255,10 +264,10 @@ namespace planc {
 
         std::string increUniqName(std::string base) {
             int suffix = 0;
-            std::string tempPath = base + std::to_string(suffix);
+            std::string tempPath = base + std::to_string(suffix) + ".h5";
             while (std::filesystem::exists(tempPath)) {
                 suffix++;
-                tempPath = base + std::to_string(suffix);
+                tempPath = base + std::to_string(suffix) + ".h5";
             }
             return tempPath;
         }
@@ -384,9 +393,13 @@ namespace planc {
         // }
 // not thread safe
         H5SpMat t() {
+            std::cout << "Creating on-disk transposition of the sparse matrix, which is currently poorly supported and slow" << std::endl;
+            // Create new H5 FILE with only the transposed dataset
+            std::string tmpfilename = this->increUniqName(this->filename + ".sparse_transposed.");
+            HighFive::File tmpfile(tmpfilename, HighFive::File::ReadWrite | HighFive::File::Create | HighFive::File::Truncate);
+
             // ================= Create the colptr of the transposed matrix =================
             // Read all colptr into memory, it's not big :)
-            std::cout << "Creating on-disk transposition of the sparse matrix, which is currently poorly supported and slow" << std::endl;
             arma::uvec colptr = this->getPByRange(0, this->n_cols);
             // Go through chunks of rowind and initialize the transposed colptr
             arma::uvec colptrT(this->n_rows + 1);
@@ -407,19 +420,22 @@ namespace planc {
             colptrT = arma::cumsum(colptrT);
 
             // Write colptrT to HDF5 file
-            std::string ptempPath = this->increUniqName(this->pPath + "_transposed_");
-            HighFive::Chunking p_newChunks(1, this->p_chunksize);
+            // std::string ptempPath = this->increUniqName(this->pPath + "_transposed_");
+            std::vector<hsize_t> p_chunksize;
+            p_chunksize.push_back(this->p_chunksize);
+            HighFive::Chunking p_newChunks(p_chunksize);
             HighFive::DataSetCreateProps p_cparms_new;
             p_cparms_new.add(p_newChunks);
-            std::vector<size_t> p_new_memspacesize;
-            p_new_memspacesize[1] = { this->n_rows + 1 };
-            HighFive::DataSpace p_new_dataspace(std::vector<size_t>(1), p_new_memspacesize);
-            HighFive::DataSet H5D_PT = this->createDataSet<arma::uword>(ptempPath, p_new_dataspace, p_cparms_new);
-            // p_cparms_new.close();
+
+            std::vector<size_t> p_new_size;
+            p_new_size.push_back(this->n_rows + 1);
+            HighFive::DataSpace p_new_dataspace(p_new_size);
+            HighFive::DataSet H5D_PT = tmpfile.createDataSet<arma::uword>("colptr", p_new_dataspace, p_cparms_new);
+
             std::vector<size_t> offset;
             offset.push_back(0);
-            HighFive::Selection p_selected = H5D_PT.select(offset, p_new_memspacesize);
-            p_selected.write<arma::uword*>(colptrT.memptr()); // i don't know that this works
+            HighFive::Selection p_selected = H5D_PT.select(offset, p_new_size);
+            p_selected.write_raw<arma::uword>(colptrT.memptr());
             // p_new_dataspace.close();
             // p_new_memspace.close();
             // H5D_PT.close();
@@ -428,22 +444,32 @@ namespace planc {
             // ================= Create the rowind and value of the transposed matrix =================
             // Pre-create the rowind and value of the transposed matrix
             // Create rowind.T
-            std::string itempPath = this->increUniqName(this->iPath + "_transposed_");
-            HighFive::Chunking i_newChunks(1, this->i_chunksize);
+            // std::string itempPath = this->increUniqName(this->iPath + "_transposed_");
+            std::vector<hsize_t> i_chunksize;
+            i_chunksize.push_back(this->i_chunksize);
+            HighFive::Chunking i_newChunks(i_chunksize);
             HighFive::DataSetCreateProps i_cparms_new;
             i_cparms_new.add(i_newChunks);
-            std::vector<size_t> i_new_memspacesize;
-            i_new_memspacesize[1] = { this->nnz };
-            HighFive::DataSpace i_new_dataspace(std::vector<size_t>(1), i_new_memspacesize); // Gonna be used later for writing
-            HighFive::DataSet H5D_IT = this->createDataSet<arma::uword>(itempPath,i_new_dataspace, i_cparms_new);
+
+            std::vector<size_t> i_new_size;
+            i_new_size.push_back(this->nnz);
+            HighFive::DataSpace i_new_dataspace(i_new_size);
+            // HighFive::DataSet H5D_IT = this->createDataSet<arma::uword>(itempPath,i_new_dataspace, i_cparms_new);
+            HighFive::DataSet H5D_IT = tmpfile.createDataSet<arma::uword>("rowind", i_new_dataspace, i_cparms_new);
             // i_cparms_new.close();
             // Create value.T
-            std::string xtempPath = this->increUniqName(this->xPath + "_transposed_");
-            HighFive::Chunking x_newChunks(1, this->x_chunksize);
+            // std::string xtempPath = this->increUniqName(this->xPath + "_transposed_");
+            std::vector<hsize_t> x_chunksize;
+            x_chunksize.push_back(this->x_chunksize);
+            HighFive::Chunking x_newChunks(x_chunksize);
             HighFive::DataSetCreateProps x_cparms_new;
-            size_t x_new_memspacesize = { this->nnz };
-            HighFive::DataSpace x_new_dataspace(x_new_memspacesize); // Gonna be used later for writing
-            HighFive::DataSet H5D_XT = this->createDataSet<double>(xtempPath, x_new_dataspace, x_cparms_new);
+            x_cparms_new.add(x_newChunks);
+
+            std::vector<size_t> x_new_size;
+            x_new_size.push_back(this->nnz);
+            HighFive::DataSpace x_new_dataspace(x_new_size);
+            // HighFive::DataSet H5D_XT = this->createDataSet<double>(xtempPath, x_new_dataspace, x_cparms_new);
+            HighFive::DataSet H5D_XT = tmpfile.createDataSet<double>("value", x_new_dataspace, x_cparms_new);
             // x_cparms_new.close();
 
             arma::uvec colptrT_start = colptrT;
@@ -469,15 +495,15 @@ namespace planc {
                 for (arma::uword j = 0; j < nnz_idx_size; j++) {
                     coord.push_back(nnz_idx[j]);
                 }
-                size_t count = nnz_idx_size;
-                HighFive::DataSpace xt_writeDataSpace(1, count);
-                HighFive::DataSpace it_writeDataSpace(1, count);
+                // size_t count = nnz_idx_size;
+                // HighFive::DataSpace xt_writeDataSpace(1, count);
+                // HighFive::DataSpace it_writeDataSpace(1, count);
 
-                HighFive::Selection i_selected = H5D_PT.select(coord);
-                HighFive::Selection x_selected = H5D_PT.select(coord);
+                HighFive::Selection i_selected = H5D_IT.select(coord);
+                HighFive::Selection x_selected = H5D_XT.select(coord);
 
-                i_selected.write<arma::uword*>(it_value.memptr());
-                x_selected.write<double*>(value_ori_col.memptr());
+                i_selected.write_raw<arma::uword>(it_value.memptr());
+                x_selected.write_raw<double>(value_ori_col.memptr());
 
                 // Increment it, so that next time when fetching the number `nnz_idx` of the same new-column/old-row,
                 // it know the previous position has been filled
@@ -491,8 +517,9 @@ namespace planc {
             // H5D_IT.close();
             // H5D_XT.close();
             // ================= self.t.rowind and self.t.value done ! =================
-
-            H5SpMat transposedMat(this->filename, itempPath, ptempPath, xtempPath, this->n_cols, this->n_rows);
+            tmpfile.flush();
+            H5SpMat transposedMat(tmpfilename, "rowind", "colptr", "value", this->n_cols, this->n_rows);
+            // H5SpMat transposedMat(this->filename, itempPath, ptempPath, xtempPath, this->n_cols, this->n_rows);
             return transposedMat;
         } // End of H5SpMat.t()
     }; // End of class H5SpMat

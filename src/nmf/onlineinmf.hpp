@@ -476,9 +476,9 @@ private:
         auto end = std::chrono::high_resolution_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::seconds>(end - start);
         if (verbose) {
-            std::cout << "Total interations: " << totalIters << std::endl;
-            std::cout << "Total time:        " << duration.count() << std::endl;
-            std::cout << "Objective:         " << this->objective_err << std::endl;
+            std::cerr << "Total interations: " << totalIters << std::endl;
+            std::cerr << "Total time:        " << duration.count() << " sec" << std::endl;
+            std::cerr << "Objective error:   " << this->objective_err << std::endl;
         }
     }
 
@@ -599,12 +599,12 @@ public:
     void runOnlineINMF(arma::uword minibatchSize = 5000, arma::uword maxEpochs = 5,
                        arma::uword maxHALSIter = 1, bool verbose = true) {
         if (verbose) {
-            std::cout << "Starting online iNMF scenario 1, factorize all datasets" << std::endl;
+            std::cerr << "Starting online iNMF scenario 1, factorize all datasets" << std::endl;
         }
         this->dataIdxNew = this->dataIdx;
         this->nCellsNew = this->ncol_E;
         this->initW2();
-        this->solveHALS(minibatchSize, maxEpochs, maxHALSIter);
+        this->solveHALS(minibatchSize, maxEpochs, maxHALSIter, verbose);
     }
 
     // Scenario 2, project == false (default): Online iNMF on new data, factorized upon existing factorization
@@ -635,13 +635,13 @@ public:
                                                                      this->nDatasets)));
         if (!project) {
             if (verbose) {
-                std::cout << "Starting online iNMF scenario 2, " <<
+                std::cerr << "Starting online iNMF scenario 2, " <<
                 "update factorization with new datasets" << std::endl;
             }
             this->solveHALS(minibatchSize, maxEpochs, maxHALSIter, verbose);
         } else {
             if (verbose) {
-                std::cout << "Starting online iNMF scenario 3, " <<
+                std::cerr << "Starting online iNMF scenario 3, " <<
                 "project new datasets without updating existing factorization" << std::endl;
             }
             this->projectNewData();

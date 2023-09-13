@@ -138,40 +138,25 @@ public:
         if (verbose) {
             std::cerr << "BPPINMF optimizeALS started, niter=" << niter << std::endl;
         }
+        this->objective_err = this->computeObjectiveError();
+        auto start = std::chrono::high_resolution_clock::now();
         unsigned int iter = 0;
-        double time_total=0;//, obj, delta=100, ;
         Progress p(niter, verbose);
         while (iter < niter ) {
-        // while (delta > thresh && iter < niter ) {
             Rcpp::checkUserInterrupt();
-            // tic();
-#ifdef _VERBOSE
-            std::cout << "========Staring iteration "
-            << iter+1 << "========" << std::endl;
-#endif
             solveH();
             solveV();
             solveW();
-            // obj = this->computeObjectiveError();
-            // delta = abs(this->objective_err - obj) / ((this->objective_err + obj) / 2);
             iter++;
-            // this->objective_err = obj;
-            // double time_iter = toc();
-#ifdef _VERBOSE
-            std::cout << "Objective:  " << obj << std::endl
-                    << "Delta:      " << delta << std::endl
-                    << "Total time: " << time_iter << " sec" << std::endl;
-#endif
-            // time_total += time_iter;
-
             if ( ! p.is_aborted() ) p.increment();
             else break;
         }
         this->objective_err = this->computeObjectiveError();
+        auto end = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::seconds>(end - start);
         if (verbose) {
-            // std::cout << "Finished after " << iter << " iterations in " << time_total << " seconds." << std::endl
-            std::cerr << "Final objective: " << this->objective_err << std::endl;
-                // << "Final delta:     " << delta << std::endl;
+            std::cerr << "Total time:      " << duration.count() << " sec" << std::endl;
+            std::cerr << "Objective error: " << this->objective_err << std::endl;
         }
     }
 };
