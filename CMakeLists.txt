@@ -96,7 +96,7 @@ if(RECIPROCAL_MATH)
     target_compile_options(RcppPlanc PRIVATE "-freciprocal-math")
 endif()
 
-set(CBLAS_H_DIR PATH FALSE)
+set(CBLAS_H_DIR CACHE PATH "Directory containing cblas.h")
 
 if(NOT APPLE)
 if(CBLAS_H_DIR)
