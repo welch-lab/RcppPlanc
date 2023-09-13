@@ -11,9 +11,9 @@ if test -z "${R_HOME}"; then
   exit 1
 fi
 CC=`"${R_HOME}/bin/R" CMD config CC`
-CC=`printf '%s\n' "${CC[0]}"`
+CC=${CC%% *}
 CXX=`"${R_HOME}/bin/R" CMD config CXX`
-CXX=`printf '%s\n' "${CXX[0]}"`
+CXX=${CXX%% *}
 CFLAGS=`"${R_HOME}/bin/R" CMD config CFLAGS`
 CPPFLAGS=`"${R_HOME}/bin/R" CMD config --cppflags`
 CXXFLAGS=`"${R_HOME}/bin/R" CMD config CXXFLAGS`
