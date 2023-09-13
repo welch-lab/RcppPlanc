@@ -1,4 +1,5 @@
 #!/bin/sh
+shopt -s nullglob
 
 if test -z "$CMAKE"; then CMAKE="`which cmake`"; fi
 if test -z "$CMAKE"; then CMAKE=/Applications/CMake.app/Contents/bin/cmake; fi
@@ -10,7 +11,9 @@ if test -z "${R_HOME}"; then
   exit 1
 fi
 CC=`"${R_HOME}/bin/R" CMD config CC`
+CC=`printf '%s\n' "${CC[0]}"`
 CXX=`"${R_HOME}/bin/R" CMD config CXX`
+CXX=`printf '%s\n' "${CXX[0]}"`
 CFLAGS=`"${R_HOME}/bin/R" CMD config CFLAGS`
 CPPFLAGS=`"${R_HOME}/bin/R" CMD config --cppflags`
 CXXFLAGS=`"${R_HOME}/bin/R" CMD config CXXFLAGS`
@@ -25,4 +28,6 @@ cd src
 cmake .. \
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_POSITION_INDEPENDENT_CODE:bool=ON \
+  -DCMAKE_C_COMPILER=$CC \
+  -DCMAKE_CXX_COMPILER=$CXX \
   -DR_HOME="$R_HOME"
