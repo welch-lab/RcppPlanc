@@ -241,19 +241,39 @@ arma::mat bppnnls(const arma::mat &C, const arma::sp_mat &B) {
         // double start = omp_get_wtime();
         arma::mat CtBChunk = C.t() * B.cols(spanStart, spanEnd);
         BPPNNLS<arma::mat, arma::vec> solveProblem(CtC, CtBChunk, true);
-        // BPPNNLS<arma::mat, arma::vec> solveProblem(C, (arma::mat)B.cols(spanStart, spanEnd));
         solveProblem.solveNNLS();
-        // double end = omp_get_wtime();
-      // titer = end - start;
-      // #ifdef _VERBOSE
-      // INFO << " start=" << spanStart
-      //     << ", end=" << spanEnd
-      //     << ", tid=" << omp_get_thread_num() << " cpu=" << sched_getcpu() << std::endl;
-      //     // << " time taken=" << titer << std::endl;
-      // #endif
         (*outmatptr).cols(spanStart, spanEnd) = solveProblem.getSolutionMatrix();
     };
+    return outmat;
+}
 
+//' Block Principal Pivoted Non-Negative Least Squares
+//'
+//' Use the BPP algorithm to get the nonnegative least squares solution for the given matrices.
+//'
+//' @param CtC Input factor dense matrix
+//' @param B Input sparse matrix
+//' @export
+//' @returns The calculated solution matrix in dense form.
+// [[Rcpp::export]]
+arma::mat bppnnls_prod(const arma::mat &CtC, const arma::mat &CtB) {
+    arma::uword n = CtB.n_cols;
+    arma::uword k = CtC.n_cols;
+    arma::mat outmat = arma::zeros<arma::mat>(k, n);
+    arma::mat *outmatptr;
+    outmatptr = &outmat;
+    unsigned int numChunks = n / ONE_THREAD_MATRIX_SIZE;
+    if (numChunks*ONE_THREAD_MATRIX_SIZE < n) numChunks++;
+#pragma omp parallel for schedule(auto)
+    for (unsigned int i = 0; i < numChunks; i++) {
+        unsigned int spanStart = i * ONE_THREAD_MATRIX_SIZE;
+        unsigned int spanEnd = (i + 1) * ONE_THREAD_MATRIX_SIZE - 1;
+        if (spanEnd > n - 1) spanEnd = n - 1;
+        arma::mat CtBChunk = CtB.cols(spanStart, spanEnd);
+        BPPNNLS<arma::mat, arma::vec> solveProblem(CtC, CtBChunk, true);
+        solveProblem.solveNNLS();
+        (*outmatptr).cols(spanStart, spanEnd) = solveProblem.getSolutionMatrix();
+    };
     return outmat;
 }
 
@@ -280,9 +300,9 @@ Rcpp::List runINMF(std::vector<T> objectList, arma::uword k, double lambda,
     std::vector<std::unique_ptr<T>> matPtrVec;
     matPtrVec = initMemMatPtr<T>(objectList);
     planc::BPPINMF<T> solver(matPtrVec, k, lambda);
-    solver.initH();
-    solver.initV();
     solver.initW();
+    solver.initV();
+    solver.initH();
     solver.optimizeALS(niter, verbose);
     std::vector<Rcpp::NumericMatrix> HList;
     std::vector<Rcpp::NumericMatrix> VList;
@@ -306,8 +326,8 @@ Rcpp::List runINMF(std::vector<T> objectList, arma::uword k, double lambda,
     matPtrVec = initMemMatPtr<T>(objectList);
     planc::BPPINMF<T> solver(matPtrVec, k, lambda);
     solver.initW(Winit);
-    solver.initH(HinitList);
     solver.initV(VinitList);
+    solver.initH(HinitList);
     solver.optimizeALS(niter, verbose);
     std::vector<Rcpp::NumericMatrix> HList;
     std::vector<Rcpp::NumericMatrix> VList;
@@ -393,11 +413,11 @@ Rcpp::List bppinmf_h5dense(std::vector<std::string> filenames, std::vector<std::
     }
     planc::BPPINMF<planc::H5Mat> solver(matPtrVec, k, lambda);
 
-    if (Hinit.isNotNull()) {
-        std::vector<arma::mat> HinitList = Rcpp::as<std::vector<arma::mat>>(Hinit);
-        solver.initH(HinitList);
+    if (Winit.isNotNull()) {
+        arma::mat W = Rcpp::as<arma::mat>(Winit);
+        solver.initW(W);
     } else {
-        solver.initH();
+        solver.initW();
     }
 
     if (Vinit.isNotNull()) {
@@ -407,11 +427,11 @@ Rcpp::List bppinmf_h5dense(std::vector<std::string> filenames, std::vector<std::
         solver.initV();
     }
 
-    if (Winit.isNotNull()) {
-        arma::mat W = Rcpp::as<arma::mat>(Winit);
-        solver.initW(W);
+    if (Hinit.isNotNull()) {
+        std::vector<arma::mat> HinitList = Rcpp::as<std::vector<arma::mat>>(Hinit);
+        solver.initH(HinitList);
     } else {
-        solver.initW();
+        solver.initH();
     }
 
     solver.optimizeALS(niter, verbose);
@@ -451,11 +471,11 @@ Rcpp::List bppinmf_h5sparse(
     }
     planc::BPPINMF<planc::H5SpMat> solver(matPtrVec, k, lambda);
 
-    if (Hinit.isNotNull()) {
-        std::vector<arma::mat> HinitList = Rcpp::as<std::vector<arma::mat>>(Hinit);
-        solver.initH(HinitList);
+    if (Winit.isNotNull()) {
+        arma::mat W = Rcpp::as<arma::mat>(Winit);
+        solver.initW(W);
     } else {
-        solver.initH();
+        solver.initW();
     }
 
     if (Vinit.isNotNull()) {
@@ -465,11 +485,11 @@ Rcpp::List bppinmf_h5sparse(
         solver.initV();
     }
 
-    if (Winit.isNotNull()) {
-        arma::mat W = Rcpp::as<arma::mat>(Winit);
-        solver.initW(W);
+    if (Hinit.isNotNull()) {
+        std::vector<arma::mat> HinitList = Rcpp::as<std::vector<arma::mat>>(Hinit);
+        solver.initH(HinitList);
     } else {
-        solver.initW();
+        solver.initH();
     }
 
     solver.optimizeALS(niter, verbose);

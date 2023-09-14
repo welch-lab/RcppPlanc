@@ -172,7 +172,8 @@ namespace planc {
             std::unique_ptr<arma::mat> H;
             for (arma::uword i = 0; i < this->nDatasets; ++i) {
                 H = std::unique_ptr<arma::mat>(new arma::mat);
-                *H = arma::randu<arma::mat>(this->ncol_E[i], this->k);
+                *H = arma::randu<arma::mat>(this->ncol_E[i], this->k,
+                                            arma::distr_param(0, 2));
                 this->Hi.push_back(std::move(H));
             }
         }
@@ -216,7 +217,8 @@ namespace planc {
             for (arma::uword i = 0; i < this->nDatasets; ++i) {
                 V = std::unique_ptr<arma::mat>(new arma::mat);
                 VT = std::unique_ptr<arma::mat>(new arma::mat);
-                *V = arma::randu<arma::mat>(this->m, this->k);
+                *V = arma::randu<arma::mat>(this->m, this->k,
+                                            arma::distr_param(0, 2));
                 *VT = (*V).t();
                 this->Vi.push_back(std::move(V));
                 this->ViT.push_back(std::move(VT));
@@ -249,7 +251,8 @@ namespace planc {
 #endif
             this->W = std::unique_ptr<arma::mat>(new arma::mat);
             this->WT = std::unique_ptr<arma::mat>(new arma::mat);
-            *this->W = arma::randu<arma::mat>(this->m, this->k);
+            *this->W = arma::randu<arma::mat>(this->m, this->k,
+                                              arma::distr_param(0, 2));
             *this->WT = (*this->W).t();
         }
 
