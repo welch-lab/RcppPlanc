@@ -216,15 +216,8 @@ Rcpp::List bppnmf(const arma::sp_mat & x, const int & k, const int & niter,
   return outlist;
 }
 
-//' Block Principal Pivoted Non-Negative Least Squares
-//'
-//' Use the BPP algorithm to get the nonnegative least squares solution for the given matrices.
-//'
-//' @param C Input factor dense matrix
-//' @param B Input sparse matrix
-//' @returns The calculated solution matrix in dense form.
-// [[Rcpp::export]]
-arma::mat bppnnls(const arma::mat &C, const arma::sp_mat &B) {
+template <typename T>
+arma::mat runbppnnls(const arma::mat &C, const T &B) {
     arma::uword m_n = B.n_cols;
     arma::uword m_k = C.n_cols;
     arma::mat CtC = C.t() * C;
@@ -249,12 +242,40 @@ arma::mat bppnnls(const arma::mat &C, const arma::sp_mat &B) {
 
 //' Block Principal Pivoted Non-Negative Least Squares
 //'
-//' Use the BPP algorithm to get the nonnegative least squares solution for the given matrices.
+//' Use the BPP algorithm to get the nonnegative least squares solution. Regular
+//' NNLS problem is described as optimizing \eqn{\min_{x\ge0}||CX - B||_F^2}
+//' where \eqn{C} and \eqn{B} are given and \eqn{X} is to be solved.
+//' \code{bppnnls} takes \eqn{C} and \eqn{B} as input. \code{bppnnls_prod} takes
+//' \eqn{C^\mathsf{T}C} and \eqn{C^\mathsf{T}B} as
+//' input to directly go for the intermediate step of BPP algorithm. This can be
+//' useful when the dimensionality of \eqn{C} and \eqn{B} is large while
+//' pre-calculating \eqn{C^\mathsf{T}C} and \eqn{C^\mathsf{T}B} is cheap.
 //'
-//' @param CtC Input factor dense matrix
-//' @param B Input sparse matrix
-//' @export
+//' @param C Input dense \eqn{C} matrix
+//' @param B Input \eqn{B} matrix of either dense or sparse form
 //' @returns The calculated solution matrix in dense form.
+//' @rdname bppnnls
+//' @examples
+//' set.seed(1)
+//' C <- matrix(rnorm(1000), nrow = 100)
+//' B <- matrix(rnorm(1500), nrow = 100)
+//' res1 <- bppnnls(C, B)
+//' dim(res1)
+//' res2 <- bppnnls_prod(t(C) %*% C, t(C) %*% B)
+//' all.equal(res1, res2)
+// [[Rcpp::export]]
+arma::mat bppnnls(const arma::mat &C, const SEXP &B) {
+    if (Rf_isS4(B)) {
+        return runbppnnls<arma::sp_mat>(C, Rcpp::as<arma::sp_mat>(B));
+    } else {
+        return runbppnnls<arma::mat>(C, Rcpp::as<arma::mat>(B));
+    }
+    return arma::mat();
+}
+
+//' @param CtC The \eqn{C^\mathsf{T}C} matrix, see description.
+//' @param CtB The \eqn{C^\mathsf{T}B} matrix, see description.
+//' @rdname bppnnls
 // [[Rcpp::export]]
 arma::mat bppnnls_prod(const arma::mat &CtC, const arma::mat &CtB) {
     arma::uword n = CtB.n_cols;

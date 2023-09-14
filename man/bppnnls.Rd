@@ -2,18 +2,41 @@
 % Please edit documentation in R/RcppExports.R
 \name{bppnnls}
 \alias{bppnnls}
+\alias{bppnnls_prod}
 \title{Block Principal Pivoted Non-Negative Least Squares}
 \usage{
 bppnnls(C, B)
+
+bppnnls_prod(CtC, CtB)
 }
 \arguments{
-\item{C}{Input factor dense matrix}
+\item{C}{Input dense \eqn{C} matrix}
 
-\item{B}{Input sparse matrix}
+\item{B}{Input \eqn{B} matrix of either dense or sparse form}
+
+\item{CtC}{The \eqn{C^\mathsf{T}C} matrix, see description.}
+
+\item{CtB}{The \eqn{C^\mathsf{T}B} matrix, see description.}
 }
 \value{
 The calculated solution matrix in dense form.
 }
 \description{
-Use the BPP algorithm to get the nonnegative least squares solution for the given matrices.
+Use the BPP algorithm to get the nonnegative least squares solution. Regular
+NNLS problem is described as optimizing \eqn{\min_{x\ge0}||CX - B||_F^2}
+where \eqn{C} and \eqn{B} are given and \eqn{X} is to be solved.
+\code{bppnnls} takes \eqn{C} and \eqn{B} as input. \code{bppnnls_prod} takes
+\eqn{C^\mathsf{T}C} and \eqn{C^\mathsf{T}B} as
+input to directly go for the intermediate step of BPP algorithm. This can be
+useful when the dimensionality of \eqn{C} and \eqn{B} is large while
+pre-calculating \eqn{C^\mathsf{T}C} and \eqn{C^\mathsf{T}B} is cheap.
+}
+\examples{
+set.seed(1)
+C <- matrix(rnorm(1000), nrow = 100)
+B <- matrix(rnorm(1500), nrow = 100)
+res1 <- bppnnls(C, B)
+dim(res1)
+res2 <- bppnnls_prod(t(C) \%*\% C, t(C) \%*\% B)
+all.equal(res1, res2)
 }

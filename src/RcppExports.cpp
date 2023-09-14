@@ -87,14 +87,26 @@ BEGIN_RCPP
 END_RCPP
 }
 // bppnnls
-arma::mat bppnnls(const arma::mat& C, const arma::sp_mat& B);
+arma::mat bppnnls(const arma::mat& C, const SEXP& B);
 RcppExport SEXP _RcppPlanc_bppnnls(SEXP CSEXP, SEXP BSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::mat& >::type C(CSEXP);
-    Rcpp::traits::input_parameter< const arma::sp_mat& >::type B(BSEXP);
+    Rcpp::traits::input_parameter< const SEXP& >::type B(BSEXP);
     rcpp_result_gen = Rcpp::wrap(bppnnls(C, B));
+    return rcpp_result_gen;
+END_RCPP
+}
+// bppnnls_prod
+arma::mat bppnnls_prod(const arma::mat& CtC, const arma::mat& CtB);
+RcppExport SEXP _RcppPlanc_bppnnls_prod(SEXP CtCSEXP, SEXP CtBSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type CtC(CtCSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type CtB(CtBSEXP);
+    rcpp_result_gen = Rcpp::wrap(bppnnls_prod(CtC, CtB));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -364,6 +376,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppPlanc_munmf", (DL_FUNC) &_RcppPlanc_munmf, 5},
     {"_RcppPlanc_bppnmf", (DL_FUNC) &_RcppPlanc_bppnmf, 5},
     {"_RcppPlanc_bppnnls", (DL_FUNC) &_RcppPlanc_bppnnls, 2},
+    {"_RcppPlanc_bppnnls_prod", (DL_FUNC) &_RcppPlanc_bppnnls_prod, 2},
     {"_RcppPlanc_bppinmf", (DL_FUNC) &_RcppPlanc_bppinmf, 8},
     {"_RcppPlanc_bppinmf_h5dense", (DL_FUNC) &_RcppPlanc_bppinmf_h5dense, 9},
     {"_RcppPlanc_bppinmf_h5sparse", (DL_FUNC) &_RcppPlanc_bppinmf_h5sparse, 13},

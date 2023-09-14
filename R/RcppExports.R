@@ -83,13 +83,36 @@ bppnmf <- function(x, k, niter, W_init = NULL, H_init = NULL) {
 
 #' Block Principal Pivoted Non-Negative Least Squares
 #'
-#' Use the BPP algorithm to get the nonnegative least squares solution for the given matrices.
+#' Use the BPP algorithm to get the nonnegative least squares solution. Regular
+#' NNLS problem is described as optimizing \eqn{\min_{x\ge0}||CX - B||_F^2}
+#' where \eqn{C} and \eqn{B} are given and \eqn{X} is to be solved.
+#' \code{bppnnls} takes \eqn{C} and \eqn{B} as input. \code{bppnnls_prod} takes
+#' \eqn{C^\mathsf{T}C} and \eqn{C^\mathsf{T}B} as
+#' input to directly go for the intermediate step of BPP algorithm. This can be
+#' useful when the dimensionality of \eqn{C} and \eqn{B} is large while
+#' pre-calculating \eqn{C^\mathsf{T}C} and \eqn{C^\mathsf{T}B} is cheap.
 #'
-#' @param C Input factor dense matrix
-#' @param B Input sparse matrix
+#' @param C Input dense \eqn{C} matrix
+#' @param B Input \eqn{B} matrix of either dense or sparse form
 #' @returns The calculated solution matrix in dense form.
+#' @rdname bppnnls
+#' @examples
+#' set.seed(1)
+#' C <- matrix(rnorm(1000), nrow = 100)
+#' B <- matrix(rnorm(1500), nrow = 100)
+#' res1 <- bppnnls(C, B)
+#' dim(res1)
+#' res2 <- bppnnls_prod(t(C) %*% C, t(C) %*% B)
+#' all.equal(res1, res2)
 bppnnls <- function(C, B) {
     .Call(`_RcppPlanc_bppnnls`, C, B)
+}
+
+#' @param CtC The \eqn{C^\mathsf{T}C} matrix, see description.
+#' @param CtB The \eqn{C^\mathsf{T}B} matrix, see description.
+#' @rdname bppnnls
+bppnnls_prod <- function(CtC, CtB) {
+    .Call(`_RcppPlanc_bppnnls_prod`, CtC, CtB)
 }
 
 .bppinmf <- function(objectList, k, lambda = 5, niter = 30L, verbose = TRUE, Hinit = NULL, Vinit = NULL, Winit = NULL) {
