@@ -234,7 +234,7 @@ namespace planc {
             i_start.push_back(start);
             std::vector<size_t> i_count;
             i_count.push_back(end - start + 1);
-            #pragma omp critial
+            #pragma omp critical
             {
             HighFive::DataSet H5D_I = this->getDataSet(iPath);
             HighFive::Selection selected_i = H5D_I.select(i_start, i_count);
