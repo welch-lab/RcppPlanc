@@ -17,35 +17,35 @@ inmf(
 }
 \arguments{
 \item{objectList}{list of input datasets. List elements should all be of the
-same class. Viable classes include: matrix, \linkS4class{dgCMatrix}, 
+same class. Viable classes include: matrix, \linkS4class{dgCMatrix},
 \link{H5Mat}, \link{H5SpMat}.}
 
-\item{k}{Integer. Inner dimensionality to factorize the datasets into. 
+\item{k}{Integer. Inner dimensionality to factorize the datasets into.
 Default \code{20}.}
 
 \item{lambda}{Regularization parameter. Larger values penalize
 dataset-specific effects more strongly (i.e. alignment should increase as
 \code{lambda} increases). Default \code{5}.}
 
-\item{niter}{Integer. Total number of block coordinate descent iterations to 
+\item{niter}{Integer. Total number of block coordinate descent iterations to
 perform. Default \code{30}.}
 
-\item{Hinit}{Initial values to use for \eqn{H} matrices. A list object where 
+\item{Hinit}{Initial values to use for \eqn{H} matrices. A list object where
 each element is the initial \eqn{H} matrix of each dataset. Each should be
 dense matrix of size \eqn{n_i \times k}. Default \code{NULL}.}
 
-\item{Vinit}{Similar to \code{Hinit}, but each should be of size 
+\item{Vinit}{Similar to \code{Hinit}, but each should be of size
 \eqn{m \times k}.}
 
-\item{Winit}{Initial values to use for \eqn{W} matrix. A matrix object of 
+\item{Winit}{Initial values to use for \eqn{W} matrix. A matrix object of
 size \eqn{m \times k}. Default \code{NULL}.}
 
-\item{verbose}{Logical scalar. Whether to show information and progress. 
+\item{verbose}{Logical scalar. Whether to show information and progress.
 Default \code{TRUE}.}
 }
 \value{
-A list of the following entries: \code{H} - a list of result 
-\eqn{H_i} matrices, \code{V} - a list of result \eqn{V_i} matrices, 
+A list of the following entries: \code{H} - a list of result
+\eqn{H_i} matrices, \code{V} - a list of result \eqn{V_i} matrices,
 \code{W} - the result \eqn{W} matrix, \code{objErr} - the final objective
 error value.
 }
@@ -57,13 +57,13 @@ objective function is stated as
 \deqn{\arg\min_{H\ge0,W\ge0,V\ge0}\sum_{i}^{d}||E_i-(W+V_i)Hi||^2_F+
 \lambda\sum_{i}^{d}||V_iH_i||_F^2}
 
-where \eqn{E_i} is the input non-negative matrix of the \eqn{i}'th dataset, 
-\eqn{d} is the total number of datasets. \eqn{E_i} is of size 
-\eqn{m \times n_i} for \eqn{m} features and \eqn{n_i} sample points, 
-\eqn{H_i} is of size \eqn{n_i \times k}, \eqn{V_i} is of size 
+where \eqn{E_i} is the input non-negative matrix of the \eqn{i}'th dataset,
+\eqn{d} is the total number of datasets. \eqn{E_i} is of size
+\eqn{m \times n_i} for \eqn{m} features and \eqn{n_i} sample points,
+\eqn{H_i} is of size \eqn{n_i \times k}, \eqn{V_i} is of size
 \eqn{m \times k}, and \eqn{W} is of size \eqn{m \times k}.
 
-\code{inmf} optimizes the objective with ANLS strategy, while 
+\code{inmf} optimizes the objective with ANLS strategy, while
 \code{\link{onlineINMF}} optimizes the same objective with an online learning
 strategy.
 }
@@ -77,16 +77,16 @@ if (FALSE) {
     h5dense2 <- H5Mat("filepath2.h5", "dataPath")
     set.seed(1)
     res3 <- inmf(list(h5dense1, h5dense2))
-    h5sparse1 <- H5SpMat("filepath1.h5", "group/data", "group/indices", 
+    h5sparse1 <- H5SpMat("filepath1.h5", "group/data", "group/indices",
                          "group/indptr", nrow = 4215, ncol = 6548)
-    h5sparse2 <- H5SpMat("filepath2.h5", "group/data", "group/indices", 
+    h5sparse2 <- H5SpMat("filepath2.h5", "group/data", "group/indices",
                          "group/indptr", nrow = 4215, ncol = 7451)
     set.seed(1)
     res4 <- inmf(list(h5sparse1, h5sparse2))
 }
 }
 \references{
-Joshua D. Welch and et al., Single-Cell Multi-omic Integration 
+Joshua D. Welch and et al., Single-Cell Multi-omic Integration
 Compares and Contrasts Features of Brain Cell Identity, Cell, 2019
 }
 \author{

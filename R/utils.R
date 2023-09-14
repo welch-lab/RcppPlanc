@@ -2,7 +2,6 @@
 #' @param filename Filename of the HDF5 file
 #' @param dataPath Path in the HDF5 file that points to a 2D dense matrix
 #' @return H5Mat object, can be used like a list
-#' @export
 H5Mat <- function(
     filename,
     dataPath
@@ -16,7 +15,6 @@ H5Mat <- function(
 #' Show info of H5Mat object
 #' @param x H5Mat object
 #' @param ... not used
-#' @export
 #' @method print H5Mat
 print.H5Mat <- function(x, ...) {
     cat("Argument list for constructing HDF5 dense matrix\n",
@@ -26,16 +24,15 @@ print.H5Mat <- function(x, ...) {
 
 #' Create argument list for constructing HDF5 based CSC sparse matrix
 #' @param filename Filename of the HDF5 file
-#' @param valuePath Path in the HDF5 file that points to the 1D value vector of 
+#' @param valuePath Path in the HDF5 file that points to the 1D value vector of
 #' the sparse matrix.
-#' @param rowindPath Path in the HDF5 file that points to the 1D rowind vector 
+#' @param rowindPath Path in the HDF5 file that points to the 1D rowind vector
 #' of the sparse matrix.
-#' @param colptrPath Path in the HDF5 file that points to the 1D colptr vector 
+#' @param colptrPath Path in the HDF5 file that points to the 1D colptr vector
 #' of the sparse matrix.
 #' @param ncol Integer, number of columns of the sparse matrix.
 #' @param nrow Integer, number of rows of the sparse matrix.
 #' @return H5SpMat object, can be used like a list
-#' @export
 H5SpMat <- function(
     filename,
     valuePath,
@@ -60,13 +57,12 @@ H5SpMat <- function(
 #' Show info of H5SpMat object
 #' @param x H5SpMat object
 #' @param ... not used
-#' @export
 #' @method print H5SpMat
 print.H5SpMat <- function(x, ...) {
   cat("Argument list for constructing HDF5 CSC sparse matrix\n",
       "filename:    ", x$filename, "\n",
       "value path:  ", x$valuePath, "\n",
-      "rowind path: ", x$rowindPath, "\n", 
+      "rowind path: ", x$rowindPath, "\n",
       "colptr path: ", x$colptrPath, "\n",
       "dimension:   ", x$nrow, " x ", x$ncol, sep = "")
 }

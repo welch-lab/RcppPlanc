@@ -9,13 +9,13 @@ H5SpMat(filename, valuePath, rowindPath, colptrPath, nrow, ncol)
 \arguments{
 \item{filename}{Filename of the HDF5 file}
 
-\item{valuePath}{Path in the HDF5 file that points to the 1D value vector of 
+\item{valuePath}{Path in the HDF5 file that points to the 1D value vector of
 the sparse matrix.}
 
-\item{rowindPath}{Path in the HDF5 file that points to the 1D rowind vector 
+\item{rowindPath}{Path in the HDF5 file that points to the 1D rowind vector
 of the sparse matrix.}
 
-\item{colptrPath}{Path in the HDF5 file that points to the 1D colptr vector 
+\item{colptrPath}{Path in the HDF5 file that points to the 1D colptr vector
 of the sparse matrix.}
 
 \item{nrow}{Integer, number of rows of the sparse matrix.}

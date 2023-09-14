@@ -2,55 +2,55 @@
 % Please edit documentation in R/INMF.R
 \name{uinmf}
 \alias{uinmf}
-\title{Perform Mosaic Integrative Non-negative Matrix Factorization with Unshared 
+\title{Perform Mosaic Integrative Non-negative Matrix Factorization with Unshared
 Features}
 \usage{
 uinmf(objectList, unsharedList, k = 20, lambda = 5, niter = 30, verbose = TRUE)
 }
 \arguments{
 \item{objectList}{list of input datasets. List elements should all be of the
-same class. Viable classes include: matrix, \linkS4class{dgCMatrix}, 
+same class. Viable classes include: matrix, \linkS4class{dgCMatrix},
 \link{H5Mat}, \link{H5SpMat}.}
 
 \item{unsharedList}{List of input unshared feature matrices, with the same
 requirement as \code{objectList}.}
 
-\item{k}{Integer. Inner dimensionality to factorize the datasets into. 
+\item{k}{Integer. Inner dimensionality to factorize the datasets into.
 Default \code{20}.}
 
-\item{lambda}{Regularization parameter. Use one number for all datasets or a 
-vector to specify for each dataset. Larger values penalize dataset-specific 
-effects more strongly (i.e. alignment should increase as \code{lambda} 
+\item{lambda}{Regularization parameter. Use one number for all datasets or a
+vector to specify for each dataset. Larger values penalize dataset-specific
+effects more strongly (i.e. alignment should increase as \code{lambda}
 increases). Default \code{5}.}
 
-\item{niter}{Integer. Total number of block coordinate descent iterations to 
+\item{niter}{Integer. Total number of block coordinate descent iterations to
 perform. Default \code{30}.}
 
-\item{verbose}{Logical scalar. Whether to show information and progress. 
+\item{verbose}{Logical scalar. Whether to show information and progress.
 Default \code{TRUE}.}
 }
 \value{
-A list of the following entries: \code{H} - a list of result 
-\eqn{H_i} matrices, \code{V} - a list of result \eqn{V_i} matrices, 
-\code{W} - the result \eqn{W} matrix, \code{U} - the result \eqn{U_i} 
+A list of the following entries: \code{H} - a list of result
+\eqn{H_i} matrices, \code{V} - a list of result \eqn{V_i} matrices,
+\code{W} - the result \eqn{W} matrix, \code{U} - the result \eqn{U_i}
 matrices, \code{objErr} - the final objective error value.
 }
 \description{
-Performs mosaic integrative non-negative matrix factorization (iNMF) (A.R. 
-Kriebel, 2022) to return factorized \eqn{H}, \eqn{W}, \eqn{V} and \eqn{U} 
+Performs mosaic integrative non-negative matrix factorization (iNMF) (A.R.
+Kriebel, 2022) to return factorized \eqn{H}, \eqn{W}, \eqn{V} and \eqn{U}
 matrices. The objective function is stated as
 
 \deqn{\arg\min_{H\ge0,W\ge0,V\ge0,U\ge0}\sum_{i}^{d}
 ||\binom{E_i}{P_i}-(\binom{W}{0}+\binom{V_i}{U_i})Hi||^2_F+
 \lambda_i\sum_{i}^{d}||\binom{V_i}{U_i}H_i||_F^2}
 
-where \eqn{E_i} is the input non-negative matrix of the \eqn{i}'th dataset, 
+where \eqn{E_i} is the input non-negative matrix of the \eqn{i}'th dataset,
 \eqn{P_i} is the input non-negative matrix for the unshared features,
-\eqn{d} is the total number of datasets. \eqn{E_i} is of size 
-\eqn{m \times n_i} for \eqn{m} shared features and \eqn{n_i} sample points, 
+\eqn{d} is the total number of datasets. \eqn{E_i} is of size
+\eqn{m \times n_i} for \eqn{m} shared features and \eqn{n_i} sample points,
 \eqn{P_i} is of size \eqn{u_i \times n_i} for \eqn{u_i} unshared feaetures,
-\eqn{H_i} is of size \eqn{n_i \times k}, \eqn{V_i} is of size 
-\eqn{m \times k}, \eqn{W} is of size \eqn{m \times k} and \eqn{U_i} is of 
+\eqn{H_i} is of size \eqn{n_i \times k}, \eqn{V_i} is of size
+\eqn{m \times k}, \eqn{W} is of size \eqn{m \times k} and \eqn{U_i} is of
 size \eqn{u_i \times k}.
 
 Similar to \code{\link{inmf}}, \code{uinmf} also optimizes the objective with
@@ -59,16 +59,16 @@ ANLS algorithm.
 \examples{
 if (FALSE) {
     set.seed(1)
-    res1 <- uinmf(list(dense1, dense2), 
+    res1 <- uinmf(list(dense1, dense2),
                   list(dense.unshare1, dense.unshare2))
     set.seed(1)
-    res2 <- uinmf(list(sparse1, sparse2), 
+    res2 <- uinmf(list(sparse1, sparse2),
                   list(sparse.unshare1, sparse.unshare2))
 }
 }
 \references{
-April R. Kriebel and Joshua D. Welch, UINMF performs mosaic 
-integration of single-cell multi-omic datasets using nonnegative matrix 
+April R. Kriebel and Joshua D. Welch, UINMF performs mosaic
+integration of single-cell multi-omic datasets using nonnegative matrix
 factorization, Nat. Comm., 2022
 }
 \author{

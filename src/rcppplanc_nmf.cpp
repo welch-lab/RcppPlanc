@@ -84,7 +84,6 @@ Rcpp::List RcallNMF(arma::sp_mat x, int k, int niter,
 //' @param niter Maximum number of nmf iterations
 //' @param H_init Initial right-hand factor matrix (Optional)
 //' @param W_init Initial left-hand factor matrix (Optional)
-//' @export
 //' @returns The calculated factor matrices as an Rcpp::List
 //' @examplesIf require("Matrix")
 //' aoadmmnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
@@ -113,7 +112,6 @@ Rcpp::List aoadmmnmf(const arma::sp_mat &x, const int &k, const int &niter,
 //' @param niter Maximum number of nmf iterations
 //' @param H_init Initial right-hand factor matrix (Optional)
 //' @param W_init Initial left-hand factor matrix (Optional)
-//' @export
 //' @returns The calculated factor matrices as an Rcpp::List
 //' @examplesIf require("Matrix")
 //' gnsymnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
@@ -143,7 +141,6 @@ Rcpp::List gnsymnmf(const arma::sp_mat &x, const int &k, const int &niter,
 //' @param niter Maximum number of nmf iterations
 //' @param H_init Initial right-hand factor matrix (Optional)
 //' @param W_init Initial left-hand factor matrix (Optional)
-//' @export
 //' @returns The calculated factor matrices as an Rcpp::List
 //' @examplesIf require("Matrix")
 //' halsmnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
@@ -172,7 +169,6 @@ Rcpp::List halsnmf(const arma::sp_mat &x, const int &k, const int &niter,
 //' @param niter Maximum number of nmf iterations
 //' @param H_init Initial right-hand factor matrix (Optional)
 //' @param W_init Initial left-hand factor matrix (Optional)
-//' @export
 //' @returns The calculated factor matrices as an Rcpp::List
 //' @examplesIf require("Matrix")
 //' halsnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
@@ -201,7 +197,6 @@ Rcpp::List munmf(const arma::sp_mat &x, const int &k, const int &niter,
 //' @param niter Maximum number of nmf iterations
 //' @param H_init Initial right-hand factor matrix (Optional)
 //' @param W_init Initial left-hand factor matrix (Optional)
-//' @export
 //' @returns The calculated factor matrices as an Rcpp::List
 //' @examplesIf require("Matrix")
 //' munmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
@@ -227,7 +222,6 @@ Rcpp::List bppnmf(const arma::sp_mat & x, const int & k, const int & niter,
 //'
 //' @param C Input factor dense matrix
 //' @param B Input sparse matrix
-//' @export
 //' @returns The calculated solution matrix in dense form.
 // [[Rcpp::export]]
 arma::mat bppnnls(const arma::mat &C, const arma::sp_mat &B) {
@@ -368,7 +362,7 @@ Rcpp::List bppinmf_sparse(std::vector<arma::sp_mat> objectList, arma::uword k, d
     }
 }
 
-// [[Rcpp::export]]
+// [[Rcpp::export(.bppinmf)]]
 Rcpp::List bppinmf(Rcpp::List objectList, const arma::uword k,
                    const double lambda = 5, const arma::uword niter = 30,
                    const bool verbose = true,
@@ -385,7 +379,7 @@ Rcpp::List bppinmf(Rcpp::List objectList, const arma::uword k,
     return Rcpp::List::create();
 }
 
-// [[Rcpp::export]]
+// [[Rcpp::export(.bppinmf_h5dense)]]
 Rcpp::List bppinmf_h5dense(std::vector<std::string> filenames, std::vector<std::string> dataPath,
     arma::uword k, double lambda, arma::uword niter, bool verbose = true,
     Rcpp::Nullable<std::vector<arma::mat>> Hinit = R_NilValue,
@@ -437,7 +431,7 @@ Rcpp::List bppinmf_h5dense(std::vector<std::string> filenames, std::vector<std::
     return output;
     }
 
-// [[Rcpp::export]]
+// [[Rcpp::export(.bppinmf_h5sparse)]]
 Rcpp::List bppinmf_h5sparse(
     std::vector<std::string> filenames,
     std::vector<std::string> valuePath,
@@ -528,7 +522,7 @@ Rcpp::List onlineINMF_S1_mem(std::vector<T> objectList, arma::uword k,
     return output;
     }
 
-// [[Rcpp::export]]
+// [[Rcpp::export(.onlineINMF_S1)]]
 Rcpp::List onlineINMF_S1(Rcpp::List objectList, arma::uword k,
     double lambda, arma::uword maxEpoch = 5, arma::uword minibatchSize = 5000,
     arma::uword maxHALSIter = 1, bool verbose = true) {
@@ -542,7 +536,7 @@ Rcpp::List onlineINMF_S1(Rcpp::List objectList, arma::uword k,
     return Rcpp::List::create();
 }
 
-// [[Rcpp::export]]
+// [[Rcpp::export(.onlineINMF_S1_h5dense)]]
 Rcpp::List onlineINMF_S1_h5dense(std::vector<std::string> filenames,
     std::vector<std::string> dataPaths, arma::uword k,
     double lambda, arma::uword maxEpoch = 5, arma::uword minibatchSize = 5000,
@@ -579,7 +573,7 @@ Rcpp::List onlineINMF_S1_h5dense(std::vector<std::string> filenames,
     return output;
 }
 
-// [[Rcpp::export]]
+// [[Rcpp::export(.onlineINMF_S1_h5sparse)]]
 Rcpp::List onlineINMF_S1_h5sparse(
     std::vector<std::string> filenames,
     std::vector<std::string> valuePaths,
@@ -672,7 +666,7 @@ Rcpp::List onlineINMF_S23_mem(std::vector<T> objectList,
     }
 }
 
-// [[Rcpp::export]]
+// [[Rcpp::export(.onlineINMF_S23)]]
 Rcpp::List onlineINMF_S23(
     Rcpp::List objectList,
     std::vector<arma::mat> Vinit, arma::mat Winit,
@@ -696,7 +690,7 @@ Rcpp::List onlineINMF_S23(
     return Rcpp::List::create();
 }
 
-// [[Rcpp::export]]
+// [[Rcpp::export(.onlineINMF_S23_h5dense)]]
 Rcpp::List onlineINMF_S23_h5dense(
     std::vector<std::string> filenames, std::vector<std::string> dataPaths,
     std::vector<std::string> filenamesNew, std::vector<std::string> dataPathsNew,
@@ -758,7 +752,7 @@ Rcpp::List onlineINMF_S23_h5dense(
     }
 }
 
-// [[Rcpp::export]]
+// [[Rcpp::export(.onlineINMF_S23_h5sparse)]]
 Rcpp::List onlineINMF_S23_h5sparse(
     std::vector<std::string> filenames, std::vector<std::string> valuePaths,
     std::vector<std::string> rowindPaths, std::vector<std::string> colptrPaths,
@@ -857,7 +851,7 @@ Rcpp::List uinmf_mem(std::vector<T> objectList,
     return output;
 }
 
-// [[Rcpp::export]]
+// [[Rcpp::export(.uinmf_rcpp)]]
 Rcpp::List uinmf_rcpp(Rcpp::List objectList, Rcpp::List unsharedList,
                  arma::uword k, arma::vec lambda,
                  arma::uword niter, bool verbose) {
@@ -873,7 +867,7 @@ Rcpp::List uinmf_rcpp(Rcpp::List objectList, Rcpp::List unsharedList,
     return Rcpp::List::create();
 }
 
-// [[Rcpp::export]]
+// [[Rcpp::export(.uinmf_h5dense)]]
 Rcpp::List uinmf_h5dense(std::vector<std::string> filenames,
                          std::vector<std::string> dataPaths,
                          std::vector<std::string> unsharedFilenames,
@@ -914,7 +908,7 @@ Rcpp::List uinmf_h5dense(std::vector<std::string> filenames,
     return output;
 }
 
-// [[Rcpp::export]]
+// [[Rcpp::export(.uinmf_h5sparse)]]
 Rcpp::List uinmf_h5sparse(std::vector<std::string> filenames,
                           std::vector<std::string> rowindPaths,
                           std::vector<std::string> colptrPaths,
