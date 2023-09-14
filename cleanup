@@ -2,3 +2,4 @@
 
 rm -f src/*.o src/*.so src/symbols.rds src/Makefile src/*.cmake src/CMakeCache.txt
 rm -rf src/CMakefiles src/CPM_modules
+rm -rf src/_deps

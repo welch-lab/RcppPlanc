@@ -1,5 +1,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^LICENSE\.md$
-^.*\.vscode$
-^test\.R$
+^.*\.vscode
+^.*build
+^.*_deps
+^.*CMakeFiles
