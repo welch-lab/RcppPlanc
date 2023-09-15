@@ -312,7 +312,7 @@ std::vector<std::unique_ptr<T>> initMemMatPtr(std::vector<T> objectList)
         std::unique_ptr<T> ptr = std::make_unique<T>(E);
         matPtrVec.push_back(std::move(ptr));
     }
-    return std::move(matPtrVec);
+    return matPtrVec;
 }
 
 template <typename T>
@@ -320,7 +320,7 @@ Rcpp::List runINMF(std::vector<T> objectList, arma::uword k, double lambda,
                    arma::uword niter, bool verbose)
 {
     std::vector<std::unique_ptr<T>> matPtrVec;
-    matPtrVec = initMemMatPtr<T>(objectList);
+    matPtrVec = std::move(initMemMatPtr<T>(objectList));
     planc::BPPINMF<T> solver(matPtrVec, k, lambda);
     solver.initW();
     solver.initV();
@@ -345,7 +345,7 @@ Rcpp::List runINMF(std::vector<T> objectList, arma::uword k, double lambda,
                    std::vector<arma::mat> HinitList, std::vector<arma::mat> VinitList, arma::mat Winit)
 {
     std::vector<std::unique_ptr<T>> matPtrVec;
-    matPtrVec = initMemMatPtr<T>(objectList);
+    matPtrVec = std::move(initMemMatPtr<T>(objectList));
     planc::BPPINMF<T> solver(matPtrVec, k, lambda);
     solver.initW(Winit);
     solver.initV(VinitList);
@@ -538,7 +538,7 @@ template <typename T>
 Rcpp::List onlineINMF_S1_mem(std::vector<T> objectList, arma::uword k,
     double lambda, arma::uword maxEpoch = 5, arma::uword minibatchSize = 5000,
     arma::uword maxHALSIter = 1, bool verbose = true) {
-    std::vector<std::unique_ptr<T>> matPtrVec = initMemMatPtr<T>(objectList);
+    std::vector<std::unique_ptr<T>> matPtrVec = std::move(initMemMatPtr<T>(objectList));
     planc::ONLINEINMF<T, T> solver(matPtrVec, k, lambda);
     solver.runOnlineINMF(minibatchSize, maxEpoch, maxHALSIter, verbose);
 
@@ -665,8 +665,8 @@ Rcpp::List onlineINMF_S23_mem(std::vector<T> objectList,
     std::vector<T> objectListNew,
     arma::uword k, double lambda, bool project = false, arma::uword maxEpoch = 5,
     arma::uword minibatchSize = 5000, arma::uword maxHALSIter = 1, bool verbose = true) {
-    std::vector<std::unique_ptr<T>> matPtrVec = initMemMatPtr<T>(objectList);
-    std::vector<std::unique_ptr<T>> matPtrVecNew = initMemMatPtr<T>(objectListNew);
+    std::vector<std::unique_ptr<T>> matPtrVec = std::move(initMemMatPtr<T>(objectList));
+    std::vector<std::unique_ptr<T>> matPtrVecNew = std::move(initMemMatPtr<T>(objectListNew));
     planc::ONLINEINMF<T, T> solver(matPtrVec, k, lambda);
     solver.initV(Vinit, false);
     solver.initW(Winit, false);
@@ -869,8 +869,8 @@ Rcpp::List uinmf_mem(std::vector<T> objectList,
 {
     std::vector<std::unique_ptr<T>> matPtrVec;
     std::vector<std::unique_ptr<T>> unsharedPtrVec;
-    matPtrVec = initMemMatPtr<T>(objectList);
-    unsharedPtrVec = initMemMatPtr<T>(unsharedList);
+    matPtrVec = std::move(initMemMatPtr<T>(objectList));
+    unsharedPtrVec = std::move(initMemMatPtr<T>(unsharedList));
     planc::UINMF<T> solver(matPtrVec, unsharedPtrVec, k, lambda);
     solver.optimizeUANLS(niter, verbose);
 
