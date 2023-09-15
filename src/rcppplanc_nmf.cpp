@@ -1,5 +1,6 @@
 // -*- mode: C++; c-indent-level: 4; c-basic-offset: 4; indent-tabs-mode: nil; -*-
 
+#define ARMA_DONT_PRINT_FAST_MATH_WARNING
 // we only include RcppArmadillo.h which pulls Rcpp.h in for us
 #include <RcppArmadillo.h>
 #include <progress.hpp>
