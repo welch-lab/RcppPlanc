@@ -113,7 +113,7 @@ private:
         std::chrono::system_clock::time_point iter_start_time = std::chrono::system_clock::now();
 #endif
         arma::mat* Wptr = this->W.get();
-        for (int i=0; i<this->nDatasets; ++i) {
+        for (arma::uword i=0; i<this->nDatasets; ++i) {
             arma::mat given(this->m, this->k);
             arma::mat* Vptr = this->Vi[i].get();
             arma::mat* Hptr = this->Hi[i].get();
@@ -157,7 +157,7 @@ private:
 #endif
         arma::mat* Wptr = this->W.get();
         arma::mat giventInput(this->k, INMF_CHUNK_SIZE);;
-        for (int i=0; i<this->nDatasets; ++i) {
+        for (arma::uword i=0; i<this->nDatasets; ++i) {
             arma::mat* Hptr = this->Hi[i].get();\
             giventGiven = (*Hptr).t() * (*Hptr);
             giventGiven *= 1 + this->lambda_i[i];
@@ -193,7 +193,7 @@ private:
         std::chrono::system_clock::time_point iter_start_time = std::chrono::system_clock::now();
 #endif
         arma::mat giventInput(this->k, INMF_CHUNK_SIZE);;
-        for (int i=0; i<this->nDatasets; ++i) {
+        for (arma::uword i=0; i<this->nDatasets; ++i) {
             if (this->u[i] == 0) continue; // skip if no U
             arma::mat* Hptr = this->Hi[i].get();
             arma::mat* Uptr = this->Ui[i].get();

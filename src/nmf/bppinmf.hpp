@@ -20,7 +20,7 @@ private:
 #endif
         arma::mat* Wptr = this->W.get();
         arma::mat given(this->m, this->k);
-        for (int i=0; i<this->nDatasets; ++i) {
+        for (arma::uword i=0; i<this->nDatasets; ++i) {
             arma::mat* Vptr = this->Vi[i].get();
             arma::mat* Hptr = this->Hi[i].get();
             T* Eptr = this->Ei[i].get();
@@ -56,7 +56,7 @@ private:
 #endif
         arma::mat* WTptr = this->WT.get();
         arma::mat giventInput(this->k, INMF_CHUNK_SIZE);;
-        for (int i=0; i<this->nDatasets; ++i) {
+        for (arma::uword i=0; i<this->nDatasets; ++i) {
             arma::mat* Hptr = this->Hi[i].get();\
             giventGiven = (*Hptr).t() * (*Hptr);
             giventGiven *= 1 + this->lambda;

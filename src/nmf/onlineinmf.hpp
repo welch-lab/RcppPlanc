@@ -30,8 +30,8 @@ private:
     bool epochNext;                                // Used when need to remove old information
     std::vector<arma::uvec> samplingIdx;           // Totally `nDataset` vectors, each of size ncol_E[i];
     std::vector<arma::uvec> minibatchIdx;          // Totally `nDataset` vectors, each of size minibatchSizes[i] when regularly within an epoch;
-    int iter;                                      // iter is the number of iterations performed after the current iteration
-    int maxEpochs;                                 // The maximum number of epochs allowed to run
+    arma::uword iter;                                      // iter is the number of iterations performed after the current iteration
+    arma::uword maxEpochs;                                 // The maximum number of epochs allowed to run
     std::vector<T2> E_mini;                 // contains the minibatches for each dataset, each of size m x minibatchSizes[i]
 
     // %%%%%%%%%%%%%%% Iteration helper functions %%%%%%%%%%%%%%%%%%%%%%%
@@ -260,7 +260,7 @@ private:
         arma::mat* Wptr = this->W.get();
         arma::mat given(this->m, this->k);
         arma::uword idx;
-        for (int i=0; i<this->dataIdxNew.size(); ++i) {
+        for (arma::uword i=0; i<this->dataIdxNew.size(); ++i) {
             idx = this->dataIdxNew[i];
             arma::mat* Vptr = this->Vi[idx].get();
             arma::mat* Hminiptr = this->miniHi[idx].get(); // `i` but not `idx`, nothing init for prev data
@@ -391,7 +391,7 @@ private:
         arma::mat* Wptr = this->W.get();
         arma::mat given(this->m, this->k);
         // arma::mat B;
-        for (int i=0; i<this->nDatasets; ++i) {
+        for (arma::uword i=0; i<this->nDatasets; ++i) {
             arma::mat* Vptr = this->Vi[i].get();
             arma::mat* Hptr = this->Hi[i].get();
             T1* Eptr = this->Ei[i].get();
