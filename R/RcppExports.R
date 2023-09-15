@@ -44,7 +44,7 @@ gnsymnmf <- function(x, k, niter, W_init = NULL, H_init = NULL) {
 #' @param W_init Initial left-hand factor matrix (Optional)
 #' @returns The calculated factor matrices as an Rcpp::List
 #' @examplesIf require("Matrix")
-#' halsmnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
+#' halsnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
 halsnmf <- function(x, k, niter, W_init = NULL, H_init = NULL) {
     .Call(`_RcppPlanc_halsnmf`, x, k, niter, W_init, H_init)
 }

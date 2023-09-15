@@ -25,6 +25,6 @@ Use the HALS algorithm to factor a given matrix at the given rank.
 }
 \examples{
 \dontshow{if (require("Matrix")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
-halsmnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
+halsnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
 \dontshow{\}) # examplesIf}
 }

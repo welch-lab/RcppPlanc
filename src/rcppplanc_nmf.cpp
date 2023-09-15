@@ -143,7 +143,7 @@ Rcpp::List gnsymnmf(const arma::sp_mat &x, const int &k, const int &niter,
 //' @param W_init Initial left-hand factor matrix (Optional)
 //' @returns The calculated factor matrices as an Rcpp::List
 //' @examplesIf require("Matrix")
-//' halsmnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
+//' halsnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
 // [[Rcpp::export]]
 Rcpp::List halsnmf(const arma::sp_mat &x, const int &k, const int &niter,
                    const Rcpp::Nullable<Rcpp::NumericMatrix> &W_init = R_NilValue,
