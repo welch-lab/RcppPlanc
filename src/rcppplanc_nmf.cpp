@@ -428,7 +428,7 @@ Rcpp::List bppinmf_h5dense(std::vector<std::string> filenames, std::vector<std::
     Rcpp::Nullable<std::vector<arma::mat>> Vinit = R_NilValue,
     Rcpp::Nullable<arma::mat> Winit  = R_NilValue) {
     std::vector<std::unique_ptr<planc::H5Mat>> matPtrVec;
-    for (int i = 0; i < filenames.size(); ++i) {
+    for (arma::uword i = 0; i < filenames.size(); ++i) {
         planc::H5Mat h5m(filenames[i], dataPath[i]);
         std::unique_ptr<planc::H5Mat> ptr = std::make_unique<planc::H5Mat>(h5m);
         matPtrVec.push_back(std::move(ptr));
@@ -486,7 +486,7 @@ Rcpp::List bppinmf_h5sparse(
     Rcpp::Nullable<std::vector<arma::mat>> Vinit = R_NilValue,
     Rcpp::Nullable<arma::mat> Winit  = R_NilValue) {
     std::vector<std::unique_ptr<planc::H5SpMat>> matPtrVec;
-    for (int i = 0; i < filenames.size(); ++i) {
+    for (arma::uword i = 0; i < filenames.size(); ++i) {
         planc::H5SpMat h5spm(filenames[i], rowindPath[i], colptrPath[i], valuePath[i], nrow[i], ncol[i]);
         std::unique_ptr<planc::H5SpMat> ptr = std::make_unique<planc::H5SpMat>(h5spm);
         matPtrVec.push_back(std::move(ptr));
@@ -676,7 +676,7 @@ Rcpp::List onlineINMF_S23_mem(std::vector<T> objectList,
 
     if (!project) {
         // Scenario 2
-        int nDatasets = objectList.size() + objectListNew.size();
+        arma::uword nDatasets = objectList.size() + objectListNew.size();
         Rcpp::List HList(nDatasets);
         Rcpp::List VList(nDatasets);
         Rcpp::List AList(nDatasets);
@@ -762,7 +762,7 @@ Rcpp::List onlineINMF_S23_h5dense(
     solver.runOnlineINMF(matPtrVecNew, project, minibatchSize, maxEpoch, maxHALSIter, verbose);
     if (!project) {
         // Scenario 2
-        int nDatasets = filenames.size() + filenamesNew.size();
+        arma::uword nDatasets = filenames.size() + filenamesNew.size();
         Rcpp::List HList(nDatasets);
         Rcpp::List VList(nDatasets);
         Rcpp::List AList(nDatasets);
@@ -828,7 +828,7 @@ Rcpp::List onlineINMF_S23_h5sparse(
     solver.runOnlineINMF(matPtrVecNew, project, minibatchSize, maxEpoch, maxHALSIter, verbose);
     if (!project) {
         // Scenario 2
-        int nDatasets = filenames.size() + filenamesNew.size();
+        arma::uword nDatasets = filenames.size() + filenamesNew.size();
         Rcpp::List HList(nDatasets);
         Rcpp::List VList(nDatasets);
         Rcpp::List AList(nDatasets);
@@ -918,7 +918,7 @@ Rcpp::List uinmf_h5dense(std::vector<std::string> filenames,
                          arma::uword niter, bool verbose) {
     std::vector<std::unique_ptr<planc::H5Mat>> matPtrVec;
     std::vector<std::unique_ptr<planc::H5Mat>> unsharedPtrVec;
-    for (int i = 0; i < filenames.size(); ++i) {
+    for (arma::uword i = 0; i < filenames.size(); ++i) {
         planc::H5Mat E(filenames[i], dataPaths[i]);
         std::unique_ptr<planc::H5Mat> ptr = std::make_unique<planc::H5Mat>(E);
         matPtrVec.push_back(std::move(ptr));
@@ -965,7 +965,7 @@ Rcpp::List uinmf_h5sparse(std::vector<std::string> filenames,
                           arma::uword niter, bool verbose) {
     std::vector<std::unique_ptr<planc::H5SpMat>> matPtrVec;
     std::vector<std::unique_ptr<planc::H5SpMat>> unsharedPtrVec;
-    for (int i = 0; i < filenames.size(); ++i) {
+    for (arma::uword i = 0; i < filenames.size(); ++i) {
         planc::H5SpMat E(filenames[i], rowindPaths[i], colptrPaths[i], valuePaths[i], nrows[i], ncols[i]);
         std::unique_ptr<planc::H5SpMat> ptr = std::make_unique<planc::H5SpMat>(E);
         matPtrVec.push_back(std::move(ptr));

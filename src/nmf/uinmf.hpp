@@ -274,7 +274,7 @@ public:
         this->ulist = std::move(ulist);
         this->lambda_i = lambda;
         u = arma::zeros<arma::uvec>(this->nDatasets);
-        for (int i=0; i<this->nDatasets; ++i) {
+        for (arma::uword i=0; i<this->nDatasets; ++i) {
             u[i] = this->ulist[i]->n_rows;
             T* us = this->ulist[i].get();
             T ut = us->t();

@@ -133,7 +133,7 @@ public:
 
     }
 
-    void optimizeALS(int niter, bool verbose = true) {
+    void optimizeALS(unsigned int niter, bool verbose = true) {
         // execute private functions here
         if (verbose) {
             std::cerr << "BPPINMF optimizeALS started, niter=" << niter << std::endl;

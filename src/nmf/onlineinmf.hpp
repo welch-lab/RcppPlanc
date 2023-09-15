@@ -618,7 +618,7 @@ public:
                                                       this->nDatasets + E_new.size() - 1,
                                                       E_new.size());
         this->nCellsNew = arma::zeros<arma::uvec>(E_new.size());
-        for (int i = 0; i < E_new.size(); i++) {
+        for (arma::uword i = 0; i < E_new.size(); i++) {
             T1* EnewPtr = E_new[i].get();
             this->nCellsNew[i] = EnewPtr->n_cols;
             this->ncol_E.push_back(EnewPtr->n_cols);

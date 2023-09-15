@@ -104,8 +104,8 @@ namespace planc {
         arma::mat cols(arma::uvec index) {
             arma::mat out(this->n_rows, index.size());
             // Identify contiguous ranges from `index` and use .cols(start, end) for each range
-            int start = index[0], end = index[0], curr = index[0];
-            int outStart = 0, outEnd = 0;
+            arma::uword start = index[0], end = index[0], curr = index[0];
+            arma::uword outStart = 0, outEnd = 0;
             for (arma::uword i = 1; i < index.size(); ++i) {
                 curr = index[i];
                 if (curr > this->n_cols - 1) {
@@ -352,8 +352,8 @@ namespace planc {
         arma::sp_mat cols(arma::uvec index) {
             arma::sp_mat out(this->n_rows, index.size());
             // Identify contiguous ranges from `index` and use .cols(start, end) for each range
-            int start = index[0], end = index[0], curr = index[0];
-            int outStart = 0, outEnd = 0;
+            arma::uword start = index[0], end = index[0], curr = index[0];
+            arma::uword outStart = 0, outEnd = 0;
             for (arma::uword i = 1; i < index.size(); ++i) {
                 curr = index[i];
                 if (curr > this->n_cols - 1) {
@@ -403,7 +403,7 @@ namespace planc {
             arma::uvec colptr = this->getPByRange(0, this->n_cols);
             // Go through chunks of rowind and initialize the transposed colptr
             arma::uvec colptrT(this->n_rows + 1);
-            int nChunk = this->nnz / this->i_chunksize;
+            arma::uword nChunk = this->nnz / this->i_chunksize;
             if (nChunk * this->i_chunksize < this->nnz) nChunk++;
             for (arma::uword i = 0; i < nChunk; i++) {
                 arma::uword start = i * this->i_chunksize;
