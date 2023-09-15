@@ -25,11 +25,14 @@ class BPPNMF : public NMF<T> {
   // The transpose is the other problem.
   void updateOtherGivenOneMultipleRHS(const T &input, const arma::mat &given,
                                       char worh, arma::mat *othermat, arma::fvec reg) {
+#if defined(_VERBOSE) || defined(COLLECTSTATS)
     double t2;
+#endif
     unsigned int numChunks = input.n_cols / ONE_THREAD_MATRIX_SIZE;
     if (numChunks * ONE_THREAD_MATRIX_SIZE < input.n_cols) numChunks++;
-
+#if defined(_VERBOSE) || defined(COLLECTSTATS)
     tic();
+#endif
     arma::mat giventInput(this->k, input.n_cols);
     // This is WtW
     giventGiven = given.t() * given;
@@ -41,7 +44,9 @@ class BPPNMF : public NMF<T> {
       this->applySymmetricReg(this->symm_reg(), &giventGiven, &fac,
                               &giventInput);
     }
+#if defined(_VERBOSE) || defined(COLLECTSTATS)
     t2 = toc();
+#endif
 #ifdef _VERBOSE
     INFO << "starting " << worh << ". Prereq for " << worh << " took=" << t2
          << " NumChunks=" << numChunks << std::endl;
@@ -50,8 +55,9 @@ class BPPNMF : public NMF<T> {
          << "RHS::" << std::endl
          << giventInput << std::endl;
 #endif
+#if defined(_VERBOSE) || defined(COLLECTSTATS)
     tic();
-
+#endif
 #pragma omp parallel for schedule(auto)
     for (unsigned int i = 0; i < numChunks; i++) {
       unsigned int spanStart = i * ONE_THREAD_MATRIX_SIZE;
@@ -86,7 +92,9 @@ class BPPNMF : public NMF<T> {
 #endif
       (*othermat).rows(spanStart, spanEnd) = subProblem.getSolutionMatrix().t();
     }
+#if defined(_VERBOSE) || defined(COLLECTSTATS)
     double totalH2 = toc();
+#endif
 #ifdef _VERBOSE
     INFO << worh << " total time taken :" << totalH2 << std::endl;
 #endif
@@ -126,16 +134,22 @@ class BPPNMF : public NMF<T> {
           INFO << "Initialized subproblem and calling solveNNLS for "
                << "H(" << i << "/" << this->n << ")";
 #endif
+#if defined(_VERBOSE) || defined(COLLECTSTATS)
           tic();
+#endif
           int numIter = subProblemforH->solveNNLS();
+#if defined(_VERBOSE) || defined(COLLECTSTATS)
           double t2 = toc();
+#endif
 #ifdef _VERBOSE
           INFO << subProblemforH->getSolutionVector();
 #endif
           this->H.row(i) = subProblemforH->getSolutionVector().t();
+#ifdef _VERBOSE
           INFO << "Comp H(" << i << "/" << this->n
                << ") of it=" << currentIteration << " time taken=" << t2
                << " num_iterations()=" << numIter << std::endl;
+#endif
         }
       }
 #ifdef _VERBOSE
@@ -159,9 +173,13 @@ class BPPNMF : public NMF<T> {
           INFO << "Initialized subproblem and calling solveNNLS for "
                << "W(" << i << "/" << this->m << ")";
 #endif
+#if defined(_VERBOSE) || defined(COLLECTSTATS)
           tic();
+#endif
           int numIter = subProblemforW->solveNNLS();
+#if defined(_VERBOSE) || defined(COLLECTSTATS)
           double t2 = toc();
+#endif
 #ifdef _VERBOSE
           INFO << subProblemforW->getSolutionVector();
 #endif
@@ -214,14 +232,20 @@ class BPPNMF : public NMF<T> {
       this->collectStats(currentIteration);
       this->stats(currentIteration + 1, 0) = currentIteration + 1;
 #endif
+#if defined(_VERBOSE) || defined(COLLECTSTATS)
       tic();
+#endif
       updateOtherGivenOneMultipleRHS(this->At, this->H, 'W', &(this->W),
                                      this->regW());
+#if defined(_VERBOSE) || defined(COLLECTSTATS)
       double totalW2 = toc();
       tic();
+#endif
       updateOtherGivenOneMultipleRHS(this->A, this->W, 'H', &(this->H),
                                      this->regH());
+#if defined(_VERBOSE) || defined(COLLECTSTATS)
       double totalH2 = toc();
+#endif
 
 #ifdef COLLECTSTATS
       // end of H and start of W are almost same.

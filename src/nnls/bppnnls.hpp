@@ -65,7 +65,6 @@ class BPPNNLS : public NNLS<MATTYPE, VECTYPE> {
     int solveNNLSMultipleRHS() {
         unsigned int iter = 0;
         unsigned int MAX_ITERATIONS = this->n * 5;
-        bool success = true;
 
         // Set the initial feasible solution
         MATTYPE Y = (this->AtA * this->X) - this->AtB;
