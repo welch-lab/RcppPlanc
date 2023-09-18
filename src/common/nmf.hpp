@@ -326,8 +326,9 @@ class NMF {
     INFO << "Entering computeObjectiveError A=" << this->A.n_rows << "x"
          << this->A.n_cols << " W = " << this->W.n_rows << "x" << this->W.n_cols
          << " H=" << this->H.n_rows << "x" << this->H.n_cols << std::endl;
-#endif // _VERBOSE
     tic();
+#endif // _VERBOSE
+
     // always restrict the errMtx size to fit it in memory
     // and doesn't occupy much space.
     // For eg., the max we can have only 3 x 10^6 elements.
@@ -397,8 +398,9 @@ class NMF {
       A_err_sub_mtx %= A_err_sub_mtx;
       splitErr(i) = arma::accu(A_err_sub_mtx);
     }
-    double err_time = toc();
+
 #ifdef _VERBOSE
+    double err_time = toc();
     INFO << "err compute time::" << err_time << std::endl;
 #endif
     this->objective_err = arma::sum(splitErr);

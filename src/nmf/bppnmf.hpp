@@ -136,8 +136,11 @@ class BPPNMF : public NMF<T> {
 #endif
 #if defined(_VERBOSE) || defined(COLLECTSTATS)
           tic();
-#endif
           int numIter = subProblemforH->solveNNLS();
+#else
+          subProblemforH->solveNNLS();
+#endif
+
 #if defined(_VERBOSE) || defined(COLLECTSTATS)
           double t2 = toc();
 #endif
@@ -175,8 +178,11 @@ class BPPNMF : public NMF<T> {
 #endif
 #if defined(_VERBOSE) || defined(COLLECTSTATS)
           tic();
-#endif
           int numIter = subProblemforW->solveNNLS();
+#else
+          subProblemforW->solveNNLS();
+#endif
+      //     int numIter = subProblemforW->solveNNLS();
 #if defined(_VERBOSE) || defined(COLLECTSTATS)
           double t2 = toc();
 #endif
