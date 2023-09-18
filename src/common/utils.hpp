@@ -145,20 +145,15 @@ void makeSparse(const double sparsity, T(*X)) {
   // make a matrix sparse
   srand(RAND_SEED_SPARSE);
 #pragma omp parallel for
-  for (int j = 0; j < X->n_cols; j++) {
-    for (int i = 0; i < X->n_rows; i++) {
+  for (arma::uword j = 0; j < X->n_cols; j++) {
+    for (arma::uword i = 0; i < X->n_rows; i++) {
       if (arma::randu() > sparsity) (*X)(i, j) = 0;
     }
   }
 }
 
-template <class T>
 void randNMF(const arma::uword m, const arma::uword n, const arma::uword k, const double sparsity,
-             T *A) {
-#ifdef BUILD_SPARSE
-  T temp = arma::sprandu<T>(m, n, sparsity);
-  A = &temp;
-#else
+             arma::mat *A) {
   srand(RAND_SEED);
   arma::mat W = 10 * arma::randu<arma::mat>(m, k);
   arma::mat H = 10 * arma::randu<arma::mat>(n, k);
@@ -166,9 +161,13 @@ void randNMF(const arma::uword m, const arma::uword n, const arma::uword k, cons
     makeSparse<arma::mat>(sparsity, &W);
     makeSparse<arma::mat>(sparsity, &H);
   }
-  T temp = ceil(W * trans(H));
+  arma::mat temp = ceil(W * trans(H));
   A = &temp;
-#endif
+}
+void randNMF(const arma::uword m, const arma::uword n, const arma::uword k, const double sparsity,
+             arma::sp_mat *A) {
+  arma::sp_mat temp = arma::sprandu<arma::sp_mat>(m, n, sparsity);
+  A = &temp;
 }
 
 template <class T>
