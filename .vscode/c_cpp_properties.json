@@ -1,29 +1,6 @@
 {
     "configurations": [
         {
-            "name": "Win32",
-            "defines": [
-                "NDEBUG",
-                "HAVE_OPENBLAS_CBLAS_H"
-            ],
-            "includePath": [
-                "${workspaceFolder}/src",
-                "C:/PROGRA~1/R/R-4.3.1/include",
-                "${workspaceFolder}/src\\nmf",
-                "${workspaceFolder}/src\\nnls",
-                "${workspaceFolder}/src\\common",
-                "C:\\Rtools43\\x86_64-w64-mingw32.static.posix/include",
-                "C:/Users/andrew/AppData/Local/R/win-library/4.3/Rcpp/include",
-                "C:/Users/andrew/AppData/Local/R/win-library/4.3/RcppArmadillo/include",
-                "C:/Users/andrew/AppData/Local/R/win-library/4.3/RcppProgress/include"
-            ],
-            "compilerPath": "C:\\Rtools43\\X86_64~1.POS\\bin\\g++.exe",
-            "cStandard": "c17",
-            "cppStandard": "c++17",
-            "intelliSenseMode": "windows-gcc-x64",
-            "configurationProvider": "ms-vscode.cmake-tools"
-        },
-        {
             "name": "Linux",
             "cStandard": "c17",
             "cppStandard": "c++17",

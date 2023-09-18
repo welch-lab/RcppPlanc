@@ -108,4 +108,5 @@ Makefile
 
 
 build/**
+out/**
 src/Makefile.ucrt
