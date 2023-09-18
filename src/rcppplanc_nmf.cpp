@@ -16,208 +16,446 @@
 #include "data.hpp"
 #include "onlineinmf.hpp"
 #include "uinmf.hpp"
-    // via the depends attribute we tell Rcpp to create hooks for
-    // RcppArmadillo so that the build process will know what to do
-    //
-    // [[Rcpp::depends(RcppArmadillo)]]
-    // [[Rcpp::depends(RcppProgress)]]
+// via the depends attribute we tell Rcpp to create hooks for
+// RcppArmadillo so that the build process will know what to do
+//
+// [[Rcpp::depends(RcppArmadillo)]]
+// [[Rcpp::depends(RcppProgress)]]
 
-    normtype m_input_normalization;
+normtype m_input_normalization;
 int m_initseed;
 arma::fvec m_regW;
 arma::fvec m_regH;
 
-template <class T>
-Rcpp::List RcallNMF(arma::sp_mat x, int k, int niter)
-{
-  arma::uword m_m = x.n_rows;
-  arma::uword m_n = x.n_cols;
-  arma::mat W = arma::randu<arma::mat>(m_m, k);
-  arma::mat H = arma::randu<arma::mat>(m_n, k);
-  T MyNMF(x, W, H);
-  // symmreg here
-  // double meanA = arma::mean(arma::mean(x));
-  //  H = 2 * std::sqrt(meanA / k) * H;
-  //  W = H;
-  //  if (m_symm_reg == 0.0)
-  //  {
-  //    double symreg = x.max();
-  //    m_symm_reg = symreg * symreg;
-  //  }
-  MyNMF.num_iterations(niter);
-  MyNMF.symm_reg(-1);
-  // MyNMF.compute_error(this->m_compute_error);
+// T1 e.g. BPPNMF<arma::sp_mat>
+// T2 e.g. arma::sp_mat
+template <class T1, class T2>
+Rcpp::List runNMF(T2 x, arma::uword k, arma::uword niter,
+                  Rcpp::Nullable<Rcpp::NumericMatrix> Winit,
+                  Rcpp::Nullable<Rcpp::NumericMatrix> Hinit) {
+    arma::uword m = x.n_rows;
+    arma::uword n = x.n_cols;
+    if (k >= m) {
+        Rcpp::stop("`k` must be less than `nrow(x)`");
+    }
+    arma::mat W(m, k);
+    arma::mat H(n, k);
+    if (Winit.isNotNull()) {
+        W = Rcpp::as<arma::mat>(Winit);
+        if (W.n_rows != m || W.n_cols != k) {
+            Rcpp::stop("Winit must be of size " +
+              std::to_string(m) + " x " + std::to_string(k));
+        }
+    } else {
+        W = arma::randu<arma::mat>(m, k);
+    }
+    if (Hinit.isNotNull()) {
+        H = Rcpp::as<arma::mat>(Hinit);
+        if (H.n_rows != n || H.n_cols != k) {
+            Rcpp::stop("Hinit must be of size " +
+                std::to_string(n) + " x " + std::to_string(k));
+        }
+    } else {
+        H = arma::randu<arma::mat>(n, k);
+    }
+    T1 MyNMF(x, W, H);
+    MyNMF.num_iterations(niter);
+    MyNMF.symm_reg(-1);
+    // if (!m_regW.empty()) MyNMF.regW(m_regW);
+    // if (!m_regH.empty()) MyNMF.regH(m_regH);
+    MyNMF.computeNMF();
+    return Rcpp::List::create(
+        Rcpp::Named("W") = MyNMF.getLeftLowRankFactor(),
+        Rcpp::Named("H") = MyNMF.getRightLowRankFactor()
+    );
+}
 
-  if (!m_regW.empty())
-  {
-    MyNMF.regW(m_regW);
+//' @title Perform Non-negative Matrix Factorization
+//' @description
+//' Regularly, Non-negative Matrix Factorization (NMF) is factorizes input
+//' matrix \eqn{X} into low rank matrices \eqn{W} and \eqn{H}, so that
+//' \eqn{X \approx WH}. The objective function can be stated as 
+//' \eqn{\arg\min_{W\ge0,H\ge0}||X-WH||_F^2}. In practice, \eqn{X} is usually 
+//' regarded as a matrix of \eqn{m} features by \eqn{n} sample points. And the 
+//' result matrix \eqn{W} should have the dimensionality of \eqn{m \times k} and
+//' H with \eqn{n \times k} (transposed).
+//' This function wraps the algorithms implemented in PLANC library to solve
+//' NMF problems. Algorithms includes Alternating Non-negative Least Squares 
+//' with Block Principal Pivoting (ANLS-BPP), Alternating Direction Method of 
+//' Multipliers (ADMM), Hierarchical Alternating Least Squares (HALS), and 
+//' Multiplicative Update (MU).
+//' @param x Input matrix for factorization. Can be either dense or sparse.
+//' @param k Integer. Factor matrix rank.
+//' @param niter Integer. Maximum number of NMF interations.
+//' @param algo Algorithm to perform the factorization, choose from "anlsbpp",
+//' "admm", "hals" or "mu". See detailed sections.
+//' @param Winit Initial left-hand factor matrix, must be of size m x k.
+//' @param Hinit Initial right-hand factor matrix, must be of size n x k.
+//' @returns A list with the following elements: 
+//' \itemize{
+//'  \item{\code{W} - the result left-hand factor matrix}
+//'  \item{\code{H} - the result right hand matrix.}
+//' }
+//' @references
+//' Ramakrishnan Kannan and et al., A High-Performance Parallel Algorithm for 
+//' Nonnegative Matrix Factorization, PPoPP '16, 2016, 10.1145/2851141.2851152
+// [[Rcpp::export]]
+Rcpp::List nmf(const SEXP& x, const arma::uword &k, const arma::uword &niter = 30,
+               const std::string &algo = "anlsbpp",
+               const Rcpp::Nullable<Rcpp::NumericMatrix> &Winit = R_NilValue,
+               const Rcpp::Nullable<Rcpp::NumericMatrix> &Hinit = R_NilValue) {
+    Rcpp::List outlist;
+    if (Rf_isS4(x)) {
+        // Assume using dgCMatrix
+        if (algo == "anlsbpp") {
+            outlist = runNMF<planc::BPPNMF<arma::sp_mat>, arma::sp_mat>(
+                Rcpp::as<arma::sp_mat>(x), k, niter, Winit, Hinit
+            );
+        } else if (algo == "admm") {
+            outlist = runNMF<planc::AOADMMNMF<arma::sp_mat>, arma::sp_mat>(
+                Rcpp::as<arma::sp_mat>(x), k, niter, Winit, Hinit
+            );
+        } else if (algo == "hals") {
+            outlist = runNMF<planc::HALSNMF<arma::sp_mat>, arma::sp_mat>(
+                Rcpp::as<arma::sp_mat>(x), k, niter, Winit, Hinit
+            );
+        } else if (algo == "mu") {
+            outlist = runNMF<planc::MUNMF<arma::sp_mat>, arma::sp_mat>(
+                Rcpp::as<arma::sp_mat>(x), k, niter, Winit, Hinit
+            );
+        } else {
+          Rcpp::stop("Please choose `algo` from \"anlsbpp\", \"admm\", \"hals\" or \"mu\".");
+        }
+    } else {
+        // Assume regular dense matrix
+        if (algo == "anlsbpp") {
+            outlist = runNMF<planc::BPPNMF<arma::mat>, arma::mat>(
+                Rcpp::as<arma::mat>(x), k, niter, Winit, Hinit
+            );
+        } else if (algo == "admm") {
+          outlist = runNMF<planc::AOADMMNMF<arma::mat>, arma::mat>(
+            Rcpp::as<arma::mat>(x), k, niter, Winit, Hinit
+          );
+        } else if (algo == "hals") {
+          outlist = runNMF<planc::HALSNMF<arma::mat>, arma::mat>(
+            Rcpp::as<arma::mat>(x), k, niter, Winit, Hinit
+          );
+        } else if (algo == "mu") {
+          outlist = runNMF<planc::MUNMF<arma::mat>, arma::mat>(
+            Rcpp::as<arma::mat>(x), k, niter, Winit, Hinit
+          );
+        } else {
+          Rcpp::stop("Please choose `algo` from \"anlsbpp\", \"admm\", \"hals\" or \"mu\".");
+        }
+    }
+    return outlist;
+}
+
+// T1 e.g. BPPNMF<arma::sp_mat>
+// T2 e.g. arma::sp_mat
+template <class T1, class T2>
+Rcpp::List runSymNMF(T2 x, arma::uword k, arma::uword niter, double symm_reg,
+                     Rcpp::Nullable<Rcpp::NumericMatrix> Hinit) {
+  arma::uword m = x.n_rows;
+  arma::uword n = x.n_cols;
+  if (m != n) {
+    Rcpp::stop("Input `x` is not square.");
   }
-  if (!m_regH.empty())
-  {
-    MyNMF.regH(m_regH);
+  if (k >= m) {
+    Rcpp::stop("`k` must be less than `nrow(x)`");
   }
+  arma::mat W(n, k); // W and H are the same for symNMF!
+  arma::mat H(n, k);
+
+  if (Hinit.isNotNull()) {
+    H = Rcpp::as<arma::mat>(Hinit);
+    if (H.n_rows != n || H.n_cols != k) {
+      Rcpp::stop("Hinit must be of size " +
+        std::to_string(n) + " x " + std::to_string(k));
+    }
+  } else {
+    H = arma::randu<arma::mat>(n, k);
+    double meanX = arma::mean(arma::mean(x));
+    H = 2 * std::sqrt(meanX / k) * H;
+    W = H;
+    if (symm_reg == 0.0) {
+      double symreg = x.max();
+      symm_reg = symreg * symreg;
+    }
+  }
+  T1 MyNMF(x, W, H);
+  MyNMF.num_iterations(niter);
+  MyNMF.symm_reg(symm_reg);
+  if (!m_regW.empty()) MyNMF.regW(m_regW);
+  if (!m_regH.empty()) MyNMF.regH(m_regH);
   MyNMF.computeNMF();
   return Rcpp::List::create(
-      Rcpp::Named("W") = MyNMF.getLeftLowRankFactor(),
-      Rcpp::Named("H") = MyNMF.getRightLowRankFactor());
+    Rcpp::Named("W") = MyNMF.getLeftLowRankFactor(),
+    Rcpp::Named("H") = MyNMF.getRightLowRankFactor()
+  );
 }
 
-template <class T>
-Rcpp::List RcallNMF(arma::sp_mat x, int k, int niter,
-                    arma::mat Winit, arma::mat Hinit) {
-  T MyNMF(x, Winit, Hinit);
-  MyNMF.num_iterations(niter);
-  MyNMF.symm_reg(-1);
-  MyNMF.computeNMF();
-  return Rcpp::List::create(
-      Rcpp::Named("W") = MyNMF.getLeftLowRankFactor(),
-      Rcpp::Named("H") = MyNMF.getRightLowRankFactor());
+//' Perform Symmetric Non-negative Matrix Factorization
+//'
+//' Symmetric input matrix \eqn{X} of size \eqn{n \times n} is required. Two
+//' approaches are provided. Alternating Non-negative Least Squares Block 
+//' Principal Pivoting algorithm (ANLSBPP) with symmetric regularization, where
+//' the objective function is set to be \eqn{\arg\min_{H\ge0,W\ge0}||X-WH||_F^2+
+//' \lambda||W-H||_F^2}, can be run with \code{algo = "anlsbpp"}. 
+//' Gaussian-Newton algorithm, where the objective function is set to be 
+//' \eqn{\arg\min_{H\ge0}||X-H^\mathsf{T}H||_F^2}, can be run with \code{algo = 
+//' "gnsym"}. In the objectives, \eqn{W} is of size \eqn{n \times k} and \eqn{H}
+//' is of size \eqn{k \times n}. The returned results will all be 
+//' \eqn{n \times k}.
+//'
+//' @param x Input matrix for factorization. Must be symmetric. Can be either 
+//' dense or sparse.
+//' @param k Integer. Factor matrix rank.
+//' @param niter Integer. Maximum number of symNMF interations.
+//' @param lambda Symmetric regularization parameter. Must be
+//' non-negative. Default \code{0.0} uses the square of the maximum value in 
+//' \code{x}.
+//' @param algo Algorithm to perform the factorization, choose from "gnsym" or
+//' "anlsbpp". Default \code{"gnsym"}
+//' @param Hinit Initial right-hand factor matrix, must be of size n x k. 
+//' Default \code{NULL}.
+//' @returns A list with the following elements: 
+//' \itemize{
+//'  \item{\code{W} - the result left-hand factor matrix, non-empty when using 
+//'  \code{"anlsbpp"}}
+//'  \item{\code{H} - the result right hand matrix.}
+//' }
+//' @references
+//' Srinivas Eswar and et al., Distributed-Memory Parallel Symmetric Nonnegative
+//' Matrix Factorization, SC '20, 2020, 10.5555/3433701.3433799
+// [[Rcpp::export()]]
+Rcpp::List symNMF(const SEXP& x, const arma::uword& k, const arma::uword& niter,
+                 const double& lambda = 0.0, const std::string& algo = "gnsym",
+                 const Rcpp::Nullable<Rcpp::NumericMatrix> &Hinit = R_NilValue) {
+//   arma::mat out;
+  Rcpp::List out;
+  if (Rf_isS4(x)) {
+    // Assume using dgCMatrix
+    if (algo == "gnsym") {
+      out = runSymNMF<planc::GNSYMNMF<arma::sp_mat>, arma::sp_mat>(
+        Rcpp::as<arma::sp_mat>(x), k, niter, lambda, Hinit
+      );
+    } else if (algo == "anlsbpp") {
+      out = runSymNMF<planc::BPPNMF<arma::sp_mat>, arma::sp_mat>(
+        Rcpp::as<arma::sp_mat>(x), k, niter, lambda, Hinit
+      );
+    } else {
+      Rcpp::stop("Please choose `algo` from \"gnsym\" or \"anlsbpp\".");
+    }
+  } else {
+    // Assume using default matrix
+    if (algo == "gnsym") {
+      out = runSymNMF<planc::GNSYMNMF<arma::mat>, arma::mat>(
+        Rcpp::as<arma::mat>(x), k, niter, lambda, Hinit
+      );
+    } else if (algo == "anlsbpp") {
+      out = runSymNMF<planc::BPPNMF<arma::mat>, arma::mat>(
+        Rcpp::as<arma::mat>(x), k, niter, lambda, Hinit
+      );
+    } else {
+      Rcpp::stop("Please choose `algo` from \"gnsym\" or \"anlsbpp\".");
+    }
+  }
+  return out;
 }
 
 
+// template <class T>
+// Rcpp::List RcallNMF(arma::sp_mat x, int k, int niter)
+// {
+//   arma::uword m_m = x.n_rows;
+//   arma::uword m_n = x.n_cols;
+//   arma::mat W = arma::randu<arma::mat>(m_m, k);
+//   arma::mat H = arma::randu<arma::mat>(m_n, k);
+//   T MyNMF(x, W, H);
+//   // symmreg here
+//   // double meanA = arma::mean(arma::mean(x));
+//   //  H = 2 * std::sqrt(meanA / k) * H;
+//   //  W = H;
+//   //  if (m_symm_reg == 0.0)
+//   //  {
+//   //    double symreg = x.max();
+//   //    m_symm_reg = symreg * symreg;
+//   //  }
+//   MyNMF.num_iterations(niter);
+//   MyNMF.symm_reg(-1);
+//   // MyNMF.compute_error(this->m_compute_error);
+
+//   if (!m_regW.empty())
+//   {
+//     MyNMF.regW(m_regW);
+//   }
+//   if (!m_regH.empty())
+//   {
+//     MyNMF.regH(m_regH);
+//   }
+//   MyNMF.computeNMF();
+//   return Rcpp::List::create(
+//       Rcpp::Named("W") = MyNMF.getLeftLowRankFactor(),
+//       Rcpp::Named("H") = MyNMF.getRightLowRankFactor());
+// }
+
+// template <class T>
+// Rcpp::List RcallNMF(arma::sp_mat x, int k, int niter,
+//                     arma::mat Winit, arma::mat Hinit) {
+//   T MyNMF(x, Winit, Hinit);
+//   MyNMF.num_iterations(niter);
+//   MyNMF.symm_reg(-1);
+//   MyNMF.computeNMF();
+//   return Rcpp::List::create(
+//       Rcpp::Named("W") = MyNMF.getLeftLowRankFactor(),
+//       Rcpp::Named("H") = MyNMF.getRightLowRankFactor());
+// }
 
 
 
-//' Alternating Direction Method of Multipliers NMF
-//'
-//' Use the AOADMM algorithm to factor a given matrix at the given rank.
-//'
-//' @param x Input matrix for factorization
-//' @param k Factor matrix rank
-//' @param niter Maximum number of nmf iterations
-//' @param H_init Initial right-hand factor matrix (Optional)
-//' @param W_init Initial left-hand factor matrix (Optional)
-//' @returns The calculated factor matrices as an Rcpp::List
-//' @examplesIf require("Matrix")
-//' aoadmmnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
-// [[Rcpp::export]]
-Rcpp::List aoadmmnmf(const arma::sp_mat &x, const int &k, const int &niter,
-                     const Rcpp::Nullable<Rcpp::NumericMatrix> &W_init = R_NilValue,
-                     const Rcpp::Nullable<Rcpp::NumericMatrix> &H_init = R_NilValue) {
-  Rcpp::List outlist;
-  if (W_init.isNotNull() && W_init.isNotNull()) {
-    outlist = RcallNMF<planc::AOADMMNMF<arma::sp_mat>>(x, k, niter,
-                                                       Rcpp::as<arma::mat>(W_init),
-                                                       Rcpp::as<arma::mat>(H_init));
-  }
-  else {
-    outlist = RcallNMF<planc::AOADMMNMF<arma::sp_mat>>(x, k, niter);
-  }
-  return outlist;
-}
 
-//' Gauss-Newton using Conjugate Gradients NMF
-//'
-//' Use the Gauss-Newton algorithm to factor a given matrix at the given rank.
-//'
-//' @param x Input matrix for factorization
-//' @param k Factor matrix rank
-//' @param niter Maximum number of nmf iterations
-//' @param H_init Initial right-hand factor matrix (Optional)
-//' @param W_init Initial left-hand factor matrix (Optional)
-//' @returns The calculated factor matrices as an Rcpp::List
-//' @examplesIf require("Matrix")
-//' gnsymnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
-// [[Rcpp::export]]
-Rcpp::List gnsymnmf(const arma::sp_mat &x, const int &k, const int &niter,
-                    const Rcpp::Nullable<Rcpp::NumericMatrix> &W_init = R_NilValue,
-                    const Rcpp::Nullable<Rcpp::NumericMatrix> &H_init = R_NilValue)
-{
-  Rcpp::List outlist;
-  if (W_init.isNotNull() && W_init.isNotNull()) {
-    outlist = RcallNMF<planc::GNSYMNMF<arma::sp_mat>>(x, k, niter,
-                                                      Rcpp::as<arma::mat>(W_init),
-                                                      Rcpp::as<arma::mat>(H_init));
-  }
-  else {
-    outlist = RcallNMF<planc::GNSYMNMF<arma::sp_mat>>(x, k, niter);
-  }
-  return outlist;
-}
 
-//' Hierarchical Alternating Least Squares NMF
-//'
-//' Use the HALS algorithm to factor a given matrix at the given rank.
-//'
-//' @param x Input matrix for factorization
-//' @param k Factor matrix rank
-//' @param niter Maximum number of nmf iterations
-//' @param H_init Initial right-hand factor matrix (Optional)
-//' @param W_init Initial left-hand factor matrix (Optional)
-//' @returns The calculated factor matrices as an Rcpp::List
-//' @examplesIf require("Matrix")
-//' halsnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
-// [[Rcpp::export]]
-Rcpp::List halsnmf(const arma::sp_mat &x, const int &k, const int &niter,
-                   const Rcpp::Nullable<Rcpp::NumericMatrix> &W_init = R_NilValue,
-                   const Rcpp::Nullable<Rcpp::NumericMatrix> &H_init = R_NilValue)
-{
-  Rcpp::List outlist;
-  if (W_init.isNotNull() && W_init.isNotNull()) {
-    outlist = RcallNMF<planc::HALSNMF<arma::sp_mat>>(x, k, niter,
-                                                     Rcpp::as<arma::mat>(W_init),
-                                                     Rcpp::as<arma::mat>(H_init));
-  }
-  else {
-    outlist = RcallNMF<planc::HALSNMF<arma::sp_mat>>(x, k, niter);
-  }
-  return outlist;
-}
-//' Multiplicative Update NMF
-//'
-//' Use the MU algorithm to factor a given matrix
-//' at the given rank.
-//' @param x Input matrix for factorization
-//' @param k Factor matrix rank
-//' @param niter Maximum number of nmf iterations
-//' @param H_init Initial right-hand factor matrix (Optional)
-//' @param W_init Initial left-hand factor matrix (Optional)
-//' @returns The calculated factor matrices as an Rcpp::List
-//' @examplesIf require("Matrix")
-//' halsnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
-// [[Rcpp::export]]
-Rcpp::List munmf(const arma::sp_mat &x, const int &k, const int &niter,
-                 const Rcpp::Nullable<Rcpp::NumericMatrix> &W_init = R_NilValue,
-                 const Rcpp::Nullable<Rcpp::NumericMatrix> &H_init = R_NilValue)
-{
-  Rcpp::List outlist;
-  if (W_init.isNotNull() && W_init.isNotNull()) {
-    outlist = RcallNMF<planc::MUNMF<arma::sp_mat>>(x, k, niter,
-                                                   Rcpp::as<arma::mat>(W_init),
-                                                   Rcpp::as<arma::mat>(H_init));
-  }
-  else {
-    outlist = RcallNMF<planc::MUNMF<arma::sp_mat>>(x, k, niter);
-  }
-  return outlist;
-}
-//' Alternating  Nonnegative Least Squares with Block Principal Pivoting NMF
-//'
-//' Use the ANLS-BPP algorithm to factor a given matrix at the given rank.
-//'
-//' @param x Input matrix for factorization
-//' @param k Factor matrix rank
-//' @param niter Maximum number of nmf iterations
-//' @param H_init Initial right-hand factor matrix (Optional)
-//' @param W_init Initial left-hand factor matrix (Optional)
-//' @returns The calculated factor matrices as an Rcpp::List
-//' @examplesIf require("Matrix")
-//' munmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
-// [[Rcpp::export]]
-Rcpp::List bppnmf(const arma::sp_mat & x, const int & k, const int & niter,
-                  const Rcpp::Nullable<Rcpp::NumericMatrix> &W_init = R_NilValue,
-                  const Rcpp::Nullable<Rcpp::NumericMatrix> &H_init = R_NilValue) {
-  Rcpp::List outlist;
-  if (W_init.isNotNull() && W_init.isNotNull()) {
-    outlist = RcallNMF<planc::BPPNMF<arma::sp_mat>>(x, k, niter,
-                                                    Rcpp::as<arma::mat>(W_init),
-                                                    Rcpp::as<arma::mat>(H_init));
-  }
-  else {
-    outlist = RcallNMF<planc::BPPNMF<arma::sp_mat>>(x, k, niter);
-  }
-  return outlist;
-}
+// //' Alternating Direction Method of Multipliers NMF
+// //'
+// //' Use the AOADMM algorithm to factor a given matrix at the given rank.
+// //'
+// //' @param x Input matrix for factorization
+// //' @param k Factor matrix rank
+// //' @param niter Maximum number of nmf iterations
+// //' @param H_init Initial right-hand factor matrix (Optional)
+// //' @param W_init Initial left-hand factor matrix (Optional)
+// //' @returns The calculated factor matrices as an Rcpp::List
+// //' @examplesIf require("Matrix")
+// //' aoadmmnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
+// // [[Rcpp::export]]
+// Rcpp::List aoadmmnmf(const arma::sp_mat &x, const int &k, const int &niter,
+//                      const Rcpp::Nullable<Rcpp::NumericMatrix> &W_init = R_NilValue,
+//                      const Rcpp::Nullable<Rcpp::NumericMatrix> &H_init = R_NilValue) {
+//   Rcpp::List outlist;
+//   if (W_init.isNotNull() && W_init.isNotNull()) {
+//     outlist = RcallNMF<planc::AOADMMNMF<arma::sp_mat>>(x, k, niter,
+//                                                        Rcpp::as<arma::mat>(W_init),
+//                                                        Rcpp::as<arma::mat>(H_init));
+//   }
+//   else {
+//     outlist = RcallNMF<planc::AOADMMNMF<arma::sp_mat>>(x, k, niter);
+//   }
+//   return outlist;
+// }
+
+// //' Gauss-Newton using Conjugate Gradients NMF
+// //'
+// //' Use the Gauss-Newton algorithm to factor a given matrix at the given rank.
+// //'
+// //' @param x Input matrix for factorization
+// //' @param k Factor matrix rank
+// //' @param niter Maximum number of nmf iterations
+// //' @param H_init Initial right-hand factor matrix (Optional)
+// //' @param W_init Initial left-hand factor matrix (Optional)
+// //' @returns The calculated factor matrices as an Rcpp::List
+// //' @examplesIf require("Matrix")
+// //' gnsymnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
+// // [[Rcpp::export]]
+// Rcpp::List gnsymnmf(const arma::sp_mat &x, const int &k, const int &niter,
+//                     const Rcpp::Nullable<Rcpp::NumericMatrix> &W_init = R_NilValue,
+//                     const Rcpp::Nullable<Rcpp::NumericMatrix> &H_init = R_NilValue)
+// {
+//   Rcpp::List outlist;
+//   if (W_init.isNotNull() && W_init.isNotNull()) {
+//     outlist = RcallNMF<planc::GNSYMNMF<arma::sp_mat>>(x, k, niter,
+//                                                       Rcpp::as<arma::mat>(W_init),
+//                                                       Rcpp::as<arma::mat>(H_init));
+//   }
+//   else {
+//     outlist = RcallNMF<planc::GNSYMNMF<arma::sp_mat>>(x, k, niter);
+//   }
+//   return outlist;
+// }
+
+// //' Hierarchical Alternating Least Squares NMF
+// //'
+// //' Use the HALS algorithm to factor a given matrix at the given rank.
+// //'
+// //' @param x Input matrix for factorization
+// //' @param k Factor matrix rank
+// //' @param niter Maximum number of nmf iterations
+// //' @param H_init Initial right-hand factor matrix (Optional)
+// //' @param W_init Initial left-hand factor matrix (Optional)
+// //' @returns The calculated factor matrices as an Rcpp::List
+// //' @examplesIf require("Matrix")
+// //' halsnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
+// // [[Rcpp::export]]
+// Rcpp::List halsnmf(const arma::sp_mat &x, const int &k, const int &niter,
+//                    const Rcpp::Nullable<Rcpp::NumericMatrix> &W_init = R_NilValue,
+//                    const Rcpp::Nullable<Rcpp::NumericMatrix> &H_init = R_NilValue)
+// {
+//   Rcpp::List outlist;
+//   if (W_init.isNotNull() && W_init.isNotNull()) {
+//     outlist = RcallNMF<planc::HALSNMF<arma::sp_mat>>(x, k, niter,
+//                                                      Rcpp::as<arma::mat>(W_init),
+//                                                      Rcpp::as<arma::mat>(H_init));
+//   }
+//   else {
+//     outlist = RcallNMF<planc::HALSNMF<arma::sp_mat>>(x, k, niter);
+//   }
+//   return outlist;
+// }
+// //' Multiplicative Update NMF
+// //'
+// //' Use the MU algorithm to factor a given matrix
+// //' at the given rank.
+// //' @param x Input matrix for factorization
+// //' @param k Factor matrix rank
+// //' @param niter Maximum number of nmf iterations
+// //' @param H_init Initial right-hand factor matrix (Optional)
+// //' @param W_init Initial left-hand factor matrix (Optional)
+// //' @returns The calculated factor matrices as an Rcpp::List
+// //' @examplesIf require("Matrix")
+// //' halsnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
+// // [[Rcpp::export]]
+// Rcpp::List munmf(const arma::sp_mat &x, const int &k, const int &niter,
+//                  const Rcpp::Nullable<Rcpp::NumericMatrix> &W_init = R_NilValue,
+//                  const Rcpp::Nullable<Rcpp::NumericMatrix> &H_init = R_NilValue)
+// {
+//   Rcpp::List outlist;
+//   if (W_init.isNotNull() && W_init.isNotNull()) {
+//     outlist = RcallNMF<planc::MUNMF<arma::sp_mat>>(x, k, niter,
+//                                                    Rcpp::as<arma::mat>(W_init),
+//                                                    Rcpp::as<arma::mat>(H_init));
+//   }
+//   else {
+//     outlist = RcallNMF<planc::MUNMF<arma::sp_mat>>(x, k, niter);
+//   }
+//   return outlist;
+// }
+// //' Alternating  Nonnegative Least Squares with Block Principal Pivoting NMF
+// //'
+// //' Use the ANLS-BPP algorithm to factor a given matrix at the given rank.
+// //'
+// //' @param x Input matrix for factorization
+// //' @param k Factor matrix rank
+// //' @param niter Maximum number of nmf iterations
+// //' @param H_init Initial right-hand factor matrix (Optional)
+// //' @param W_init Initial left-hand factor matrix (Optional)
+// //' @returns The calculated factor matrices as an Rcpp::List
+// //' @examplesIf require("Matrix")
+// //' munmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
+// // [[Rcpp::export]]
+// Rcpp::List bppnmf(const arma::sp_mat & x, const int & k, const int & niter,
+//                   const Rcpp::Nullable<Rcpp::NumericMatrix> &W_init = R_NilValue,
+//                   const Rcpp::Nullable<Rcpp::NumericMatrix> &H_init = R_NilValue) {
+//   Rcpp::List outlist;
+//   if (W_init.isNotNull() && W_init.isNotNull()) {
+//     outlist = RcallNMF<planc::BPPNMF<arma::sp_mat>>(x, k, niter,
+//                                                     Rcpp::as<arma::mat>(W_init),
+//                                                     Rcpp::as<arma::mat>(H_init));
+//   }
+//   else {
+//     outlist = RcallNMF<planc::BPPNMF<arma::sp_mat>>(x, k, niter);
+//   }
+//   return outlist;
+// }
 
 template <typename T>
 arma::mat runbppnnls(const arma::mat &C, const T &B) {

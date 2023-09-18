@@ -11,78 +11,35 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// aoadmmnmf
-Rcpp::List aoadmmnmf(const arma::sp_mat& x, const int& k, const int& niter, const Rcpp::Nullable<Rcpp::NumericMatrix>& W_init, const Rcpp::Nullable<Rcpp::NumericMatrix>& H_init);
-RcppExport SEXP _RcppPlanc_aoadmmnmf(SEXP xSEXP, SEXP kSEXP, SEXP niterSEXP, SEXP W_initSEXP, SEXP H_initSEXP) {
+// nmf
+Rcpp::List nmf(const SEXP& x, const arma::uword& k, const arma::uword& niter, const std::string& algo, const Rcpp::Nullable<Rcpp::NumericMatrix>& Winit, const Rcpp::Nullable<Rcpp::NumericMatrix>& Hinit);
+RcppExport SEXP _RcppPlanc_nmf(SEXP xSEXP, SEXP kSEXP, SEXP niterSEXP, SEXP algoSEXP, SEXP WinitSEXP, SEXP HinitSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::sp_mat& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< const int& >::type k(kSEXP);
-    Rcpp::traits::input_parameter< const int& >::type niter(niterSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::Nullable<Rcpp::NumericMatrix>& >::type W_init(W_initSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::Nullable<Rcpp::NumericMatrix>& >::type H_init(H_initSEXP);
-    rcpp_result_gen = Rcpp::wrap(aoadmmnmf(x, k, niter, W_init, H_init));
+    Rcpp::traits::input_parameter< const SEXP& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const arma::uword& >::type k(kSEXP);
+    Rcpp::traits::input_parameter< const arma::uword& >::type niter(niterSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type algo(algoSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::Nullable<Rcpp::NumericMatrix>& >::type Winit(WinitSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::Nullable<Rcpp::NumericMatrix>& >::type Hinit(HinitSEXP);
+    rcpp_result_gen = Rcpp::wrap(nmf(x, k, niter, algo, Winit, Hinit));
     return rcpp_result_gen;
 END_RCPP
 }
-// gnsymnmf
-Rcpp::List gnsymnmf(const arma::sp_mat& x, const int& k, const int& niter, const Rcpp::Nullable<Rcpp::NumericMatrix>& W_init, const Rcpp::Nullable<Rcpp::NumericMatrix>& H_init);
-RcppExport SEXP _RcppPlanc_gnsymnmf(SEXP xSEXP, SEXP kSEXP, SEXP niterSEXP, SEXP W_initSEXP, SEXP H_initSEXP) {
+// symNMF
+Rcpp::List symNMF(const SEXP& x, const arma::uword& k, const arma::uword& niter, const double& lambda, const std::string& algo, const Rcpp::Nullable<Rcpp::NumericMatrix>& Hinit);
+RcppExport SEXP _RcppPlanc_symNMF(SEXP xSEXP, SEXP kSEXP, SEXP niterSEXP, SEXP lambdaSEXP, SEXP algoSEXP, SEXP HinitSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::sp_mat& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< const int& >::type k(kSEXP);
-    Rcpp::traits::input_parameter< const int& >::type niter(niterSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::Nullable<Rcpp::NumericMatrix>& >::type W_init(W_initSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::Nullable<Rcpp::NumericMatrix>& >::type H_init(H_initSEXP);
-    rcpp_result_gen = Rcpp::wrap(gnsymnmf(x, k, niter, W_init, H_init));
-    return rcpp_result_gen;
-END_RCPP
-}
-// halsnmf
-Rcpp::List halsnmf(const arma::sp_mat& x, const int& k, const int& niter, const Rcpp::Nullable<Rcpp::NumericMatrix>& W_init, const Rcpp::Nullable<Rcpp::NumericMatrix>& H_init);
-RcppExport SEXP _RcppPlanc_halsnmf(SEXP xSEXP, SEXP kSEXP, SEXP niterSEXP, SEXP W_initSEXP, SEXP H_initSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::sp_mat& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< const int& >::type k(kSEXP);
-    Rcpp::traits::input_parameter< const int& >::type niter(niterSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::Nullable<Rcpp::NumericMatrix>& >::type W_init(W_initSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::Nullable<Rcpp::NumericMatrix>& >::type H_init(H_initSEXP);
-    rcpp_result_gen = Rcpp::wrap(halsnmf(x, k, niter, W_init, H_init));
-    return rcpp_result_gen;
-END_RCPP
-}
-// munmf
-Rcpp::List munmf(const arma::sp_mat& x, const int& k, const int& niter, const Rcpp::Nullable<Rcpp::NumericMatrix>& W_init, const Rcpp::Nullable<Rcpp::NumericMatrix>& H_init);
-RcppExport SEXP _RcppPlanc_munmf(SEXP xSEXP, SEXP kSEXP, SEXP niterSEXP, SEXP W_initSEXP, SEXP H_initSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::sp_mat& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< const int& >::type k(kSEXP);
-    Rcpp::traits::input_parameter< const int& >::type niter(niterSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::Nullable<Rcpp::NumericMatrix>& >::type W_init(W_initSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::Nullable<Rcpp::NumericMatrix>& >::type H_init(H_initSEXP);
-    rcpp_result_gen = Rcpp::wrap(munmf(x, k, niter, W_init, H_init));
-    return rcpp_result_gen;
-END_RCPP
-}
-// bppnmf
-Rcpp::List bppnmf(const arma::sp_mat& x, const int& k, const int& niter, const Rcpp::Nullable<Rcpp::NumericMatrix>& W_init, const Rcpp::Nullable<Rcpp::NumericMatrix>& H_init);
-RcppExport SEXP _RcppPlanc_bppnmf(SEXP xSEXP, SEXP kSEXP, SEXP niterSEXP, SEXP W_initSEXP, SEXP H_initSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::sp_mat& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< const int& >::type k(kSEXP);
-    Rcpp::traits::input_parameter< const int& >::type niter(niterSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::Nullable<Rcpp::NumericMatrix>& >::type W_init(W_initSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::Nullable<Rcpp::NumericMatrix>& >::type H_init(H_initSEXP);
-    rcpp_result_gen = Rcpp::wrap(bppnmf(x, k, niter, W_init, H_init));
+    Rcpp::traits::input_parameter< const SEXP& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const arma::uword& >::type k(kSEXP);
+    Rcpp::traits::input_parameter< const arma::uword& >::type niter(niterSEXP);
+    Rcpp::traits::input_parameter< const double& >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type algo(algoSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::Nullable<Rcpp::NumericMatrix>& >::type Hinit(HinitSEXP);
+    rcpp_result_gen = Rcpp::wrap(symNMF(x, k, niter, lambda, algo, Hinit));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -370,11 +327,8 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_RcppPlanc_aoadmmnmf", (DL_FUNC) &_RcppPlanc_aoadmmnmf, 5},
-    {"_RcppPlanc_gnsymnmf", (DL_FUNC) &_RcppPlanc_gnsymnmf, 5},
-    {"_RcppPlanc_halsnmf", (DL_FUNC) &_RcppPlanc_halsnmf, 5},
-    {"_RcppPlanc_munmf", (DL_FUNC) &_RcppPlanc_munmf, 5},
-    {"_RcppPlanc_bppnmf", (DL_FUNC) &_RcppPlanc_bppnmf, 5},
+    {"_RcppPlanc_nmf", (DL_FUNC) &_RcppPlanc_nmf, 6},
+    {"_RcppPlanc_symNMF", (DL_FUNC) &_RcppPlanc_symNMF, 6},
     {"_RcppPlanc_bppnnls", (DL_FUNC) &_RcppPlanc_bppnnls, 2},
     {"_RcppPlanc_bppnnls_prod", (DL_FUNC) &_RcppPlanc_bppnnls_prod, 2},
     {"_RcppPlanc_bppinmf", (DL_FUNC) &_RcppPlanc_bppinmf, 8},

@@ -38,30 +38,35 @@ Default \code{20}.}
 dataset-specific effects more strongly (i.e. alignment should increase as
 \code{lambda} increases). Default \code{5}.}
 
+\item{maxEpoch}{The number of epochs to iterate through. Default \code{5}.}
+
+\item{minibatchSize}{Total number of cells in each mini-batch. Default
+\code{5000}.}
+
 \item{maxHALSIter}{Maximum number of block coordinate descent (HALS
 algorithm) iterations to perform for each update of \eqn{W} and \eqn{V}.
 Default \code{1}. Changing this parameter is not recommended.}
 
-\item{Vinit, Hinit, Ainit, Binit}{Pass the previous factorization result for
+\item{Vinit, Winit, Ainit, Binit}{Pass the previous factorization result for
 datasets existing in \code{objectList}, in order to run scenario 2 or 3. All
 should have \code{length(objectList)} matrices inside. See description for
-dimensionality of \eqn{V_i} and \eqn{H_i}. \eqn{A_i} should be of size
+dimensionality of \eqn{V_i} and \eqn{W_i}. \eqn{A_i} should be of size
 \eqn{k \times k} and \eqn{B_i} should be of size \eqn{m \times k}}
 
 \item{verbose}{Logical scalar. Whether to show information and progress.
 Default \code{TRUE}.}
-
-\item{maxEpochs}{The number of epochs to iterate through. Default \code{5}.}
-
-\item{miniBatchSize}{Total number of cells in each mini-batch. Default
-\code{5000}.}
 }
 \value{
-A list of the following entries: \code{H} - a list of result
-\eqn{H_i} matrices, \code{V} - a list of result \eqn{V_i} matrices,
-\code{W} - the result \eqn{W} matrix, \code{A} - a list of result \eqn{A_i}
-matrices, \code{B} - a list of result \eqn{B_i} matrices, \code{objErr} - the
-final objective error value.
+A list of the following elements: 
+\itemize{
+ \item{\code{H} - a list of result \eqn{H_i} matrices of size 
+ \eqn{n_i \times k}}
+ \item{\code{V} - a list of result \eqn{V_i} matrices}
+ \item{\code{W} - the result \eqn{W} matrix}
+ \item{\code{A} - a list of result \eqn{A_i} matrices, \eqn{k \times k}}
+ \item{\code{B} - a list of result \eqn{B_i} matrices, \eqn{m \times k}}
+ \item{\code{objErr} - the final objective error value.}
+}
 }
 \description{
 Performs integrative non-negative matrix factorization (iNMF) (J.D. Welch,
@@ -74,7 +79,7 @@ Performs integrative non-negative matrix factorization (iNMF) (J.D. Welch,
 where \eqn{E_i} is the input non-negative matrix of the \eqn{i}'th dataset,
 \eqn{d} is the total number of datasets. \eqn{E_i} is of size
 \eqn{m \times n_i} for \eqn{m} features and \eqn{n_i} sample points,
-\eqn{H_i} is of size \eqn{n_i \times k}, \eqn{V_i} is of size
+\eqn{H_i} is of size \eqn{k \times n_i}, \eqn{V_i} is of size
 \eqn{m \times k}, and \eqn{W} is of size \eqn{m \times k}.
 
 Different from \code{\link{inmf}} which optimizes the objective with ANLS

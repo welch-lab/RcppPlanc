@@ -9,6 +9,7 @@ Description: Rcpp bindings for planc, a highly parallel
               and extensible NMF/NTF library.
 Encoding: UTF-8
 Imports:
+    methods,
     Rcpp
 Suggests:
     Matrix

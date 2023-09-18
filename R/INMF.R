@@ -35,10 +35,14 @@
 #' size \eqn{m \times k}. Default \code{NULL}.
 #' @param verbose Logical scalar. Whether to show information and progress.
 #' Default \code{TRUE}.
-#' @return A list of the following entries: \code{H} - a list of result
-#' \eqn{H_i} matrices of size \eqn{n_i \times k}, \code{V} - a list of result 
-#' \eqn{V_i} matrices, \code{W} - the result \eqn{W} matrix, \code{objErr} - the 
-#' final objective error value.
+#' @return A list of the following elements: 
+#' \itemize{
+#'  \item{\code{H} - a list of result \eqn{H_i} matrices of size 
+#'  \eqn{n_i \times k}}
+#'  \item{\code{V} - a list of result \eqn{V_i} matrices}
+#'  \item{\code{W} - the result \eqn{W} matrix}
+#'  \item{\code{objErr} - the final objective error value.}
+#' }
 #' @author Yichen Wang
 #' @references Joshua D. Welch and et al., Single-Cell Multi-omic Integration
 #' Compares and Contrasts Features of Brain Cell Identity, Cell, 2019
@@ -118,7 +122,6 @@ inmf <- function(
 #'  \item Iterative refinement using continually arriving datasets;
 #'  \item Projection of new datasets without updating the existing factorization
 #' }
-#'
 #' @param objectList list of input datasets. List elements should all be of the
 #' same class. Viable classes include: matrix, \linkS4class{dgCMatrix},
 #' \link{H5Mat}, \link{H5SpMat}.
@@ -131,24 +134,29 @@ inmf <- function(
 #' @param lambda Regularization parameter. Larger values penalize
 #' dataset-specific effects more strongly (i.e. alignment should increase as
 #' \code{lambda} increases). Default \code{5}.
-#' @param maxEpochs The number of epochs to iterate through. Default \code{5}.
+#' @param maxEpoch The number of epochs to iterate through. Default \code{5}.
+#' @param minibatchSize Total number of cells in each mini-batch. Default
+#' \code{5000}.
 #' @param maxHALSIter Maximum number of block coordinate descent (HALS
 #' algorithm) iterations to perform for each update of \eqn{W} and \eqn{V}.
 #' Default \code{1}. Changing this parameter is not recommended.
-#' @param miniBatchSize Total number of cells in each mini-batch. Default
-#' \code{5000}.
-#' @param Vinit,Hinit,Ainit,Binit Pass the previous factorization result for
+#' @param Vinit,Winit,Ainit,Binit Pass the previous factorization result for
 #' datasets existing in \code{objectList}, in order to run scenario 2 or 3. All
 #' should have \code{length(objectList)} matrices inside. See description for
-#' dimensionality of \eqn{V_i} and \eqn{H_i}. \eqn{A_i} should be of size
+#' dimensionality of \eqn{V_i} and \eqn{W_i}. \eqn{A_i} should be of size
 #' \eqn{k \times k} and \eqn{B_i} should be of size \eqn{m \times k}
 #' @param verbose Logical scalar. Whether to show information and progress.
 #' Default \code{TRUE}.
-#' @return A list of the following entries: \code{H} - a list of result
-#' \eqn{H_i} matrices of size \eqn{n_i \times k}, \code{V} - a list of result 
-#' \eqn{V_i} matrices, \code{W} - the result \eqn{W} matrix, \code{A} - a list 
-#' of result \eqn{A_i} matrices, \code{B} - a list of result \eqn{B_i} matrices,
-#' \code{objErr} - the final objective error value.
+#' @return A list of the following elements: 
+#' \itemize{
+#'  \item{\code{H} - a list of result \eqn{H_i} matrices of size 
+#'  \eqn{n_i \times k}}
+#'  \item{\code{V} - a list of result \eqn{V_i} matrices}
+#'  \item{\code{W} - the result \eqn{W} matrix}
+#'  \item{\code{A} - a list of result \eqn{A_i} matrices, \eqn{k \times k}}
+#'  \item{\code{B} - a list of result \eqn{B_i} matrices, \eqn{m \times k}}
+#'  \item{\code{objErr} - the final objective error value.}
+#' }
 #' @author Yichen Wang
 #' @references Joshua D. Welch and et al., Single-Cell Multi-omic Integration
 #' Compares and Contrasts Features of Brain Cell Identity, Cell, 2019
@@ -325,10 +333,15 @@ onlineINMF <- function(
 #' perform. Default \code{30}.
 #' @param verbose Logical scalar. Whether to show information and progress.
 #' Default \code{TRUE}.
-#' @return A list of the following entries: \code{H} - a list of result
-#' \eqn{H_i} matrices of size \eqn{n_i \times k}, \code{V} - a list of result 
-#' \eqn{V_i} matrices, \code{W} - the result \eqn{W} matrix, \code{U} - the 
-#' result \eqn{U_i} matrices, \code{objErr} - the final objective error value.
+#' @return A list of the following elements: 
+#' \itemize{
+#'  \item{\code{H} - a list of result \eqn{H_i} matrices of size 
+#'  \eqn{n_i \times k}}
+#'  \item{\code{V} - a list of result \eqn{V_i} matrices}
+#'  \item{\code{W} - the result \eqn{W} matrix}
+#'  \item{\code{U} - a list of result \eqn{A_i} matrices}
+#'  \item{\code{objErr} - the final objective error value.}
+#' }
 #' @author Yichen Wang
 #' @references April R. Kriebel and Joshua D. Welch, UINMF performs mosaic
 #' integration of single-cell multi-omic datasets using nonnegative matrix
@@ -406,7 +419,7 @@ uinmf <- function(
             unsharedList[[i]] <- switch(
                 mode,
                 matrix = matrix(nrow = 0, ncol = ncol(objectList[[i]])),
-                dgCMatrix = as(as(as(Matrix::Matrix(
+                dgCMatrix = methods::as(methods::as(methods::as(Matrix::Matrix(
                     nrow = 0, ncol = ncol(objectList[[i]])
                 ), "dMatrix"), "generalMatrix"), "CsparseMatrix"),
                 H5Mat = stop("Empty H5Mat not supported yet"),
