@@ -74,15 +74,15 @@ Rcpp::List runNMF(T2 x, arma::uword k, arma::uword niter,
 //' @description
 //' Regularly, Non-negative Matrix Factorization (NMF) is factorizes input
 //' matrix \eqn{X} into low rank matrices \eqn{W} and \eqn{H}, so that
-//' \eqn{X \approx WH}. The objective function can be stated as 
-//' \eqn{\arg\min_{W\ge0,H\ge0}||X-WH||_F^2}. In practice, \eqn{X} is usually 
-//' regarded as a matrix of \eqn{m} features by \eqn{n} sample points. And the 
+//' \eqn{X \approx WH}. The objective function can be stated as
+//' \eqn{\arg\min_{W\ge0,H\ge0}||X-WH||_F^2}. In practice, \eqn{X} is usually
+//' regarded as a matrix of \eqn{m} features by \eqn{n} sample points. And the
 //' result matrix \eqn{W} should have the dimensionality of \eqn{m \times k} and
 //' H with \eqn{n \times k} (transposed).
 //' This function wraps the algorithms implemented in PLANC library to solve
-//' NMF problems. Algorithms includes Alternating Non-negative Least Squares 
-//' with Block Principal Pivoting (ANLS-BPP), Alternating Direction Method of 
-//' Multipliers (ADMM), Hierarchical Alternating Least Squares (HALS), and 
+//' NMF problems. Algorithms includes Alternating Non-negative Least Squares
+//' with Block Principal Pivoting (ANLS-BPP), Alternating Direction Method of
+//' Multipliers (ADMM), Hierarchical Alternating Least Squares (HALS), and
 //' Multiplicative Update (MU).
 //' @param x Input matrix for factorization. Can be either dense or sparse.
 //' @param k Integer. Factor matrix rank.
@@ -91,13 +91,13 @@ Rcpp::List runNMF(T2 x, arma::uword k, arma::uword niter,
 //' "admm", "hals" or "mu". See detailed sections.
 //' @param Winit Initial left-hand factor matrix, must be of size m x k.
 //' @param Hinit Initial right-hand factor matrix, must be of size n x k.
-//' @returns A list with the following elements: 
+//' @returns A list with the following elements:
 //' \itemize{
 //'  \item{\code{W} - the result left-hand factor matrix}
 //'  \item{\code{H} - the result right hand matrix.}
 //' }
 //' @references
-//' Ramakrishnan Kannan and et al., A High-Performance Parallel Algorithm for 
+//' Ramakrishnan Kannan and et al., A High-Performance Parallel Algorithm for
 //' Nonnegative Matrix Factorization, PPoPP '16, 2016, 10.1145/2851141.2851152
 // [[Rcpp::export]]
 Rcpp::List nmf(const SEXP& x, const arma::uword &k, const arma::uword &niter = 30,
@@ -198,30 +198,30 @@ Rcpp::List runSymNMF(T2 x, arma::uword k, arma::uword niter, double symm_reg,
 //' Perform Symmetric Non-negative Matrix Factorization
 //'
 //' Symmetric input matrix \eqn{X} of size \eqn{n \times n} is required. Two
-//' approaches are provided. Alternating Non-negative Least Squares Block 
+//' approaches are provided. Alternating Non-negative Least Squares Block
 //' Principal Pivoting algorithm (ANLSBPP) with symmetric regularization, where
 //' the objective function is set to be \eqn{\arg\min_{H\ge0,W\ge0}||X-WH||_F^2+
-//' \lambda||W-H||_F^2}, can be run with \code{algo = "anlsbpp"}. 
-//' Gaussian-Newton algorithm, where the objective function is set to be 
-//' \eqn{\arg\min_{H\ge0}||X-H^\mathsf{T}H||_F^2}, can be run with \code{algo = 
+//' \lambda||W-H||_F^2}, can be run with \code{algo = "anlsbpp"}.
+//' Gaussian-Newton algorithm, where the objective function is set to be
+//' \eqn{\arg\min_{H\ge0}||X-H^\mathsf{T}H||_F^2}, can be run with \code{algo =
 //' "gnsym"}. In the objectives, \eqn{W} is of size \eqn{n \times k} and \eqn{H}
-//' is of size \eqn{k \times n}. The returned results will all be 
+//' is of size \eqn{k \times n}. The returned results will all be
 //' \eqn{n \times k}.
 //'
-//' @param x Input matrix for factorization. Must be symmetric. Can be either 
+//' @param x Input matrix for factorization. Must be symmetric. Can be either
 //' dense or sparse.
 //' @param k Integer. Factor matrix rank.
 //' @param niter Integer. Maximum number of symNMF interations.
 //' @param lambda Symmetric regularization parameter. Must be
-//' non-negative. Default \code{0.0} uses the square of the maximum value in 
+//' non-negative. Default \code{0.0} uses the square of the maximum value in
 //' \code{x}.
 //' @param algo Algorithm to perform the factorization, choose from "gnsym" or
 //' "anlsbpp". Default \code{"gnsym"}
-//' @param Hinit Initial right-hand factor matrix, must be of size n x k. 
+//' @param Hinit Initial right-hand factor matrix, must be of size n x k.
 //' Default \code{NULL}.
-//' @returns A list with the following elements: 
+//' @returns A list with the following elements:
 //' \itemize{
-//'  \item{\code{W} - the result left-hand factor matrix, non-empty when using 
+//'  \item{\code{W} - the result left-hand factor matrix, non-empty when using
 //'  \code{"anlsbpp"}}
 //'  \item{\code{H} - the result right hand matrix.}
 //' }
@@ -560,7 +560,7 @@ Rcpp::List runINMF(std::vector<T> objectList, arma::uword k, double lambda,
                    arma::uword niter, bool verbose)
 {
     std::vector<std::unique_ptr<T>> matPtrVec;
-    matPtrVec = std::move(initMemMatPtr<T>(objectList));
+    matPtrVec = initMemMatPtr<T>(objectList);
     planc::BPPINMF<T> solver(matPtrVec, k, lambda);
     solver.initW();
     solver.initV();
@@ -585,7 +585,7 @@ Rcpp::List runINMF(std::vector<T> objectList, arma::uword k, double lambda,
                    std::vector<arma::mat> HinitList, std::vector<arma::mat> VinitList, arma::mat Winit)
 {
     std::vector<std::unique_ptr<T>> matPtrVec;
-    matPtrVec = std::move(initMemMatPtr<T>(objectList));
+    matPtrVec = initMemMatPtr<T>(objectList);
     planc::BPPINMF<T> solver(matPtrVec, k, lambda);
     solver.initW(Winit);
     solver.initV(VinitList);
@@ -778,7 +778,7 @@ template <typename T>
 Rcpp::List onlineINMF_S1_mem(std::vector<T> objectList, arma::uword k,
     double lambda, arma::uword maxEpoch = 5, arma::uword minibatchSize = 5000,
     arma::uword maxHALSIter = 1, bool verbose = true) {
-    std::vector<std::unique_ptr<T>> matPtrVec = std::move(initMemMatPtr<T>(objectList));
+    std::vector<std::unique_ptr<T>> matPtrVec = initMemMatPtr<T>(objectList);
     planc::ONLINEINMF<T, T> solver(matPtrVec, k, lambda);
     solver.runOnlineINMF(minibatchSize, maxEpoch, maxHALSIter, verbose);
 
@@ -905,8 +905,8 @@ Rcpp::List onlineINMF_S23_mem(std::vector<T> objectList,
     std::vector<T> objectListNew,
     arma::uword k, double lambda, bool project = false, arma::uword maxEpoch = 5,
     arma::uword minibatchSize = 5000, arma::uword maxHALSIter = 1, bool verbose = true) {
-    std::vector<std::unique_ptr<T>> matPtrVec = std::move(initMemMatPtr<T>(objectList));
-    std::vector<std::unique_ptr<T>> matPtrVecNew = std::move(initMemMatPtr<T>(objectListNew));
+    std::vector<std::unique_ptr<T>> matPtrVec = initMemMatPtr<T>(objectList);
+    std::vector<std::unique_ptr<T>> matPtrVecNew = initMemMatPtr<T>(objectListNew);
     planc::ONLINEINMF<T, T> solver(matPtrVec, k, lambda);
     solver.initV(Vinit, false);
     solver.initW(Winit, false);
@@ -1109,8 +1109,8 @@ Rcpp::List uinmf_mem(std::vector<T> objectList,
 {
     std::vector<std::unique_ptr<T>> matPtrVec;
     std::vector<std::unique_ptr<T>> unsharedPtrVec;
-    matPtrVec = std::move(initMemMatPtr<T>(objectList));
-    unsharedPtrVec = std::move(initMemMatPtr<T>(unsharedList));
+    matPtrVec = initMemMatPtr<T>(objectList);
+    unsharedPtrVec = initMemMatPtr<T>(unsharedList);
     planc::UINMF<T> solver(matPtrVec, unsharedPtrVec, k, lambda);
     solver.optimizeUANLS(niter, verbose);
 
