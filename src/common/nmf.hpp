@@ -252,6 +252,7 @@ class NMF {
    ||WH||_F^2 - over all nnz (w_i h_j)^2
    *
    */
+/*
 #if 0
     void computeObjectiveError() {
         // 1. over all nnz (a_ij - w_i h_j)^2
@@ -405,7 +406,7 @@ class NMF {
 #endif
     this->objective_err = arma::sum(splitErr);
   }
-
+*/
   void computeObjectiveError() {
     arma::mat AtW = this->A.t() * this->W;
     arma::mat WtW = this->W.t() * this->W;
@@ -441,7 +442,7 @@ class NMF {
     this->objective_err = this->fit_err_sq + fro_W_obj + fro_H_obj
         + l1_W_obj + l1_H_obj + sym_obj;
   }
-#endif  // ifdef BUILD_SPARSE
+// #endif  // ifdef BUILD_SPARSE
   void computeObjectiveError(const T &At, const arma::mat &WtW, const arma::mat &HtH) {
     arma::mat AtW = At * this->W;
 

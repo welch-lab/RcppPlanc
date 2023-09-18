@@ -55,12 +55,7 @@ constexpr auto RAND_SEED_SPARSE = 100;
 constexpr auto WTRUE_SEED=1196089;
 constexpr auto HTRUE_SEED=1230587;
 
-#ifdef BUILD_SPARSE
-typedef std::pair<arma::sp_mat, arma::mat> PAIRMAT;
-#endif
-#ifndef BUILD_SPARSE
-typedef std::pair<arma::mat, arma::mat> PAIRMAT;
-#endif
+
 #define PRINTMATINFO(A) "::" #A "::" << (A).n_rows << "x" << (A).n_cols
 
 #define PRINTMAT(A) PRINTMATINFO((A)) << std::endl << (A)
