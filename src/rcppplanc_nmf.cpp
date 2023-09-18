@@ -1,6 +1,8 @@
 // -*- mode: C++; c-indent-level: 4; c-basic-offset: 4; indent-tabs-mode: nil; -*-
 
+#ifndef ARMA_DONT_PRINT_FAST_MATH_WARNING
 #define ARMA_DONT_PRINT_FAST_MATH_WARNING
+#endif
 // we only include RcppArmadillo.h which pulls Rcpp.h in for us
 #include <RcppArmadillo.h>
 #include <progress.hpp>
@@ -14,13 +16,13 @@
 #include "data.hpp"
 #include "onlineinmf.hpp"
 #include "uinmf.hpp"
-// via the depends attribute we tell Rcpp to create hooks for
-// RcppArmadillo so that the build process will know what to do
-//
-// [[Rcpp::depends(RcppArmadillo)]]
-// [[Rcpp::depends(RcppProgress)]]
+    // via the depends attribute we tell Rcpp to create hooks for
+    // RcppArmadillo so that the build process will know what to do
+    //
+    // [[Rcpp::depends(RcppArmadillo)]]
+    // [[Rcpp::depends(RcppProgress)]]
 
-normtype m_input_normalization;
+    normtype m_input_normalization;
 int m_initseed;
 arma::fvec m_regW;
 arma::fvec m_regH;
