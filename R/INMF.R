@@ -10,8 +10,8 @@
 #' where \eqn{E_i} is the input non-negative matrix of the \eqn{i}'th dataset,
 #' \eqn{d} is the total number of datasets. \eqn{E_i} is of size
 #' \eqn{m \times n_i} for \eqn{m} features and \eqn{n_i} sample points,
-#' \eqn{H_i} is of size \eqn{n_i \times k}, \eqn{V_i} is of size
-#' \eqn{m \times k}, and \eqn{W} is of size \eqn{m \times k}.
+#' \eqn{H_i} is of size \eqn{k \times n_i}, \eqn{V_i} is of size
+#' \eqn{m \times k}, and \eqn{W} is of size \eqn{m \times k}. 
 #'
 #' \code{inmf} optimizes the objective with ANLS strategy, while
 #' \code{\link{onlineINMF}} optimizes the same objective with an online learning
@@ -36,9 +36,9 @@
 #' @param verbose Logical scalar. Whether to show information and progress.
 #' Default \code{TRUE}.
 #' @return A list of the following entries: \code{H} - a list of result
-#' \eqn{H_i} matrices, \code{V} - a list of result \eqn{V_i} matrices,
-#' \code{W} - the result \eqn{W} matrix, \code{objErr} - the final objective
-#' error value.
+#' \eqn{H_i} matrices of size \eqn{n_i \times k}, \code{V} - a list of result 
+#' \eqn{V_i} matrices, \code{W} - the result \eqn{W} matrix, \code{objErr} - the 
+#' final objective error value.
 #' @author Yichen Wang
 #' @references Joshua D. Welch and et al., Single-Cell Multi-omic Integration
 #' Compares and Contrasts Features of Brain Cell Identity, Cell, 2019
@@ -103,7 +103,7 @@ inmf <- function(
 #' where \eqn{E_i} is the input non-negative matrix of the \eqn{i}'th dataset,
 #' \eqn{d} is the total number of datasets. \eqn{E_i} is of size
 #' \eqn{m \times n_i} for \eqn{m} features and \eqn{n_i} sample points,
-#' \eqn{H_i} is of size \eqn{n_i \times k}, \eqn{V_i} is of size
+#' \eqn{H_i} is of size \eqn{k \times n_i}, \eqn{V_i} is of size
 #' \eqn{m \times k}, and \eqn{W} is of size \eqn{m \times k}.
 #'
 #' Different from \code{\link{inmf}} which optimizes the objective with ANLS
@@ -145,10 +145,10 @@ inmf <- function(
 #' @param verbose Logical scalar. Whether to show information and progress.
 #' Default \code{TRUE}.
 #' @return A list of the following entries: \code{H} - a list of result
-#' \eqn{H_i} matrices, \code{V} - a list of result \eqn{V_i} matrices,
-#' \code{W} - the result \eqn{W} matrix, \code{A} - a list of result \eqn{A_i}
-#' matrices, \code{B} - a list of result \eqn{B_i} matrices, \code{objErr} - the
-#' final objective error value.
+#' \eqn{H_i} matrices of size \eqn{n_i \times k}, \code{V} - a list of result 
+#' \eqn{V_i} matrices, \code{W} - the result \eqn{W} matrix, \code{A} - a list 
+#' of result \eqn{A_i} matrices, \code{B} - a list of result \eqn{B_i} matrices,
+#' \code{objErr} - the final objective error value.
 #' @author Yichen Wang
 #' @references Joshua D. Welch and et al., Single-Cell Multi-omic Integration
 #' Compares and Contrasts Features of Brain Cell Identity, Cell, 2019
@@ -289,20 +289,22 @@ onlineINMF <- function(
 #' Perform Mosaic Integrative Non-negative Matrix Factorization with Unshared
 #' Features
 #' @description
-#' Performs mosaic integrative non-negative matrix factorization (iNMF) (A.R.
+#' Performs mosaic integrative non-negative matrix factorization (UINMF) (A.R.
 #' Kriebel, 2022) to return factorized \eqn{H}, \eqn{W}, \eqn{V} and \eqn{U}
 #' matrices. The objective function is stated as
 #'
 #' \deqn{\arg\min_{H\ge0,W\ge0,V\ge0,U\ge0}\sum_{i}^{d}
-#' ||\binom{E_i}{P_i}-(\binom{W}{0}+\binom{V_i}{U_i})Hi||^2_F+
-#' \lambda_i\sum_{i}^{d}||\binom{V_i}{U_i}H_i||_F^2}
+#' ||\begin{bmatrix}E_i \\ P_i \end{bmatrix} - 
+#' (\begin{bmatrix}W \\ 0 \end{bmatrix}+
+#' \begin{bmatrix}V_i \\ U_i \end{bmatrix})Hi||^2_F+
+#' \lambda_i\sum_{i}^{d}||\begin{bmatrix}V_i \\ U_i \end{bmatrix}H_i||_F^2}
 #'
 #' where \eqn{E_i} is the input non-negative matrix of the \eqn{i}'th dataset,
 #' \eqn{P_i} is the input non-negative matrix for the unshared features,
 #' \eqn{d} is the total number of datasets. \eqn{E_i} is of size
 #' \eqn{m \times n_i} for \eqn{m} shared features and \eqn{n_i} sample points,
 #' \eqn{P_i} is of size \eqn{u_i \times n_i} for \eqn{u_i} unshared feaetures,
-#' \eqn{H_i} is of size \eqn{n_i \times k}, \eqn{V_i} is of size
+#' \eqn{H_i} is of size \eqn{k \times n_i}, \eqn{V_i} is of size
 #' \eqn{m \times k}, \eqn{W} is of size \eqn{m \times k} and \eqn{U_i} is of
 #' size \eqn{u_i \times k}.
 #'
@@ -324,9 +326,9 @@ onlineINMF <- function(
 #' @param verbose Logical scalar. Whether to show information and progress.
 #' Default \code{TRUE}.
 #' @return A list of the following entries: \code{H} - a list of result
-#' \eqn{H_i} matrices, \code{V} - a list of result \eqn{V_i} matrices,
-#' \code{W} - the result \eqn{W} matrix, \code{U} - the result \eqn{U_i}
-#' matrices, \code{objErr} - the final objective error value.
+#' \eqn{H_i} matrices of size \eqn{n_i \times k}, \code{V} - a list of result 
+#' \eqn{V_i} matrices, \code{W} - the result \eqn{W} matrix, \code{U} - the 
+#' result \eqn{U_i} matrices, \code{objErr} - the final objective error value.
 #' @author Yichen Wang
 #' @references April R. Kriebel and Joshua D. Welch, UINMF performs mosaic
 #' integration of single-cell multi-omic datasets using nonnegative matrix
