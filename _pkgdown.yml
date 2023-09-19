@@ -1,0 +1,39 @@
+template:
+  params:
+  bootswatch: flatly
+
+reference:
+- title: "Non-negative Matrix Factorization"
+- contents:
+  - nmf
+  - symNMF
+- title: "Non-negative Least Square"
+- contents:
+  - bppnnls
+  - bppnnls_prod
+- title: "Integrative Non-negative Matrix Factorization"
+- contents:
+  - inmf
+  - onlineINMF
+  - uinmf
+- title: "Other Utilities"
+- contents:
+  - H5Mat
+  - H5SpMat
+  - print.H5Mat
+  - print.H5SpMat
+
+navbar:
+  title: "RcppPlanc"
+  left:
+    - text: "Installation"
+      href: #
+    - text: "Tutorial"
+      href: #
+    - text: "Functions"
+      href: reference/index.html
+    - text: "NEWS"
+      href: news/index.html
+  right:
+    - icon: fa-github
+      href: https://github.com/welch-lab/liger
