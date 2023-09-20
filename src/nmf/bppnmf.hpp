@@ -6,12 +6,7 @@
 #endif
 #include "nmf.hpp"
 #include "bppnnls.hpp"
-
-// needed for precondition with hals
-#ifdef BUILD_SPARSE
 #include "hals.hpp"
-#endif
-
 #define ONE_THREAD_MATRIX_SIZE 2000
 
 namespace planc {
@@ -101,7 +96,53 @@ class BPPNMF : public NMF<T> {
     giventGiven.clear();
     giventInput.clear();
   }
+void commonSolve() {
+    unsigned int currentIteration = 0;
+    while (currentIteration < this->num_iterations()) {
+#ifdef COLLECTSTATS
+      this->collectStats(currentIteration);
+      this->stats(currentIteration + 1, 0) = currentIteration + 1;
+#endif
+#if defined(_VERBOSE) || defined(COLLECTSTATS)
+      tic();
+#endif
+      updateOtherGivenOneMultipleRHS(this->At, this->H, 'W', &(this->W),
+                                     this->regW());
+#if defined(_VERBOSE) || defined(COLLECTSTATS)
+      double totalW2 = toc();
+      tic();
+#endif
+      updateOtherGivenOneMultipleRHS(this->A, this->W, 'H', &(this->H),
+                                     this->regH());
+#if defined(_VERBOSE) || defined(COLLECTSTATS)
+      double totalH2 = toc();
+#endif
 
+#ifdef COLLECTSTATS
+      // end of H and start of W are almost same.
+      this->stats(currentIteration + 1, 1) = totalH2;
+      this->stats(currentIteration + 1, 2) = totalW2;
+
+      this->stats(currentIteration + 1, 3) = totalW2 + totalH2;
+#endif
+#ifdef _VERBOSE
+      INFO << "Completed It (" << currentIteration << "/"
+           << this->num_iterations() << ")"
+           << " time =" << totalW2 + totalH2 << std::endl;
+#endif
+      this->computeObjectiveError();
+#ifdef _VERBOSE
+      this->printObjective(currentIteration);
+
+#endif
+      currentIteration++;
+    }
+    this->normalize_by_W();
+#ifdef COLLECTSTATS
+    this->collectStats(currentIteration);
+    INFO << "NMF Statistics:" << std::endl << this->stats << std::endl;
+#endif
+  };
  public:
   BPPNMF(const T &A, int lowrank) : NMF<T>(A, lowrank) {
     giventGiven = arma::zeros<arma::mat>(lowrank, lowrank);
@@ -210,74 +251,20 @@ class BPPNMF : public NMF<T> {
       currentIteration++;
     }
   }
+
+
   void computeNMF() {
-    unsigned int currentIteration = 0;
 #ifdef COLLECTSTATS
     // this->objective_err;
 #endif
-    // tic();
-    // this->At = this->A.t();  // do it once
-    // INFO << "At time::" << toc() << std::endl;
-#ifdef BUILD_SPARSE
-    // run hals once to get proper initializations
-    HALSNMF<T> tempHals(this->A, this->W, this->H);
-    tempHals.num_iterations(2);
-    this->W = tempHals.getLeftLowRankFactor();
-    this->H = tempHals.getRightLowRankFactor();
-#endif
 #ifdef _VERBOSE
     INFO << PRINTMATINFO(this->At);
-#ifdef BUILD_SPARSE
-    INFO << " nnz = " << this->At.n_nonzero << std::endl;
-#endif
     INFO << "Starting BPP for num_iterations()=" << this->num_iterations()
          << std::endl;
 #endif
-    while (currentIteration < this->num_iterations()) {
-#ifdef COLLECTSTATS
-      this->collectStats(currentIteration);
-      this->stats(currentIteration + 1, 0) = currentIteration + 1;
-#endif
-#if defined(_VERBOSE) || defined(COLLECTSTATS)
-      tic();
-#endif
-      updateOtherGivenOneMultipleRHS(this->At, this->H, 'W', &(this->W),
-                                     this->regW());
-#if defined(_VERBOSE) || defined(COLLECTSTATS)
-      double totalW2 = toc();
-      tic();
-#endif
-      updateOtherGivenOneMultipleRHS(this->A, this->W, 'H', &(this->H),
-                                     this->regH());
-#if defined(_VERBOSE) || defined(COLLECTSTATS)
-      double totalH2 = toc();
-#endif
+this->commonSolve();
+  };
 
-#ifdef COLLECTSTATS
-      // end of H and start of W are almost same.
-      this->stats(currentIteration + 1, 1) = totalH2;
-      this->stats(currentIteration + 1, 2) = totalW2;
-
-      this->stats(currentIteration + 1, 3) = totalW2 + totalH2;
-#endif
-#ifdef _VERBOSE
-      INFO << "Completed It (" << currentIteration << "/"
-           << this->num_iterations() << ")"
-           << " time =" << totalW2 + totalH2 << std::endl;
-#endif
-      this->computeObjectiveError();
-#ifdef _VERBOSE
-      this->printObjective(currentIteration);
-
-#endif
-      currentIteration++;
-    }
-    this->normalize_by_W();
-#ifdef COLLECTSTATS
-    this->collectStats(currentIteration);
-    INFO << "NMF Statistics:" << std::endl << this->stats << std::endl;
-#endif
-  }
   double getObjectiveError() { return this->objectiveErr; }
 
   /*
@@ -292,5 +279,28 @@ class BPPNMF : public NMF<T> {
   }
   ~BPPNMF() { this->At.clear(); }
 };  // class BPPNMF
+
+template<>
+void BPPNMF<arma::sp_mat>::computeNMF() {
+  unsigned int currentIteration = 0;
+#ifdef COLLECTSTATS
+  // this->objective_err;
+#endif
+  // tic();
+  // this->At = this->A.t();  // do it once
+  // INFO << "At time::" << toc() << std::endl;
+  // run hals once to get proper initializations
+  HALSNMF<arma::sp_mat> tempHals(this->A, this->W, this->H);
+  tempHals.num_iterations(2);
+  this->W = tempHals.getLeftLowRankFactor();
+  this->H = tempHals.getRightLowRankFactor();
+#ifdef _VERBOSE
+  INFO << PRINTMATINFO(this->At);
+  INFO << " nnz = " << this->At.n_nonzero << std::endl;
+  INFO << "Starting BPP for num_iterations()=" << this->num_iterations()
+       << std::endl;
+#endif
+  this->commonSolve();
+}
 
 }  // namespace planc
