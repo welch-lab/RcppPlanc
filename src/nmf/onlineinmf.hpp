@@ -476,7 +476,7 @@ private:
         auto end = std::chrono::high_resolution_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::seconds>(end - start);
         if (verbose) {
-            std::cerr << "Total interations: " << totalIters << std::endl;
+            std::cerr << "Total iterations:  " << totalIters << std::endl;
             std::cerr << "Total time:        " << duration.count() << " sec" << std::endl;
             std::cerr << "Objective error:   " << this->objective_err << std::endl;
         }
@@ -512,10 +512,10 @@ private:
                 giventInput.clear();
             }
             // iNMF is basically (W + V) * HT = E, now we solved W * HT = E, so V = 0
-            std::unique_ptr<arma::mat> V;
-            V = std::unique_ptr<arma::mat>(new arma::mat);
-            *V = arma::zeros<arma::mat>(this->m, this->k);
-            this->Vi.push_back(std::move(V));
+            // std::unique_ptr<arma::mat> V;
+            // V = std::unique_ptr<arma::mat>(new arma::mat);
+            // *V = arma::zeros<arma::mat>(this->m, this->k);
+            // this->Vi.push_back(std::move(V));
         }
         giventGiven.clear();
 #ifdef _VERBOSE
@@ -639,14 +639,16 @@ public:
                 "update factorization with new datasets" << std::endl;
             }
             this->solveHALS(minibatchSize, maxEpochs, maxHALSIter, verbose);
+            this->objective_err = this->computeObjectiveError();
         } else {
             if (verbose) {
                 std::cerr << "Starting online iNMF scenario 3, " <<
                 "project new datasets without updating existing factorization" << std::endl;
             }
             this->projectNewData();
+            // No factorization update, so no objective error
         }
-        this->objective_err = this->computeObjectiveError();
+
     }
 
     // %%%%%%%%%%%%%%% Results Getters %%%%%%%%%%%%%%%%%%%%%%%

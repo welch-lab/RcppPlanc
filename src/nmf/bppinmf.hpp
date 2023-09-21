@@ -136,7 +136,7 @@ public:
     void optimizeALS(unsigned int niter, bool verbose = true) {
         // execute private functions here
         if (verbose) {
-            std::cerr << "BPPINMF optimizeALS started, niter=" << niter << std::endl;
+            std::cerr << "INMF started, niter=" << niter << std::endl;
         }
         this->objective_err = this->computeObjectiveError();
         auto start = std::chrono::high_resolution_clock::now();

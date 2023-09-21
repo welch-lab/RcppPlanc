@@ -285,7 +285,7 @@ public:
 
     void optimizeUANLS(int niter=30, bool verbose=true) {
         if (verbose) {
-            std::cerr << "UINMF optimizeUANLS started, niter=" << niter << std::endl;
+            std::cerr << "UINMF started, niter=" << niter << std::endl;
         }
         auto start = std::chrono::high_resolution_clock::now();
         this->sampleUandV();

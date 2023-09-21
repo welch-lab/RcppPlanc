@@ -908,10 +908,10 @@ Rcpp::List onlineINMF_S23_mem(std::vector<T> objectList,
     std::vector<std::unique_ptr<T>> matPtrVec = initMemMatPtr<T>(objectList);
     std::vector<std::unique_ptr<T>> matPtrVecNew = initMemMatPtr<T>(objectListNew);
     planc::ONLINEINMF<T, T> solver(matPtrVec, k, lambda);
-    solver.initV(Vinit, false);
+    if (!project) solver.initV(Vinit, false);
     solver.initW(Winit, false);
-    solver.initA(Ainit);
-    solver.initB(Binit);
+    if (!project) solver.initA(Ainit);
+    if (!project) solver.initB(Binit);
     solver.runOnlineINMF(matPtrVecNew, project, minibatchSize, maxEpoch, maxHALSIter, verbose);
 
     if (!project) {

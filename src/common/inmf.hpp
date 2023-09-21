@@ -71,6 +71,7 @@ namespace planc {
             this->nMax = 0;
             this->nSum = 0;
             this->nDatasets = 0;
+            if (this->k > this->m) throw std::invalid_argument("k must be <= m");
 #ifdef _VERBOSE
             std::cout << "k=" << k << "; m=" << m << std::endl;
 #endif
@@ -146,7 +147,7 @@ namespace planc {
 #ifdef _VERBOSE
             std::cout << "Taking initialized H matrices" << std::endl;
 #endif
-            if (this->Hi.size() != this->nDatasets) {
+            if (Hinit.size() != this->nDatasets) {
                 std::string msg = "Must provide " +
                                   std::to_string(this->nDatasets) +
                                   " H matrices";
@@ -199,12 +200,12 @@ namespace planc {
                 }
                 V = std::unique_ptr<arma::mat>(new arma::mat);
                 *V = Vinit[i];
-                this->Vi.push_back(std::move(V));
                 if (transpose) {
                     VT = std::unique_ptr<arma::mat>(new arma::mat);
                     *VT = (*V).t();
                     this->ViT.push_back(std::move(VT));
                 }
+                this->Vi.push_back(std::move(V));
             }
         }
 

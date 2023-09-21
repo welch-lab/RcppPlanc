@@ -12,8 +12,13 @@ Imports:
     methods,
     Rcpp
 Suggests:
-    Matrix
+    Matrix,
+    testthat (>= 3.0.0)
 LinkingTo: Rcpp, RcppArmadillo, RcppProgress
 License: GPL (>= 2)
 RoxygenNote: 7.2.3
 SystemRequirements: C++17
+Config/testthat/edition: 3
+Depends: 
+    R (>= 2.10)
+LazyData: true
