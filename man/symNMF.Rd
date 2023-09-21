@@ -7,7 +7,7 @@
 symNMF(x, k, niter, lambda = 0, algo = "gnsym", Hinit = NULL)
 }
 \arguments{
-\item{x}{Input matrix for factorization. Must be symmetric. Can be either 
+\item{x}{Input matrix for factorization. Must be symmetric. Can be either
 dense or sparse.}
 
 \item{k}{Integer. Factor matrix rank.}
@@ -15,33 +15,33 @@ dense or sparse.}
 \item{niter}{Integer. Maximum number of symNMF interations.}
 
 \item{lambda}{Symmetric regularization parameter. Must be
-non-negative. Default \code{0.0} uses the square of the maximum value in 
+non-negative. Default \code{0.0} uses the square of the maximum value in
 \code{x}.}
 
 \item{algo}{Algorithm to perform the factorization, choose from "gnsym" or
 "anlsbpp". Default \code{"gnsym"}}
 
-\item{Hinit}{Initial right-hand factor matrix, must be of size n x k. 
+\item{Hinit}{Initial right-hand factor matrix, must be of size n x k.
 Default \code{NULL}.}
 }
 \value{
-A list with the following elements: 
+A list with the following elements:
 \itemize{
- \item{\code{W} - the result left-hand factor matrix, non-empty when using 
+ \item{\code{W} - the result left-hand factor matrix, non-empty when using
  \code{"anlsbpp"}}
  \item{\code{H} - the result right hand matrix.}
 }
 }
 \description{
 Symmetric input matrix \eqn{X} of size \eqn{n \times n} is required. Two
-approaches are provided. Alternating Non-negative Least Squares Block 
+approaches are provided. Alternating Non-negative Least Squares Block
 Principal Pivoting algorithm (ANLSBPP) with symmetric regularization, where
 the objective function is set to be \eqn{\arg\min_{H\ge0,W\ge0}||X-WH||_F^2+
-\lambda||W-H||_F^2}, can be run with \code{algo = "anlsbpp"}. 
-Gaussian-Newton algorithm, where the objective function is set to be 
-\eqn{\arg\min_{H\ge0}||X-H^\mathsf{T}H||_F^2}, can be run with \code{algo = 
+\lambda||W-H||_F^2}, can be run with \code{algo = "anlsbpp"}.
+Gaussian-Newton algorithm, where the objective function is set to be
+\eqn{\arg\min_{H\ge0}||X-H^\mathsf{T}H||_F^2}, can be run with \code{algo =
 "gnsym"}. In the objectives, \eqn{W} is of size \eqn{n \times k} and \eqn{H}
-is of size \eqn{k \times n}. The returned results will all be 
+is of size \eqn{k \times n}. The returned results will all be
 \eqn{n \times k}.
 }
 \references{

@@ -282,7 +282,7 @@ this->commonSolve();
 
 template<>
 void BPPNMF<arma::sp_mat>::computeNMF() {
-  unsigned int currentIteration = 0;
+//   unsigned int currentIteration = 0;
 #ifdef COLLECTSTATS
   // this->objective_err;
 #endif

@@ -109,18 +109,21 @@ while (regenerate) {
 }
 
 test_that("sparse, nmf, anlsbpp", {
-  res <- nmf(mat.sp, k, niter = 100)
-  expect_type(res, "list")
-  expect_equal(nrow(res$W), m)
-  expect_equal(ncol(res$W), k)
-  expect_equal(nrow(res$H), n)
-  expect_equal(ncol(res$H), k)
-  obj <- Matrix::norm(mat.sp - res$W %*% t(res$H), type = "F")^2
+  set.seed(1)
+  res1 <- nmf(mat.sp, k, niter = 100)
+  expect_type(res1, "list")
+  expect_equal(nrow(res1$W), m)
+  expect_equal(ncol(res1$W), k)
+  expect_equal(nrow(res1$H), n)
+  expect_equal(ncol(res1$H), k)
+  obj <- Matrix::norm(mat.sp - res1$W %*% t(res1$H), type = "F")^2
   cat(obj)
   expect_lte(obj, 800)
-  
+  set.seed(1)
+  res2 <- nmf(as.matrix(mat.sp), k, niter = 100)
+  expect_true(all.equal(res1, res2))
   # Using init W and H
-  res <- nmf(mat.sp, k, niter = 100, Winit = res$W, Hinit = res$H)
+  res <- nmf(mat.sp, k, niter = 100, Winit = res1$W, Hinit = res1$H)
   obj <- Matrix::norm(mat.sp - res$W %*% t(res$H), type = "F")^2
   cat(obj)
   # Expected max objective error

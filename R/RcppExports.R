@@ -5,15 +5,15 @@
 #' @description
 #' Regularly, Non-negative Matrix Factorization (NMF) is factorizes input
 #' matrix \eqn{X} into low rank matrices \eqn{W} and \eqn{H}, so that
-#' \eqn{X \approx WH}. The objective function can be stated as 
-#' \eqn{\arg\min_{W\ge0,H\ge0}||X-WH||_F^2}. In practice, \eqn{X} is usually 
-#' regarded as a matrix of \eqn{m} features by \eqn{n} sample points. And the 
+#' \eqn{X \approx WH}. The objective function can be stated as
+#' \eqn{\arg\min_{W\ge0,H\ge0}||X-WH||_F^2}. In practice, \eqn{X} is usually
+#' regarded as a matrix of \eqn{m} features by \eqn{n} sample points. And the
 #' result matrix \eqn{W} should have the dimensionality of \eqn{m \times k} and
 #' H with \eqn{n \times k} (transposed).
 #' This function wraps the algorithms implemented in PLANC library to solve
-#' NMF problems. Algorithms includes Alternating Non-negative Least Squares 
-#' with Block Principal Pivoting (ANLS-BPP), Alternating Direction Method of 
-#' Multipliers (ADMM), Hierarchical Alternating Least Squares (HALS), and 
+#' NMF problems. Algorithms includes Alternating Non-negative Least Squares
+#' with Block Principal Pivoting (ANLS-BPP), Alternating Direction Method of
+#' Multipliers (ADMM), Hierarchical Alternating Least Squares (HALS), and
 #' Multiplicative Update (MU).
 #' @param x Input matrix for factorization. Can be either dense or sparse.
 #' @param k Integer. Factor matrix rank.
@@ -22,13 +22,13 @@
 #' "admm", "hals" or "mu". See detailed sections.
 #' @param Winit Initial left-hand factor matrix, must be of size m x k.
 #' @param Hinit Initial right-hand factor matrix, must be of size n x k.
-#' @returns A list with the following elements: 
+#' @returns A list with the following elements:
 #' \itemize{
 #'  \item{\code{W} - the result left-hand factor matrix}
 #'  \item{\code{H} - the result right hand matrix.}
 #' }
 #' @references
-#' Ramakrishnan Kannan and et al., A High-Performance Parallel Algorithm for 
+#' Ramakrishnan Kannan and et al., A High-Performance Parallel Algorithm for
 #' Nonnegative Matrix Factorization, PPoPP '16, 2016, 10.1145/2851141.2851152
 nmf <- function(x, k, niter = 30L, algo = "anlsbpp", Winit = NULL, Hinit = NULL) {
     .Call(`_RcppPlanc_nmf`, x, k, niter, algo, Winit, Hinit)
@@ -37,30 +37,30 @@ nmf <- function(x, k, niter = 30L, algo = "anlsbpp", Winit = NULL, Hinit = NULL)
 #' Perform Symmetric Non-negative Matrix Factorization
 #'
 #' Symmetric input matrix \eqn{X} of size \eqn{n \times n} is required. Two
-#' approaches are provided. Alternating Non-negative Least Squares Block 
+#' approaches are provided. Alternating Non-negative Least Squares Block
 #' Principal Pivoting algorithm (ANLSBPP) with symmetric regularization, where
 #' the objective function is set to be \eqn{\arg\min_{H\ge0,W\ge0}||X-WH||_F^2+
-#' \lambda||W-H||_F^2}, can be run with \code{algo = "anlsbpp"}. 
-#' Gaussian-Newton algorithm, where the objective function is set to be 
-#' \eqn{\arg\min_{H\ge0}||X-H^\mathsf{T}H||_F^2}, can be run with \code{algo = 
+#' \lambda||W-H||_F^2}, can be run with \code{algo = "anlsbpp"}.
+#' Gaussian-Newton algorithm, where the objective function is set to be
+#' \eqn{\arg\min_{H\ge0}||X-H^\mathsf{T}H||_F^2}, can be run with \code{algo =
 #' "gnsym"}. In the objectives, \eqn{W} is of size \eqn{n \times k} and \eqn{H}
-#' is of size \eqn{k \times n}. The returned results will all be 
+#' is of size \eqn{k \times n}. The returned results will all be
 #' \eqn{n \times k}.
 #'
-#' @param x Input matrix for factorization. Must be symmetric. Can be either 
+#' @param x Input matrix for factorization. Must be symmetric. Can be either
 #' dense or sparse.
 #' @param k Integer. Factor matrix rank.
 #' @param niter Integer. Maximum number of symNMF interations.
 #' @param lambda Symmetric regularization parameter. Must be
-#' non-negative. Default \code{0.0} uses the square of the maximum value in 
+#' non-negative. Default \code{0.0} uses the square of the maximum value in
 #' \code{x}.
 #' @param algo Algorithm to perform the factorization, choose from "gnsym" or
 #' "anlsbpp". Default \code{"gnsym"}
-#' @param Hinit Initial right-hand factor matrix, must be of size n x k. 
+#' @param Hinit Initial right-hand factor matrix, must be of size n x k.
 #' Default \code{NULL}.
-#' @returns A list with the following elements: 
+#' @returns A list with the following elements:
 #' \itemize{
-#'  \item{\code{W} - the result left-hand factor matrix, non-empty when using 
+#'  \item{\code{W} - the result left-hand factor matrix, non-empty when using
 #'  \code{"anlsbpp"}}
 #'  \item{\code{H} - the result right hand matrix.}
 #' }

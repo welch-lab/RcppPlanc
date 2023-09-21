@@ -21,7 +21,7 @@ nmf(x, k, niter = 30L, algo = "anlsbpp", Winit = NULL, Hinit = NULL)
 \item{Hinit}{Initial right-hand factor matrix, must be of size n x k.}
 }
 \value{
-A list with the following elements: 
+A list with the following elements:
 \itemize{
  \item{\code{W} - the result left-hand factor matrix}
  \item{\code{H} - the result right hand matrix.}
@@ -30,18 +30,18 @@ A list with the following elements:
 \description{
 Regularly, Non-negative Matrix Factorization (NMF) is factorizes input
 matrix \eqn{X} into low rank matrices \eqn{W} and \eqn{H}, so that
-\eqn{X \approx WH}. The objective function can be stated as 
-\eqn{\arg\min_{W\ge0,H\ge0}||X-WH||_F^2}. In practice, \eqn{X} is usually 
-regarded as a matrix of \eqn{m} features by \eqn{n} sample points. And the 
+\eqn{X \approx WH}. The objective function can be stated as
+\eqn{\arg\min_{W\ge0,H\ge0}||X-WH||_F^2}. In practice, \eqn{X} is usually
+regarded as a matrix of \eqn{m} features by \eqn{n} sample points. And the
 result matrix \eqn{W} should have the dimensionality of \eqn{m \times k} and
 H with \eqn{n \times k} (transposed).
 This function wraps the algorithms implemented in PLANC library to solve
-NMF problems. Algorithms includes Alternating Non-negative Least Squares 
-with Block Principal Pivoting (ANLS-BPP), Alternating Direction Method of 
-Multipliers (ADMM), Hierarchical Alternating Least Squares (HALS), and 
+NMF problems. Algorithms includes Alternating Non-negative Least Squares
+with Block Principal Pivoting (ANLS-BPP), Alternating Direction Method of
+Multipliers (ADMM), Hierarchical Alternating Least Squares (HALS), and
 Multiplicative Update (MU).
 }
 \references{
-Ramakrishnan Kannan and et al., A High-Performance Parallel Algorithm for 
+Ramakrishnan Kannan and et al., A High-Performance Parallel Algorithm for
 Nonnegative Matrix Factorization, PPoPP '16, 2016, 10.1145/2851141.2851152
 }
