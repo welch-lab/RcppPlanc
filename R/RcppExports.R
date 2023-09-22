@@ -153,3 +153,7 @@ bppnnls_prod <- function(CtC, CtB) {
     .Call(`_RcppPlanc_uinmf_h5sparse`, filenames, rowindPaths, colptrPaths, valuePaths, nrows, ncols, unsharedFilenames, unsharedRowindPaths, unsharedColptrPaths, unsharedValuePaths, unsharedNrows, unsharedNcols, k, lambda, niter, verbose)
 }
 
+.testCacheCalc <- function(rank) {
+    .Call(`_RcppPlanc_testcacheCalc`, rank)
+}
+

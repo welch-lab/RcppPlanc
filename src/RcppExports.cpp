@@ -325,6 +325,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// testcacheCalc
+int testcacheCalc(int rank);
+RcppExport SEXP _RcppPlanc_testcacheCalc(SEXP rankSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type rank(rankSEXP);
+    rcpp_result_gen = Rcpp::wrap(testcacheCalc(rank));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_RcppPlanc_nmf", (DL_FUNC) &_RcppPlanc_nmf, 6},
@@ -343,6 +354,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppPlanc_uinmf_rcpp", (DL_FUNC) &_RcppPlanc_uinmf_rcpp, 6},
     {"_RcppPlanc_uinmf_h5dense", (DL_FUNC) &_RcppPlanc_uinmf_h5dense, 8},
     {"_RcppPlanc_uinmf_h5sparse", (DL_FUNC) &_RcppPlanc_uinmf_h5sparse, 16},
+    {"_RcppPlanc_testcacheCalc", (DL_FUNC) &_RcppPlanc_testcacheCalc, 1},
     {NULL, NULL, 0}
 };
 

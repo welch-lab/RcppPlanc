@@ -29,12 +29,12 @@ private:
             giventGiven += (*Vptr).t() * (*Vptr) * this->lambda;
             // giventInput = given.t() * (*Eptr);
             unsigned int dataSize = this->ncol_E[i];
-            unsigned int numChunks = dataSize / INMF_CHUNK_SIZE;
-            if (numChunks * INMF_CHUNK_SIZE < dataSize) numChunks++;
+            unsigned int numChunks = dataSize / this->INMF_CHUNK_SIZE;
+            if (numChunks * this->INMF_CHUNK_SIZE < dataSize) numChunks++;
 #pragma omp parallel for schedule(auto)
             for (unsigned int j = 0; j < numChunks; ++j) {
-                unsigned int spanStart = j * INMF_CHUNK_SIZE;
-                unsigned int spanEnd = (j + 1) * INMF_CHUNK_SIZE - 1;
+                unsigned int spanStart = j * this->INMF_CHUNK_SIZE;
+                unsigned int spanEnd = (j + 1) * this->INMF_CHUNK_SIZE - 1;
                 if (spanEnd > dataSize - 1) spanEnd = dataSize - 1;
                 arma::mat giventInput = given.t() * (*Eptr).cols(spanStart, spanEnd);
                 BPPNNLS<arma::mat, arma::vec> subProbH(giventGiven, giventInput, true);
@@ -55,7 +55,7 @@ private:
         std::cout << "--Solving V--  ";
 #endif
         arma::mat* WTptr = this->WT.get();
-        arma::mat giventInput(this->k, INMF_CHUNK_SIZE);;
+        arma::mat giventInput(this->k, this->INMF_CHUNK_SIZE);;
         for (arma::uword i=0; i<this->nDatasets; ++i) {
             arma::mat* Hptr = this->Hi[i].get();\
             giventGiven = (*Hptr).t() * (*Hptr);
@@ -63,12 +63,12 @@ private:
             arma::mat* Vptr = this->Vi[i].get();
             arma::mat* VTptr = this->ViT[i].get();
             T* ETptr = this->EiT[i].get();
-            unsigned int numChunks = this->m / INMF_CHUNK_SIZE;
-            if (numChunks * INMF_CHUNK_SIZE < this->m) numChunks++;
+            unsigned int numChunks = this->m / this->INMF_CHUNK_SIZE;
+            if (numChunks * this->INMF_CHUNK_SIZE < this->m) numChunks++;
 #pragma omp parallel for schedule(auto)
             for (unsigned int j = 0; j < numChunks; ++j) {
-                unsigned int spanStart = j * INMF_CHUNK_SIZE;
-                unsigned int spanEnd = (j + 1) * INMF_CHUNK_SIZE - 1;
+                unsigned int spanStart = j * this->INMF_CHUNK_SIZE;
+                unsigned int spanEnd = (j + 1) * this->INMF_CHUNK_SIZE - 1;
                 if (spanEnd > this->m - 1) spanEnd = this->m - 1;
                 arma::mat giventInput;
                 giventInput = (*Hptr).t() * (*ETptr).cols(spanStart, spanEnd);
@@ -100,11 +100,11 @@ private:
             giventGiven += (*Hptr).t() * (*Hptr);
         }
 
-        unsigned int numChunks = this->m / INMF_CHUNK_SIZE;
-        if (numChunks * INMF_CHUNK_SIZE < this->m) numChunks++;
+        unsigned int numChunks = this->m / this->INMF_CHUNK_SIZE;
+        if (numChunks * this->INMF_CHUNK_SIZE < this->m) numChunks++;
         for (unsigned int i = 0; i < numChunks; ++i) {
-            unsigned int spanStart = i * INMF_CHUNK_SIZE;
-            unsigned int spanEnd = (i + 1) * INMF_CHUNK_SIZE - 1;
+            unsigned int spanStart = i * this->INMF_CHUNK_SIZE;
+            unsigned int spanEnd = (i + 1) * this->INMF_CHUNK_SIZE - 1;
             if (spanEnd > this->m - 1) spanEnd = this->m - 1;
             giventInput = arma::zeros<arma::mat>(this->k, spanEnd - spanStart + 1); ///
             #pragma omp parallel for schedule(auto)

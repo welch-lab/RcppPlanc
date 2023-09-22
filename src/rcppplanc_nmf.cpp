@@ -465,6 +465,7 @@ arma::mat runbppnnls(const arma::mat &C, const T &B) {
     arma::mat outmat = arma::zeros<arma::mat>(m_k, m_n);
     arma::mat *outmatptr;
     outmatptr = &outmat;
+    arma::uword ONE_THREAD_MATRIX_SIZE = chunk_size_dense<double>(m_k);
     unsigned int numChunks = m_n / ONE_THREAD_MATRIX_SIZE;
     if (numChunks*ONE_THREAD_MATRIX_SIZE < m_n) numChunks++;
 #pragma omp parallel for schedule(auto)
@@ -521,6 +522,7 @@ arma::mat bppnnls(const arma::mat &C, const SEXP &B) {
 arma::mat bppnnls_prod(const arma::mat &CtC, const arma::mat &CtB) {
     arma::uword n = CtB.n_cols;
     arma::uword k = CtC.n_cols;
+    arma::uword ONE_THREAD_MATRIX_SIZE = chunk_size_dense<double>(k);
     arma::mat outmat = arma::zeros<arma::mat>(k, n);
     arma::mat *outmatptr;
     outmatptr = &outmat;
@@ -1233,4 +1235,9 @@ Rcpp::List uinmf_h5sparse(std::vector<std::string> filenames,
         Rcpp::Named("objErr") = Rcpp::wrap(solver.objErr())
     );
     return output;
+}
+
+// [[Rcpp::export(.testCacheCalc)]]
+int testcacheCalc(int rank) {
+    return chunk_size_dense<double>(rank);
 }

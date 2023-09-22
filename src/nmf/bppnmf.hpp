@@ -7,7 +7,6 @@
 #include "nmf.hpp"
 #include "bppnnls.hpp"
 #include "hals.hpp"
-#define ONE_THREAD_MATRIX_SIZE 2000
 
 namespace planc {
 
@@ -16,6 +15,7 @@ class BPPNMF : public NMF<T> {
  private:
   T At;
   arma::mat giventGiven;
+  unsigned int ONE_THREAD_MATRIX_SIZE; // chunking
   // designed as if W is given and H is found.
   // The transpose is the other problem.
   void updateOtherGivenOneMultipleRHS(const T &input, const arma::mat &given,

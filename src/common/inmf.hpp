@@ -7,7 +7,7 @@
 #include <memory>
 #include "utils.hpp"
 
-#define INMF_CHUNK_SIZE 1000
+
 
 namespace planc {
 
@@ -15,6 +15,7 @@ namespace planc {
     class INMF {
     protected:
         arma::uword m, k, nDatasets, nMax, nSum;
+        arma::uword INMF_CHUNK_SIZE;                 // chunking
         std::vector<arma::uword> ncol_E;             // vector of n_i
         std::vector<std::unique_ptr<T>> Ei;          // each of size mxn_i
         std::vector<std::unique_ptr<T>> EiT;          // each of size n_ixm
@@ -121,6 +122,7 @@ namespace planc {
         }
     public:
         INMF(std::vector<std::unique_ptr<T>>& Ei, arma::uword k, double lambda, bool makeTranspose = true) {
+            this->INMF_CHUNK_SIZE = chunk_size_dense<double>(k);
             this->constructObject(Ei, k, lambda, makeTranspose);
             // this->initHWV();
         }

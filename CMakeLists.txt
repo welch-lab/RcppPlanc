@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
 project(RcppPlanc VERSION 0.8.3 LANGUAGES C CXX)
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 include(CheckIncludeFile)
 include(CheckCXXCompilerFlag)
 include(cmake/CPM.cmake)
@@ -52,19 +53,41 @@ else()
 message(FATAL_ERROR "missing RcppProgress")
 endif()
 
+add_library(hw_detect OBJECT "${PROJECT_SOURCE_DIR}/src/common/hw_detect.cpp")
+
+if(WIN32)
+CPMAddPackage(NAME hwloc
+              GIT_TAG hwloc-2.9.3
+              GITHUB_REPOSITORY open-mpi/hwloc
+              VERSION 2.9.3
+              SOURCE_SUBDIR contrib/windows-cmake
+              OPTIONS "HWLOC_ENABLE_TESTING OFF" "HWLOC_SKIP_LSTOPO ON" "HWLOC_SKIP_TOOLS ON"
+              )
+else()
+    find_package(HWLOC)
+    if(HWLOC_FOUND)
+    target_link_libraries(hw_detect PRIVATE "${HWLOC_LIBRARIES}")
+    target_include_directories(hw_detect PRIVATE "${HWLOC_DIR}")
+    else()
+        #BUILD_ME
+    endif()
+endif()
 CPMAddPackage(NAME HighFive
-              GIT_TAG v2.7.1
-              GITHUB_REPOSITORY BlueBrain/HighFive
-              OPTIONS "HIGHFIVE_EXAMPLES OFF" "HIGHFIVE_BUILD_DOCS OFF" "HIGHFIVE_USE_BOOST OFF"
-              DOWNLOAD_ONLY TRUE)
+    GIT_TAG v2.7.1
+    GITHUB_REPOSITORY BlueBrain/HighFive
+    OPTIONS "HIGHFIVE_EXAMPLES OFF" "HIGHFIVE_BUILD_DOCS OFF" "HIGHFIVE_USE_BOOST OFF"
+    DOWNLOAD_ONLY TRUE)
 
 target_include_directories(RcppPlanc PRIVATE "${HighFive_SOURCE_DIR}/include")
 if(WIN32)
+    target_link_libraries(hw_detect PRIVATE hwloc)
     target_link_libraries(RcppPlanc PRIVATE -lhdf5 -lsz -lz -lopenblas -lgfortran -lgomp -lpthread -ldl -lm -lquadmath "${R_HOME}/bin/x64/R.dll")
 else()
     find_package(HDF5 REQUIRED)
     target_link_libraries(RcppPlanc PUBLIC BLAS::BLAS LAPACK::LAPACK hdf5::hdf5)
 endif()
+
+target_link_libraries(RcppPlanc PRIVATE hw_detect)
 
 if(OpenMP_CXX_FOUND)
 target_compile_options(RcppPlanc PRIVATE ${OpenMP_CXX_FLAGS})

@@ -1,6 +1,12 @@
 {
     "r.rpath.windows": "C:\\Program Files\\R\\R-4.3.1\\bin\\x64\\R.exe",
     "files.associations": {
+        "*.json.liquid": "json",
+        "*.yaml.liquid": "yaml",
+        "*.md.liquid": "markdown",
+        "*.js.liquid": "liquid-javascript",
+        "*.css.liquid": "liquid-css",
+        "*.scss.liquid": "liquid-scss",
         "NAMESPACE": "r",
         "armadillo": "cpp",
         "cctype": "cpp",
@@ -97,7 +103,8 @@
         "source_location": "cpp",
         "ranges": "cpp",
         "regex": "cpp",
-        "future": "cpp"
+        "future": "cpp",
+        "shared_mutex": "cpp"
     },
     "FSharp.suggestGitignore": false,
     "C_Cpp.errorSquiggles": "enabled",

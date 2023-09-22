@@ -14,7 +14,7 @@
 #include <vector>
 #include "utils.h"
 #include <random>
-
+#include "hw_detect.hpp"
 #ifdef MKL_FOUND
 #include <mkl.h>
 #else
@@ -30,22 +30,22 @@
 #endif
 #endif
 
-static ULONG powersof10[16] = {1,
-                               10,
-                               100,
-                               1000,
-                               10000,
-                               100000,
-                               1000000,
-                               10000000,
-                               100000000,
-                               1000000000,
-                               10000000000,
-                               100000000000,
-                               1000000000000,
-                               10000000000000,
-                               100000000000000,
-                               1000000000000000};
+static uint64_t powersof10[16] = {1,
+                                  10,
+                                  100,
+                                  1000,
+                                  10000,
+                                  100000,
+                                  1000000,
+                                  10000000,
+                                  100000000,
+                                  1000000000,
+                                  10000000000,
+                                  100000000000,
+                                  1000000000000,
+                                  10000000000000,
+                                  100000000000000,
+                                  1000000000000000};
 
 static std::stack<std::chrono::steady_clock::time_point> tictoc_stack;
 static std::stack<double> tictoc_stack_omp_clock;
@@ -453,4 +453,13 @@ int debug_hook(){
   int i = 0;
   while(i < 1){}
   return 0;
+}
+
+template<typename T>
+arma::uword chunk_size_dense(arma::uword rank) {
+#ifdef _OPENMP
+return (get_l1_data_cache() / (rank * sizeof(T)));
+#else
+return (get_l2_data_cache())
+#endif
 }
