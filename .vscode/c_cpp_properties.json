@@ -6,25 +6,6 @@
             "cppStandard": "c++17",
             "intelliSenseMode": "linux-gcc-x64",
             "configurationProvider": "ms-vscode.cmake-tools"
-        },
-        {
-            "name": "Mac",
-            "includePath": [
-                "${workspaceFolder}/**",
-                "/Library/Frameworks/R.framework/Resources/include/**",
-                "/Library/Frameworks/R.framework/Resources/library/Rcpp/include/**",
-                "/Library/Frameworks/R.framework/Resources/library/RcppArmadillo/include/**",
-                "/Library/Frameworks/R.framework/Resources/library/RcppProgress/include/**",
-                "/opt/homebrew/Cellar/hdf5/1.14.1/include/**"
-            ],
-            "defines": [],
-            "compilerPath": "/usr/lib64/ccache/gcc",
-            "cStandard": "c17",
-            "cppStandard": "gnu++17",
-            "intelliSenseMode": "macos-gcc-arm64",
-            "macFrameworkPath": [
-                "/Library/Frameworks/"
-            ]
         }
     ],
     "version": 4
