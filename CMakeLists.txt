@@ -66,7 +66,7 @@ CPMAddPackage(NAME hwloc
 else()
     find_package(HWLOC)
     if(HWLOC_FOUND)
-    target_link_libraries(hw_detect PRIVATE "${HWLOC_LIBRARY_DIRS}/lib${HWLOC_LIBRARIES}.dylib")
+    target_link_libraries(hw_detect PRIVATE "${HWLOC_LDFLAGS}")
     target_include_directories(hw_detect PRIVATE "${HWLOC_INCLUDE_DIRS}")
     else()
         #BUILD_ME

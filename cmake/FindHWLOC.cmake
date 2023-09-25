@@ -25,6 +25,12 @@
 #  HWLOC_DIR             - Where to find the base directory of hwloc
 #  HWLOC_INCDIR          - Where to find the header files
 #  HWLOC_LIBDIR          - Where to find the library files
+#
+# For CMakeLikst.txt, do:
+#   find_package(HWLOC)
+#   target_link_libraries(hw_detect PRIVATE "${HWLOC_LDFLAGS}")
+#   target_include_directories(hw_detect PRIVATE "${HWLOC_INCLUDE_DIRS}")
+#
 # The module can also look for the following environment variables if paths
 # are not given as cmake variable: HWLOC_DIR, HWLOC_INCDIR, HWLOC_LIBDIR
 
