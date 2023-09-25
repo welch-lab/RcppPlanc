@@ -460,6 +460,6 @@ arma::uword chunk_size_dense(arma::uword rank) {
 #ifdef _OPENMP
 return (get_l1_data_cache() / (rank * sizeof(T)));
 #else
-return (get_l2_data_cache());
+return (get_l2_data_cache() / (rank * sizeof(T)));
 #endif
 }

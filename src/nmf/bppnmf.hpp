@@ -23,8 +23,8 @@ class BPPNMF : public NMF<T> {
 #if defined(_VERBOSE) || defined(COLLECTSTATS)
     double t2;
 #endif
-    unsigned int numChunks = input.n_cols / ONE_THREAD_MATRIX_SIZE;
-    if (numChunks * ONE_THREAD_MATRIX_SIZE < input.n_cols) numChunks++;
+    unsigned int numChunks = input.n_cols / this->ONE_THREAD_MATRIX_SIZE;
+    if (numChunks * this->ONE_THREAD_MATRIX_SIZE < input.n_cols) numChunks++;
 #if defined(_VERBOSE) || defined(COLLECTSTATS)
     tic();
 #endif
@@ -55,8 +55,8 @@ class BPPNMF : public NMF<T> {
 #endif
 #pragma omp parallel for schedule(auto)
     for (unsigned int i = 0; i < numChunks; i++) {
-      unsigned int spanStart = i * ONE_THREAD_MATRIX_SIZE;
-      unsigned int spanEnd = (i + 1) * ONE_THREAD_MATRIX_SIZE - 1;
+      unsigned int spanStart = i * this->ONE_THREAD_MATRIX_SIZE;
+      unsigned int spanEnd = (i + 1) * this->ONE_THREAD_MATRIX_SIZE - 1;
       if (spanEnd > input.n_cols - 1) {
         spanEnd = input.n_cols - 1;
       }
@@ -129,15 +129,14 @@ void commonSolve() {
       INFO << "Completed It (" << currentIteration << "/"
            << this->num_iterations() << ")"
            << " time =" << totalW2 + totalH2 << std::endl;
-#endif
       this->computeObjectiveError();
-#ifdef _VERBOSE
       this->printObjective(currentIteration);
 
 #endif
       currentIteration++;
     }
     this->normalize_by_W();
+    this->computeObjectiveError();
 #ifdef COLLECTSTATS
     this->collectStats(currentIteration);
     INFO << "NMF Statistics:" << std::endl << this->stats << std::endl;
@@ -147,9 +146,11 @@ void commonSolve() {
   BPPNMF(const T &A, int lowrank) : NMF<T>(A, lowrank) {
     giventGiven = arma::zeros<arma::mat>(lowrank, lowrank);
     this->At = A.t();
+    this->ONE_THREAD_MATRIX_SIZE = chunk_size_dense<double>(lowrank);
   }
   BPPNMF(const T &A, const arma::mat &llf, const arma::mat &rlf) : NMF<T>(A, llf, rlf) {
     this->At = A.t();
+    this->ONE_THREAD_MATRIX_SIZE = chunk_size_dense<double>(llf.n_cols);
   }
   void computeNMFSingleRHS() {
     int currentIteration = 0;
