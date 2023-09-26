@@ -153,8 +153,8 @@ public:
         }
         this->objective_err = this->computeObjectiveError();
         auto end = std::chrono::high_resolution_clock::now();
-        auto duration = std::chrono::duration_cast<std::chrono::seconds>(end - start);
         if (verbose) {
+            auto duration = std::chrono::duration_cast<std::chrono::seconds>(end - start);
             std::cerr << "Total time:      " << duration.count() << " sec" << std::endl;
             std::cerr << "Objective error: " << this->objective_err << std::endl;
         }
