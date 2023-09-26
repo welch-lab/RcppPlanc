@@ -60,52 +60,37 @@ private:
     }
 
     double computeObjectiveError() {
-#ifdef _VERBOSE
-        std::cout << "Computing UINMF objective error" << std::endl;
-        std::chrono::system_clock::time_point time_start = std::chrono::system_clock::now();
-#endif
         double obj = 0;
         arma::mat* Wptr = this->W.get();
+        arma::mat L(this->m, this->k);
         for (arma::uword i = 0; i < this->nDatasets; ++i) {
-            arma::uword dataSize = this->ncol_E[i];
             T* Eptr = this->Ei[i].get();
             T* usptr = this->ulist[i].get();
             arma::mat* Hptr = this->Hi[i].get();
             arma::mat* Vptr = this->Vi[i].get();
             arma::mat* Uptr = this->Ui[i].get();
-            unsigned int numChunks = dataSize / this->INMF_CHUNK_SIZE;
-            if (numChunks * this->INMF_CHUNK_SIZE < dataSize) numChunks++;
-#pragma omp parallel for schedule(auto)
-            for (unsigned int j = 0; j < numChunks; ++j) {
-                unsigned int spanStart = j * this->INMF_CHUNK_SIZE;
-                unsigned int spanEnd = (j + 1) * this->INMF_CHUNK_SIZE - 1;
-                if (spanEnd > dataSize - 1) spanEnd = dataSize - 1;
-                double norm;
-                arma::mat errMat(this->m + this->u[i], spanEnd - spanStart + 1);
-                errMat.rows(0, this->m - 1) = (*Wptr + *Vptr) * arma::mat(Hptr->t()).cols(spanStart, spanEnd);
-                errMat.rows(0, this->m - 1) -= Eptr->cols(spanStart, spanEnd);
-                if (this->u[i] > 0) {
-                    errMat.rows(this->m, this->m + this->u[i] - 1) = (*Uptr) * arma::mat(Hptr->t()).cols(spanStart, spanEnd);
-                    errMat.rows(this->m, this->m + this->u[i] - 1) -= usptr->cols(spanStart, spanEnd);
-                }
-                norm = arma::norm<arma::mat>(errMat, "fro");
-                norm *= norm;
-                obj += norm;
-
-                errMat = arma::join_cols(*Vptr, *Uptr) * arma::mat(Hptr->t()).cols(spanStart, spanEnd);
-                norm = arma::norm<arma::mat>(errMat, "fro");
-                norm *= norm;
-                obj += this->lambda_i[i] * norm;
-            }
+            double sqnormE = arma::norm<T>(*Eptr, "fro");
+            sqnormE *= sqnormE;
+            double sqnormUs = arma::norm<T>(*usptr, "fro");
+            sqnormUs *= sqnormUs;
+            L = *Wptr + *Vptr;
+            arma::mat LtL = L.t() * L;
+            arma::mat HtH = Hptr->t() * *Hptr;
+            arma::mat VtV = Vptr->t() * *Vptr;
+            arma::mat UtU = Uptr->t() * *Uptr;
+            arma::mat EtL = Eptr->t() * L;
+            arma::mat UstU = usptr->t() * *Uptr;
+            double TrLtLHtH = arma::trace(LtL * HtH);
+            double TrUtUHtH = arma::trace(UtU * HtH);
+            double TrHtEtL = arma::trace(Hptr->t() * EtL);
+            double TrHtUstU = arma::trace(Hptr->t() * UstU);
+            double TrVtVHtH = arma::trace(VtV * HtH);
+            obj += sqnormE + sqnormUs + TrLtLHtH +
+                (1+this->lambda_i[i]) * TrUtUHtH - 2 * TrHtEtL - 2 * TrHtUstU +
+                this->lambda_i[i] * TrVtVHtH;
         }
-#ifdef _VERBOSE
-        std::chrono::system_clock::time_point time_end = std::chrono::system_clock::now();
-        std::chrono::duration<double> elapsed_seconds = time_end - time_start;
-        std::cout << "Objective error computed in " << elapsed_seconds.count() << " sec" << std::endl;
-#endif
         return obj;
     }
-
 
     void solveH() {
 #ifdef _VERBOSE
@@ -328,5 +313,100 @@ public:
         }
      }
 }; // class UINMF
+
+template<>
+double UINMF<H5Mat>::computeObjectiveError() {
+    double obj = 0;
+    arma::mat* Wptr = this->W.get();
+    arma::mat L(this->m, this->k);
+    for (arma::uword i = 0; i < this->nDatasets; ++i) {
+        H5Mat* Eptr = this->Ei[i].get();
+        H5Mat* usptr = this->ulist[i].get();
+        arma::mat* Hptr = this->Hi[i].get();
+        arma::mat* Vptr = this->Vi[i].get();
+        arma::mat* Uptr = this->Ui[i].get();
+        double sqnormE = Eptr->normF();
+        sqnormE *= sqnormE;
+        double sqnormUs = usptr->normF();
+        sqnormUs *= sqnormUs;
+        L = *Wptr + *Vptr;
+        arma::mat LtL = L.t() * L;
+        arma::mat HtH = Hptr->t() * *Hptr;
+        arma::mat VtV = Vptr->t() * *Vptr;
+        arma::mat UtU = Uptr->t() * *Uptr;
+        arma::mat EtL(this->ncol_E[i], this->k);
+        arma::uword numChunks = Eptr->n_cols / Eptr->colChunkSize;
+        if (numChunks * Eptr->colChunkSize < Eptr->n_cols) numChunks++;
+        for (arma::uword j = 0; j < numChunks; ++j) {
+            arma::uword spanStart = j * Eptr->colChunkSize;
+            arma::uword spanEnd = (j + 1) * Eptr->colChunkSize - 1;
+            if (spanEnd > Eptr->n_cols - 1) spanEnd = Eptr->n_cols - 1;
+            EtL.rows(spanStart, spanEnd) = Eptr->cols(spanStart, spanEnd).t() * L;
+        }
+
+        arma::mat UstU(this->ncol_E[i], this->k);
+        numChunks = usptr->n_cols / usptr->colChunkSize;
+        if (numChunks * usptr->colChunkSize < usptr->n_cols) numChunks++;
+        for (arma::uword j = 0; j < numChunks; ++j) {
+            arma::uword spanStart = j * usptr->colChunkSize;
+            arma::uword spanEnd = (j + 1) * usptr->colChunkSize - 1;
+            if (spanEnd > usptr->n_cols - 1) spanEnd = usptr->n_cols - 1;
+            UstU.rows(spanStart, spanEnd) = usptr->cols(spanStart, spanEnd).t() * *Uptr;
+        }
+
+        double TrLtLHtH = arma::trace(LtL * HtH);
+        double TrUtUHtH = arma::trace(UtU * HtH);
+        double TrHtEtL = arma::trace(Hptr->t() * EtL);
+        double TrHtUstU = arma::trace(Hptr->t() * UstU);
+        double TrVtVHtH = arma::trace(VtV * HtH);
+        obj += sqnormE + sqnormUs + TrLtLHtH +
+                (1+this->lambda_i[i]) * TrUtUHtH - 2 * TrHtEtL - 2 * TrHtUstU +
+                this->lambda_i[i] * TrVtVHtH;
+    }
+    return obj;
+}
+
+template<>
+double UINMF<H5SpMat>::computeObjectiveError() {
+    double obj = 0;
+    arma::mat* Wptr = this->W.get();
+    arma::mat L(this->m, this->k);
+    for (arma::uword i = 0; i < this->nDatasets; ++i) {
+        H5SpMat* Eptr = this->Ei[i].get();
+        H5SpMat* usptr = this->ulist[i].get();
+        arma::mat* Hptr = this->Hi[i].get();
+        arma::mat* Vptr = this->Vi[i].get();
+        arma::mat* Uptr = this->Ui[i].get();
+        double sqnormE = Eptr->normF();
+        sqnormE *= sqnormE;
+        double sqnormUs = usptr->normF();
+        sqnormUs *= sqnormUs;
+        L = *Wptr + *Vptr;
+        arma::mat LtL = L.t() * L;
+        arma::mat HtH = Hptr->t() * *Hptr;
+        arma::mat VtV = Vptr->t() * *Vptr;
+        arma::mat UtU = Uptr->t() * *Uptr;
+        arma::mat EtL(this->ncol_E[i], this->k);
+        arma::mat UstU(this->ncol_E[i], this->k);
+        arma::uword numChunks = Eptr->n_cols / this->INMF_CHUNK_SIZE;
+        if (numChunks * this->INMF_CHUNK_SIZE < Eptr->n_cols) numChunks++;
+        for (arma::uword j = 0; j < numChunks; ++j) {
+            arma::uword spanStart = j * this->INMF_CHUNK_SIZE;
+            arma::uword spanEnd = (j + 1) * this->INMF_CHUNK_SIZE - 1;
+            if (spanEnd > Eptr->n_cols - 1) spanEnd = Eptr->n_cols - 1;
+            EtL.rows(spanStart, spanEnd) = Eptr->cols(spanStart, spanEnd).t() * L;
+            UstU.rows(spanStart, spanEnd) = usptr->cols(spanStart, spanEnd).t() * *Uptr;
+        }
+        double TrLtLHtH = arma::trace(LtL * HtH);
+        double TrUtUHtH = arma::trace(UtU * HtH);
+        double TrHtEtL = arma::trace(Hptr->t() * EtL);
+        double TrHtUstU = arma::trace(Hptr->t() * UstU);
+        double TrVtVHtH = arma::trace(VtV * HtH);
+        obj += sqnormE + sqnormUs + TrLtLHtH +
+                (1+this->lambda_i[i]) * TrUtUHtH - 2 * TrHtEtL - 2 * TrHtUstU +
+                this->lambda_i[i] * TrVtVHtH;
+    }
+    return obj;
+}
 
 } // namespace planc

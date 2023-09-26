@@ -326,8 +326,7 @@ namespace planc {
                 arma::uword spanStart = j * Eptr->colChunkSize;
                 arma::uword spanEnd = (j + 1) * Eptr->colChunkSize - 1;
                 if (spanEnd > Eptr->n_cols - 1) spanEnd = Eptr->n_cols - 1;
-                arma::mat EtLchunk = Eptr->cols(spanStart, spanEnd).t() * L;
-                EtL.rows(spanStart, spanEnd) = EtLchunk;
+                EtL.rows(spanStart, spanEnd) = Eptr->cols(spanStart, spanEnd).t() * L;
             }
             double TrHtEtL = arma::trace(Hptr->t() * EtL);
             arma::mat VtV = Vptr->t() * *Vptr; // k x k
@@ -359,8 +358,7 @@ namespace planc {
                 arma::uword spanStart = j * this->INMF_CHUNK_SIZE;
                 arma::uword spanEnd = (j + 1) * this->INMF_CHUNK_SIZE - 1;
                 if (spanEnd > Eptr->n_cols - 1) spanEnd = Eptr->n_cols - 1;
-                arma::mat EtLchunk = Eptr->cols(spanStart, spanEnd).t() * L;
-                EtL.rows(spanStart, spanEnd) = EtLchunk;
+                EtL.rows(spanStart, spanEnd) = Eptr->cols(spanStart, spanEnd).t() * L;
             }
             double TrHtEtL = arma::trace(Hptr->t() * EtL);
             arma::mat VtV = Vptr->t() * *Vptr; // k x k
