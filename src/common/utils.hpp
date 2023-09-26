@@ -15,6 +15,7 @@
 #include "utils.h"
 #include <random>
 #include "hw_detect.hpp"
+#include "data.hpp"
 #ifdef MKL_FOUND
 #include <mkl.h>
 #else

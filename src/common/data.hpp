@@ -29,9 +29,8 @@ namespace planc {
 
         public:
         //not thread safe
-            H5Mat(std::string filename, std::string datapath) : HighFive::File(filename, HighFive::File::ReadOnly)
-
-            {
+        H5Mat(std::string filename, std::string datapath) : HighFive::File(filename, HighFive::File::ReadOnly)
+        {
             this->filename = filename;
             this->datapath = datapath;
             HighFive::DataSet H5D = this->getDataSet(datapath);
@@ -201,6 +200,19 @@ namespace planc {
             return transposedMat;
         } // End of H5Mat.t()
 
+        double normF() {
+            arma::uword nChunks = this->n_cols / this->colChunkSize;
+            if (nChunks * this->colChunkSize < this->n_cols) nChunks++;
+            double norm = 0;
+            for (arma::uword i = 0; i < nChunks; ++i) {
+                arma::uword start = i * this->colChunkSize;
+                arma::uword end = (i + 1) * this->colChunkSize - 1;
+                if (end > this->n_cols - 1) end = this->n_cols - 1;
+                arma::mat chunk = this->cols(start, end);
+                norm += arma::accu(chunk % chunk);
+            }
+            return std::sqrt(norm);
+        }
     }; // End of class H5Mat
 
     class H5SpMat : public HighFive::File  {
@@ -522,5 +534,19 @@ namespace planc {
             // H5SpMat transposedMat(this->filename, itempPath, ptempPath, xtempPath, this->n_cols, this->n_rows);
             return transposedMat;
         } // End of H5SpMat.t()
+
+        double normF() {
+            arma::uword nChunks = this->nnz / this->x_chunksize;
+            if (nChunks * this->x_chunksize < this->nnz) nChunks++;
+            double norm = 0;
+            for (arma::uword i = 0; i < nChunks; ++i) {
+                arma::uword start = i * this->x_chunksize;
+                arma::uword end = (i + 1) * this->x_chunksize - 1;
+                if (end > this->nnz - 1) end = this->nnz - 1;
+                arma::vec chunk = this->getXByRange(start, end);
+                norm += arma::accu(chunk % chunk);
+            }
+            return std::sqrt(norm);
+        }
     }; // End of class H5SpMat
 } // End of namespace planc

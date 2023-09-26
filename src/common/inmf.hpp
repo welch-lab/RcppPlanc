@@ -26,42 +26,36 @@ namespace planc {
         std::unique_ptr<arma::mat> WT;                // kxm
         double lambda, sqrtLambda, objective_err;
         bool cleared;
-
         double computeObjectiveError() {
-#ifdef _VERBOSE
-            std::cout << "--calc  obj--  ";
-#endif
+            // obj_i = ||E_i - (W + V_i)*H_i||_F^2 + lambda * ||V_i*H_i||_F^2
+            // Let W + V = L
+            // ||E - LH||_F^2 = ||E||_F^2 - 2*Tr(Ht*(Et*L)) + Tr((Lt*L)*(Ht*H))
+            // ||V*H||_F^2 = Tr((Vt*V)*(Ht*H))
+            //
+            //  This way, no giant mxn matrix is created in the process.
+            //
+            // Note that, arma::norm and direct EtL multiplication does not work
+            // with H5Mat and H5SpMat, so templated methods are implemented at
+            // the end of this file.
             double obj = 0;
             arma::mat* Wptr = this->W.get();
+            arma::mat L(this->m, this->k); // (loading) L = W + V
             for (arma::uword i = 0; i < this->nDatasets; ++i) {
-                arma::uword dataSize = this->ncol_E[i];
                 T* Eptr = this->Ei[i].get();
                 arma::mat* Hptr = this->Hi[i].get();
                 arma::mat* Vptr = this->Vi[i].get();
-                unsigned int numChunks = dataSize / INMF_CHUNK_SIZE;
-                if (numChunks * INMF_CHUNK_SIZE < dataSize) numChunks++;
-#pragma omp parallel for schedule(auto)
-                for (unsigned int j = 0; j < numChunks; ++j) {
-                    unsigned int spanStart = j * INMF_CHUNK_SIZE;
-                    unsigned int spanEnd = (j + 1) * INMF_CHUNK_SIZE - 1;
-                    double norm;
-                    if (spanEnd > dataSize - 1) spanEnd = dataSize - 1;
-                    arma::mat errMat(this->m, spanEnd - spanStart + 1);
-                    errMat = (*Vptr + *Wptr) * arma::mat(Hptr->t()).cols(spanStart, spanEnd);
-                    errMat -= Eptr->cols(spanStart, spanEnd);
-                    norm = arma::norm<arma::mat>(errMat, "fro");
-                    norm *= norm;
-                    obj += norm;
-
-                    errMat = *Vptr * arma::mat(Hptr->t()).cols(spanStart, spanEnd);
-                    norm = arma::norm<arma::mat>(errMat, "fro");
-                    norm *= norm;
-                    obj += this->lambda * norm;
-                }
+                L = *Wptr + *Vptr;
+                double sqnormE = arma::norm<T>(*Eptr, "fro");
+                sqnormE *= sqnormE;
+                arma::mat LtL = L.t() * L; // k x k
+                arma::mat HtH = Hptr->t() * *Hptr;  // k x k
+                double TrLtLHtH = arma::trace(LtL * HtH);
+                arma::mat EtL = Eptr->t() * L; // n_i x k
+                double TrHtEtL = arma::trace(Hptr->t() * EtL);
+                arma::mat VtV = Vptr->t() * *Vptr; // k x k
+                double TrVtVHtH = arma::trace(VtV * HtH);
+                obj += sqnormE - 2 * TrHtEtL + TrLtLHtH + this->lambda * TrVtVHtH;
             }
-#ifdef _VERBOSE
-            std::cout << toc() << " sec" << std::endl;
-#endif
             return obj;
         }
 
@@ -307,6 +301,74 @@ namespace planc {
             }
             this->cleared = true;
         }
-    };
+    }; // class INMF
+
+    template<>
+    double INMF<H5Mat>::computeObjectiveError() {
+        double obj = 0;
+        arma::mat* Wptr = this->W.get();
+        arma::mat L(this->m, this->k); // (loading) L = W + V
+        for (arma::uword i = 0; i < this->nDatasets; ++i) {
+            H5Mat* Eptr = this->Ei[i].get();
+            arma::mat* Hptr = this->Hi[i].get();
+            arma::mat* Vptr = this->Vi[i].get();
+            L = *Wptr + *Vptr;
+            double sqnormE = Eptr->normF();
+            sqnormE *= sqnormE;
+            arma::mat LtL = L.t() * L; // k x k
+            arma::mat HtH = Hptr->t() * *Hptr;  // k x k
+            double TrLtLHtH = arma::trace(LtL * HtH);
+            // arma::mat EtL = Eptr->t() * L; // n_i x k
+            arma::mat EtL(Eptr->n_cols, this->k);
+            arma::uword numChunks = Eptr->n_cols / Eptr->colChunkSize;
+            if (numChunks * Eptr->colChunkSize < Eptr->n_cols) numChunks++;
+            for (arma::uword j = 0; j < numChunks; ++j) {
+                arma::uword spanStart = j * Eptr->colChunkSize;
+                arma::uword spanEnd = (j + 1) * Eptr->colChunkSize - 1;
+                if (spanEnd > Eptr->n_cols - 1) spanEnd = Eptr->n_cols - 1;
+                arma::mat EtLchunk = Eptr->cols(spanStart, spanEnd).t() * L;
+                EtL.rows(spanStart, spanEnd) = EtLchunk;
+            }
+            double TrHtEtL = arma::trace(Hptr->t() * EtL);
+            arma::mat VtV = Vptr->t() * *Vptr; // k x k
+            double TrVtVHtH = arma::trace(VtV * HtH);
+            obj += sqnormE - 2 * TrHtEtL + TrLtLHtH + this->lambda * TrVtVHtH;
+        }
+        return obj;
+    }
+    template<>
+    double INMF<H5SpMat>::computeObjectiveError() {
+        double obj = 0;
+        arma::mat* Wptr = this->W.get();
+        arma::mat L(this->m, this->k); // (loading) L = W + V
+        for (arma::uword i = 0; i < this->nDatasets; ++i) {
+            H5SpMat* Eptr = this->Ei[i].get();
+            arma::mat* Hptr = this->Hi[i].get();
+            arma::mat* Vptr = this->Vi[i].get();
+            L = *Wptr + *Vptr;
+            double sqnormE = Eptr->normF();
+            sqnormE *= sqnormE;
+            arma::mat LtL = L.t() * L; // k x k
+            arma::mat HtH = Hptr->t() * *Hptr;  // k x k
+            double TrLtLHtH = arma::trace(LtL * HtH);
+            // arma::mat EtL = Eptr->t() * L; // n_i x k
+            arma::mat EtL(Eptr->n_cols, this->k);
+            arma::uword numChunks = Eptr->n_cols / this->INMF_CHUNK_SIZE;
+            if (numChunks * this->INMF_CHUNK_SIZE < Eptr->n_cols) numChunks++;
+            for (arma::uword j = 0; j < numChunks; ++j) {
+                arma::uword spanStart = j * this->INMF_CHUNK_SIZE;
+                arma::uword spanEnd = (j + 1) * this->INMF_CHUNK_SIZE - 1;
+                if (spanEnd > Eptr->n_cols - 1) spanEnd = Eptr->n_cols - 1;
+                arma::mat EtLchunk = Eptr->cols(spanStart, spanEnd).t() * L;
+                EtL.rows(spanStart, spanEnd) = EtLchunk;
+            }
+            double TrHtEtL = arma::trace(Hptr->t() * EtL);
+            arma::mat VtV = Vptr->t() * *Vptr; // k x k
+            double TrVtVHtH = arma::trace(VtV * HtH);
+            obj += sqnormE - 2 * TrHtEtL + TrLtLHtH + this->lambda * TrVtVHtH;
+        }
+        return obj;
+    }
+
 
 }
