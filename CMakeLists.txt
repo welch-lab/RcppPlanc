@@ -69,7 +69,30 @@ else()
     target_link_libraries(hw_detect PRIVATE "${HWLOC_LDFLAGS}")
     target_include_directories(hw_detect PRIVATE "${HWLOC_INCLUDE_DIRS}")
     else()
-        #BUILD_ME
+    CPMAddPackage(NAME hwloc
+              GIT_TAG hwloc-2.9.3
+              GITHUB_REPOSITORY open-mpi/hwloc
+              VERSION 2.9.3
+              DOWNLOAD_ONLY
+              )
+    find_package(Autotools REQUIRED)
+    add_custom_command(OUTPUT "${hwloc_SOURCE_DIR}/configure"
+    COMMAND "${hwloc_SOURCE_DIR}/autogen.sh"
+    WORKING_DIRECTORY "${hwloc_SOURCE_DIR}")
+    add_custom_command(OUTPUT "${hwloc_SOURCE_DIR}/Makefile"
+    COMMAND "${hwloc_SOURCE_DIR}/configure"
+    ARGS "--with-pic" "--prefix=${hwloc_SOURCE_DIR}/out/" "--disable-picky" "--enable-shared=no" "--enable-static=yes"
+    "--disable-cairo" "--disable-libxml2" "--disable-io" "--disable-plugin-dlopen" "--disable-plugin-ltdl" "--enable-embedded-mode"
+    WORKING_DIRECTORY "${hwloc_SOURCE_DIR}"
+    DEPENDS "${hwloc_SOURCE_DIR}/configure")
+    add_custom_command(OUTPUT "${hwloc_SOURCE_DIR}/hwloc/.libs/libhwloc_embedded.a"
+    DEPENDS "${hwloc_SOURCE_DIR}/Makefile"
+    COMMAND "${CMAKE_MAKE_PROGRAM}"
+    WORKING_DIRECTORY "${hwloc_SOURCE_DIR}")
+    add_custom_target(hwloc DEPENDS "${hwloc_SOURCE_DIR}/hwloc/.libs/libhwloc_embedded.a")
+    target_include_directories(hw_detect PRIVATE "${hwloc_SOURCE_DIR}/include")
+    add_dependencies(hw_detect hwloc)
+    target_link_libraries(hw_detect PRIVATE "${hwloc_SOURCE_DIR}/hwloc/.libs/libhwloc_embedded.a")
     endif()
 endif()
 CPMAddPackage(NAME HighFive
