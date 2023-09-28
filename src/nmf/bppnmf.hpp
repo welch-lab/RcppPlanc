@@ -23,6 +23,7 @@ class BPPNMF : public NMF<T> {
 #if defined(_VERBOSE) || defined(COLLECTSTATS)
     double t2;
 #endif
+    this->ONE_THREAD_MATRIX_SIZE = chunk_size_dense<double>(this->W.n_cols);
     unsigned int numChunks = input.n_cols / this->ONE_THREAD_MATRIX_SIZE;
     if (numChunks * this->ONE_THREAD_MATRIX_SIZE < input.n_cols) numChunks++;
 #if defined(_VERBOSE) || defined(COLLECTSTATS)
@@ -146,11 +147,9 @@ void commonSolve() {
   BPPNMF(const T &A, int lowrank) : NMF<T>(A, lowrank) {
     giventGiven = arma::zeros<arma::mat>(lowrank, lowrank);
     this->At = A.t();
-    this->ONE_THREAD_MATRIX_SIZE = chunk_size_dense<double>(lowrank);
   }
   BPPNMF(const T &A, const arma::mat &llf, const arma::mat &rlf) : NMF<T>(A, llf, rlf) {
     this->At = A.t();
-    this->ONE_THREAD_MATRIX_SIZE = chunk_size_dense<double>(llf.n_cols);
   }
   void computeNMFSingleRHS() {
     int currentIteration = 0;
