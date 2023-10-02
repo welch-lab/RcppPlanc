@@ -30,6 +30,7 @@ A list with the following elements:
  \item{\code{W} - the result left-hand factor matrix, non-empty when using
  \code{"anlsbpp"}}
  \item{\code{H} - the result right hand matrix.}
+ \item{\code{objErr} - the objective error of the factorization.}
 }
 }
 \description{

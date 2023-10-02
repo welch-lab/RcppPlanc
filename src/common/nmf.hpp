@@ -521,6 +521,9 @@ class NMF {
   /// Returns the number of iterations
   const unsigned int num_iterations() const { return m_num_iterations; }
 
+  /// Returns the last objective error calculated
+  double objErr() { return this->objective_err; }
+  
   ~NMF() { clear(); }
   /// Clear the memory for input matrix A, right low rank factor W
   /// and left low rank factor H

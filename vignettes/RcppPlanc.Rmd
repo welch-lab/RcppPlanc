@@ -46,7 +46,7 @@ mat <- matrix(runif(50*100), nrow = 50, ncol = 100)
 res <- nmf(mat, k = 10)
 ```
 
-The output result `res` is a list object with entries `res$W` and `res$H` for the output matrices as described above. Note that here matrix `res$H` is transposed (i.e. $n \times k$) for the sake of efficient implementation. 
+The output result `res` is a list object with entries `res$W` and `res$H` for the output matrices as described above. Note that here matrix `res$H` is transposed (i.e. $n \times k$) for the sake of efficient implementation. `res$objErr` is the objective error computed for the result.
 
 There are other variant algorithms for NMF that can be specified with argument `algo=` and also symmetric NMF approach implemented in `symNMF()`. Please see `?nmf` or `?symNMF` for more detailed documentation of the functions.
 

@@ -38,6 +38,7 @@
 #' \itemize{
 #'  \item{\code{W} - the result left-hand factor matrix}
 #'  \item{\code{H} - the result right hand matrix.}
+#'  \item{\code{objErr} - the objective error of the factorization.}
 #' }
 #' @references
 #' Ramakrishnan Kannan and et al., A High-Performance Parallel Algorithm for
@@ -75,6 +76,7 @@ nmf <- function(x, k, niter = 30L, algo = "anlsbpp", Winit = NULL, Hinit = NULL)
 #'  \item{\code{W} - the result left-hand factor matrix, non-empty when using
 #'  \code{"anlsbpp"}}
 #'  \item{\code{H} - the result right hand matrix.}
+#'  \item{\code{objErr} - the objective error of the factorization.}
 #' }
 #' @references
 #' Srinivas Eswar and et al., Distributed-Memory Parallel Symmetric Nonnegative

@@ -66,7 +66,8 @@ Rcpp::List runNMF(T2 x, arma::uword k, arma::uword niter,
     MyNMF.computeNMF();
     return Rcpp::List::create(
         Rcpp::Named("W") = MyNMF.getLeftLowRankFactor(),
-        Rcpp::Named("H") = MyNMF.getRightLowRankFactor()
+        Rcpp::Named("H") = MyNMF.getRightLowRankFactor(),
+        Rcpp::Named("objErr") = MyNMF.objErr()
     );
 }
 
@@ -95,6 +96,7 @@ Rcpp::List runNMF(T2 x, arma::uword k, arma::uword niter,
 //' \itemize{
 //'  \item{\code{W} - the result left-hand factor matrix}
 //'  \item{\code{H} - the result right hand matrix.}
+//'  \item{\code{objErr} - the objective error of the factorization.}
 //' }
 //' @references
 //' Ramakrishnan Kannan and et al., A High-Performance Parallel Algorithm for
@@ -191,7 +193,8 @@ Rcpp::List runSymNMF(T2 x, arma::uword k, arma::uword niter, double symm_reg,
   MyNMF.computeNMF();
   return Rcpp::List::create(
     Rcpp::Named("W") = MyNMF.getLeftLowRankFactor(),
-    Rcpp::Named("H") = MyNMF.getRightLowRankFactor()
+    Rcpp::Named("H") = MyNMF.getRightLowRankFactor(),
+    Rcpp::Named("objErr") = MyNMF.objErr()
   );
 }
 
@@ -224,6 +227,7 @@ Rcpp::List runSymNMF(T2 x, arma::uword k, arma::uword niter, double symm_reg,
 //'  \item{\code{W} - the result left-hand factor matrix, non-empty when using
 //'  \code{"anlsbpp"}}
 //'  \item{\code{H} - the result right hand matrix.}
+//'  \item{\code{objErr} - the objective error of the factorization.}
 //' }
 //' @references
 //' Srinivas Eswar and et al., Distributed-Memory Parallel Symmetric Nonnegative
