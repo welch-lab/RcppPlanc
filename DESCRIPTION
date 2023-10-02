@@ -1,9 +1,12 @@
 Package: RcppPlanc
 Type: Package
-Title: Fast Multithreaded Factorization
+Title: Fast Multithreaded Non-negative Matrix Factorization
 Version: 0.8.3.1
 Date: 2023-09-15
-Author: Ramakrishnan Kannan, Andrew Robbins, Yichen Wang
+Author: c(
+  person(given = 'Andrew', family = 'Robbins', email = 'robbiand@med.umich.edu', role = c('aut', 'cre')),
+  person(given = 'Yichen', family = 'Wang', email = 'wayichen@med.umich.edu', role = c('aut')),
+  person(given = 'Ramakrishnan', family = 'Kannan', role = c('aut')))
 Maintainer: Andrew Robbins <robbiand@med.umich.edu>
 Description: Rcpp bindings for planc, a highly parallel
               and extensible NMF/NTF library.
@@ -12,7 +15,9 @@ Imports:
     methods,
     Rcpp
 Suggests:
+    knitr,
     Matrix,
+    rmarkdown,
     testthat (>= 3.0.0)
 LinkingTo: Rcpp, RcppArmadillo, RcppProgress
 License: GPL (>= 2)
@@ -22,3 +27,4 @@ Config/testthat/edition: 3
 Depends: 
     R (>= 2.10)
 LazyData: true
+VignetteBuilder: knitr

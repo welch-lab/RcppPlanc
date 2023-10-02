@@ -1,0 +1,126 @@
+---
+title: "RcppPlanc, Fast NMF and iNMF Implementation with C++"
+author: Yichen Wang
+date: 10-02-2023
+output:
+  html_document:
+    toc: true
+    toc_float:
+      toc_collapsed: true
+    toc_depth: 3
+    theme: cerulean
+    highlight: tango
+    mathjax: "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+vignette: >
+  %\VignetteIndexEntry{RcppPlanc, Fast NMF and iNMF Implementation with C++}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+RcppPlanc is an R package initiated for wrapping the C++ library PLANC ([planc GitHub](https://github.com/ramkikannan/planc), [S. Eswar, 2021](https://doi.org/10.1145/3432185)), where fast algorithms for non-negative matrix factorization (NMF) are implemented. Based on that, we also mimic the optimization and implemented integrative NMF (iNMF) ([liger GitHub](https://github.com/welch-lab/liger), [J. D. Welch, 2019](https://doi.org/10.1016/j.cell.2019.05.006)).
+
+```{r setup}
+library(RcppPlanc)
+library(Matrix)
+```
+
+## Running Non-negative Matrix Factorization (NMF)
+
+NMF problem is stated with the objective below and it aims at factorizing a given non-negative $X$ matrix into two low-rank non-negative matrices $W$ and $H$ so that $WH \approx X$. Denote the dimensionality of $X$ to be $m$ features by $n$ sample points, then $W$ will have the size of $m \times k$ and $H$ is of $k \times n$. $k$ is the inner dimension of the factorization and should be less than $m$ and $n$. 
+
+\begin{align*}
+\arg\min_{W\ge0,H\ge0}||X-WH||_F^2
+\end{align*}
+
+The implementation currently supports the factorization of both dense and sparse (`dgCMatrix`) matrix. The following code chunk factorizes a randomly initialized non-negative dense matrix. 
+
+```{r nmfDense}
+mat <- matrix(runif(50*100), nrow = 50, ncol = 100)
+res <- nmf(mat, k = 10)
+```
+
+The output result `res` is a list object with entries `res$W` and `res$H` for the output matrices as described above. Note that here matrix `res$H` is transposed (i.e. $n \times k$) for the sake of efficient implementation. 
+
+There are other variant algorithms for NMF that can be specified with argument `algo=` and also symmetric NMF approach implemented in `symNMF()`. Please see `?nmf` or `?symNMF` for more detailed documentation of the functions.
+
+## Running Integrative Non-negative Matrix Factorization (iNMF)
+
+iNMF jointly factorizes multiple datasets that share the same set of features. It is originally designed for integrating single-cell biological data, such as transcriptomics and other modalities. As its objective function stated as below, it factorizes given datasets $E_i$ ($m \times n_i$) into $W$ ($m \times k$), $V_i$ ($m \times k$) and $H_i$ ($k \times n_i$), where $W$ is shared across all datasets and $V$ and $H$ are dataset specific. $\lambda$ is regularization parameter, $m$ is the number of shared features (e.g. gene expression), $n_i$ is the number of sample points (e.g. cells) of each dataset and $d$ is the number of datasets, It is expected that $(W+V_i)H_i \approx E_i$. Please see `?inmf` for more detailed explanation.
+
+\begin{align*}
+\arg\min_{H\ge0,W\ge0,V\ge0}\sum_{i}^{d}||E_i-(W+V_i)Hi||^2_F+\lambda\sum_{i}^{d}||V_iH_i||_F^2
+\end{align*}
+
+We prepared some example datasets that are down-sampled from public available study ([Hyun Min Kang, 2018](https://doi.org/10.1038/nbt.4042)). They can be loaded with the following code chunk. These datasets are presented as sparse matrices. 
+
+```{r inmfLoadData}
+data("ctrl.sparse")
+data("stim.sparse")
+```
+
+To run iNMF with the datasets in hand, simply create a list of them and call the function `inmf()`.
+
+```{r inmf, message=FALSE, results='hide'}
+res <- inmf(list(ctrl.sparse, stim.sparse), k = 20, lambda = 5)
+```
+
+The returned result is also a list object, which contains the following entries:
+
+- `res$H`, a list of dataset specific $H$ matrices, each of size $n_i \times k$. Similarly, they are also transposed.
+- `res$V`, a list of dataset specific $V$ matrices, each of size $m \times k$.
+- `res$W`, the $W$ matrix, $m \times k$.
+- `res$objErr`, the objective error value calculated for the result.
+
+We also implemented the other variant of iNMF in `onlineINMF()` ([C. Gao, 2021](https://doi.org/10.1038/s41587-021-00867-x)) and `uinmf()` ([A.R. Kriebel, 2022](https://doi.org/10.1038/s41467-022-28431-4)). Please see their help pages for the detail. 
+
+## Using Data Stored in HDF5 Files for iNMF
+
+[HDF5](https://www.hdfgroup.org/solutions/hdf5/) files have been widely adpoted for storing large-scale datasets on hard drive. Relevant examples can be found such as the H5AD files used by Python [AnnData](https://github.com/scverse/anndata) package that store annotated data, and the output file of [10X CellRanger Count](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/using/count) which stores pre-processed single-cell expression matrix and metadata. 
+
+We support using either dense matrices stored in 2-D datasets or CSC (compressed sparse column) sparse matrices stored with sets of three 1-D array datasets. Currently, we don't provide interfaces for interactively exploring the data in an HDF5, but this can be easily achieved with other packages, such as [hdf5r](https://CRAN.R-project.org/package=hdf5r). To use datasets stored in HDF5 files, we provide argument list constructors `H5Mat()` and `H5SpMat()`, respectively for dense and sparse matrix, to organize the necessary information for retrieving data.
+
+We prepared example HDF5 files with identical information as the package data `ctrl.sparse` and `stim.sparse`, in both dense and sparse forms. The argument lists for them can be constructed as shown below:
+
+```{r h5mat}
+ctrl.denseH5FilePath <- system.file("extdata/ctrl_dense.h5", package = "RcppPlanc")
+ctrl.h5dense <- H5Mat(filename = ctrl.denseH5FilePath, dataPath = "data")
+ctrl.h5dense
+
+stim.denseH5FilePath <- system.file("extdata/stim_dense.h5", package = "RcppPlanc")
+stim.h5dense <- H5Mat(filename = stim.denseH5FilePath, dataPath = "data")
+stim.h5dense
+
+ctrl.sparseH5FilePath <- system.file("extdata/ctrl_sparse.h5", package = "RcppPlanc")
+ctrl.h5sparse <- H5SpMat(filename = ctrl.sparseH5FilePath, 
+                         valuePath = "scaleDataSparse/data", rowindPath = "scaleDataSparse/indices", colptrPath = "scaleDataSparse/indptr",
+                         nrow = nrow(ctrl.sparse), ncol = ncol(ctrl.sparse))
+ctrl.h5sparse
+
+stim.sparseH5FilePath <- system.file("extdata/stim_sparse.h5", package = "RcppPlanc")
+stim.h5sparse <- H5SpMat(filename = stim.sparseH5FilePath,
+                         valuePath = "scaleDataSparse/data", rowindPath = "scaleDataSparse/indices", colptrPath = "scaleDataSparse/indptr",
+                         nrow = nrow(stim.sparse), ncol = ncol(stim.sparse))
+stim.h5sparse
+```
+
+With the argument list constructed, we can simply run any iNMF algorithm with having them in a list, which is the same as what we did with in-memory matrix objects. 
+
+>Note that it is recommended to apply `onlineINMF()` with HDF5 files due to the nature of the HALS algorithm it adopts. `inmf()` and `uinmf()` use ANLS updating approach which requires subsetting on rows of the data and could be very slow. Although this is still supported. Optimization might be updated in future versions.
+
+```{r onlineinmf, message=FALSE, results='hide'}
+res <- onlineINMF(list(ctrl.h5sparse, stim.h5sparse), k = 20, lambda = 5, minibatchSize = 50)
+```
+
+Here, the result is also a similar list object but with two additional entries `res$A` and `res$B`. These are dataset specific matrices storing the algorithm update information but not the primary result of iNMF. These are needed for performing other scenarios of online iNMF. Please see `?onlineINMF` for more explanation. 
+
+Note that the argument `minibatchSize` is set to `50` only for demonstrating this minimal example of this vignette. This is a parameter specifying the chunk size of each updates in the iterative algorithm, which obviously should be a smaller number than the number of sample points in provided datasets. Users testing with real life large-scale data should ignore it or determine it basing on the specification (e.g. RAM) of the machines. 
+
+\br
+\br

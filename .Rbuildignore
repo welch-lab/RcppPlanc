@@ -5,3 +5,5 @@
 ^.*build
 ^.*_deps
 ^.*CMakeFiles
+^doc$
+^Meta$
