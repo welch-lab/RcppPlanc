@@ -11,6 +11,55 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// rcpp_mat_to_h5mat
+CharacterVector rcpp_mat_to_h5mat(const NumericMatrix& x, std::string filename, std::string dataPath);
+RcppExport SEXP _RcppPlanc_rcpp_mat_to_h5mat(SEXP xSEXP, SEXP filenameSEXP, SEXP dataPathSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< std::string >::type filename(filenameSEXP);
+    Rcpp::traits::input_parameter< std::string >::type dataPath(dataPathSEXP);
+    rcpp_result_gen = Rcpp::wrap(rcpp_mat_to_h5mat(x, filename, dataPath));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rcpp_spmat_to_h5mat
+CharacterVector rcpp_spmat_to_h5mat(const NumericVector& data, const IntegerVector& rowind, const IntegerVector& colptr, unsigned int nrow, unsigned int ncol, std::string filename, std::string dataPath);
+RcppExport SEXP _RcppPlanc_rcpp_spmat_to_h5mat(SEXP dataSEXP, SEXP rowindSEXP, SEXP colptrSEXP, SEXP nrowSEXP, SEXP ncolSEXP, SEXP filenameSEXP, SEXP dataPathSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericVector& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type rowind(rowindSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type colptr(colptrSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type nrow(nrowSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type ncol(ncolSEXP);
+    Rcpp::traits::input_parameter< std::string >::type filename(filenameSEXP);
+    Rcpp::traits::input_parameter< std::string >::type dataPath(dataPathSEXP);
+    rcpp_result_gen = Rcpp::wrap(rcpp_spmat_to_h5mat(data, rowind, colptr, nrow, ncol, filename, dataPath));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rcpp_spmat_to_h5spmat
+CharacterVector rcpp_spmat_to_h5spmat(const NumericVector& value, const IntegerVector& rowind, const IntegerVector& colptr, unsigned int nrow, unsigned int ncol, std::string filename, std::string valuePath, std::string rowindPath, std::string colptrPath);
+RcppExport SEXP _RcppPlanc_rcpp_spmat_to_h5spmat(SEXP valueSEXP, SEXP rowindSEXP, SEXP colptrSEXP, SEXP nrowSEXP, SEXP ncolSEXP, SEXP filenameSEXP, SEXP valuePathSEXP, SEXP rowindPathSEXP, SEXP colptrPathSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericVector& >::type value(valueSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type rowind(rowindSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type colptr(colptrSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type nrow(nrowSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type ncol(ncolSEXP);
+    Rcpp::traits::input_parameter< std::string >::type filename(filenameSEXP);
+    Rcpp::traits::input_parameter< std::string >::type valuePath(valuePathSEXP);
+    Rcpp::traits::input_parameter< std::string >::type rowindPath(rowindPathSEXP);
+    Rcpp::traits::input_parameter< std::string >::type colptrPath(colptrPathSEXP);
+    rcpp_result_gen = Rcpp::wrap(rcpp_spmat_to_h5spmat(value, rowind, colptr, nrow, ncol, filename, valuePath, rowindPath, colptrPath));
+    return rcpp_result_gen;
+END_RCPP
+}
 // nmf
 Rcpp::List nmf(const SEXP& x, const arma::uword& k, const arma::uword& niter, const std::string& algo, const Rcpp::Nullable<Rcpp::NumericMatrix>& Winit, const Rcpp::Nullable<Rcpp::NumericMatrix>& Hinit);
 RcppExport SEXP _RcppPlanc_nmf(SEXP xSEXP, SEXP kSEXP, SEXP niterSEXP, SEXP algoSEXP, SEXP WinitSEXP, SEXP HinitSEXP) {
@@ -338,6 +387,9 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_RcppPlanc_rcpp_mat_to_h5mat", (DL_FUNC) &_RcppPlanc_rcpp_mat_to_h5mat, 3},
+    {"_RcppPlanc_rcpp_spmat_to_h5mat", (DL_FUNC) &_RcppPlanc_rcpp_spmat_to_h5mat, 7},
+    {"_RcppPlanc_rcpp_spmat_to_h5spmat", (DL_FUNC) &_RcppPlanc_rcpp_spmat_to_h5spmat, 9},
     {"_RcppPlanc_nmf", (DL_FUNC) &_RcppPlanc_nmf, 6},
     {"_RcppPlanc_symNMF", (DL_FUNC) &_RcppPlanc_symNMF, 6},
     {"_RcppPlanc_bppnnls", (DL_FUNC) &_RcppPlanc_bppnnls, 2},

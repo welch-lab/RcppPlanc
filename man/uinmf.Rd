@@ -65,11 +65,7 @@ ANLS algorithm.
 }
 \examples{
 if (FALSE) {
-    set.seed(1)
-    res1 <- uinmf(list(dense1, dense2),
-                  list(dense.unshare1, dense.unshare2))
-    set.seed(1)
-    res2 <- uinmf(list(sparse1, sparse2),
+    res1 <- uinmf(list(sparse1, sparse2),
                   list(sparse.unshare1, sparse.unshare2))
 }
 }

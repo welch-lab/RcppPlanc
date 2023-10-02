@@ -1,11 +1,31 @@
+library(RcppPlanc)
+library(testthat)
+library(Matrix)
+ctrl.h5ds <- H5Mat(filename = system.file("extdata", "ctrl_dense.h5", 
+                                          package = "RcppPlanc", mustWork = TRUE), 
+                   dataPath = "scaleData")
+stim.h5ds <- H5Mat(filename = system.file("extdata", "stim_dense.h5", 
+                                          package = "RcppPlanc", mustWork = TRUE), 
+                   dataPath = "scaleData")
+ctrl.h5sp <- H5SpMat(filename = system.file("extdata", "ctrl_sparse.h5", 
+                                            package = "RcppPlanc", mustWork = TRUE), 
+                     valuePath = "scaleDataSparse/data", 
+                     rowindPath = "scaleDataSparse/indices", 
+                     colptrPath = "scaleDataSparse/indptr", 
+                     nrow = nrow(ctrl.sparse), 
+                     ncol = ncol(ctrl.sparse))
+stim.h5sp <- H5SpMat(filename = system.file("extdata", "stim_sparse.h5", 
+                                            package = "RcppPlanc", mustWork = TRUE), 
+                     valuePath = "scaleDataSparse/data", 
+                     rowindPath = "scaleDataSparse/indices", 
+                     colptrPath = "scaleDataSparse/indptr", 
+                     nrow = nrow(stim.sparse), 
+                     ncol = ncol(stim.sparse))
 ctrl.dense <- as.matrix(ctrl.sparse)
 stim.dense <- as.matrix(stim.sparse)
 m <- nrow(ctrl.dense)
 ni <- c(ncol(ctrl.dense), ncol(stim.dense))
 k <- 20
-set.seed(1)
-
-## TODO: Test HDF5
 
 test_that("inmf, w/o init", {
   # Dense cases
@@ -23,11 +43,20 @@ test_that("inmf, w/o init", {
   
   expect_error(inmf(list(ctrl.dense, ctrl.dense), k = 300),
                "k must be <= m")
-  
   # Sparse cases
   set.seed(1)
   res2 <- inmf(list(ctrl.sparse, stim.sparse), k = k)
   expect_true(all.equal(res1, res2))
+  
+  # dense h5 cases
+  set.seed(1)
+  res3 <- inmf(list(ctrl.h5ds, stim.h5ds), k = k)
+  expect_true(all.equal(res1, res3))
+  
+  # sparse h5 cases
+  set.seed(1)
+  res4 <- inmf(objectList = list(ctrl.h5sp, stim.h5sp), k = k)
+  expect_true(all.equal(res1, res4, tolerance = 1e-6))
 })
 
 test_that("inmf, w/ init", {
@@ -68,12 +97,26 @@ test_that("onlineINMF, scenario 1", {
   set.seed(1)
   res2 <- onlineINMF(list(ctrl.dense, stim.dense), k = k, minibatchSize = 50)
   expect_true(all.equal(res1, res2))
+  
+  # dense h5 cases
+  set.seed(1)
+  res3 <- onlineINMF(list(ctrl.h5ds, stim.h5ds), k = k, minibatchSize = 50)
+  expect_true(all.equal(res1, res3))
+  
+  # sparse h5 cases
+  set.seed(1)
+  res4 <- onlineINMF(list(ctrl.h5sp, stim.h5sp), k = k, minibatchSize = 50)
+  expect_true(all.equal(res1, res4, tolerance = 1e-6))
 })
 
 set.seed(233)
 new.data <- ctrl.sparse
 new.data@x <- new.data@x + runif(length(new.data@x))
 new.data.dense <- as.matrix(new.data)
+new.h5sp <- as.H5SpMat(new.data, "temp_new_sparse.h5", overwrite = TRUE)
+new.h5m <- as.H5Mat(new.data.dense, "temp_new_dense.h5", overwrite = TRUE)
+# TODO create temp h5 file for new.data
+
 test_that("onlineINMF, scenario 2", {
   res0 <- onlineINMF(list(ctrl.sparse, stim.sparse), k = k, minibatchSize = 50)
   set.seed(1)
@@ -117,12 +160,23 @@ test_that("onlineINMF, scenario 2", {
                           Ainit = res0$A),
                "Must provide 2 B matrices")
   
+  res3 <- onlineINMF(list(ctrl.h5sp, ctrl.h5sp), newDatasets = list(new.h5sp),
+                     k = k, minibatchSize = 50, Vinit = res0$V, Winit = res0$W, 
+                     Ainit = res0$A, Binit = res0$B)
+  expect_true(all.equal(res1, res2))
+  
+  res4 <- onlineINMF(list(ctrl.h5ds, stim.h5ds), newDatasets = list(new.h5m),
+                     k = k, minibatchSize = 50, Vinit = res0$V, Winit = res0$W, 
+                     Ainit = res0$A, Binit = res0$B)
+  # TODO May need to investigate why h5 dense version always has some sort of
+  # precision error
+  expect_true(all.equal(res1, res4, tolerance = 1e-3))
+  
   # Scenario 3
   expect_no_error(onlineINMF(list(ctrl.sparse, stim.sparse), 
                              newDatasets = list(new.data), project = TRUE,
                              k = k, minibatchSize = 50, Winit = res0$W))
 })
-
 
 p1 <- ctrl.sparse[1:10,]
 p2 <- stim.sparse[11:30,]
@@ -160,3 +214,41 @@ test_that("uinmf", {
   expect_equal(nrow(res4$U[[2]]), 0)
   expect_equal(ncol(res4$U[[2]]), 20)
 })
+
+test_that("auxiliary", {
+  expect_error(H5Mat("thisFilenameShouldNotExist", "something"), 
+               "File not found")
+  expect_error(as.H5Mat(ctrl.dense, "temp_new_dense.h5", overwrite = FALSE), 
+               "File already exists at the given path")
+  
+  # Test if `as.H5Mat.dgCMatrix` S3 method convert sparse to h5 dense correctly
+  ctrl.h5ds_2 <- as.H5Mat(ctrl.sparse, "temp_ctrl_dense.h5")
+  set.seed(1)
+  res1 <- onlineINMF(list(ctrl.sparse, stim.sparse), k = k, minibatchSize = 50)
+  set.seed(1)
+  res2 <- onlineINMF(list(ctrl.h5ds_2, stim.h5ds), k = k, minibatchSize = 50)
+  expect_true(all.equal(res1, res2))
+  
+  expect_no_error(print.H5Mat(ctrl.h5ds))
+  
+  
+  expect_error(H5SpMat("thisFilenameShouldNotExist", "something", "a", "b", 1, 2), 
+               "File not found")
+  expect_error(as.H5SpMat(ctrl.dense, "temp_new_sparse.h5", overwrite = FALSE), 
+               "File already exists at the given path")
+  
+  # Test if `as.H5SpMat.matrix` S3 method convert dense to h5 sparse correctly
+  ctrl.h5sp_2 <- as.H5SpMat(ctrl.dense, filename = "temp_ctrl_sparse.h5")
+  set.seed(1)
+  res1 <- onlineINMF(list(ctrl.sparse, stim.sparse), k = k, minibatchSize = 50)
+  set.seed(1)
+  res2 <- onlineINMF(list(ctrl.h5sp_2, stim.h5sp), k = k, minibatchSize = 50)
+  expect_true(all.equal(res1, res2, tolerance = 1e-6))
+  
+  expect_no_error(print.H5SpMat(ctrl.h5sp))
+})
+
+unlink("temp_ctrl_dense.h5")
+unlink("temp_ctrl_sparse.h5")
+unlink("temp_new_sparse.h5")
+unlink("temp_new_dense.h5")

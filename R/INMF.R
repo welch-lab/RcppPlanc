@@ -47,22 +47,12 @@
 #' @references Joshua D. Welch and et al., Single-Cell Multi-omic Integration
 #' Compares and Contrasts Features of Brain Cell Identity, Cell, 2019
 #' @examples
-#' if (FALSE) {
-#'     set.seed(1)
-#'     res1 <- inmf(list(dense1, dense2))
-#'     set.seed(1)
-#'     res2 <- inmf(list(sparse1, sparse2))
-#'     h5dense1 <- H5Mat("filepath1.h5", "dataPath")
-#'     h5dense2 <- H5Mat("filepath2.h5", "dataPath")
-#'     set.seed(1)
-#'     res3 <- inmf(list(h5dense1, h5dense2))
-#'     h5sparse1 <- H5SpMat("filepath1.h5", "group/data", "group/indices",
-#'                          "group/indptr", nrow = 4215, ncol = 6548)
-#'     h5sparse2 <- H5SpMat("filepath2.h5", "group/data", "group/indices",
-#'                          "group/indptr", nrow = 4215, ncol = 7451)
-#'     set.seed(1)
-#'     res4 <- inmf(list(h5sparse1, h5sparse2))
-#' }
+#' library(Matrix)
+#' set.seed(1)
+#' res1 <- inmf(list(ctrl.sparse, stim.sparse))
+#' set.seed(1)
+#' res2 <- inmf(list(as.matrix(ctrl.sparse), as.matrix(stim.sparse)))
+#' all.equal(res1, res2)
 inmf <- function(
     objectList,
     k = 20,
@@ -83,14 +73,15 @@ inmf <- function(
         H5Mat = .bppinmf_h5dense(sapply(objectList, function(x) x$filename),
                                 sapply(objectList, function(x) x$dataPath),
                                 k, lambda, niter, verbose, Hinit, Vinit, Winit),
-        H5SpMat = .bppinmf_h5sparse(sapply(objectList, function(x) x$filename),
-                                   sapply(objectList, function(x) x$valuePath),
-                                   sapply(objectList, function(x) x$rowindPath),
-                                   sapply(objectList, function(x) x$colptrPath),
-                                   sapply(objectList, function(x) x$nrow),
-                                   sapply(objectList, function(x) x$ncol),
-                                   k, lambda, niter, verbose,
-                                   Hinit, Vinit, Winit)
+        H5SpMat = .bppinmf_h5sparse(filenames = sapply(objectList, function(x) x$filename),
+                                    valuePath = sapply(objectList, function(x) x$valuePath),
+                                    rowindPath = sapply(objectList, function(x) x$rowindPath),
+                                    colptrPath = sapply(objectList, function(x) x$colptrPath),
+                                    nrow = sapply(objectList, function(x) x$nrow),
+                                    ncol = sapply(objectList, function(x) x$ncol),
+                                    k = k, lambda = lambda, niter = niter, 
+                                    verbose = verbose, Hinit = Hinit, 
+                                    Vinit = Vinit, Winit = Winit)
     )
     return(res)
 }
@@ -164,32 +155,54 @@ inmf <- function(
 #' Chao Gao and et al., Iterative single-cell multi-omic integration using
 #' online learning, Nat Biotechnol., 2021
 #' @examples
-#' if (FALSE) {
-#'     # Scenario 1 with sparse matrices
-#'     res1 <- onlineINMF(list(sparse1, sparse2))
+#' library(Matrix)
+#' ctrl.h5sp <- H5SpMat(filename = system.file("extdata", "ctrl_sparse.h5", 
+#'                                             package = "RcppPlanc", 
+#'                                             mustWork = TRUE), 
+#'                      valuePath = "scaleDataSparse/data", 
+#'                      rowindPath = "scaleDataSparse/indices", 
+#'                      colptrPath = "scaleDataSparse/indptr", 
+#'                      nrow = nrow(ctrl.sparse), 
+#'                      ncol = ncol(ctrl.sparse))
+#' stim.h5sp <- H5SpMat(filename = system.file("extdata", "stim_sparse.h5", 
+#'                                             package = "RcppPlanc", 
+#'                                             mustWork = TRUE), 
+#'                      valuePath = "scaleDataSparse/data", 
+#'                      rowindPath = "scaleDataSparse/indices", 
+#'                      colptrPath = "scaleDataSparse/indptr", 
+#'                      nrow = nrow(stim.sparse), 
+#'                      ncol = ncol(stim.sparse))
+#' 
+#' # Scenario 1 with sparse matrices
+#' set.seed(1)
+#' res1 <- onlineINMF(list(ctrl.sparse, stim.sparse), minibatchSize = 50)
+#' set.seed(1)
+#' res2 <- onlineINMF(list(ctrl.h5sp, stim.h5sp), minibatchSize = 50)
+#' all.equal(res1, res2)
+#' 
+#' \dontrun{
+#' # Scenario 2 with H5 dense matrices
+#' h5dense1 <- H5Mat("filepath1.h5", "dataPath")
+#' h5dense2 <- H5Mat("filepath2.h5", "dataPath")
+#' res2 <- onlineINMF(list(h5dense1, h5dense2))
+#' h5dense3 <- H5Mat("filepath3.h5", "dataPath")
+#' res3 <- onlineINMF(list(h5dense1, h5dense2),
+#'                    newDatasets = list(h5dense3),
+#'                    Vinit = res2$V, Winit = res2$W,
+#'                    Ainit = res2$A, Binit = res2$B)
 #'
-#'     # Scenario 2 with H5 dense matrices
-#'     h5dense1 <- H5Mat("filepath1.h5", "dataPath")
-#'     h5dense2 <- H5Mat("filepath2.h5", "dataPath")
-#'     res2 <- onlineINMF(list(h5dense1, h5dense2))
-#'     h5dense3 <- H5Mat("filepath3.h5", "dataPath")
-#'     res3 <- onlineINMF(list(h5dense1, h5dense2),
-#'                        newDatasets = list(h5dense3),
-#'                        Vinit = res2$V, Winit = res2$W,
-#'                        Ainit = res2$A, Binit = res2$B)
-#'
-#'     # Scenario 3 with H5 sparse matrices
-#'     h5sparse1 <- H5SpMat("filepath1.h5", "group/data", "group/indices",
-#'                          "group/indptr", nrow = 4215, ncol = 6548)
-#'     h5sparse2 <- H5SpMat("filepath2.h5", "group/data", "group/indices",
-#'                          "group/indptr", nrow = 4215, ncol = 7451)
-#'     res4 <- onlineINMF(list(h5sparse1, h5sparse2))
-#'     h5sparse3 <- H5SpMat("filepath3.h5", "group/data", "group/indices",
-#'                          "group/indptr", nrow = 4215, ncol = 3456)
-#'     res5 <- onlineINMF(list(h5sparse1, h5sparse2),
-#'                        newDatasets = list(h5sparse3), project = TRUE,
-#'                        Vinit = res4$V, Winit = res4$W,
-#'                        Ainit = res4$A, Binit = res4$B)
+#' # Scenario 3 with H5 sparse matrices
+#' h5sparse1 <- H5SpMat("filepath1.h5", "group/data", "group/indices",
+#'                      "group/indptr", nrow = 4215, ncol = 6548)
+#' h5sparse2 <- H5SpMat("filepath2.h5", "group/data", "group/indices",
+#'                      "group/indptr", nrow = 4215, ncol = 7451)
+#' res4 <- onlineINMF(list(h5sparse1, h5sparse2))
+#' h5sparse3 <- H5SpMat("filepath3.h5", "group/data", "group/indices",
+#'                      "group/indptr", nrow = 4215, ncol = 3456)
+#' res5 <- onlineINMF(list(h5sparse1, h5sparse2),
+#'                    newDatasets = list(h5sparse3), project = TRUE,
+#'                    Vinit = res4$V, Winit = res4$W,
+#'                    Ainit = res4$A, Binit = res4$B)
 #' }
 onlineINMF <- function(
     objectList,
@@ -348,11 +361,7 @@ onlineINMF <- function(
 #' factorization, Nat. Comm., 2022
 #' @examples
 #' if (FALSE) {
-#'     set.seed(1)
-#'     res1 <- uinmf(list(dense1, dense2),
-#'                   list(dense.unshare1, dense.unshare2))
-#'     set.seed(1)
-#'     res2 <- uinmf(list(sparse1, sparse2),
+#'     res1 <- uinmf(list(sparse1, sparse2),
 #'                   list(sparse.unshare1, sparse.unshare2))
 #' }
 uinmf <- function(

@@ -2,29 +2,109 @@
 % Please edit documentation in R/utils.R
 \name{H5SpMat}
 \alias{H5SpMat}
-\title{Create argument list for constructing HDF5 based CSC sparse matrix}
+\alias{as.H5SpMat}
+\alias{as.H5SpMat.matrix}
+\alias{as.H5SpMat.dgCMatrix}
+\alias{as.H5SpMat.default}
+\title{Argument list object for using a sparse matrix stored in HDF5 file}
 \usage{
 H5SpMat(filename, valuePath, rowindPath, colptrPath, nrow, ncol)
+
+as.H5SpMat(
+  x,
+  filename,
+  valuePath = "data",
+  rowindPath = "indices",
+  colptrPath = "indptr",
+  overwrite = FALSE,
+  ...
+)
+
+\method{as.H5SpMat}{matrix}(
+  x,
+  filename,
+  valuePath = "data",
+  rowindPath = "indices",
+  colptrPath = "indptr",
+  overwrite = FALSE,
+  ...
+)
+
+\method{as.H5SpMat}{dgCMatrix}(
+  x,
+  filename,
+  valuePath = "data",
+  rowindPath = "indices",
+  colptrPath = "indptr",
+  overwrite = FALSE,
+  ...
+)
+
+\method{as.H5SpMat}{default}(
+  x,
+  filename,
+  valuePath = "data",
+  rowindPath = "indices",
+  colptrPath = "indptr",
+  overwrite = FALSE,
+  ...
+)
 }
 \arguments{
 \item{filename}{Filename of the HDF5 file}
 
-\item{valuePath}{Path in the HDF5 file that points to the 1D value vector of
-the sparse matrix.}
+\item{valuePath}{Path in the HDF5 file that points to a 1D array storing the
+non-zero values of the sparse matrix. Default \code{"data"} when using 
+\code{as.H5SpMat}.}
 
-\item{rowindPath}{Path in the HDF5 file that points to the 1D rowind vector
-of the sparse matrix.}
+\item{rowindPath}{Path in the HDF5 file that points to a 1D integer array
+storing the row indices of non-zero values in each column of the sparse 
+matrix. Default \code{"indices"} when using \code{as.H5SpMat}.}
 
-\item{colptrPath}{Path in the HDF5 file that points to the 1D colptr vector
-of the sparse matrix.}
+\item{colptrPath}{Path in the HDF5 file that points to a 1D integer array
+storing the number of non-zero values in each column of the sparse matrix. 
+Default \code{"indptr"} when using \code{as.H5SpMat}.}
 
-\item{nrow}{Integer, number of rows of the sparse matrix.}
+\item{nrow, ncol}{Integer, the true dimensionality of the sparse matrix.}
 
-\item{ncol}{Integer, number of columns of the sparse matrix.}
+\item{x}{For \code{as.H5SpMat}, matrix of either dense or sparse type to be
+written; for \code{print}, a \code{H5SpMat} argument list object.}
+
+\item{overwrite}{Logical, whether to overwrite the file if already exists at
+the given path. Default \code{FALSE}.}
+
+\item{...}{not used}
 }
 \value{
-H5SpMat object, can be used like a list
+H5SpMat object, indeed a list object.
 }
 \description{
-Create argument list for constructing HDF5 based CSC sparse matrix
+For running \code{\link{inmf}}, \code{\link{onlineINMF}} or 
+\code{\link{uinmf}} with sparse matrix stored in HDF5 file, users will need 
+to construct an argument list for the filename of the HDF5 file as well as 
+the paths in the file storing the arrays that construct the CSC (compressed 
+sparse column) matrix. \code{H5SpMat} is provided as an instructed 
+constructor. Meanwhile, since the INMF functions require that all datasets 
+should be of the same type, \code{as.H5SpMat} is provided for writing 
+in-memory data into a new HDF5 file on disk and returning the 
+constructed argument list.
+}
+\examples{
+h <- H5SpMat(system.file("extdata/ctrl_sparse.h5", package = "RcppPlanc"),
+             "data", "indices", "indptr", 173, 300)
+dim(h)
+\dontrun{
+library(Matrix)
+ctrl.dense <- as.matrix(ctrl.sparse)
+h1 <- as.H5SpMat(ctrl.sparse, "ctrl_from_sparse_to_sparse.h5", 
+                 valuePath = "data", rowindPath = "indices", 
+                 colptrPath = "indptr", nrow = nrow(ctrl.sparse), 
+                 ncol = ncol(ctrl.sparse))
+h1
+h2 <- as.H5SpMat(ctrl.dense, "ctrl_from_dense_to_sparse.h5", 
+                 valuePath = "data", rowindPath = "indices", 
+                 colptrPath = "indptr", nrow = nrow(ctrl.sparse), 
+                 ncol = ncol(ctrl.sparse))
+h2
+}
 }

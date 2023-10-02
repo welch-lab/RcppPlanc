@@ -72,22 +72,12 @@ where \eqn{E_i} is the input non-negative matrix of the \eqn{i}'th dataset,
 strategy.
 }
 \examples{
-if (FALSE) {
-    set.seed(1)
-    res1 <- inmf(list(dense1, dense2))
-    set.seed(1)
-    res2 <- inmf(list(sparse1, sparse2))
-    h5dense1 <- H5Mat("filepath1.h5", "dataPath")
-    h5dense2 <- H5Mat("filepath2.h5", "dataPath")
-    set.seed(1)
-    res3 <- inmf(list(h5dense1, h5dense2))
-    h5sparse1 <- H5SpMat("filepath1.h5", "group/data", "group/indices",
-                         "group/indptr", nrow = 4215, ncol = 6548)
-    h5sparse2 <- H5SpMat("filepath2.h5", "group/data", "group/indices",
-                         "group/indptr", nrow = 4215, ncol = 7451)
-    set.seed(1)
-    res4 <- inmf(list(h5sparse1, h5sparse2))
-}
+library(Matrix)
+set.seed(1)
+res1 <- inmf(list(ctrl.sparse, stim.sparse))
+set.seed(1)
+res2 <- inmf(list(as.matrix(ctrl.sparse), as.matrix(stim.sparse)))
+all.equal(res1, res2)
 }
 \references{
 Joshua D. Welch and et al., Single-Cell Multi-omic Integration

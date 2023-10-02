@@ -159,8 +159,18 @@ namespace planc {
             HighFive::File tmpfile(tmpfilename, HighFive::File::ReadWrite | HighFive::File::Create | HighFive::File::Truncate);
             // Set specified chunk dimension for the new dataset
             std::vector<hsize_t> chunk_dims_new;
-            chunk_dims_new.push_back(this->chunk_dims[0]); // Typically, the "1000"
-            chunk_dims_new.push_back(this->n_cols);
+            if (this->colChunkSize > this->n_rows) {
+                // Mainly happening in small unit test case, but worth checking
+                chunk_dims_new.push_back(this->n_rows);
+            } else {
+                chunk_dims_new.push_back(this->colChunkSize);
+            }
+            if (this->rowChunkSize > this->n_cols) {
+                // Mainly happening in small unit test case, but worth checking
+                chunk_dims_new.push_back(this->n_cols);
+            } else {
+                chunk_dims_new.push_back(this->rowChunkSize);
+            }
             HighFive::Chunking newChunks(chunk_dims_new);
             HighFive::DataSetCreateProps cparms_new;
             cparms_new.add(newChunks);
@@ -434,7 +444,12 @@ namespace planc {
             // Write colptrT to HDF5 file
             // std::string ptempPath = this->increUniqName(this->pPath + "_transposed_");
             std::vector<hsize_t> p_chunksize;
-            p_chunksize.push_back(this->p_chunksize);
+            if (this->p_chunksize > this->n_rows+1) {
+                // Mainly happening in small unit test case, but worth checking
+                p_chunksize.push_back(this->n_rows+1);
+            } else {
+                p_chunksize.push_back(this->p_chunksize);
+            }
             HighFive::Chunking p_newChunks(p_chunksize);
             HighFive::DataSetCreateProps p_cparms_new;
             p_cparms_new.add(p_newChunks);
