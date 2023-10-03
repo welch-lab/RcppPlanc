@@ -1,3 +1,7 @@
+#ifndef ARMA_DONT_PRINT_FAST_MATH_WARNING
+#define ARMA_DONT_PRINT_FAST_MATH_WARNING
+#endif
+
 #include <RcppArmadillo.h>
 #include <Rcpp.h>
 #include <highfive/H5File.hpp>
@@ -23,7 +27,7 @@ CharacterVector rcpp_mat_to_h5mat(const NumericMatrix& x, std::string filename,
     HighFive::DataSpace fspace(tDims);
     // // Set chunking dimension for the new dataset
     std::vector<hsize_t> chunk_dims;
-    int colChunkSize = 1000, rowChunkSize = 1000;
+    unsigned int colChunkSize = 1000, rowChunkSize = 1000;
     if (colChunkSize > x.ncol()) {
         // Mainly happening in small unit test case, but worth checking
         chunk_dims.push_back(x.ncol());
