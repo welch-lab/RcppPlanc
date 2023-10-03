@@ -474,7 +474,7 @@ arma::mat runbppnnls(const arma::mat &C, const T &B) {
     arma::uword ONE_THREAD_MATRIX_SIZE = chunk_size_dense<double>(m_k);
     unsigned int numChunks = m_n / ONE_THREAD_MATRIX_SIZE;
     if (numChunks*ONE_THREAD_MATRIX_SIZE < m_n) numChunks++;
-#pragma omp parallel for schedule(auto)
+#pragma omp parallel for schedule(dynamic)
     for (unsigned int i = 0; i < numChunks; i++) {
         unsigned int spanStart = i * ONE_THREAD_MATRIX_SIZE;
         unsigned int spanEnd = (i + 1) * ONE_THREAD_MATRIX_SIZE - 1;
@@ -534,7 +534,7 @@ arma::mat bppnnls_prod(const arma::mat &CtC, const arma::mat &CtB) {
     outmatptr = &outmat;
     unsigned int numChunks = n / ONE_THREAD_MATRIX_SIZE;
     if (numChunks*ONE_THREAD_MATRIX_SIZE < n) numChunks++;
-#pragma omp parallel for schedule(auto)
+#pragma omp parallel for schedule(dynamic)
     for (unsigned int i = 0; i < numChunks; i++) {
         unsigned int spanStart = i * ONE_THREAD_MATRIX_SIZE;
         unsigned int spanEnd = (i + 1) * ONE_THREAD_MATRIX_SIZE - 1;
