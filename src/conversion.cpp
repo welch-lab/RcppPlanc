@@ -27,7 +27,7 @@ CharacterVector rcpp_mat_to_h5mat(const NumericMatrix& x, std::string filename,
     HighFive::DataSpace fspace(tDims);
     // // Set chunking dimension for the new dataset
     std::vector<hsize_t> chunk_dims;
-    unsigned int colChunkSize = 1000, rowChunkSize = 1000;
+    int colChunkSize = 1000, rowChunkSize = 1000;
     if (colChunkSize > x.ncol()) {
         // Mainly happening in small unit test case, but worth checking
         chunk_dims.push_back(x.ncol());
@@ -77,7 +77,7 @@ CharacterVector rcpp_spmat_to_h5mat(const NumericVector& data,
     HighFive::DataSpace fspace(tDims);
     // // Set chunking dimension for the new dataset
     std::vector<hsize_t> chunk_dims;
-    int colChunkSize = 1000, rowChunkSize = 1000;
+    unsigned int colChunkSize = 1000, rowChunkSize = 1000;
     if (colChunkSize > ncol) {
         // Mainly happening in small unit test case, but worth checking
         chunk_dims.push_back(ncol);
