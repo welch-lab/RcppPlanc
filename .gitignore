@@ -9,7 +9,6 @@
 # User-specific files
 .Ruserdata
 *.rds
-*.h5
 
 # Example code in package build process
 *-Ex.R
