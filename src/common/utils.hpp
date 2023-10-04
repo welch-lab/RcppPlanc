@@ -14,9 +14,7 @@
 #include <vector>
 #include "utils.h"
 #include <random>
-#ifdef USE_HW_DETECT
 #include "hw_detect.hpp"
-#endif
 #include "data.hpp"
 #ifdef MKL_FOUND
 #include <mkl.h>
@@ -460,9 +458,9 @@ int debug_hook(){
 
 template<typename T>
 arma::uword chunk_size_dense(arma::uword rank) {
-#ifdef USE_HW_DETECT
-return (get_l2_data_cache() / (rank * sizeof(T))); //todo fix me, this is suboptimal
+#ifdef _OPENMP
+return (get_l1_data_cache() / (rank * sizeof(T)));
 #else
-return 1u;
+return (get_l2_data_cache() / (rank * sizeof(T)));
 #endif
 }
