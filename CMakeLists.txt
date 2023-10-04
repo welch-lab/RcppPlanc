@@ -86,7 +86,7 @@ if(CMAKE_HOST_SYSTEM_PROCESSOR MATCHES arm64 AND APPLE AND (NOT CMAKE_CROSSCOMPI
     target_link_libraries(hw_detect PRIVATE "${hwloc_SOURCE_DIR}/hwloc/.libs/libhwloc_embedded.a")
     endif()
     target_link_libraries(RcppPlanc PRIVATE hw_detect)
-    target_compile_definitions(RcppPlanc USE_HW_DETECT)
+    target_compile_definitions(RcppPlanc PRIVATE USE_HW_DETECT)
 endif()
 CPMAddPackage(NAME HighFive
     GIT_TAG v2.7.1
