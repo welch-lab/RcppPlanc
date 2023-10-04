@@ -32,6 +32,12 @@ Relevant citations can be found in his repository at <https://github.com/ramkika
 
 When and if a citation for this package becomes available, it will be posted here.
 
+Parts of this code source are licensed under the 3-clause BSD (c) 2016 , UT-Battelle, LLC and (c) 2017 Ramakrishnan Kannan.
+The compiled binary and sources not marked otherwise are licensed under the GPLv2 or later.
+
+Licenses for the various CMake scripts (CPM, FindAutotools, FindHWLOC, FindR, and FindRModule) are included at the top
+of each file.
+
 ## Contributing and Support
 
 Please reach out to us at the Welch Lab using the issue tracker in this repository *before* contacting upstream.

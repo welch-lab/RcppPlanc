@@ -1,9 +1,12 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^LICENSE\.md$
+^LICENSE-GPL\.md$
+^LICENSE-UT\.md$
 ^.*\.vscode
 ^.*build
 ^.*_deps
 ^.*CMakeFiles
 ^doc$
 ^Meta$
+^cran-comments\.md$
+^CMakePresets\.json$

@@ -1,14 +1,16 @@
 Package: RcppPlanc
 Type: Package
-Title: Fast Multithreaded Non-negative Matrix Factorization
-Version: 0.8.3.1
-Date: 2023-09-15
+Title: Parallel Low-rank Approximation with Nonnegativity Constraints
+Version: 1.0.0
+Date: 2023-10-??
 Author: c(
   person(given = 'Andrew', family = 'Robbins', email = 'robbiand@med.umich.edu', role = c('aut', 'cre')),
   person(given = 'Yichen', family = 'Wang', email = 'wayichen@med.umich.edu', role = c('aut')),
-  person(given = 'Ramakrishnan', family = 'Kannan', role = c('aut')))
+person(given = 'Joshua', family = 'Welch', role = c('cph')),
+  person(given = 'Ramakrishnan', family = 'Kannan', role = c('cph'), comment = "The original PLANC code")),
+  person("UT-Batelle", role = c('cph'), comment = "The original PLANC code"))
 Maintainer: Andrew Robbins <robbiand@med.umich.edu>
-Description: Rcpp bindings for planc, a highly parallel
+Description: Rcpp bindings for PLANC, a highly parallel
               and extensible NMF/NTF library.
 Encoding: UTF-8
 Imports:
