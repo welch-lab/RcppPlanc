@@ -107,13 +107,18 @@ private:
             unsigned int spanEnd = (i + 1) * this->INMF_CHUNK_SIZE - 1;
             if (spanEnd > this->m - 1) spanEnd = this->m - 1;
             giventInput = arma::zeros<arma::mat>(this->k, spanEnd - spanStart + 1); ///
-            #pragma omp parallel for schedule(dynamic)
+            #pragma omp parallel for ordered schedule(dynamic)
             for (unsigned int j = 0; j < this->nDatasets; ++j) {
                 T* ETptr = this->EiT[j].get();
                 arma::mat* Hptr = this->Hi[j].get();
                 arma::mat* VTptr = this->ViT[j].get();
-                giventInput += (*Hptr).t() * (*ETptr).cols(spanStart, spanEnd);
-                giventInput -= (*Hptr).t() * *Hptr * (*VTptr).cols(spanStart, spanEnd);
+                arma::mat gtIpos = (*Hptr).t() * (*ETptr).cols(spanStart, spanEnd);
+                arma::mat gtIneg = (*Hptr).t() * *Hptr * (*VTptr).cols(spanStart, spanEnd);
+                #pragma omp ordered
+                {
+                giventInput += gtIpos;
+                giventInput -= gtIneg;
+                }
             }
             BPPNNLS<arma::mat, arma::vec> subProbW(giventGiven, giventInput, true); ///
             subProbW.solveNNLS();
