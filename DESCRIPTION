@@ -1,6 +1,6 @@
 Package: RcppPlanc
 Type: Package
-Title: Parallel Low-rank Approximation with Nonnegativity Constraints
+Title: Parallel Low-Rank Approximation with Nonnegativity Constraints
 Version: 1.0.0
 Date: 2023-10-??
 Author: c(
