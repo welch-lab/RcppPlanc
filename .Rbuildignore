@@ -3,7 +3,7 @@
 ^LICENSE-GPL\.md$
 ^LICENSE-UT\.md$
 ^.*\.vscode
-^.*build
+^.*out
 ^.*_deps
 ^.*CMakeFiles
 ^doc$
