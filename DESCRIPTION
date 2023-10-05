@@ -6,8 +6,8 @@ Date: 2023-10-??
 Author: c(
   person(given = 'Andrew', family = 'Robbins', email = 'robbiand@med.umich.edu', role = c('aut', 'cre')),
   person(given = 'Yichen', family = 'Wang', email = 'wayichen@med.umich.edu', role = c('aut')),
-person(given = 'Joshua', family = 'Welch', role = c('cph')),
-  person(given = 'Ramakrishnan', family = 'Kannan', role = c('cph'), comment = "The original PLANC code")),
+  person(given = 'Joshua', family = 'Welch', role = c('cph')),
+  person(given = 'Ramakrishnan', family = 'Kannan', role = c('cph'), comment = "The original PLANC code"),
   person("UT-Batelle", role = c('cph'), comment = "The original PLANC code"))
 Maintainer: Andrew Robbins <robbiand@med.umich.edu>
 Description: Rcpp bindings for PLANC, a highly parallel
