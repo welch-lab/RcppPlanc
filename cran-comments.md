@@ -2,10 +2,25 @@
 
 ## Test Environments
 
-Local:
-Windows 11, R 4.3.1 (x86_64-w64-mingw32)
+* Local:
+  * Windows 11, R 4.3.1 (x86_64-w64-mingw32)
+* win-builder:
+  * Windows Server 2022, Devel
+* R-hub Builder (<https://builder.r-hub.io>)
+  * Windows Server 2022 R-Devel
 
 ## R CMD check results
+
+``` <!-- language: lang-none -->
+
+Found the following significant warnings:
+  D:/temp/Rtmpk1MpYi/R.INSTALL2f5205985409f/RcppPlanc/src/_deps/hwloc-src/hwloc/topology-windows.c:1282:46: warning: format '%u' expects argument of type 'unsigned int', but argument 4 has type 'DWORD' {aka 'long unsigned int'} [-Wformat=]
+  D:/temp/Rtmpk1MpYi/R.INSTALL2f5205985409f/RcppPlanc/src/_deps/hwloc-src/hwloc/topology-windows.c:1282:49: warning: format '%u' expects argument of type 'unsigned int', but argument 5 has type 'DWORD' {aka 'long unsigned int'} [-Wformat=]
+  D:/temp/Rtmpk1MpYi/R.INSTALL2f5205985409f/RcppPlanc/src/_deps/hwloc-src/hwloc/topology-windows.c:1282:52: warning: format '%u' expects argument of type 'unsigned int', but argument 6 has type 'DWORD' {aka 'long unsigned int'} [-Wformat=]
+  D:/temp/Rtmpk1MpYi/R.INSTALL2f5205985409f/RcppPlanc/src/_deps/hwloc-src/hwloc/topology-windows.c:1286:29: warning: passing argument 2 of 'GetComputerNameA' from incompatible pointer type [-Wincompatible-pointer-types]
+```
+
+This is from one of our linked dependencies. If need be, they can be patched out, but these code paths are never called.
 
 ``` <!-- language: lang-none -->
 
@@ -857,8 +872,29 @@ This is likely from the exception handling routines of included libraries. If ne
   Found the following files/directories:
     ''NULL''
 
-0 errors ✔ | 5 warnings ✖ | 7 notes ✖
-
 ```
 
 Per <https://github.com/r-hub/rhub/issues/560> this appears to be a bug.
+
+  ``` <!-- language: lang-none -->
+❯ checking for detritus in the temp directory ... NOTE
+  Found the following files/directories:
+    'lastMiKTeXException''
+
+```
+
+Per <https://github.com/r-hub/rhub/issues/503> this appears to be a bug.
+
+  ``` <!-- language: lang-none -->
+❯ checking HTML version of manual ... NOTE
+  Skipping checking math rendering: package 'V8' unavailable
+
+```
+
+This is an Rhub issue. It works locally.
+
+0 errors ✔ | 5 warnings ✖ | 7 notes ✖
+
+## revdepcheck results
+
+None as this is a new package.
