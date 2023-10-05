@@ -3,7 +3,7 @@ Type: Package
 Title: Parallel Low-Rank Approximation with Nonnegativity Constraints
 Version: 1.0.0
 Date: 2023-10-??
-Author: c(
+Authors@R: c(
   person(given = 'Andrew', family = 'Robbins', email = 'robbiand@med.umich.edu', role = c('aut', 'cre')),
   person(given = 'Yichen', family = 'Wang', email = 'wayichen@med.umich.edu', role = c('aut')),
   person(given = 'Joshua', family = 'Welch', role = c('cph')),
