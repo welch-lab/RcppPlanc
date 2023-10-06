@@ -1,5 +1,4 @@
 #!/bin/sh
-shopt -s nullglob
 
 if test -z "$CMAKE"; then CMAKE="`which cmake`"; fi
 if test -z "$CMAKE"; then CMAKE=/Applications/CMake.app/Contents/bin/cmake; fi
