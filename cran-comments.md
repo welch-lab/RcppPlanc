@@ -4,6 +4,7 @@
 
 * Local:
   * Windows 11, R 4.3.1 (x86_64-w64-mingw32)
+  * rhub/ubuntu-gcc-release image
 * win-builder:
   * Windows Server 2022, Devel
 * R-hub Builder (<https://builder.r-hub.io>)
@@ -21,6 +22,7 @@ Found the following significant warnings:
 ```
 
 This is from one of our linked dependencies. If need be, they can be patched out, but these code paths are never called.
+This warning is not present on UNIX-alikes.
 
 ``` <!-- language: lang-none -->
 
@@ -111,7 +113,8 @@ These are vendored source files. If need be, we can patch them.
       libs  30.9Mb
 ```
 
-Static linkage of quite a few libraries will do this.
+Static linkage of quite a few libraries will do this. Reported size is from my Windows machine. Unix-alike installs
+use dynamic linkage and embedded hwloc and will be smaller.
 
 ``` <!-- language: lang-none -->
 
@@ -836,7 +839,8 @@ This is CMake standard practice. If need be, they can be moved to src or another
   Some Unix compilers require LF line endings.
 ```
 
-  These are not included in the tarball, they are downloaded at configure time.
+  These are not included in the tarball, they are downloaded at configure time. On UNIX-alikes this note is limited to
+  `src/_deps/hwloc-src/contrib/android/AndroidApp/lstopo/src/main/cpp/lib.c`
 
 ``` <!-- language: lang-none -->
 ❯ checking compilation flags used ... NOTE
@@ -887,11 +891,30 @@ Per <https://github.com/r-hub/rhub/issues/503> this appears to be a bug.
 
   ``` <!-- language: lang-none -->
 ❯ checking HTML version of manual ... NOTE
+  Skipping checking HTML validation: no command 'tidy' found
   Skipping checking math rendering: package 'V8' unavailable
 
 ```
 
 This is an Rhub issue. It works locally.
+
+``` <!-- language: lang-none -->
+❯ checking for future file timestamps ... NOTE
+  unable to verify current time
+
+```
+
+Per <https://github.com/r-hub/rhub/issues/440> this appears to be a bug.
+
+``` <!-- language: lang-none -->
+❯ checking examples ... NOTE
+  Examples with CPU (user + system) or elapsed time > 5s
+         user system elapsed
+  inmf 15.049  0.115   1.532
+
+```
+
+Will vary by platform-appears to be timing out winbuilder.
 
 0 errors ✔ | 5 warnings ✖ | 7 notes ✖
 
