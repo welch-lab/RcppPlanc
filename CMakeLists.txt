@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
 project(RcppPlanc VERSION 1.0.0 LANGUAGES C CXX)
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 include(CheckIncludeFile)
