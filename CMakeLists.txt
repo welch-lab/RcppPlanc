@@ -107,7 +107,7 @@ if(WIN32)
     target_link_libraries(RcppPlanc PRIVATE -lhdf5 -lsz -lz -lopenblas -lgfortran -lgomp -lpthread -ldl -lm -lquadmath "${R_HOME}/bin/x64/R.dll")
 else()
     find_package(HDF5 REQUIRED)
-    target_link_libraries(RcppPlanc PUBLIC BLAS::BLAS LAPACK::LAPACK hdf5::hdf5)
+    target_link_libraries(RcppPlanc PUBLIC ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} ${HDF5_LIBRARIES})
 endif()
 
 target_link_libraries(RcppPlanc PRIVATE hw_detect)
