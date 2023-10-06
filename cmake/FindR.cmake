@@ -68,7 +68,7 @@ find_program(RSCRIPT_EXECUTABLE Rscript DOC "Rscript executable." HINTS "${R_HOM
 set(CMAKE_FIND_APPBUNDLE ${TEMP_CMAKE_FIND_APPBUNDLE})
 
 # Search for non-standard R.h include path if header missing
-execute_process(COMMAND ${RSCRIPT_EXECUTABLE} "-e" "R.home('include')"
+execute_process(COMMAND ${RSCRIPT_EXECUTABLE} --vanilla "-e" "R.home('include')"
     RESULT_VARIABLE _haveR_h
     OUTPUT_VARIABLE _R_INCLUDE_location
     ERROR_VARIABLE _R_INCLUDE_location
