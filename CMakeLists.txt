@@ -77,7 +77,7 @@ else()
               DOWNLOAD_ONLY
               )
     find_package(Autotools REQUIRED)
-    find_program(LIBTOOL_EXECUTABLE libtool PATHS ${R_HOME})
+    find_program(LIBTOOL_EXECUTABLE libtool PATHS "${R_HOME}/bin")
     add_custom_command(OUTPUT "${hwloc_SOURCE_DIR}/configure"
     COMMAND "${hwloc_SOURCE_DIR}/autogen.sh"
     WORKING_DIRECTORY "${hwloc_SOURCE_DIR}")
