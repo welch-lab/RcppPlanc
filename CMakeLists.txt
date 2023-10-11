@@ -4,7 +4,6 @@ set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 include(CheckIncludeFile)
 include(CheckCXXCompilerFlag)
 include(cmake/CPM.cmake)
-include(cmake/FindR.cmake)
 include(cmake/FindRModule.cmake)
 
 if(NOT WIN32)
@@ -27,6 +26,8 @@ set_target_properties(RcppPlanc PROPERTIES SUFFIX ".so")
 endif()
 target_include_directories(RcppPlanc
 PRIVATE "${PROJECT_SOURCE_DIR}/src/common;${PROJECT_SOURCE_DIR}/src/nnls;${PROJECT_SOURCE_DIR}/src/nmf")
+
+find_package(R REQUIRED)
 
 find_r_module(Rcpp)
 find_r_module(RcppArmadillo)
@@ -76,6 +77,7 @@ else()
               DOWNLOAD_ONLY
               )
     find_package(Autotools REQUIRED)
+    find_program(LIBTOOL_EXECUTABLE libtool PATHS ${R_HOME})
     add_custom_command(OUTPUT "${hwloc_SOURCE_DIR}/configure"
     COMMAND "${hwloc_SOURCE_DIR}/autogen.sh"
     WORKING_DIRECTORY "${hwloc_SOURCE_DIR}")
