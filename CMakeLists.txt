@@ -79,14 +79,15 @@ else()
     find_package(Autotools REQUIRED)
     find_program(LIBTOOL_EXECUTABLE libtool PATHS "${R_HOME}/bin")
     add_custom_command(OUTPUT "${hwloc_SOURCE_DIR}/configure"
-    COMMAND "${hwloc_SOURCE_DIR}/autogen.sh"
-    WORKING_DIRECTORY "${hwloc_SOURCE_DIR}")
-    add_custom_command(OUTPUT "${hwloc_SOURCE_DIR}/Makefile"
-    COMMAND "${hwloc_SOURCE_DIR}/configure"
-    ARGS "--with-pic" "--prefix=${hwloc_SOURCE_DIR}/out/" "--disable-picky" "--enable-shared=no" "--enable-static=yes"
-    "--disable-cairo" "--disable-libxml2" "--disable-io" "--disable-plugin-dlopen" "--disable-plugin-ltdl" "--enable-embedded-mode"
+    COMMAND ${CMAKE_COMMAND} -E env PATH=${R_HOME}/bin:$ENV{PATH} ${hwloc_SOURCE_DIR}/autogen.sh
     WORKING_DIRECTORY "${hwloc_SOURCE_DIR}"
-    DEPENDS "${hwloc_SOURCE_DIR}/configure")
+    VERBATIM)
+    add_custom_command(OUTPUT "${hwloc_SOURCE_DIR}/Makefile"
+    COMMAND ${hwloc_SOURCE_DIR}/configure --with-pic --prefix=${hwloc_SOURCE_DIR}/out/ --disable-picky --enable-shared=no --enable-static=yes
+    --disable-cairo --disable-libxml2 --disable-io --disable-plugin-dlopen --disable-plugin-ltdl --enable-embedded-mode
+    WORKING_DIRECTORY "${hwloc_SOURCE_DIR}"
+    DEPENDS "${hwloc_SOURCE_DIR}/configure"
+    VERBATIM)
     add_custom_command(OUTPUT "${hwloc_SOURCE_DIR}/hwloc/.libs/libhwloc_embedded.a"
     DEPENDS "${hwloc_SOURCE_DIR}/Makefile"
     COMMAND "${CMAKE_MAKE_PROGRAM}"
