@@ -4,7 +4,13 @@
 
 * Local:
   * Windows 11, R 4.3.1 (x86_64-w64-mingw32)
-  * rhub/ubuntu-gcc-release image
+  * r-hub/containers/ubuntu-release (R 4.3.1)
+  * r-hub/containers/ubuntu-next (R 4.3.1 Patched r85316)
+  * r-hub/containers/ubuntu-gcc12 (R-Devel r85316) -- additional packages: libdeflate-dev
+  * r-hub/containers/ubuntu-clang (R-Devel r85316) -- additional packages: libdeflate-dev, libstdc++-12-dev
+  * r-hub/containers/atlas (Fedora 38, R-Devel r85316)
+  * r-hub/containers/gcc13 (Fedora 38, R-Devel r85316)
+  * r-hub/containers/nold  (Ubuntu 22.04, R-Devel r85316) -- additional packages: libdeflate-dev
 * win-builder:
   * Windows Server 2022, Devel
 * R-hub Builder (<https://builder.r-hub.io>)
@@ -32,6 +38,29 @@ This warning is not present on UNIX-alikes.
 ```
 
   These are not included in the tarball, they are downloaded at configure time from version control tags.
+
+``` <!-- language: lang-none -->
+* checking R files for syntax errors ... WARNING
+Warning in Sys.setlocale("LC_CTYPE", "en_US.UTF-8") :
+  OS reports request to set locale to "en_US.UTF-8" cannot be honored
+```
+
+The R-Hub ubuntu containers appear to not have locales installed. At least, some of them.
+
+``` <!-- language: lang-none -->
+* checking data for non-ASCII characters ... [1s/0s] WARNING
+  Error loading dataset 'ctrl.sparse':
+   Error in .requirePackage(package) :
+    unable to find required package 'Matrix'
+
+  Error loading dataset 'stim.sparse':
+   Error in .requirePackage(package) :
+    unable to find required package 'Matrix'
+
+  The dataset(s) may use package(s) not declared in Depends/Imports.
+  ```
+
+Matrix is declared in Suggests.
 
 ``` <!-- language: lang-none -->
 ❯ checking line endings in Makefiles ... WARNING
@@ -915,6 +944,18 @@ Per <https://github.com/r-hub/rhub/issues/440> this appears to be a bug.
 ```
 
 Will vary by platform-appears to be timing out winbuilder.
+
+``` <!-- language: lang-none -->
+* checking tests ...
+  Running 'testthat.R' [3344s/219s]
+Running R code in 'testthat.R' had CPU time 15.3 times elapsed time
+* checking re-building of vignette outputs ... [110s/12s] NOTE
+Re-building vignettes had CPU time 9.4 times elapsed time
+ [3346s/220s] NOTE
+
+```
+
+Only occurs in ubuntu-based docker containers. Likely the default openblas-pthread conflicting with openmp.
 
 0 errors ✔ | 5 warnings ✖ | 7 notes ✖
 
