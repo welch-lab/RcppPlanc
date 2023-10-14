@@ -13,15 +13,7 @@ enum normtype { NONE, L2NORM, MAXNORM };
 
 enum helptype { NMF, DISTNMF, NTF, DISTNTF, JOINTNMF, DISTJOINTNMF, HIERNMF };
 
-// #if !defined(ARMA_64BIT_WORD)
-// #define ARMA_64BIT_WORD
-#ifndef ARMA_DONT_PRINT_FAST_MATH_WARNING
-#define ARMA_DONT_PRINT_FAST_MATH_WARNING
-#endif
-#define ARMA_DONT_USE_WRAPPER
-#define ARMA_USE_BLAS
-#define ARMA_USE_LAPACK
-// #endif
+
 #include <armadillo>
 #include <cmath>
 #include <iostream>
