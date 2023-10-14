@@ -21,7 +21,7 @@ target_include_directories(RcppPlanc
 PRIVATE "${PROJECT_SOURCE_DIR}/src/common;${PROJECT_SOURCE_DIR}/src/nnls;${PROJECT_SOURCE_DIR}/src/nmf")
 
 set(MKL_DIR "${PROJECT_SOURCE_DIR}/cmake")
-find_package(MKL PATHS $ENV{MKLROOT})
+find_package(MKL)
 if(MKL_FOUND AND NOT DEFINED BLAS_VENDOR AND NOT WIN32)
     set(USE_MKL)
     set(BLAS_LIBRARIES MKL::BLAS)
