@@ -1,4 +1,5 @@
 #pragma once
+#include "config.h"
 /* Copyright 2016 Ramakrishnan Kannan */
 // utility functions
 
