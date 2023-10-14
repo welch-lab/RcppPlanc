@@ -6,13 +6,6 @@ include(CheckCXXCompilerFlag)
 include(cmake/CPM.cmake)
 include(cmake/FindRModule.cmake)
 
-if(NOT WIN32)
-find_package(BLAS  REQUIRED)
-find_package(LAPACK REQUIRED)
-endif()
-if(NOT (APPLE AND (CMAKE_HOST_SYSTEM_PROCESSOR MATCHES arm64)))
-find_package(OpenMP)
-endif()
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_FLAGS_RELEASE "")
@@ -26,6 +19,21 @@ set_target_properties(RcppPlanc PROPERTIES SUFFIX ".so")
 endif()
 target_include_directories(RcppPlanc
 PRIVATE "${PROJECT_SOURCE_DIR}/src/common;${PROJECT_SOURCE_DIR}/src/nnls;${PROJECT_SOURCE_DIR}/src/nmf")
+
+find_package(MKL CONFIG PATHS $ENV{MKLROOT})
+if(MKL_LIBRARY AND NOT DEFINED BLAS_VENDOR AND NOT WIN32)
+    set(USE_MKL)
+    set(BLAS_LIBRARIES MKL::BLAS)
+    set(LAPACK_LIBRARIES MKL::LAPACK)
+    target_compile_definitions(RcppPlanc PRIVATE "MKL_FOUND")
+elseif(NOT WIN32)
+    find_package(BLAS REQUIRED)
+    find_package(LAPACK REQUIRED)
+endif()
+
+if(NOT(APPLE AND(CMAKE_HOST_SYSTEM_PROCESSOR MATCHES arm64)))
+    find_package(OpenMP)
+endif()
 
 find_package(R REQUIRED)
 
@@ -149,7 +157,7 @@ endif()
 
 set(CBLAS_H_DIR CACHE PATH "Directory containing cblas.h")
 
-if(NOT APPLE)
+if(NOT APPLE AND NOT USE_MKL)
 if(CBLAS_H_DIR)
 target_include_directories(RcppPlanc PRIVATE ${CBLAS_H_DIR})
 else()
