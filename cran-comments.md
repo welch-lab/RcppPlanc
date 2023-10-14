@@ -10,6 +10,8 @@
   * r-hub/containers/ubuntu-clang (R-Devel r85316) -- additional packages: libdeflate-dev, libstdc++-12-dev
   * r-hub/containers/atlas (Fedora 38, R-Devel r85316)
   * r-hub/containers/gcc13 (Fedora 38, R-Devel r85316)
+  * r-hub/containers/intel (Fedora 38, R-Devel r85316) -- additional packages: intel-oneapi-mkl-devel
+  * r-hub/containers/mkl (Fedora 38, R-Devel r85316) -- additional packages: intel-oneapi-mkl-devel
   * r-hub/containers/nold  (Ubuntu 22.04, R-Devel r85316) -- additional packages: libdeflate-dev
 * win-builder:
   * Windows Server 2022, Devel
@@ -29,6 +31,17 @@ Found the following significant warnings:
 
 This is from one of our linked dependencies. If need be, they can be patched out, but these code paths are never called.
 This warning is not present on UNIX-alikes.
+
+``` <!-- language: lang-none -->
+
+/root/R/x86_64-pc-linux-gnu-library/4.4/RcppArmadillo/include/armadillo_bits/arma_cmath.hpp:88:10: warning: explicit comparison with infinity in fast floating point mode [-Wtautological-constant-compare]
+  /root/R/x86_64-pc-linux-gnu-library/4.4/RcppArmadillo/include/armadillo_bits/arma_cmath.hpp:98:10: warning: explicit comparison with infinity in fast floating point mode [-Wtautological-constant-compare]
+  /root/R/x86_64-pc-linux-gnu-library/4.4/RcppArmadillo/include/armadillo_bits/arma_cmath.hpp:134:10: warning: explicit comparison with NaN in fast floating point mode [-Wtautological-constant-compare]
+  /root/R/x86_64-pc-linux-gnu-library/4.4/RcppArmadillo/include/armadillo_bits/arma_cmath.hpp:144:10: warning: explicit comparison with NaN in fast floating point mode [-Wtautological-constant-compare]
+See ‘/check/RcppPlanc.Rcheck/00install.out’ for details.
+```
+
+This warning is exclusive to the intel compiler and is an issue with RcppArmadillo.
 
 ``` <!-- language: lang-none -->
 
