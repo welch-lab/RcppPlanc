@@ -281,7 +281,7 @@ void ARMAMKLSCSCMM(const arma::sp_mat &mklMat, char transa, const arma::mat &Bt,
   MKL_UINT *pntre = pntrb + 1;
   mkl_dcscmm(&transa, &m, &n, &k, &alpha, matdescra, mklMat.values,
              const_cast<MKL_UINT *>(mklMat.row_indices, pntrb, pntre),
-             static_cast<double *>(Bt.memptr()), &ldb, &beta, Ct, &ldc);
+             const_cast<double *>(Bt.memptr()), &ldb, &beta, Ct, &ldc);
 }
 #endif
 
