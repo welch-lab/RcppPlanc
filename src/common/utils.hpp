@@ -12,7 +12,6 @@
 #include <stack>
 #include <typeinfo>
 #include <vector>
-#include "utils.h"
 #include <random>
 #include "hw_detect.hpp"
 #include "data.hpp"
@@ -30,6 +29,8 @@
 #include "cblas.h"
 #endif
 #endif
+
+#include "utils.h"
 
 static uint64_t powersof10[16] = {1,
                                   10,
