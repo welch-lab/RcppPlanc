@@ -1,12 +1,10 @@
 #pragma once
 
 #ifdef MKL_FOUND
-extern "C" {
-#include <mkl.h>
+#include <mkl_cblas.h>
 #define ARMA_DONT_USE_FORTRAN_HIDDEN_ARGS
 #define ARMA_USE_MKL_ALLOC
 #define ARMA_USE_MKL_TYPES
-}
 #else
 
 #if defined(__APPLE__)
