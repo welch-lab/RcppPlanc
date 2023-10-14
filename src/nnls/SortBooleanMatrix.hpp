@@ -1,7 +1,7 @@
 #pragma once
 /* Copyright 2016 Ramakrishnan Kannan */
 
-#include <armadillo>
+#include <utils.hpp>
 #include <vector>
 #include <algorithm>
 
