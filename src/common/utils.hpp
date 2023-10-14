@@ -277,10 +277,10 @@ void ARMAMKLSCSCMM(const arma::sp_mat &mklMat, char transa, const arma::mat &Bt,
   char *matdescra = "GUNC";
   MKL_INT ldb = n;
   MKL_INT ldc = n;
-  MKL_INT *pntrb = static_cast<MKL_INT *>(mklMat.col_ptrs);
-  MKL_INT *pntre = pntrb + 1;
+  MKL_UINT *pntrb = static_cast<MKL_UINT *>(mklMat.col_ptrs);
+  MKL_UINT *pntre = pntrb + 1;
   mkl_dcscmm(&transa, &m, &n, &k, &alpha, matdescra, mklMat.values,
-             static_cast<MKL_INT *> mklMat.row_indices, pntrb, pntre,
+             static_cast<MKL_UINT *>(mklMat.row_indices, pntrb, pntre),
              static_cast<double *>(Bt.memptr()), &ldb, &beta, Ct, &ldc);
 }
 #endif
