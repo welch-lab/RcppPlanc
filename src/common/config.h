@@ -3,7 +3,6 @@
 #ifdef MKL_FOUND
 #include <mkl_cblas.h>
 #define ARMA_DONT_USE_FORTRAN_HIDDEN_ARGS
-#define ARMA_USE_MKL_ALLOC
 #define ARMA_USE_MKL_TYPES
 #else
 
