@@ -241,37 +241,6 @@ double computeObjectiveError(const INPUTTYPE &A, const LRTYPE &W,
   return (fastErr);
 }
 
-#ifdef MKL_FOUND
-/*
- * mklMat is csc representation
- * Bt is the row major order of the arma B matrix
- * Ct is the row major order of the arma C matrix
- * Once you receive Ct, transpose again to print
- * C using arma
- */
-void ARMAMKLSCSCMM(const arma::sp_mat &mklMat, char transa, const arma::mat &Bt,
-                   double *Ct) {
-  MKL_INT m, k, n, nnz;
-  m = static_cast<MKL_INT>(mklMat.n_rows);
-  k = static_cast<MKL_INT>(mklMat.n_cols);
-  n = static_cast<MKL_INT>(Bt.n_rows);
-  // arma::mat B = B.t();
-  // C = alpha * A * B + beta * C;
-  // mkl_?cscmm - https://software.MKL_INTel.com/en-us/node/468598
-  // char transa = 'N';
-  double alpha = 1.0;
-  double beta = 0.0;
-  char *matdescra = "GUNC";
-  MKL_INT ldb = n;
-  MKL_INT ldc = n;
-  MKL_UINT *pntrb = const_cast<MKL_UINT *>(mklMat.col_ptrs);
-  MKL_UINT *pntre = pntrb + 1;
-  mkl_sparse_d_mm(&transa, &m, &n, &k, &alpha, matdescra, mklMat.values,
-                  const_cast<MKL_UINT *>(mklMat.row_indices, pntrb, pntre),
-                  const_cast<double *>(Bt.memptr()), &ldb, &beta, Ct, &ldc);
-}
-#endif
-
 /*
  * This is an sgemm wrapper for armadillo matrices
  * Something is going crazy with armadillo
