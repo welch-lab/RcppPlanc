@@ -254,7 +254,7 @@ double computeObjectiveError(const INPUTTYPE &A, const LRTYPE &W,
   return (fastErr);
 }
 
-#if defined(MKL_FOUND) && defined(BUILD_SPARSE)
+#ifdef MKL_FOUND
 /*
  * mklMat is csc representation
  * Bt is the row major order of the arma B matrix
