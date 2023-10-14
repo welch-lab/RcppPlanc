@@ -266,9 +266,9 @@ void ARMAMKLSCSCMM(const arma::sp_mat &mklMat, char transa, const arma::mat &Bt,
   MKL_INT ldc = n;
   MKL_UINT *pntrb = const_cast<MKL_UINT *>(mklMat.col_ptrs);
   MKL_UINT *pntre = pntrb + 1;
-  mkl_dcscmm(&transa, &m, &n, &k, &alpha, matdescra, mklMat.values,
-             const_cast<MKL_UINT *>(mklMat.row_indices, pntrb, pntre),
-             const_cast<double *>(Bt.memptr()), &ldb, &beta, Ct, &ldc);
+  mkl_sparse_d_mm(&transa, &m, &n, &k, &alpha, matdescra, mklMat.values,
+                  const_cast<MKL_UINT *>(mklMat.row_indices, pntrb, pntre),
+                  const_cast<double *>(Bt.memptr()), &ldb, &beta, Ct, &ldc);
 }
 #endif
 
