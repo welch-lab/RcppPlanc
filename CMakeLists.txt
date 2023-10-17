@@ -92,17 +92,11 @@ else()
             VERSION 2.9.3
             DOWNLOAD_ONLY
         )
-    find_package(Autotools REQUIRED)
-    #find_program(LIBTOOL_EXECUTABLE libtool PATHS "${R_HOME}/bin")
-    add_custom_command(OUTPUT "${hwloc_SOURCE_DIR}/configure"
-    COMMAND ${CMAKE_COMMAND} -E env PATH=${AUTOCONF_PATH}:$ENV{PATH} ${hwloc_SOURCE_DIR}/autogen.sh
-    WORKING_DIRECTORY "${hwloc_SOURCE_DIR}"
-    VERBATIM)
+    #find_package(Autotools REQUIRED)
     add_custom_command(OUTPUT "${hwloc_SOURCE_DIR}/Makefile"
     COMMAND ${hwloc_SOURCE_DIR}/configure --with-pic --prefix=${hwloc_SOURCE_DIR}/out/ --disable-picky --enable-shared=no --enable-static=yes
     --disable-cairo --disable-libxml2 --disable-io --disable-plugin-dlopen --disable-plugin-ltdl --enable-embedded-mode
     WORKING_DIRECTORY "${hwloc_SOURCE_DIR}"
-    DEPENDS "${hwloc_SOURCE_DIR}/configure"
     VERBATIM)
     add_custom_command(OUTPUT "${hwloc_SOURCE_DIR}/hwloc/.libs/libhwloc_embedded.a"
     DEPENDS "${hwloc_SOURCE_DIR}/Makefile"
@@ -112,6 +106,9 @@ else()
     target_include_directories(hw_detect PRIVATE "${hwloc_SOURCE_DIR}/include")
     add_dependencies(hw_detect hwloc)
     target_link_libraries(hw_detect PRIVATE "${hwloc_SOURCE_DIR}/hwloc/.libs/libhwloc_embedded.a")
+    if(APPLE)
+    target_link_libraries(hwloc INTERFACE "-framework Foundation" "-framework IOKit")
+    endif()
     endif()
 endif()
 if(WIN32)
