@@ -1,4 +1,6 @@
 cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
+set(CMAKE_OSX_DEPLOYMENT_TARGET "11" CACHE STRING "Target MacOS Version")
+mark_as_advanced(CMAKE_OSX_DEPLOYMENT_TARGET)
 project(RcppPlanc VERSION 1.0.0 LANGUAGES C CXX)
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 include(CheckIncludeFile)
