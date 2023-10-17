@@ -13,7 +13,8 @@ set(CMAKE_VERBOSE_MAKEFILE TRUE)
 
 if(APPLE)
     set(CMAKE_PROGRAM_PATH /opt/R/${CMAKE_HOST_SYSTEM_PROCESSOR}/bin)
-    set(CMAKE_LIBRARY_PATH /opt/R/${CMAKE_HOST_SYSTEM_PROCESSOR}/bin)
+    set(CMAKE_LIBRARY_PATH /opt/R/${CMAKE_HOST_SYSTEM_PROCESSOR}/lib)
+    set(CMAKE_INCLUDE_PATH /opt/R/${CMAKE_HOST_SYSTEM_PROCESSOR}/include)
 endif()
 
 add_library(RcppPlanc SHARED "${PROJECT_SOURCE_DIR}/src/rcppplanc_nmf.cpp" "${PROJECT_SOURCE_DIR}/src/RcppExports.cpp" "${PROJECT_SOURCE_DIR}/src/conversion.cpp")
