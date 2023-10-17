@@ -94,7 +94,8 @@ else()
             VERSION 2.9.3
             DOWNLOAD_ONLY
         )
-    #find_package(Autotools REQUIRED)
+    find_package(Autotools REQUIRED)
+
     add_custom_command(OUTPUT "${hwloc_SOURCE_DIR}/Makefile"
     COMMAND ${hwloc_SOURCE_DIR}/configure --with-pic --prefix=${hwloc_SOURCE_DIR}/out/ --disable-picky --enable-shared=no --enable-static=yes
     --disable-cairo --disable-libxml2 --disable-io --disable-plugin-dlopen --disable-plugin-ltdl --enable-embedded-mode
@@ -135,6 +136,9 @@ target_link_libraries(RcppPlanc PRIVATE hw_detect)
 if(OpenMP_CXX_FOUND)
 target_compile_options(RcppPlanc PRIVATE ${OpenMP_CXX_FLAGS})
 target_include_directories(RcppPlanc PRIVATE ${OpenMP_CXX_INCLUDE_DIRS})
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+target_link_options(RcppPlanc PRIVATE ${OPENMP_CXX_FLAGS})
+endif()
 endif()
 
 check_cxx_compiler_flag("-funsafe-math-optimizations" UNSAFE_MATH)
