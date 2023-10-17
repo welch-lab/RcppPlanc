@@ -31,6 +31,7 @@ if(AUTOCONF_EXECUTABLE)
         string(REGEX MATCH "autoconf .*([0-9]+\\.[0-9]+)" _m "${out}")
         set(AUTOCONF_VERSION "${CMAKE_MATCH_1}")
     endif()
+    get_filename_component(AUTOCONF_PATH ${AUTOCONF_EXECUTABLE} DIRECTORY)
 endif()
 
 find_program(AUTOMAKE_EXECUTABLE

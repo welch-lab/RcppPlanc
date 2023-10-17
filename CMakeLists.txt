@@ -92,9 +92,9 @@ else()
               DOWNLOAD_ONLY
               )
     find_package(Autotools REQUIRED)
-    find_program(LIBTOOL_EXECUTABLE libtool PATHS "${R_HOME}/bin")
+    #find_program(LIBTOOL_EXECUTABLE libtool PATHS "${R_HOME}/bin")
     add_custom_command(OUTPUT "${hwloc_SOURCE_DIR}/configure"
-    COMMAND ${CMAKE_COMMAND} -E env PATH=${R_HOME}/bin:$ENV{PATH} ${hwloc_SOURCE_DIR}/autogen.sh
+    COMMAND ${CMAKE_COMMAND} -E env PATH=${AUTOCONF_PATH}:$ENV{PATH} ${hwloc_SOURCE_DIR}/autogen.sh
     WORKING_DIRECTORY "${hwloc_SOURCE_DIR}"
     VERBATIM)
     add_custom_command(OUTPUT "${hwloc_SOURCE_DIR}/Makefile"
