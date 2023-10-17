@@ -73,25 +73,25 @@ endif()
 add_library(hw_detect OBJECT "${PROJECT_SOURCE_DIR}/src/common/hw_detect.cpp")
 
 if(WIN32)
-CPMAddPackage(NAME hwloc
-              GIT_TAG hwloc-2.9.3
-              GITHUB_REPOSITORY open-mpi/hwloc
-              VERSION 2.9.3
-              SOURCE_SUBDIR contrib/windows-cmake
-              OPTIONS "HWLOC_ENABLE_TESTING OFF" "HWLOC_SKIP_LSTOPO ON" "HWLOC_SKIP_TOOLS ON"
-              )
+    CPMAddPackage(NAME hwloc
+        URL https://download.open-mpi.org/release/hwloc/v2.9/hwloc-2.9.3.tar.gz
+        URL_HASH SHA256=5985db3a30bbe51234c2cd26ebe4ae9b4c3352ab788b1a464c40c0483bf4de59
+        VERSION 2.9.3
+        SOURCE_SUBDIR contrib/windows-cmake
+        OPTIONS "HWLOC_ENABLE_TESTING OFF" "HWLOC_SKIP_LSTOPO ON" "HWLOC_SKIP_TOOLS ON"
+    )
 else()
     find_package(HWLOC)
     if(HWLOC_FOUND)
     target_link_libraries(hw_detect PRIVATE "${HWLOC_LDFLAGS}")
     target_include_directories(hw_detect PRIVATE "${HWLOC_INCLUDE_DIRS}")
     else()
-    CPMAddPackage(NAME hwloc
-              GIT_TAG hwloc-2.9.3
-              GITHUB_REPOSITORY open-mpi/hwloc
-              VERSION 2.9.3
-              DOWNLOAD_ONLY
-              )
+        CPMAddPackage(NAME hwloc
+            URL https://download.open-mpi.org/release/hwloc/v2.9/hwloc-2.9.3.tar.gz
+            URL_HASH SHA256=5985db3a30bbe51234c2cd26ebe4ae9b4c3352ab788b1a464c40c0483bf4de59
+            VERSION 2.9.3
+            DOWNLOAD_ONLY
+        )
     find_package(Autotools REQUIRED)
     #find_program(LIBTOOL_EXECUTABLE libtool PATHS "${R_HOME}/bin")
     add_custom_command(OUTPUT "${hwloc_SOURCE_DIR}/configure"
