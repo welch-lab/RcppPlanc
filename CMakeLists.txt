@@ -11,6 +11,11 @@ set(CMAKE_C_FLAGS_RELEASE "")
 set(CMAKE_CXX_FLAGS_RELEASE "")
 set(CMAKE_VERBOSE_MAKEFILE TRUE)
 
+if(APPLE)
+    set(CMAKE_PROGRAM_PATH /opt/R/${CMAKE_HOST_SYSTEM_PROCESSOR}/bin)
+    set(CMAKE_LIBRARY_PATH /opt/R/${CMAKE_HOST_SYSTEM_PROCESSOR}/bin)
+endif()
+
 add_library(RcppPlanc SHARED "${PROJECT_SOURCE_DIR}/src/rcppplanc_nmf.cpp" "${PROJECT_SOURCE_DIR}/src/RcppExports.cpp" "${PROJECT_SOURCE_DIR}/src/conversion.cpp")
 set_target_properties(RcppPlanc PROPERTIES PREFIX "")
 if(APPLE)
