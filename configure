@@ -15,7 +15,7 @@ RCC=${RCC#$CC}
 EXTRACFLAGS=$(echo "$RCC"| sed -e  "s/-std=[^ ]\{0,\}//")
 RCXX=`"${R_HOME}/bin/R" CMD config CXX`
 CXX=${RCXX%% *}
-RCXX=${RCXX#CXX}
+RCXX=${RCXX#$CXX}
 EXTRACXXFLAGS=$(echo "$RCXX"| sed -e  "s/-std=[^ ]\{0,\}//")
 CFLAGS=`"${R_HOME}/bin/R" CMD config CFLAGS`
 CPPFLAGS=`"${R_HOME}/bin/R" CMD config --cppflags`
