@@ -10,9 +10,9 @@ if test -z "${R_HOME}"; then
   exit 1
 fi
 CC=`"${R_HOME}/bin/R" CMD config CC`
-set -- $(echo $CC| sed -e  "s/-std=[^ ]\{0,\}//")
+CC=$(echo $CC| sed -e  "s/-std=[^ ]\{0,\}//")
 CXX=`"${R_HOME}/bin/R" CMD config CXX`
-set -- $(echo $CXX| sed -e  "s/-std=[^ ]\{0,\}//")
+CXX=$(echo $CXX| sed -e  "s/-std=[^ ]\{0,\}//")
 CFLAGS=`"${R_HOME}/bin/R" CMD config CFLAGS`
 CPPFLAGS=`"${R_HOME}/bin/R" CMD config --cppflags`
 CXXFLAGS=`"${R_HOME}/bin/R" CMD config CXXFLAGS`
