@@ -118,7 +118,7 @@ if(WIN32)
         OPTIONS "HIGHFIVE_EXAMPLES OFF" "HIGHFIVE_BUILD_DOCS OFF" "HIGHFIVE_USE_BOOST OFF"
         DOWNLOAD_ONLY TRUE)
     target_include_directories(RcppPlanc PRIVATE "${HighFive_SOURCE_DIR}/include")
-    target_link_libraries(hw_detect PUBLIC hwloc)
+    target_link_libraries(hw_detect PRIVATE hwloc)
     target_link_libraries(RcppPlanc PRIVATE -lhdf5 -lsz -lz -lopenblas -lgfortran -lgomp -lpthread -ldl -lm -lquadmath "${R_HOME}/bin/x64/R.dll")
 else()
     CPMAddPackage(NAME HighFive
