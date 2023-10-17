@@ -5,7 +5,6 @@ include(CheckIncludeFile)
 include(CheckCXXCompilerFlag)
 include(cmake/CPM.cmake)
 include(cmake/FindRModule.cmake)
-include(cmake/FindMKL.cmake)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_FLAGS_RELEASE "")
@@ -21,7 +20,9 @@ target_include_directories(RcppPlanc
 PRIVATE "${PROJECT_SOURCE_DIR}/src/common;${PROJECT_SOURCE_DIR}/src/nnls;${PROJECT_SOURCE_DIR}/src/nmf")
 
 set(MKL_DIR "${PROJECT_SOURCE_DIR}/cmake")
+find_package(MKL QUIET)
 if(MKL_FOUND AND NOT DEFINED BLAS_VENDOR AND NOT WIN32)
+    message(STATUS "found MKL")
     set(USE_MKL)
     set(BLAS_LIBRARIES "${MKL_LIBRARIES}")
     set(LAPACK_LIBRARIES "${MKL_LAPACK_LIBRARIES}")
