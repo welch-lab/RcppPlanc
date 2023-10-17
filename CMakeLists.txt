@@ -137,7 +137,7 @@ if(OpenMP_CXX_FOUND)
 target_compile_options(RcppPlanc PRIVATE ${OpenMP_CXX_FLAGS})
 target_include_directories(RcppPlanc PRIVATE ${OpenMP_CXX_INCLUDE_DIRS})
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-target_link_options(RcppPlanc PRIVATE ${OPENMP_CXX_FLAGS})
+target_link_options(RcppPlanc PRIVATE ${OpenMP_CXX_FLAGS})
 endif()
 endif()
 
