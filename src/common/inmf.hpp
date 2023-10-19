@@ -60,6 +60,7 @@ namespace planc {
         }
 
         void constructObject(std::vector<std::unique_ptr<T>>& Ei, arma::uword k, double lambda, bool makeTranspose) {
+            this->cleared = false;
             this->Ei = std::move(Ei);
             this->k = k;
             this->m = this->Ei[0].get()->n_rows;
