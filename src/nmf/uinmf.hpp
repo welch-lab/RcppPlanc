@@ -32,8 +32,8 @@ private:
             arma::uvec indices = arma::randperm(this->ncol_E[i]).head(this->k);
             arma::mat* Uptr = U.get();
             arma::mat* Vptr = V.get();
-            *Uptr = this->ulist[i]->cols(indices);
-            *Vptr = this->Ei[i]->cols(indices);
+            *Uptr = this->ulist[i].get()->cols(indices);
+            *Vptr = this->Ei[i].get()->cols(indices);
             this->Ui.push_back(std::move(U));
             this->Vi.push_back(std::move(V));
         }
