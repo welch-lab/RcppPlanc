@@ -72,7 +72,7 @@ else()
 message(FATAL_ERROR "missing RcppProgress")
 endif()
 
-add_library(hw_detect OBJECT "${PROJECT_SOURCE_DIR}/src/common/hw_detect.cpp")
+add_library(hw_detect OBJECT "${PROJECT_SOURCE_DIR}/src/common/hw_detect.c")
 
 if(WIN32)
     CPMAddPackage(NAME hwloc

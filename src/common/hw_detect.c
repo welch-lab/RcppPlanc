@@ -1,4 +1,4 @@
-#include "hw_detect.hpp"
+#include "hw_detect.h"
 #include "hwloc.h"
 
 unsigned int get_l1_data_cache() {
