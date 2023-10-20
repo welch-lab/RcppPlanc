@@ -30,8 +30,10 @@ private:
             U = std::unique_ptr<arma::mat>(new arma::mat(this->u[i], this->k, arma::fill::zeros));
             V = std::unique_ptr<arma::mat>(new arma::mat(this->m, this->k, arma::fill::zeros));
             arma::uvec indices = arma::randperm(this->ncol_E[i]).head(this->k);
-            *U = this->ulist[i]->cols(indices);
-            *V = this->Ei[i]->cols(indices);
+            arma::mat* Uptr = U.get();
+            arma::mat* Vptr = V.get();
+            *Uptr = this->ulist[i]->cols(indices);
+            *Vptr = this->Ei[i]->cols(indices);
             this->Ui.push_back(std::move(U));
             this->Vi.push_back(std::move(V));
         }

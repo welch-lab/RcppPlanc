@@ -187,7 +187,8 @@ private:
         for (arma::uword i = 0; i < this->dataIdxNew.size(); ++i) {
             idx = this->dataIdxNew[i];
             H = std::unique_ptr<arma::mat>(new arma::mat);
-            *H = arma::zeros<arma::mat>(this->ncol_E[idx], this->k);
+            arma::mat* Hptr = H.get();
+            *Hptr = arma::zeros<arma::mat>(this->ncol_E[idx], this->k);
             this->Hi.push_back(std::move(H));
         }
     }
@@ -203,10 +204,11 @@ private:
             idx = this->dataIdxNew[i];
             V = std::unique_ptr<arma::mat>(new arma::mat);
             // *V taken from random sampled columns of Ei[i]
+            arma::mat* Vptr = V.get();
             arma::uvec indices = arma::randperm(this->ncol_E[idx]).head(this->k);
-            *V = this->Ei[idx]->cols(indices);
+            *Vptr = this->Ei[idx]->cols(indices);
             for (arma::uword j = 0; j < this->k; ++j) {
-                V->col(j) /= arma::norm(V->col(j), 2);
+                Vptr->col(j) /= arma::norm(Vptr->col(j), 2);
             }
             this->Vi.push_back(std::move(V));
         }
@@ -220,9 +222,10 @@ private:
         // For scenario 1.
         // When scenario 2, call .initW(givenW, false) in wrapper
         this->W = std::unique_ptr<arma::mat>(new arma::mat);
-        *this->W = arma::randu<arma::mat>(this->m, this->k, arma::distr_param(0, 2));
+        arma::mat* Wptr = this->W.get();
+        *Wptr = arma::randu<arma::mat>(this->m, this->k, arma::distr_param(0, 2));
         for (arma::uword i = 0; i < this->k; ++i) {
-            this->W->col(i) /= arma::norm(this->W->col(i), 2);
+            Wptr->col(i) /= arma::norm(Wptr->col(i), 2);
         }
     }
 
@@ -230,9 +233,11 @@ private:
         std::unique_ptr<arma::mat> A, Aold;
         for (arma::uword i = 0; i < this->dataIdxNew.size(); ++i) {
             A = std::unique_ptr<arma::mat>(new arma::mat);
+            arma::mat* Aptr = A.get();
             Aold = std::unique_ptr<arma::mat>(new arma::mat);
-            *A = arma::zeros<arma::mat>(this->k, this->k);
-            *Aold = arma::zeros<arma::mat>(this->k, this->k);
+            arma::mat* Aoldptr = Aold.get();
+            *Aptr = arma::zeros<arma::mat>(this->k, this->k);
+            *Aoldptr = arma::zeros<arma::mat>(this->k, this->k);
             this->Ai.push_back(std::move(A));
             this->Ai_old.push_back(std::move(Aold));
         }
@@ -242,9 +247,11 @@ private:
         std::unique_ptr<arma::mat> B, Bold;
         for (arma::uword i = 0; i < this->dataIdxNew.size(); ++i) {
             B = std::unique_ptr<arma::mat>(new arma::mat);
+            arma::mat *Bptr = B.get();
             Bold = std::unique_ptr<arma::mat>(new arma::mat);
-            *B = arma::zeros<arma::mat>(this->m, this->k);
-            *Bold = arma::zeros<arma::mat>(this->m, this->k);
+            arma::mat *Boldptr = Bold.get();
+            *Bptr = arma::zeros<arma::mat>(this->m, this->k);
+            *Boldptr = arma::zeros<arma::mat>(this->m, this->k);
             this->Bi.push_back(std::move(B));
             this->Bi_old.push_back(std::move(Bold));
         }
@@ -557,8 +564,9 @@ public:
                 throw std::invalid_argument(msg);
             }
             A = std::unique_ptr<arma::mat>(new arma::mat);
+            arma::mat* Aptr = A.get();
             Aold = std::unique_ptr<arma::mat>(new arma::mat);
-            *A = Ainit[i];
+            *Aptr = Ainit[i];
             this->Ai.push_back(std::move(A));
             this->Ai_old.push_back(std::move(Aold));
         }
@@ -585,8 +593,9 @@ public:
                 throw std::invalid_argument(msg);
             }
             B = std::unique_ptr<arma::mat>(new arma::mat);
+            arma::mat* Bptr = B.get();
             Bold = std::unique_ptr<arma::mat>(new arma::mat);
-            *B = Binit[i];
+            *Bptr = Binit[i];
             this->Bi.push_back(std::move(B));
             this->Bi_old.push_back(std::move(Bold));
         }
