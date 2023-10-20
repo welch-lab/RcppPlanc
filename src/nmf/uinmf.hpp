@@ -46,7 +46,8 @@ private:
         std::cout << "Randomly initializing W matrix" << std::endl;
 #endif
         this->W = std::unique_ptr<arma::mat>(new arma::mat);
-        *this->W = arma::randu<arma::mat>(this->m, this->k, arma::distr_param(0, 2));
+        arma::mat* Wptr = this->W.get();
+        *Wptr = arma::randu<arma::mat>(this->m, this->k, arma::distr_param(0, 2));
     }
 
     void initH() {
@@ -56,7 +57,8 @@ private:
         std::unique_ptr<arma::mat> H;
         for (arma::uword i = 0; i < this->nDatasets; ++i) {
             H = std::unique_ptr<arma::mat>(new arma::mat);
-            *H = arma::randu<arma::mat>(this->ncol_E[i], this->k, arma::distr_param(0, 2));
+            arma::mat* Hptr = H.get();
+            *Hptr = arma::randu<arma::mat>(this->ncol_E[i], this->k, arma::distr_param(0, 2));
             this->Hi.push_back(std::move(H));
         }
     }
