@@ -279,7 +279,7 @@ public:
 
     void optimizeUANLS(int niter=30, bool verbose=true) {
         if (verbose) {
-            std::cerr << "UINMF started, niter=" << niter << std::endl;
+            Rcpp::Rcerr << "UINMF started, niter=" << niter << std::endl;
         }
         auto start = std::chrono::high_resolution_clock::now();
         this->sampleUandV();
@@ -299,8 +299,8 @@ public:
         auto end = std::chrono::high_resolution_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::seconds>(end - start);
         if (verbose) {
-            std::cerr << "Total time:      " << duration.count() << " sec" << std::endl;
-            std::cerr << "Objective error: " << this->objective_err << std::endl;
+            Rcpp::Rcerr << "Total time:      " << duration.count() << " sec" << std::endl;
+            Rcpp::Rcerr << "Objective error: " << this->objective_err << std::endl;
         }
     }
 
