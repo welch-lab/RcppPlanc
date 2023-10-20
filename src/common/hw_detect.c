@@ -1,7 +1,7 @@
 #include "hw_detect.h"
 #include "hwloc.h"
 
-unsigned int get_l1_data_cache() {
+unsigned int get_l1_data_cache(void) {
     hwloc_topology_t topo;
     hwloc_topology_init(&topo);
     hwloc_topology_load(topo);
@@ -11,7 +11,7 @@ unsigned int get_l1_data_cache() {
     return myL1size;
 }
 
-unsigned int get_l2_data_cache()
+unsigned int get_l2_data_cache(void)
 {
     hwloc_topology_t topo;
     hwloc_topology_init(&topo);
