@@ -1,7 +1,4 @@
-#ifndef ARMA_DONT_PRINT_FAST_MATH_WARNING
-#define ARMA_DONT_PRINT_FAST_MATH_WARNING
-#endif
-
+#include "config.h"
 #include <RcppArmadillo.h>
 #include <Rcpp.h>
 #include <highfive/H5File.hpp>
@@ -12,8 +9,8 @@
 using namespace Rcpp;
 
 // [[Rcpp::export(.rcpp_mat_to_h5mat)]]
-CharacterVector rcpp_mat_to_h5mat(const NumericMatrix& x, std::string filename,
-    std::string dataPath) {
+CharacterVector rcpp_mat_to_h5mat(const NumericMatrix& x, const std::string& filename,
+    const std::string& dataPath) {
     CharacterVector res(2);
     res[0] = filename;
     res[1] = dataPath;
@@ -21,7 +18,7 @@ CharacterVector rcpp_mat_to_h5mat(const NumericMatrix& x, std::string filename,
     HighFive::File file(filename, HighFive::File::ReadWrite | HighFive::File::Create | HighFive::File::Truncate);
     // Create a dataset of native double with the same shape as the matrix
     // // Set the dimensions of the dataset
-    std::array<size_t, 2> tDims;
+    std::array<size_t, 2> tDims{};
     tDims[0] = x.ncol();
     tDims[1] = x.nrow();
     HighFive::DataSpace fspace(tDims);
@@ -61,7 +58,7 @@ CharacterVector rcpp_spmat_to_h5mat(const NumericVector& data,
                                     const IntegerVector& rowind,
                                     const IntegerVector& colptr,
                                     unsigned int nrow, unsigned int ncol,
-                                    std::string filename, std::string dataPath)
+                                    const std::string& filename, const std::string& dataPath)
 {
     CharacterVector res(2);
     res[0] = filename;
@@ -71,7 +68,7 @@ CharacterVector rcpp_spmat_to_h5mat(const NumericVector& data,
     HighFive::File file(filename, HighFive::File::ReadWrite | HighFive::File::Create | HighFive::File::Truncate);
     // Create a dataset of native double with the same shape as the matrix
     // // Set the dimensions of the dataset
-    std::array<size_t, 2> tDims;
+    std::array<size_t, 2> tDims{};
     tDims[0] = ncol;
     tDims[1] = nrow;
     HighFive::DataSpace fspace(tDims);
@@ -105,9 +102,9 @@ CharacterVector rcpp_spmat_to_h5mat(const NumericVector& data,
         unsigned int numCols = endCol - startCol + 1;
         // Create dense matrix from the given sparse information
         arma::mat x = arma::zeros(nrow, numCols);
-        arma::uvec colptr_chunk = as<arma::uvec>(colptr[Rcpp::Range(startCol, endCol + 1)]);
-        arma::uvec rowind_chunk = as<arma::uvec>(rowind[Rcpp::Range(colptr_chunk[0], colptr_chunk[numCols] - 1)]);
-        arma::vec data_chunk = as<arma::vec>(data[Rcpp::Range(colptr_chunk[0], colptr_chunk[numCols] - 1)]);
+        auto colptr_chunk = as<arma::uvec>(colptr[Rcpp::Range(startCol, endCol + 1)]);
+        auto rowind_chunk = as<arma::uvec>(rowind[Rcpp::Range(colptr_chunk[0], colptr_chunk[numCols] - 1)]);
+        auto data_chunk = as<arma::vec>(data[Rcpp::Range(colptr_chunk[0], colptr_chunk[numCols] - 1)]);
         colptr_chunk -= colptr_chunk[0];
         arma::sp_mat chunk = arma::sp_mat(rowind_chunk, colptr_chunk, data_chunk, nrow, ncol, true);
         arma::mat chunk_dense = arma::mat(chunk);
@@ -129,8 +126,8 @@ CharacterVector rcpp_spmat_to_h5mat(const NumericVector& data,
 CharacterVector rcpp_spmat_to_h5spmat(
     const NumericVector& value, const IntegerVector& rowind,
     const IntegerVector& colptr, unsigned int nrow, unsigned int ncol,
-    std::string filename, std::string valuePath, std::string rowindPath,
-    std::string colptrPath
+    const std::string& filename, const std::string& valuePath, const std::string& rowindPath,
+    const std::string& colptrPath
 ) {
     CharacterVector res(4);
     res[0] = filename;

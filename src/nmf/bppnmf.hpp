@@ -54,7 +54,7 @@ class BPPNMF : public NMF<T> {
 #if defined(_VERBOSE) || defined(COLLECTSTATS)
     tic();
 #endif
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic) default(none) shared(numChunks, input, giventInput, othermat)
     for (unsigned int i = 0; i < numChunks; i++) {
       unsigned int spanStart = i * this->ONE_THREAD_MATRIX_SIZE;
       unsigned int spanEnd = (i + 1) * this->ONE_THREAD_MATRIX_SIZE - 1;
@@ -153,7 +153,7 @@ void commonSolve() {
   }
   void computeNMFSingleRHS() {
     int currentIteration = 0;
-    T At = this->A.t();
+    this->At = this->A.t();
     this->computeObjectiveErr();
     while (currentIteration < this->num_iterations() &&
            this->objectiveErr > CONV_ERR) {
@@ -167,9 +167,9 @@ void commonSolve() {
       arma::mat WtA = Wt * this->A;
       Wt.clear();
       {
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic) default(none)
         for (unsigned int i = 0; i < this->n; i++) {
-          BPPNNLS<arma::mat, arma::vec> *subProblemforH =
+          auto *subProblemforH =
               new BPPNNLS<arma::mat, arma::vec>(WtW, (arma::vec)WtA.col(i), true);
 #ifdef _VERBOSE
           INFO << "Initialized subproblem and calling solveNNLS for "
@@ -209,9 +209,9 @@ void commonSolve() {
         arma::mat HtAt = Ht * At;
         Ht.clear();
 // solve for W given H;
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic) default(none)
         for (unsigned int i = 0; i < this->m; i++) {
-          BPPNNLS<arma::mat, arma::vec> *subProblemforW =
+          auto *subProblemforW =
               new BPPNNLS<arma::mat, arma::vec>(HtH, (arma::vec)HtAt.col(i), true);
 #ifdef _VERBOSE
           INFO << "Initialized subproblem and calling solveNNLS for "
@@ -253,7 +253,7 @@ void commonSolve() {
   }
 
 
-  void computeNMF() {
+  void computeNMF() override {
 #ifdef COLLECTSTATS
     // this->objective_err;
 #endif

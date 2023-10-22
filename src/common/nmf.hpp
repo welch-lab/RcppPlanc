@@ -1,7 +1,7 @@
 #pragma once
 /* Copyright 2016 Ramakrishnan Kannan */
 
-#include <assert.h>
+#include <cassert>
 #include <string>
 #include "utils.hpp"
 
@@ -210,10 +210,10 @@ class NMF {
       const arma::mat &rightlowrankfactor): A(input) {
     try
     {
-      if (!(leftlowrankfactor.n_cols == rightlowrankfactor.n_cols))
+      if (leftlowrankfactor.n_cols != rightlowrankfactor.n_cols)
       {
         throw std::logic_error("received factor matrices with uneven shape");
-      };
+      }
     }
     catch(const std::logic_error& e)
     {
@@ -407,7 +407,7 @@ class NMF {
     this->objective_err = arma::sum(splitErr);
   }
 */
-  void computeObjectiveError() {
+  virtual void computeObjectiveError() {
     arma::mat AtW = this->A.t() * this->W;
     arma::mat WtW = this->W.t() * this->W;
     arma::mat HtH = this->H.t() * this->H;
@@ -478,7 +478,7 @@ class NMF {
   }
 
   /// Print out the objective stats
-  void printObjective(const int itr) {
+  virtual void printObjective(const int itr) {
     double err = (this->fit_err_sq > 0)? sqrt(this->fit_err_sq) : this->normA;
     INFO << "Completed it = " << itr
          << "::algo::" << this->m_updalgo << "::k::" << this->k << std::endl;
@@ -519,7 +519,7 @@ class NMF {
   void updalgo(algotype dat) { this->m_updalgo = dat; }
 
   /// Returns the number of iterations
-  const unsigned int num_iterations() const { return m_num_iterations; }
+  [[nodiscard]] unsigned int num_iterations() const { return m_num_iterations; }
 
   /// Returns the last objective error calculated
   double objErr() { return this->objective_err; }

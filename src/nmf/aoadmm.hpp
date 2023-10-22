@@ -194,7 +194,7 @@ class AOADMMNMF : public NMF<T> {
       currentIteration++;
     }
   }
-  ~AOADMMNMF() {}
+  ~AOADMMNMF() = default;
 };
 
 }  // namespace planc

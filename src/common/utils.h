@@ -61,7 +61,7 @@ void absmat(const arma::fmat *X);
 inline void tic();
 inline double toc();
 
-int random_sieve(const int);
+int random_sieve(int);
 
 template <typename FVT>
 inline void fillVector(const FVT value, std::vector<FVT> *a) {

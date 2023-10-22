@@ -2,15 +2,16 @@
 /* Copyright 2016 Ramakrishnan Kannan */
 // utility functions
 
-#include <assert.h>
+#include <cassert>
 #ifdef _OPENMP
 #include <omp.h>
 #endif //_OPENMP
-#include <stdio.h>
+#include <cstdio>
 #include <chrono>
 #include <ctime>
 #include <stack>
 #include <typeinfo>
+#include <utility>
 #include <vector>
 #include <random>
 #include "data.hpp"
@@ -136,7 +137,7 @@ template <class T>
 void makeSparse(const double sparsity, T(*X)) {
   // make a matrix sparse
   srand(RAND_SEED_SPARSE);
-#pragma omp parallel for
+#pragma omp parallel for default(none) shared(sparsity, X)
   for (arma::uword j = 0; j < X->n_cols; j++) {
     for (arma::uword i = 0; i < X->n_rows; i++) {
       if (arma::randu() > sparsity) (*X)(i, j) = 0;
@@ -158,7 +159,7 @@ void randNMF(const arma::uword m, const arma::uword n, const arma::uword k, cons
 }
 void randNMF(const arma::uword m, const arma::uword n, const arma::uword k, const double sparsity,
              arma::sp_mat *A) {
-  arma::sp_mat temp = arma::sprandu<arma::sp_mat>(m, n, sparsity);
+  auto temp = arma::sprandu<arma::sp_mat>(m, n, sparsity);
   A = &temp;
 }
 
@@ -278,9 +279,9 @@ void gen_discard(int row_start, int nrows, int k,
     gen.discard(row_start);
     for(int i = 0; i < nrows; ++i) {
       if (trans) {
-          X(j, i) =  ((double)gen()) / gen.max();
+          X(j, i) =  ((double)gen()) / std::mt19937::max();
       } else {
-          X(i, j) =  ((double)gen()) / gen.max();
+          X(i, j) =  ((double)gen()) / std::mt19937::max();
       }
     }
   }
@@ -290,20 +291,20 @@ void gen_discard(int row_start, int nrows, int k,
  * Read in a dense matrix
  */
 void read_input_matrix(arma::mat &A, std::string fname) {
-  A.load(fname);
+  A.load(std::move(fname));
 }
 
 /*
  * Read in a sparse matrix
  */
 void read_input_matrix(arma::sp_mat &A, std::string fname) {
-  A.load(fname, arma::coord_ascii);
+  A.load(std::move(fname), arma::coord_ascii);
 }
 
 /*
  * Generate random dense matrix
  */
-void generate_rand_matrix(arma::mat &A, std::string rtype,
+void generate_rand_matrix(arma::mat &A, const std::string& rtype,
         arma::uword m, arma::uword n, arma::uword k, double density, bool symm_flag = false,
         bool adjrand = false, int kalpha = 1, int kbeta = 0) {
   if (rtype == "uniform") {
@@ -350,7 +351,7 @@ void generate_rand_matrix(arma::mat &A, std::string rtype,
 /*
  * Generate random sparse matrix
  */
-void generate_rand_matrix(arma::sp_mat &A, std::string rtype,
+void generate_rand_matrix(arma::sp_mat &A, const std::string& rtype,
         arma::uword m, arma::uword n, arma::uword k, double density, bool symm_flag = false,
         bool adjrand = false, int kalpha = 5, int kbeta = 10) {
   if (rtype == "uniform") {
@@ -373,7 +374,7 @@ void generate_rand_matrix(arma::sp_mat &A, std::string rtype,
   } else if (rtype == "lowrank") {
     if (symm_flag) {
       double dens = 0.5 * density;
-      arma::sp_mat mask = arma::sprandu<arma::sp_mat>(m, n, dens);
+      auto mask = arma::sprandu<arma::sp_mat>(m, n, dens);
       mask = 0.5 * (mask + mask.t());
       mask = arma::spones(mask);
       arma::mat Htrue = arma::zeros(n, k);
@@ -384,7 +385,7 @@ void generate_rand_matrix(arma::sp_mat &A, std::string rtype,
       Htrue.clear();
       mask.clear();
     } else {
-      arma::sp_mat mask = arma::sprandu<arma::sp_mat>(m, n, density);
+      auto mask = arma::sprandu<arma::sp_mat>(m, n, density);
       mask = arma::spones(mask);
       arma::mat Wtrue = arma::zeros(m, k);
       gen_discard(0, m, k, Wtrue, false, WTRUE_SEED);

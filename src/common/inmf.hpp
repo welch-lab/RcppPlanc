@@ -3,6 +3,7 @@
 #ifdef _OPENMP
 #include <omp.h>
 #endif
+#include <memory>
 #include <vector>
 #include <memory>
 #include "utils.hpp"
@@ -26,7 +27,7 @@ namespace planc {
         std::unique_ptr<arma::mat> WT;                // kxm
         double lambda, sqrtLambda, objective_err;
         bool cleared;
-        double computeObjectiveError() {
+        virtual double computeObjectiveError() {
             // obj_i = ||E_i - (W + V_i)*H_i||_F^2 + lambda * ||V_i*H_i||_F^2
             // Let W + V = L
             // ||E - LH||_F^2 = ||E||_F^2 - 2*Tr(Ht*(Et*L)) + Tr((Lt*L)*(Ht*H))
@@ -59,10 +60,10 @@ namespace planc {
             return obj;
         }
 
-        void constructObject(std::vector<std::unique_ptr<T>>& Ei, arma::uword k, double lambda, bool makeTranspose) {
+        void constructObject(std::vector<std::unique_ptr<T>>& inputEi, arma::uword inputk, double inputlambda, bool makeTranspose) {
             this->cleared = false;
-            this->Ei = std::move(Ei);
-            this->k = k;
+            this->Ei = std::move(inputEi);
+            this->k = inputk;
             this->m = this->Ei[0].get()->n_rows;
             this->nMax = 0;
             this->nSum = 0;
@@ -85,13 +86,13 @@ namespace planc {
                 }
                 this->nSum += E->n_cols;
                 this->nDatasets++;
-            };
+            }
 #ifdef _VERBOSE
             std::cout << "nMax=" << this->nMax << "; nSum=" << this->nSum << std::endl;
             std::cout << "nDatasets=" << this->nDatasets << std::endl;
 #endif
             // this->initHWV();
-            this->lambda = lambda;
+            this->lambda = inputlambda;
             this->sqrtLambda = sqrt(lambda); //TODO
             //TODO implement common tasks i.e. norm, reg, etc
         }
@@ -157,19 +158,19 @@ namespace planc {
                                       std::to_string(this->k);
                     throw std::invalid_argument(msg);
                 }
-                H = std::unique_ptr<arma::mat>(new arma::mat);
+                H = std::make_unique<arma::mat>();
                 *H = Hinit[i];
                 this->Hi.push_back(std::move(H));
             }
         }
 
-        void initH() {
+        virtual void initH() {
 #ifdef _VERBOSE
             std::cout << "Randomly initializing H matrices" << std::endl;
 #endif
             std::unique_ptr<arma::mat> H;
             for (arma::uword i = 0; i < this->nDatasets; ++i) {
-                H = std::unique_ptr<arma::mat>(new arma::mat);
+                H = std::make_unique<arma::mat>();
                 *H = arma::randu<arma::mat>(this->ncol_E[i], this->k,
                                             arma::distr_param(0, 2));
                 this->Hi.push_back(std::move(H));
@@ -195,10 +196,10 @@ namespace planc {
                                       std::to_string(this->k);
                     throw std::invalid_argument(msg);
                 }
-                V = std::unique_ptr<arma::mat>(new arma::mat);
+                V = std::make_unique<arma::mat>();
                 *V = Vinit[i];
                 if (transpose) {
-                    VT = std::unique_ptr<arma::mat>(new arma::mat);
+                    VT = std::make_unique<arma::mat>();
                     *VT = (*V).t();
                     this->ViT.push_back(std::move(VT));
                 }
@@ -213,8 +214,8 @@ namespace planc {
             std::unique_ptr<arma::mat> V;
             std::unique_ptr<arma::mat> VT;
             for (arma::uword i = 0; i < this->nDatasets; ++i) {
-                V = std::unique_ptr<arma::mat>(new arma::mat);
-                VT = std::unique_ptr<arma::mat>(new arma::mat);
+                V = std::make_unique<arma::mat>();
+                VT = std::make_unique<arma::mat>();
                 *V = arma::randu<arma::mat>(this->m, this->k,
                                             arma::distr_param(0, 2));
                 *VT = (*V).t();
@@ -235,10 +236,10 @@ namespace planc {
                                   std::to_string(Winit.n_cols);
                 throw std::invalid_argument(msg);
             }
-            this->W = std::unique_ptr<arma::mat>(new arma::mat);
+            this->W = std::make_unique<arma::mat>();
             *this->W = Winit;
             if (transpose) {
-                this->WT = std::unique_ptr<arma::mat>(new arma::mat);
+                this->WT = std::make_unique<arma::mat>();
                 *this->WT = (*this->W).t();
             }
         }
@@ -247,8 +248,8 @@ namespace planc {
 #ifdef _VERBOSE
             std::cout << "Randomly initializing W matrix" << std::endl;
 #endif
-            this->W = std::unique_ptr<arma::mat>(new arma::mat);
-            this->WT = std::unique_ptr<arma::mat>(new arma::mat);
+            this->W = std::make_unique<arma::mat>();
+            this->WT = std::make_unique<arma::mat>();
             *this->W = arma::randu<arma::mat>(this->m, this->k,
                                               arma::distr_param(0, 2));
             *this->WT = (*this->W).t();

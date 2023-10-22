@@ -174,8 +174,7 @@ class NNLS {
         this->cleared = false;
     }
 
-    ~NNLS() {
-    }
+    ~NNLS() = default;
 
     virtual int solveNNLS() = 0;
 

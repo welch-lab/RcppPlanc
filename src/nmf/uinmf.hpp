@@ -2,6 +2,8 @@
 
 #ifdef _OPENMP
 #include <omp.h>
+
+#include <memory>
 #endif
 #include "bppnnls.hpp"
 #include "inmf.hpp"
@@ -45,25 +47,25 @@ private:
 #ifdef _VERBOSE
         std::cout << "Randomly initializing W matrix" << std::endl;
 #endif
-        this->W = std::unique_ptr<arma::mat>(new arma::mat);
+        this->W = std::make_unique<arma::mat>();
         arma::mat* Wptr = this->W.get();
         *Wptr = arma::randu<arma::mat>(this->m, this->k, arma::distr_param(0, 2));
     }
 
-    void initH() {
+    void initH() override {
 #ifdef _VERBOSE
         std::cout << "Randomly initializing H matrices" << std::endl;
 #endif
         std::unique_ptr<arma::mat> H;
         for (arma::uword i = 0; i < this->nDatasets; ++i) {
-            H = std::unique_ptr<arma::mat>(new arma::mat);
+            H = std::make_unique<arma::mat>();
             arma::mat* Hptr = H.get();
             *Hptr = arma::randu<arma::mat>(this->ncol_E[i], this->k, arma::distr_param(0, 2));
             this->Hi.push_back(std::move(H));
         }
     }
 
-    double computeObjectiveError() {
+    double computeObjectiveError() override {
         double obj = 0;
         arma::mat* Wptr = this->W.get();
         arma::mat L(this->m, this->k);
@@ -117,7 +119,7 @@ private:
             unsigned int dataSize = this->ncol_E[i];
             unsigned int numChunks = dataSize / this->INMF_CHUNK_SIZE;
             if (numChunks * this->INMF_CHUNK_SIZE < dataSize) numChunks++;
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic) default(none) shared(Eptr, usptr, i, Uptr, WV, Hptr, numChunks, dataSize)
             for (unsigned int j = 0; j < numChunks; ++j) {
                 unsigned int spanStart = j * this->INMF_CHUNK_SIZE;
                 unsigned int spanEnd = (j + 1) * this->INMF_CHUNK_SIZE - 1;
@@ -145,7 +147,7 @@ private:
         std::chrono::system_clock::time_point iter_start_time = std::chrono::system_clock::now();
 #endif
         arma::mat* Wptr = this->W.get();
-        arma::mat giventInput(this->k, this->INMF_CHUNK_SIZE);;
+        arma::mat giventInput(this->k, this->INMF_CHUNK_SIZE);
         for (arma::uword i=0; i<this->nDatasets; ++i) {
             arma::mat* Hptr = this->Hi[i].get();\
             giventGiven = (*Hptr).t() * (*Hptr);
@@ -154,15 +156,15 @@ private:
             T* ETptr = this->EiT[i].get();
             unsigned int numChunks = this->m / this->INMF_CHUNK_SIZE;
             if (numChunks * this->INMF_CHUNK_SIZE < this->m) numChunks++;
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic) default(none) shared(i, Hptr, numChunks, Wptr, Vptr, ETptr)
             for (unsigned int j = 0; j < numChunks; ++j) {
                 unsigned int spanStart = j * this->INMF_CHUNK_SIZE;
                 unsigned int spanEnd = (j + 1) * this->INMF_CHUNK_SIZE - 1;
                 if (spanEnd > this->m - 1) spanEnd = this->m - 1;
-                arma::mat giventInput;
-                giventInput = (*Hptr).t() * ETptr->cols(spanStart, spanEnd);
-                giventInput -= (*Hptr).t() * *Hptr * Wptr->rows(spanStart, spanEnd).t();
-                BPPNNLS<arma::mat, arma::vec> subProbV(giventGiven, giventInput, true);
+                arma::mat giventInputTLS;
+                giventInputTLS = (*Hptr).t() * ETptr->cols(spanStart, spanEnd);
+                giventInputTLS -= (*Hptr).t() * *Hptr * Wptr->rows(spanStart, spanEnd).t();
+                BPPNNLS<arma::mat, arma::vec> subProbV(giventGiven, giventInputTLS, true);
                 subProbV.solveNNLS();
                 (*Vptr).rows(spanStart, spanEnd) = subProbV.getSolutionMatrix().t();
             }
@@ -181,7 +183,7 @@ private:
         std::cout << "--Solving UINMF U--  ";
         std::chrono::system_clock::time_point iter_start_time = std::chrono::system_clock::now();
 #endif
-        arma::mat giventInput(this->k, this->INMF_CHUNK_SIZE);;
+        arma::mat giventInput(this->k, this->INMF_CHUNK_SIZE);
         for (arma::uword i=0; i<this->nDatasets; ++i) {
             if (this->u[i] == 0) continue; // skip if no U
             arma::mat* Hptr = this->Hi[i].get();
@@ -192,14 +194,14 @@ private:
             T* USTptr = this->ulistT[i].get();
             unsigned int numChunks = this->u[i] / this->INMF_CHUNK_SIZE;
             if (numChunks * this->INMF_CHUNK_SIZE < this->u[i]) numChunks++;
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic) default(none) shared(i, Uptr, Hptr, numChunks, USTptr)
             for (unsigned int j = 0; j < numChunks; ++j) {
                 unsigned int spanStart = j * this->INMF_CHUNK_SIZE;
                 unsigned int spanEnd = (j + 1) * this->INMF_CHUNK_SIZE - 1;
                 if (spanEnd > this->u[i] - 1) spanEnd = this->u[i] - 1;
-                arma::mat giventInput;
-                giventInput = (*Hptr).t() * USTptr->cols(spanStart, spanEnd);
-                BPPNNLS<arma::mat, arma::vec> subProbU(giventGiven, giventInput, true);
+                arma::mat giventInputTLS;
+                giventInputTLS = (*Hptr).t() * USTptr->cols(spanStart, spanEnd);
+                BPPNNLS<arma::mat, arma::vec> subProbU(giventGiven, giventInputTLS, true);
                 subProbU.solveNNLS();
                 (*Uptr).rows(spanStart, spanEnd) = subProbU.getSolutionMatrix().t();
             }
@@ -233,7 +235,7 @@ private:
             unsigned int spanEnd = (i + 1) * this->INMF_CHUNK_SIZE - 1;
             if (spanEnd > this->m - 1) spanEnd = this->m - 1;
             giventInput = arma::zeros<arma::mat>(this->k, spanEnd - spanStart + 1); ///
-            #pragma omp parallel for ordered schedule(dynamic)
+            #pragma omp parallel for ordered schedule(dynamic) default(none) shared(i, numChunks, spanStart, spanEnd, giventInput)
             for (unsigned int j = 0; j < this->nDatasets; ++j) {
                 T* ETptr = this->EiT[j].get();
                 arma::mat* Hptr = this->Hi[j].get();
@@ -264,7 +266,7 @@ private:
 public:
     UINMF(std::vector<std::unique_ptr<T>>& Ei,
           std::vector<std::unique_ptr<T>>& ulist,
-          arma::uword k, arma::vec lambda) : INMF<T>(Ei, k, 0, true) {
+          arma::uword k, const arma::vec& lambda) : INMF<T>(Ei, k, 0, true) {
         this->ulist = std::move(ulist);
         this->lambda_i = lambda;
         u = arma::zeros<arma::uvec>(this->nDatasets);

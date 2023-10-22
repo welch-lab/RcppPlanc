@@ -4,6 +4,7 @@
 #include "config.h"
 #include <RcppArmadillo.h>
 #include <progress.hpp>
+#include <utility>
 #include "bppnmf.hpp"
 #include "bppinmf.hpp"
 #include "bppnnls.hpp"
@@ -127,7 +128,7 @@ Rcpp::List nmf(const SEXP& x, const arma::uword &k, const arma::uword &niter = 3
                 Rcpp::as<arma::sp_mat>(x), k, niter, Winit, Hinit
             );
         } else {
-          Rcpp::stop("Please choose `algo` from \"anlsbpp\", \"admm\", \"hals\" or \"mu\".");
+          Rcpp::stop(R"(Please choose `algo` from "anlsbpp", "admm", "hals" or "mu".)");
         }
     } else {
         // Assume regular dense matrix
@@ -148,7 +149,7 @@ Rcpp::List nmf(const SEXP& x, const arma::uword &k, const arma::uword &niter = 3
             Rcpp::as<arma::mat>(x), k, niter, Winit, Hinit
           );
         } else {
-          Rcpp::stop("Please choose `algo` from \"anlsbpp\", \"admm\", \"hals\" or \"mu\".");
+          Rcpp::stop(R"(Please choose `algo` from "anlsbpp", "admm", "hals" or "mu".)");
         }
     }
     return outlist;
@@ -250,7 +251,7 @@ Rcpp::List symNMF(const SEXP& x, const arma::uword& k, const arma::uword& niter,
         Rcpp::as<arma::sp_mat>(x), k, niter, lambda, Hinit
       );
     } else {
-      Rcpp::stop("Please choose `algo` from \"gnsym\" or \"anlsbpp\".");
+      Rcpp::stop(R"(Please choose `algo` from "gnsym" or "anlsbpp".)");
     }
   } else {
     // Assume using default matrix
@@ -263,7 +264,7 @@ Rcpp::List symNMF(const SEXP& x, const arma::uword& k, const arma::uword& niter,
         Rcpp::as<arma::mat>(x), k, niter, lambda, Hinit
       );
     } else {
-      Rcpp::stop("Please choose `algo` from \"gnsym\" or \"anlsbpp\".");
+      Rcpp::stop(R"(Please choose `algo` from "gnsym" or "anlsbpp".)");
     }
   }
   return out;
@@ -473,7 +474,7 @@ arma::mat runbppnnls(const arma::mat &C, const T &B) {
     arma::uword ONE_THREAD_MATRIX_SIZE = chunk_size_dense<double>(m_k);
     unsigned int numChunks = m_n / ONE_THREAD_MATRIX_SIZE;
     if (numChunks*ONE_THREAD_MATRIX_SIZE < m_n) numChunks++;
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic) default(none) shared(numChunks, ONE_THREAD_MATRIX_SIZE, m_n, outmatptr, C, B, CtC)
     for (unsigned int i = 0; i < numChunks; i++) {
         unsigned int spanStart = i * ONE_THREAD_MATRIX_SIZE;
         unsigned int spanEnd = (i + 1) * ONE_THREAD_MATRIX_SIZE - 1;
@@ -483,7 +484,7 @@ arma::mat runbppnnls(const arma::mat &C, const T &B) {
         BPPNNLS<arma::mat, arma::vec> solveProblem(CtC, CtBChunk, true);
         solveProblem.solveNNLS();
         (*outmatptr).cols(spanStart, spanEnd) = solveProblem.getSolutionMatrix();
-    };
+    }
     return outmat;
 }
 
@@ -517,7 +518,7 @@ arma::mat bppnnls(const arma::mat &C, const SEXP &B) {
     } else {
         return runbppnnls<arma::mat>(C, Rcpp::as<arma::mat>(B));
     }
-    return arma::mat();
+    return {};
 }
 
 //' @param CtC The \eqn{C^\mathsf{T}C} matrix, see description.
@@ -533,7 +534,7 @@ arma::mat bppnnls_prod(const arma::mat &CtC, const arma::mat &CtB) {
     outmatptr = &outmat;
     unsigned int numChunks = n / ONE_THREAD_MATRIX_SIZE;
     if (numChunks*ONE_THREAD_MATRIX_SIZE < n) numChunks++;
-#pragma omp parallel for schedule(dynamic)
+#pragma omp parallel for schedule(dynamic) default(none) shared(numChunks, CtB, ONE_THREAD_MATRIX_SIZE, outmatptr, CtC, n)
     for (unsigned int i = 0; i < numChunks; i++) {
         unsigned int spanStart = i * ONE_THREAD_MATRIX_SIZE;
         unsigned int spanEnd = (i + 1) * ONE_THREAD_MATRIX_SIZE - 1;
@@ -542,7 +543,7 @@ arma::mat bppnnls_prod(const arma::mat &CtC, const arma::mat &CtB) {
         BPPNNLS<arma::mat, arma::vec> solveProblem(CtC, CtBChunk, true);
         solveProblem.solveNNLS();
         (*outmatptr).cols(spanStart, spanEnd) = solveProblem.getSolutionMatrix();
-    };
+    }
     return outmat;
 }
 
@@ -612,7 +613,7 @@ Rcpp::List runINMF(std::vector<T> objectList, arma::uword k, double lambda,
         Rcpp::Named("objErr") = solver.objErr());
 }
 
-Rcpp::List bppinmf_dense(std::vector<arma::mat> objectList, arma::uword k,
+Rcpp::List bppinmf_dense(const std::vector<arma::mat>& objectList, arma::uword k,
                          double lambda, arma::uword niter, bool verbose = true,
                          Rcpp::Nullable<std::vector<arma::mat>> Hinit = R_NilValue,
                          Rcpp::Nullable<std::vector<arma::mat>> Vinit = R_NilValue,
@@ -633,7 +634,7 @@ Rcpp::List bppinmf_dense(std::vector<arma::mat> objectList, arma::uword k,
     }
 }
 
-Rcpp::List bppinmf_sparse(std::vector<arma::sp_mat> objectList, arma::uword k, double lambda,
+Rcpp::List bppinmf_sparse(const std::vector<arma::sp_mat>& objectList, arma::uword k, double lambda,
     arma::uword niter, bool verbose = true,
     Rcpp::Nullable<std::vector<arma::mat>> Hinit = R_NilValue,
     Rcpp::Nullable<std::vector<arma::mat>> Vinit = R_NilValue,
@@ -683,21 +684,21 @@ Rcpp::List bppinmf_h5dense(std::vector<std::string> filenames, std::vector<std::
     planc::BPPINMF<planc::H5Mat> solver(matPtrVec, k, lambda);
 
     if (Winit.isNotNull()) {
-        arma::mat W = Rcpp::as<arma::mat>(Winit);
+        auto W = Rcpp::as<arma::mat>(Winit);
         solver.initW(W);
     } else {
         solver.initW();
     }
 
     if (Vinit.isNotNull()) {
-        std::vector<arma::mat> VinitList = Rcpp::as<std::vector<arma::mat>>(Vinit);
+        auto VinitList = Rcpp::as<std::vector<arma::mat>>(Vinit);
         solver.initV(VinitList);
     } else {
         solver.initV();
     }
 
     if (Hinit.isNotNull()) {
-        std::vector<arma::mat> HinitList = Rcpp::as<std::vector<arma::mat>>(Hinit);
+        auto HinitList = Rcpp::as<std::vector<arma::mat>>(Hinit);
         solver.initH(HinitList);
     } else {
         solver.initH();
@@ -741,21 +742,21 @@ Rcpp::List bppinmf_h5sparse(
     planc::BPPINMF<planc::H5SpMat> solver(matPtrVec, k, lambda);
 
     if (Winit.isNotNull()) {
-        arma::mat W = Rcpp::as<arma::mat>(Winit);
+        auto W = Rcpp::as<arma::mat>(Winit);
         solver.initW(W);
     } else {
         solver.initW();
     }
 
     if (Vinit.isNotNull()) {
-        std::vector<arma::mat> VinitList = Rcpp::as<std::vector<arma::mat>>(Vinit);
+        auto VinitList = Rcpp::as<std::vector<arma::mat>>(Vinit);
         solver.initV(VinitList);
     } else {
         solver.initV();
     }
 
     if (Hinit.isNotNull()) {
-        std::vector<arma::mat> HinitList = Rcpp::as<std::vector<arma::mat>>(Hinit);
+        auto HinitList = Rcpp::as<std::vector<arma::mat>>(Hinit);
         solver.initH(HinitList);
     } else {
         solver.initH();
@@ -958,9 +959,9 @@ Rcpp::List onlineINMF_S23_mem(std::vector<T> objectList,
 // [[Rcpp::export(.onlineINMF_S23)]]
 Rcpp::List onlineINMF_S23(
     Rcpp::List objectList,
-    std::vector<arma::mat> Vinit, arma::mat Winit,
-    std::vector<arma::mat> Ainit, std::vector<arma::mat> Binit,
-    Rcpp::List objectListNew,
+    const std::vector<arma::mat>& Vinit, const arma::mat& Winit,
+    const std::vector<arma::mat>& Ainit, const std::vector<arma::mat>& Binit,
+    const Rcpp::List& objectListNew,
     arma::uword k, double lambda, bool project = false, arma::uword maxEpoch = 5,
     arma::uword minibatchSize = 5000, arma::uword maxHALSIter = 1, bool verbose = true) {
     if (Rf_isS4(objectList[0])) {
@@ -1003,7 +1004,7 @@ Rcpp::List onlineINMF_S23_h5dense(
     }
     planc::ONLINEINMF<planc::H5Mat, arma::mat> solver(matPtrVec, k, lambda);
     solver.initV(Vinit, false);
-    solver.initW(Winit, false);
+    solver.initW(std::move(Winit), false);
     solver.initA(Ainit);
     solver.initB(Binit);
     solver.runOnlineINMF(matPtrVecNew, project, minibatchSize, maxEpoch, maxHALSIter, verbose);
@@ -1069,7 +1070,7 @@ Rcpp::List onlineINMF_S23_h5sparse(
     }
     planc::ONLINEINMF<planc::H5SpMat, arma::sp_mat> solver(matPtrVec, k, lambda);
     solver.initV(Vinit, false);
-    solver.initW(Winit, false);
+    solver.initW(std::move(Winit), false);
     solver.initA(Ainit);
     solver.initB(Binit);
     solver.runOnlineINMF(matPtrVecNew, project, minibatchSize, maxEpoch, maxHALSIter, verbose);
@@ -1141,8 +1142,8 @@ Rcpp::List uinmf_mem(std::vector<T> objectList,
 }
 
 // [[Rcpp::export(.uinmf_rcpp)]]
-Rcpp::List uinmf_rcpp(Rcpp::List objectList, Rcpp::List unsharedList,
-                 arma::uword k, arma::vec lambda,
+Rcpp::List uinmf_rcpp(Rcpp::List objectList, const Rcpp::List& unsharedList,
+                 arma::uword k, const arma::vec& lambda,
                  arma::uword niter, bool verbose) {
     if (Rf_isS4(objectList[0])) {
         return uinmf_mem<arma::sp_mat>(Rcpp::as<std::vector<arma::sp_mat>>(objectList),
@@ -1161,7 +1162,7 @@ Rcpp::List uinmf_h5dense(std::vector<std::string> filenames,
                          std::vector<std::string> dataPaths,
                          std::vector<std::string> unsharedFilenames,
                          std::vector<std::string> unsharedDataPaths,
-                         arma::uword k, arma::vec lambda,
+                         arma::uword k, const arma::vec& lambda,
                          arma::uword niter, bool verbose) {
     std::vector<std::unique_ptr<planc::H5Mat>> matPtrVec;
     std::vector<std::unique_ptr<planc::H5Mat>> unsharedPtrVec;
@@ -1208,7 +1209,7 @@ Rcpp::List uinmf_h5sparse(std::vector<std::string> filenames,
                           std::vector<std::string> unsharedColptrPaths,
                           std::vector<std::string> unsharedValuePaths,
                           arma::uvec unsharedNrows, arma::uvec unsharedNcols,
-                          arma::uword k, arma::vec lambda,
+                          arma::uword k, const arma::vec& lambda,
                           arma::uword niter, bool verbose) {
     std::vector<std::unique_ptr<planc::H5SpMat>> matPtrVec;
     std::vector<std::unique_ptr<planc::H5SpMat>> unsharedPtrVec;

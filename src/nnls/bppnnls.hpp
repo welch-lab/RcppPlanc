@@ -1,7 +1,7 @@
 #pragma once
 /*Copyright 2016 Ramakrishnan Kannan*/
 
-#include <assert.h>
+#include <cassert>
 #include "nnls.hpp"
 #include "utils.hpp"
 #include <set>
@@ -63,7 +63,7 @@ class BPPNNLS : public NNLS<MATTYPE, VECTYPE> {
      * associated with the paper.
      */
     int solveNNLSMultipleRHS() {
-        unsigned int iter = 0;
+        int iter = 0;
         unsigned int MAX_ITERATIONS = this->n * 5;
 
         // Set the initial feasible solution
@@ -268,7 +268,7 @@ class BPPNNLS : public NNLS<MATTYPE, VECTYPE> {
         beginIndex.push_back(beginIdx);
         for (unsigned int i = 0; i < sortedIdx.size(); ++i) {
             if (i == sortedIdx.size() - 1 ||
-                    bac(sortedIdx[i], sortedIdx[i + 1]) == true) {
+                bac(sortedIdx[i], sortedIdx[i + 1])) {
                 beginIdx = i + 1;
                 beginIndex.push_back(beginIdx);
             }

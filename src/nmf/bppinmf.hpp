@@ -55,7 +55,7 @@ private:
         std::cout << "--Solving V--  ";
 #endif
         arma::mat* WTptr = this->WT.get();
-        arma::mat giventInput(this->k, this->INMF_CHUNK_SIZE);;
+        arma::mat giventInput(this->k, this->INMF_CHUNK_SIZE);
         for (arma::uword i=0; i<this->nDatasets; ++i) {
             arma::mat* Hptr = this->Hi[i].get();\
             giventGiven = (*Hptr).t() * (*Hptr);
@@ -70,10 +70,10 @@ private:
                 unsigned int spanStart = j * this->INMF_CHUNK_SIZE;
                 unsigned int spanEnd = (j + 1) * this->INMF_CHUNK_SIZE - 1;
                 if (spanEnd > this->m - 1) spanEnd = this->m - 1;
-                arma::mat giventInput;
-                giventInput = (*Hptr).t() * (*ETptr).cols(spanStart, spanEnd);
-                giventInput -= (*Hptr).t() * *Hptr * (*WTptr).cols(spanStart, spanEnd);
-                BPPNNLS<arma::mat, arma::vec> subProbV(giventGiven, giventInput, true);
+                arma::mat giventInputTLS;
+                giventInputTLS = (*Hptr).t() * (*ETptr).cols(spanStart, spanEnd);
+                giventInputTLS -= (*Hptr).t() * *Hptr * (*WTptr).cols(spanStart, spanEnd);
+                BPPNNLS<arma::mat, arma::vec> subProbV(giventGiven, giventInputTLS, true);
                 subProbV.solveNNLS();
                 (*Vptr).rows(spanStart, spanEnd) = subProbV.getSolutionMatrix().t();
                 (*VTptr).cols(spanStart, spanEnd) = subProbV.getSolutionMatrix();

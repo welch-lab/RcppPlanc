@@ -125,7 +125,7 @@ class HALSNMF : public NMF<T> {
       currentIteration++;
     }
   }
-  ~HALSNMF() {}
+  ~HALSNMF() = default;
 };
 
 }  // namespace planc

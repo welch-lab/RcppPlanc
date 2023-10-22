@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 5,
   "configurePresets": [
     {
       "name": "linux-debug",
@@ -40,7 +40,7 @@
       "binaryDir": "${sourceDir}/out/build/${presetName}",
       "installDir": "${sourceDir}/out/install/${presetName}",
       "environment": {
-        "INCLUDE" : "$penv{INCLUDE};${workspaceFolder}/src/common;${workspaceFolder}/src/nmf;${workspaceFolder}/src/nnls;/Library/Frameworks/R.framework/Resources/include/;/Library/Frameworks/R.framework/Resources/library/Rcpp/include/;/Library/Frameworks/R.framework/Resources/library/RcppArmadillo/include/;/Library/Frameworks/R.framework/Resources/library/RcppProgress/include/;/opt/homebrew/Cellar/hdf5/1.14.1/include/"
+        "INCLUDE" : "$penv{INCLUDE};${sourceDir}/src/common;${sourceDir}/src/nmf;${sourceDir}/src/nnls;/Library/Frameworks/R.framework/Resources/include/;/Library/Frameworks/R.framework/Resources/library/Rcpp/include/;/Library/Frameworks/R.framework/Resources/library/RcppArmadillo/include/;/Library/Frameworks/R.framework/Resources/library/RcppProgress/include/;/opt/homebrew/Cellar/hdf5/1.14.1/include/"
       },
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
