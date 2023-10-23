@@ -54,15 +54,15 @@ as.H5SpMat(
 \item{filename}{Filename of the HDF5 file}
 
 \item{valuePath}{Path in the HDF5 file that points to a 1D array storing the
-non-zero values of the sparse matrix. Default \code{"data"} when using 
+non-zero values of the sparse matrix. Default \code{"data"} when using
 \code{as.H5SpMat}.}
 
 \item{rowindPath}{Path in the HDF5 file that points to a 1D integer array
-storing the row indices of non-zero values in each column of the sparse 
+storing the row indices of non-zero values in each column of the sparse
 matrix. Default \code{"indices"} when using \code{as.H5SpMat}.}
 
 \item{colptrPath}{Path in the HDF5 file that points to a 1D integer array
-storing the number of non-zero values in each column of the sparse matrix. 
+storing the number of non-zero values in each column of the sparse matrix.
 Default \code{"indptr"} when using \code{as.H5SpMat}.}
 
 \item{nrow, ncol}{Integer, the true dimensionality of the sparse matrix.}
@@ -79,14 +79,14 @@ the given path. Default \code{FALSE}.}
 H5SpMat object, indeed a list object.
 }
 \description{
-For running \code{\link{inmf}}, \code{\link{onlineINMF}} or 
-\code{\link{uinmf}} with sparse matrix stored in HDF5 file, users will need 
-to construct an argument list for the filename of the HDF5 file as well as 
-the paths in the file storing the arrays that construct the CSC (compressed 
-sparse column) matrix. \code{H5SpMat} is provided as an instructed 
-constructor. Meanwhile, since the INMF functions require that all datasets 
-should be of the same type, \code{as.H5SpMat} is provided for writing 
-in-memory data into a new HDF5 file on disk and returning the 
+For running \code{\link{inmf}}, \code{\link{onlineINMF}} or
+\code{\link{uinmf}} with sparse matrix stored in HDF5 file, users will need
+to construct an argument list for the filename of the HDF5 file as well as
+the paths in the file storing the arrays that construct the CSC (compressed
+sparse column) matrix. \code{H5SpMat} is provided as an instructed
+constructor. Meanwhile, since the INMF functions require that all datasets
+should be of the same type, \code{as.H5SpMat} is provided for writing
+in-memory data into a new HDF5 file on disk and returning the
 constructed argument list.
 }
 \examples{
@@ -96,14 +96,14 @@ dim(h)
 \dontrun{
 library(Matrix)
 ctrl.dense <- as.matrix(ctrl.sparse)
-h1 <- as.H5SpMat(ctrl.sparse, "ctrl_from_sparse_to_sparse.h5", 
-                 valuePath = "data", rowindPath = "indices", 
-                 colptrPath = "indptr", nrow = nrow(ctrl.sparse), 
+h1 <- as.H5SpMat(ctrl.sparse, "ctrl_from_sparse_to_sparse.h5",
+                 valuePath = "data", rowindPath = "indices",
+                 colptrPath = "indptr", nrow = nrow(ctrl.sparse),
                  ncol = ncol(ctrl.sparse))
 h1
-h2 <- as.H5SpMat(ctrl.dense, "ctrl_from_dense_to_sparse.h5", 
-                 valuePath = "data", rowindPath = "indices", 
-                 colptrPath = "indptr", nrow = nrow(ctrl.sparse), 
+h2 <- as.H5SpMat(ctrl.dense, "ctrl_from_dense_to_sparse.h5",
+                 valuePath = "data", rowindPath = "indices",
+                 colptrPath = "indptr", nrow = nrow(ctrl.sparse),
                  ncol = ncol(ctrl.sparse))
 h2
 }

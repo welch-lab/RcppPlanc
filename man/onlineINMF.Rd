@@ -57,9 +57,9 @@ dimensionality of \eqn{V_i} and \eqn{W_i}. \eqn{A_i} should be of size
 Default \code{TRUE}.}
 }
 \value{
-A list of the following elements: 
+A list of the following elements:
 \itemize{
- \item{\code{H} - a list of result \eqn{H_i} matrices of size 
+ \item{\code{H} - a list of result \eqn{H_i} matrices of size
  \eqn{n_i \times k}}
  \item{\code{V} - a list of result \eqn{V_i} matrices}
  \item{\code{W} - the result \eqn{W} matrix}
@@ -97,21 +97,21 @@ This function allows online learning in 3 scenarios:
 }
 \examples{
 library(Matrix)
-ctrl.h5sp <- H5SpMat(filename = system.file("extdata", "ctrl_sparse.h5", 
-                                            package = "RcppPlanc", 
-                                            mustWork = TRUE), 
-                     valuePath = "scaleDataSparse/data", 
-                     rowindPath = "scaleDataSparse/indices", 
-                     colptrPath = "scaleDataSparse/indptr", 
-                     nrow = nrow(ctrl.sparse), 
+ctrl.h5sp <- H5SpMat(filename = system.file("extdata", "ctrl_sparse.h5",
+                                            package = "RcppPlanc",
+                                            mustWork = TRUE),
+                     valuePath = "scaleDataSparse/data",
+                     rowindPath = "scaleDataSparse/indices",
+                     colptrPath = "scaleDataSparse/indptr",
+                     nrow = nrow(ctrl.sparse),
                      ncol = ncol(ctrl.sparse))
-stim.h5sp <- H5SpMat(filename = system.file("extdata", "stim_sparse.h5", 
-                                            package = "RcppPlanc", 
-                                            mustWork = TRUE), 
-                     valuePath = "scaleDataSparse/data", 
-                     rowindPath = "scaleDataSparse/indices", 
-                     colptrPath = "scaleDataSparse/indptr", 
-                     nrow = nrow(stim.sparse), 
+stim.h5sp <- H5SpMat(filename = system.file("extdata", "stim_sparse.h5",
+                                            package = "RcppPlanc",
+                                            mustWork = TRUE),
+                     valuePath = "scaleDataSparse/data",
+                     rowindPath = "scaleDataSparse/indices",
+                     colptrPath = "scaleDataSparse/indptr",
+                     nrow = nrow(stim.sparse),
                      ncol = ncol(stim.sparse))
 
 # Scenario 1 with sparse matrices

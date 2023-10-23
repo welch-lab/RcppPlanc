@@ -11,7 +11,7 @@
 #' \eqn{d} is the total number of datasets. \eqn{E_i} is of size
 #' \eqn{m \times n_i} for \eqn{m} features and \eqn{n_i} sample points,
 #' \eqn{H_i} is of size \eqn{k \times n_i}, \eqn{V_i} is of size
-#' \eqn{m \times k}, and \eqn{W} is of size \eqn{m \times k}. 
+#' \eqn{m \times k}, and \eqn{W} is of size \eqn{m \times k}.
 #'
 #' \code{inmf} optimizes the objective with ANLS strategy, while
 #' \code{\link{onlineINMF}} optimizes the same objective with an online learning
@@ -35,9 +35,9 @@
 #' size \eqn{m \times k}. Default \code{NULL}.
 #' @param verbose Logical scalar. Whether to show information and progress.
 #' Default \code{TRUE}.
-#' @return A list of the following elements: 
+#' @return A list of the following elements:
 #' \itemize{
-#'  \item{\code{H} - a list of result \eqn{H_i} matrices of size 
+#'  \item{\code{H} - a list of result \eqn{H_i} matrices of size
 #'  \eqn{n_i \times k}}
 #'  \item{\code{V} - a list of result \eqn{V_i} matrices}
 #'  \item{\code{W} - the result \eqn{W} matrix}
@@ -79,10 +79,11 @@ inmf <- function(
                                     colptrPath = sapply(objectList, function(x) x$colptrPath),
                                     nrow = sapply(objectList, function(x) x$nrow),
                                     ncol = sapply(objectList, function(x) x$ncol),
-                                    k = k, lambda = lambda, niter = niter, 
-                                    verbose = verbose, Hinit = Hinit, 
+                                    k = k, lambda = lambda, niter = niter,
+                                    verbose = verbose, Hinit = Hinit,
                                     Vinit = Vinit, Winit = Winit)
     )
+    names(res$H) <- names(res$V) <- names(objectList)
     return(res)
 }
 
@@ -138,9 +139,9 @@ inmf <- function(
 #' \eqn{k \times k} and \eqn{B_i} should be of size \eqn{m \times k}
 #' @param verbose Logical scalar. Whether to show information and progress.
 #' Default \code{TRUE}.
-#' @return A list of the following elements: 
+#' @return A list of the following elements:
 #' \itemize{
-#'  \item{\code{H} - a list of result \eqn{H_i} matrices of size 
+#'  \item{\code{H} - a list of result \eqn{H_i} matrices of size
 #'  \eqn{n_i \times k}}
 #'  \item{\code{V} - a list of result \eqn{V_i} matrices}
 #'  \item{\code{W} - the result \eqn{W} matrix}
@@ -156,30 +157,30 @@ inmf <- function(
 #' online learning, Nat Biotechnol., 2021
 #' @examples
 #' library(Matrix)
-#' ctrl.h5sp <- H5SpMat(filename = system.file("extdata", "ctrl_sparse.h5", 
-#'                                             package = "RcppPlanc", 
-#'                                             mustWork = TRUE), 
-#'                      valuePath = "scaleDataSparse/data", 
-#'                      rowindPath = "scaleDataSparse/indices", 
-#'                      colptrPath = "scaleDataSparse/indptr", 
-#'                      nrow = nrow(ctrl.sparse), 
+#' ctrl.h5sp <- H5SpMat(filename = system.file("extdata", "ctrl_sparse.h5",
+#'                                             package = "RcppPlanc",
+#'                                             mustWork = TRUE),
+#'                      valuePath = "scaleDataSparse/data",
+#'                      rowindPath = "scaleDataSparse/indices",
+#'                      colptrPath = "scaleDataSparse/indptr",
+#'                      nrow = nrow(ctrl.sparse),
 #'                      ncol = ncol(ctrl.sparse))
-#' stim.h5sp <- H5SpMat(filename = system.file("extdata", "stim_sparse.h5", 
-#'                                             package = "RcppPlanc", 
-#'                                             mustWork = TRUE), 
-#'                      valuePath = "scaleDataSparse/data", 
-#'                      rowindPath = "scaleDataSparse/indices", 
-#'                      colptrPath = "scaleDataSparse/indptr", 
-#'                      nrow = nrow(stim.sparse), 
+#' stim.h5sp <- H5SpMat(filename = system.file("extdata", "stim_sparse.h5",
+#'                                             package = "RcppPlanc",
+#'                                             mustWork = TRUE),
+#'                      valuePath = "scaleDataSparse/data",
+#'                      rowindPath = "scaleDataSparse/indices",
+#'                      colptrPath = "scaleDataSparse/indptr",
+#'                      nrow = nrow(stim.sparse),
 #'                      ncol = ncol(stim.sparse))
-#' 
+#'
 #' # Scenario 1 with sparse matrices
 #' set.seed(1)
 #' res1 <- onlineINMF(list(ctrl.sparse, stim.sparse), minibatchSize = 50)
 #' set.seed(1)
 #' res2 <- onlineINMF(list(ctrl.h5sp, stim.h5sp), minibatchSize = 50)
 #' all.equal(res1, res2)
-#' 
+#'
 #' \dontrun{
 #' # Scenario 2 with H5 dense matrices
 #' h5dense1 <- H5Mat("filepath1.h5", "dataPath")
@@ -249,6 +250,7 @@ onlineINMF <- function(
                                              k, lambda, maxEpoch, minibatchSize,
                                              maxHALSIter, verbose)
         )
+        names(res$H) <- names(res$V) <- names(res$A) <- names(res$B) <- names(objectList)
     } else {
         mode2 <- .typeOfInput(newDatasets)
         if (mode2 != mode) {
@@ -303,6 +305,9 @@ onlineINMF <- function(
                                               minibatchSize, maxHALSIter,
                                               verbose)
         )
+        for (i in seq_along(res)) {
+            if (names(res)[i] != "W") names(res[[i]]) <- names(objectList)
+        }
     }
     return(res)
 }
@@ -315,7 +320,7 @@ onlineINMF <- function(
 #' matrices. The objective function is stated as
 #'
 #' \deqn{\arg\min_{H\ge0,W\ge0,V\ge0,U\ge0}\sum_{i}^{d}
-#' ||\begin{bmatrix}E_i \\ P_i \end{bmatrix} - 
+#' ||\begin{bmatrix}E_i \\ P_i \end{bmatrix} -
 #' (\begin{bmatrix}W \\ 0 \end{bmatrix}+
 #' \begin{bmatrix}V_i \\ U_i \end{bmatrix})Hi||^2_F+
 #' \lambda_i\sum_{i}^{d}||\begin{bmatrix}V_i \\ U_i \end{bmatrix}H_i||_F^2}
@@ -346,9 +351,9 @@ onlineINMF <- function(
 #' perform. Default \code{30}.
 #' @param verbose Logical scalar. Whether to show information and progress.
 #' Default \code{TRUE}.
-#' @return A list of the following elements: 
+#' @return A list of the following elements:
 #' \itemize{
-#'  \item{\code{H} - a list of result \eqn{H_i} matrices of size 
+#'  \item{\code{H} - a list of result \eqn{H_i} matrices of size
 #'  \eqn{n_i \times k}}
 #'  \item{\code{V} - a list of result \eqn{V_i} matrices}
 #'  \item{\code{W} - the result \eqn{W} matrix}
@@ -377,18 +382,20 @@ uinmf <- function(
         stop("Must specify 1 lambda for all or each.")
     }
     mode <- .typeOfInput(objectList, null.rm = FALSE)
-    unsharedList <- .uinmf.matchDatasets(objectList, unsharedList)
+    unshareCleanUp <- .uinmf.matchDatasets(objectList, unsharedList)
+    unsharedList <- unshareCleanUp[[1]]
+    whichUnshared <- unshareCleanUp[[2]]
     res <- switch(
         mode,
-        matrix = .uinmf_rcpp(objectList, unsharedList,
+        matrix = .uinmf_rcpp(objectList, unsharedList, whichUnshared,
                             k, lambda, niter, verbose),
-        dgCMatrix = .uinmf_rcpp(objectList, unsharedList,
+        dgCMatrix = .uinmf_rcpp(objectList, unsharedList, whichUnshared,
                                k, lambda, niter, verbose),
         H5Mat = .uinmf_h5dense(sapply(objectList, function(x) x$filename),
                               sapply(objectList, function(x) x$dataPath),
                               sapply(unsharedList, function(x) x$filename),
                               sapply(unsharedList, function(x) x$dataPath),
-                              k, lambda, niter, verbose),
+                              whichUnshared, k, lambda, niter, verbose),
         H5SpMat = .uinmf_h5sparse(sapply(objectList, function(x) x$filename),
                                  sapply(objectList, function(x) x$rowindPath),
                                  sapply(objectList, function(x) x$colptrPath),
@@ -401,45 +408,57 @@ uinmf <- function(
                                  sapply(unsharedList, function(x) x$valuePath),
                                  sapply(unsharedList, function(x) x$nrow),
                                  sapply(unsharedList, function(x) x$ncol),
-                                 k, lambda, niter, verbose)
+                                 whichUnshared, k, lambda, niter, verbose)
     )
+    names(res$H) <- names(res$V) <- names(objectList)
+    names(res$U) <- names(unsharedList)
     return(res)
 }
 
+# Check and returns a processed `unsharedList` so it can be used with c++
+# also returns a matching vector so we don't make empty dataset and have error
+# If `objectList` has name a, b, c, d, and unsharedList has b, d, c,
+# then matching vector has c(-1, 0, 2, 1). `-1` indicates no shared features, 
+# non-negs are 0-based index for which mat in `unsharedList` is the one for this
+# object. 
 .uinmf.matchDatasets <- function(objectList, unsharedList) {
-    if (is.null(names(objectList)) || is.null(unsharedList)) {
+    if (is.null(names(objectList)) || is.null(names(unsharedList))) {
         if (length(unsharedList) != length(objectList)) {
-            stop("Number of matrix in unshared featire list does not match, ",
+            stop("Number of matrix in unshared feature list does not match, ",
                  "please use named lists to indicate dataset matching.")
         }
-    } else {
-        unsharedList <- lapply(names(objectList), function(n) unsharedList[[n]])
-        names(unsharedList) <- names(objectList)
+        # No naming matching available, assume one-by-one matching
+        names(objectList) <- names(unsharedList) <- 
+            as.character(seq_along(objectList))
     }
+    # Remove unshared ones not existing in objectList First
+    unsharedList <- unsharedList[names(unsharedList) %in% names(objectList)]
+    # Remove empty unshared ones
+    unsharedList <- unsharedList[sapply(unsharedList, function(x) {
+        if (is.null(x)) return(FALSE)
+        if (is.null(nrow(x))) return(FALSE)
+        if (nrow(x) == 0) return(FALSE)
+        return(TRUE)
+    })]
+    
+    whichUnshared <- rep(-1, length(objectList))
+    for (i in seq_along(objectList)) {
+        d <- names(objectList)[i]
+        if (d %in% names(unsharedList)) {
+            # Guaranteed to cover all unshared data, b/c cleaned up above
+            if (ncol(unsharedList[[d]]) != ncol(objectList[[d]])) {
+                stop("Number of columns in each matrix from `unsharedList` ",
+                     "must match with the corresponding matrix from `object`")
+            }
+            whichUnshared[i] <- which(names(unsharedList) == d)[1] - 1
+        }
+    }
+    
     mode <- .typeOfInput(objectList, null.rm = FALSE)
-    mode2 <- .typeOfInput(unsharedList, null.rm = TRUE)
+    mode2 <- .typeOfInput(unsharedList, null.rm = FALSE)
     if (mode != mode2) {
         stop("Data of unshared feature should be of the same class as ",
              "input data")
     }
-    for (i in seq_along(unsharedList)) {
-        if (is.null(unsharedList[[i]])) {
-            # Assume no unshared feature for this dataset
-            unsharedList[[i]] <- switch(
-                mode,
-                matrix = matrix(nrow = 0, ncol = ncol(objectList[[i]])),
-                dgCMatrix = methods::as(methods::as(methods::as(Matrix::Matrix(
-                    nrow = 0, ncol = ncol(objectList[[i]])
-                ), "dMatrix"), "generalMatrix"), "CsparseMatrix"),
-                H5Mat = stop("Empty H5Mat not supported yet"),
-                H5SpMat = stop("Empty H5SpMat not supported yet")
-            )
-        } else {
-            if (ncol(unsharedList[[i]]) != ncol(objectList[[i]])) {
-                stop("Number of columns in each matrix from `unsharedList` ",
-                     "must match with the corresponding matrix from `object`")
-            }
-        }
-    }
-    return(unsharedList)
+    return(list(unsharedList, whichUnshared))
 }

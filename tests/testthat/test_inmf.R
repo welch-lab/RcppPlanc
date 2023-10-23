@@ -200,7 +200,7 @@ test_that("uinmf", {
   expect_error(uinmf(list(ctrl.sparse, stim.sparse), list(p1, p2), lambda = 1:3),
                "Must specify 1 lambda for all or each.")
   expect_error(uinmf(list(ctrl.sparse, stim.sparse), list(p1)),
-               "Number of matrix in unshared featire list does not match")
+               "Number of matrix in unshared feature list does not match")
   expect_error(uinmf(list(ctrl.sparse, stim.sparse), list(p1.dense, p2.dense)),
                "Data of unshared feature should be of the same class as")
   expect_error(uinmf(list(ctrl.sparse, stim.sparse), list(p1, p2[,1:100])),
@@ -210,9 +210,7 @@ test_that("uinmf", {
   set.seed(1)
   res4 <- uinmf(list(a = ctrl.dense, b = stim.dense), list(a = p1.dense))
   expect_true(all.equal(res3, res4))
-  expect_false(is.null(res3$U[[2]]))
-  expect_equal(nrow(res4$U[[2]]), 0)
-  expect_equal(ncol(res4$U[[2]]), 20)
+  expect_equal(length(res4$U), 1)
 })
 
 test_that("auxiliary", {

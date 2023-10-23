@@ -44,9 +44,9 @@ size \eqn{m \times k}. Default \code{NULL}.}
 Default \code{TRUE}.}
 }
 \value{
-A list of the following elements: 
+A list of the following elements:
 \itemize{
- \item{\code{H} - a list of result \eqn{H_i} matrices of size 
+ \item{\code{H} - a list of result \eqn{H_i} matrices of size
  \eqn{n_i \times k}}
  \item{\code{V} - a list of result \eqn{V_i} matrices}
  \item{\code{W} - the result \eqn{W} matrix}
@@ -65,7 +65,7 @@ where \eqn{E_i} is the input non-negative matrix of the \eqn{i}'th dataset,
 \eqn{d} is the total number of datasets. \eqn{E_i} is of size
 \eqn{m \times n_i} for \eqn{m} features and \eqn{n_i} sample points,
 \eqn{H_i} is of size \eqn{k \times n_i}, \eqn{V_i} is of size
-\eqn{m \times k}, and \eqn{W} is of size \eqn{m \times k}. 
+\eqn{m \times k}, and \eqn{W} is of size \eqn{m \times k}.
 
 \code{inmf} optimizes the objective with ANLS strategy, while
 \code{\link{onlineINMF}} optimizes the same objective with an online learning

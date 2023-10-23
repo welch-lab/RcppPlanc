@@ -316,24 +316,25 @@ BEGIN_RCPP
 END_RCPP
 }
 // uinmf_rcpp
-Rcpp::List uinmf_rcpp(Rcpp::List objectList, const Rcpp::List& unsharedList, arma::uword k, const arma::vec& lambda, arma::uword niter, bool verbose);
-RcppExport SEXP _RcppPlanc_uinmf_rcpp(SEXP objectListSEXP, SEXP unsharedListSEXP, SEXP kSEXP, SEXP lambdaSEXP, SEXP niterSEXP, SEXP verboseSEXP) {
+Rcpp::List uinmf_rcpp(Rcpp::List objectList, const Rcpp::List& unsharedList, std::vector<int> whichUnshared, arma::uword k, const arma::vec& lambda, arma::uword niter, bool verbose);
+RcppExport SEXP _RcppPlanc_uinmf_rcpp(SEXP objectListSEXP, SEXP unsharedListSEXP, SEXP whichUnsharedSEXP, SEXP kSEXP, SEXP lambdaSEXP, SEXP niterSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::List >::type objectList(objectListSEXP);
     Rcpp::traits::input_parameter< const Rcpp::List& >::type unsharedList(unsharedListSEXP);
+    Rcpp::traits::input_parameter< std::vector<int> >::type whichUnshared(whichUnsharedSEXP);
     Rcpp::traits::input_parameter< arma::uword >::type k(kSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type lambda(lambdaSEXP);
     Rcpp::traits::input_parameter< arma::uword >::type niter(niterSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(uinmf_rcpp(objectList, unsharedList, k, lambda, niter, verbose));
+    rcpp_result_gen = Rcpp::wrap(uinmf_rcpp(objectList, unsharedList, whichUnshared, k, lambda, niter, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
 // uinmf_h5dense
-Rcpp::List uinmf_h5dense(std::vector<std::string> filenames, std::vector<std::string> dataPaths, std::vector<std::string> unsharedFilenames, std::vector<std::string> unsharedDataPaths, arma::uword k, const arma::vec& lambda, arma::uword niter, bool verbose);
-RcppExport SEXP _RcppPlanc_uinmf_h5dense(SEXP filenamesSEXP, SEXP dataPathsSEXP, SEXP unsharedFilenamesSEXP, SEXP unsharedDataPathsSEXP, SEXP kSEXP, SEXP lambdaSEXP, SEXP niterSEXP, SEXP verboseSEXP) {
+Rcpp::List uinmf_h5dense(std::vector<std::string> filenames, std::vector<std::string> dataPaths, std::vector<std::string> unsharedFilenames, std::vector<std::string> unsharedDataPaths, std::vector<int> whichUnshared, arma::uword k, const arma::vec& lambda, arma::uword niter, bool verbose);
+RcppExport SEXP _RcppPlanc_uinmf_h5dense(SEXP filenamesSEXP, SEXP dataPathsSEXP, SEXP unsharedFilenamesSEXP, SEXP unsharedDataPathsSEXP, SEXP whichUnsharedSEXP, SEXP kSEXP, SEXP lambdaSEXP, SEXP niterSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -341,17 +342,18 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< std::vector<std::string> >::type dataPaths(dataPathsSEXP);
     Rcpp::traits::input_parameter< std::vector<std::string> >::type unsharedFilenames(unsharedFilenamesSEXP);
     Rcpp::traits::input_parameter< std::vector<std::string> >::type unsharedDataPaths(unsharedDataPathsSEXP);
+    Rcpp::traits::input_parameter< std::vector<int> >::type whichUnshared(whichUnsharedSEXP);
     Rcpp::traits::input_parameter< arma::uword >::type k(kSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type lambda(lambdaSEXP);
     Rcpp::traits::input_parameter< arma::uword >::type niter(niterSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(uinmf_h5dense(filenames, dataPaths, unsharedFilenames, unsharedDataPaths, k, lambda, niter, verbose));
+    rcpp_result_gen = Rcpp::wrap(uinmf_h5dense(filenames, dataPaths, unsharedFilenames, unsharedDataPaths, whichUnshared, k, lambda, niter, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
 // uinmf_h5sparse
-Rcpp::List uinmf_h5sparse(std::vector<std::string> filenames, std::vector<std::string> rowindPaths, std::vector<std::string> colptrPaths, std::vector<std::string> valuePaths, arma::uvec nrows, arma::uvec ncols, std::vector<std::string> unsharedFilenames, std::vector<std::string> unsharedRowindPaths, std::vector<std::string> unsharedColptrPaths, std::vector<std::string> unsharedValuePaths, arma::uvec unsharedNrows, arma::uvec unsharedNcols, arma::uword k, const arma::vec& lambda, arma::uword niter, bool verbose);
-RcppExport SEXP _RcppPlanc_uinmf_h5sparse(SEXP filenamesSEXP, SEXP rowindPathsSEXP, SEXP colptrPathsSEXP, SEXP valuePathsSEXP, SEXP nrowsSEXP, SEXP ncolsSEXP, SEXP unsharedFilenamesSEXP, SEXP unsharedRowindPathsSEXP, SEXP unsharedColptrPathsSEXP, SEXP unsharedValuePathsSEXP, SEXP unsharedNrowsSEXP, SEXP unsharedNcolsSEXP, SEXP kSEXP, SEXP lambdaSEXP, SEXP niterSEXP, SEXP verboseSEXP) {
+Rcpp::List uinmf_h5sparse(std::vector<std::string> filenames, std::vector<std::string> rowindPaths, std::vector<std::string> colptrPaths, std::vector<std::string> valuePaths, arma::uvec nrows, arma::uvec ncols, std::vector<std::string> unsharedFilenames, std::vector<std::string> unsharedRowindPaths, std::vector<std::string> unsharedColptrPaths, std::vector<std::string> unsharedValuePaths, arma::uvec unsharedNrows, arma::uvec unsharedNcols, std::vector<int> whichUnshared, arma::uword k, const arma::vec& lambda, arma::uword niter, bool verbose);
+RcppExport SEXP _RcppPlanc_uinmf_h5sparse(SEXP filenamesSEXP, SEXP rowindPathsSEXP, SEXP colptrPathsSEXP, SEXP valuePathsSEXP, SEXP nrowsSEXP, SEXP ncolsSEXP, SEXP unsharedFilenamesSEXP, SEXP unsharedRowindPathsSEXP, SEXP unsharedColptrPathsSEXP, SEXP unsharedValuePathsSEXP, SEXP unsharedNrowsSEXP, SEXP unsharedNcolsSEXP, SEXP whichUnsharedSEXP, SEXP kSEXP, SEXP lambdaSEXP, SEXP niterSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -367,11 +369,12 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< std::vector<std::string> >::type unsharedValuePaths(unsharedValuePathsSEXP);
     Rcpp::traits::input_parameter< arma::uvec >::type unsharedNrows(unsharedNrowsSEXP);
     Rcpp::traits::input_parameter< arma::uvec >::type unsharedNcols(unsharedNcolsSEXP);
+    Rcpp::traits::input_parameter< std::vector<int> >::type whichUnshared(whichUnsharedSEXP);
     Rcpp::traits::input_parameter< arma::uword >::type k(kSEXP);
     Rcpp::traits::input_parameter< const arma::vec& >::type lambda(lambdaSEXP);
     Rcpp::traits::input_parameter< arma::uword >::type niter(niterSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(uinmf_h5sparse(filenames, rowindPaths, colptrPaths, valuePaths, nrows, ncols, unsharedFilenames, unsharedRowindPaths, unsharedColptrPaths, unsharedValuePaths, unsharedNrows, unsharedNcols, k, lambda, niter, verbose));
+    rcpp_result_gen = Rcpp::wrap(uinmf_h5sparse(filenames, rowindPaths, colptrPaths, valuePaths, nrows, ncols, unsharedFilenames, unsharedRowindPaths, unsharedColptrPaths, unsharedValuePaths, unsharedNrows, unsharedNcols, whichUnshared, k, lambda, niter, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -404,9 +407,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppPlanc_onlineINMF_S23", (DL_FUNC) &_RcppPlanc_onlineINMF_S23, 13},
     {"_RcppPlanc_onlineINMF_S23_h5dense", (DL_FUNC) &_RcppPlanc_onlineINMF_S23_h5dense, 15},
     {"_RcppPlanc_onlineINMF_S23_h5sparse", (DL_FUNC) &_RcppPlanc_onlineINMF_S23_h5sparse, 23},
-    {"_RcppPlanc_uinmf_rcpp", (DL_FUNC) &_RcppPlanc_uinmf_rcpp, 6},
-    {"_RcppPlanc_uinmf_h5dense", (DL_FUNC) &_RcppPlanc_uinmf_h5dense, 8},
-    {"_RcppPlanc_uinmf_h5sparse", (DL_FUNC) &_RcppPlanc_uinmf_h5sparse, 16},
+    {"_RcppPlanc_uinmf_rcpp", (DL_FUNC) &_RcppPlanc_uinmf_rcpp, 7},
+    {"_RcppPlanc_uinmf_h5dense", (DL_FUNC) &_RcppPlanc_uinmf_h5dense, 9},
+    {"_RcppPlanc_uinmf_h5sparse", (DL_FUNC) &_RcppPlanc_uinmf_h5sparse, 17},
     {"_RcppPlanc_testcacheCalc", (DL_FUNC) &_RcppPlanc_testcacheCalc, 1},
     {NULL, NULL, 0}
 };

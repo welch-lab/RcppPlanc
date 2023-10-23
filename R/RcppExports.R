@@ -155,16 +155,16 @@ bppnnls_prod <- function(CtC, CtB) {
     .Call(`_RcppPlanc_onlineINMF_S23_h5sparse`, filenames, valuePaths, rowindPaths, colptrPaths, nrows, ncols, filenamesNew, valuePathsNew, rowindPathsNew, colptrPathsNew, nrowsNew, ncolsNew, Vinit, Winit, Ainit, Binit, k, lambda, project, maxEpoch, minibatchSize, maxHALSIter, verbose)
 }
 
-.uinmf_rcpp <- function(objectList, unsharedList, k, lambda, niter, verbose) {
-    .Call(`_RcppPlanc_uinmf_rcpp`, objectList, unsharedList, k, lambda, niter, verbose)
+.uinmf_rcpp <- function(objectList, unsharedList, whichUnshared, k, lambda, niter, verbose) {
+    .Call(`_RcppPlanc_uinmf_rcpp`, objectList, unsharedList, whichUnshared, k, lambda, niter, verbose)
 }
 
-.uinmf_h5dense <- function(filenames, dataPaths, unsharedFilenames, unsharedDataPaths, k, lambda, niter, verbose) {
-    .Call(`_RcppPlanc_uinmf_h5dense`, filenames, dataPaths, unsharedFilenames, unsharedDataPaths, k, lambda, niter, verbose)
+.uinmf_h5dense <- function(filenames, dataPaths, unsharedFilenames, unsharedDataPaths, whichUnshared, k, lambda, niter, verbose) {
+    .Call(`_RcppPlanc_uinmf_h5dense`, filenames, dataPaths, unsharedFilenames, unsharedDataPaths, whichUnshared, k, lambda, niter, verbose)
 }
 
-.uinmf_h5sparse <- function(filenames, rowindPaths, colptrPaths, valuePaths, nrows, ncols, unsharedFilenames, unsharedRowindPaths, unsharedColptrPaths, unsharedValuePaths, unsharedNrows, unsharedNcols, k, lambda, niter, verbose) {
-    .Call(`_RcppPlanc_uinmf_h5sparse`, filenames, rowindPaths, colptrPaths, valuePaths, nrows, ncols, unsharedFilenames, unsharedRowindPaths, unsharedColptrPaths, unsharedValuePaths, unsharedNrows, unsharedNcols, k, lambda, niter, verbose)
+.uinmf_h5sparse <- function(filenames, rowindPaths, colptrPaths, valuePaths, nrows, ncols, unsharedFilenames, unsharedRowindPaths, unsharedColptrPaths, unsharedValuePaths, unsharedNrows, unsharedNcols, whichUnshared, k, lambda, niter, verbose) {
+    .Call(`_RcppPlanc_uinmf_h5sparse`, filenames, rowindPaths, colptrPaths, valuePaths, nrows, ncols, unsharedFilenames, unsharedRowindPaths, unsharedColptrPaths, unsharedValuePaths, unsharedNrows, unsharedNcols, whichUnshared, k, lambda, niter, verbose)
 }
 
 .testCacheCalc <- function(rank) {

@@ -1,18 +1,18 @@
 #' Argument list object for using a dense matrix stored in HDF5 file
 #' @description
-#' For running \code{\link{inmf}}, \code{\link{onlineINMF}} or 
-#' \code{\link{uinmf}} with dense matrix stored in HDF5 file, users will need 
-#' to construct an argument list for the filename of the HDF5 file as well as 
+#' For running \code{\link{inmf}}, \code{\link{onlineINMF}} or
+#' \code{\link{uinmf}} with dense matrix stored in HDF5 file, users will need
+#' to construct an argument list for the filename of the HDF5 file as well as
 #' the path in the file storing the matrix. \code{H5Mat} is provided as an
 #' instructed constructor. Meanwhile, since the INMF functions require that
-#' all datasets should be of the same type, \code{as.H5Mat} is provided for 
-#' writing in-memory data into a new HDF5 file on disk and returning the 
-#' constructed argument list. 
-#' 
+#' all datasets should be of the same type, \code{as.H5Mat} is provided for
+#' writing in-memory data into a new HDF5 file on disk and returning the
+#' constructed argument list.
+#'
 #' @param x For \code{as.H5Mat}, matrix of either dense or sparse type to be
-#' written; for \code{print}, a \code{H5Mat} argument list object 
+#' written; for \code{print}, a \code{H5Mat} argument list object
 #' @param filename Filename of the HDF5 file
-#' @param dataPath Path in the HDF5 file that points to a 2D dense matrix. 
+#' @param dataPath Path in the HDF5 file that points to a 2D dense matrix.
 #' Default \code{"data"} when using \code{as.H5Mat}.
 #' @param overwrite Logical, whether to overwrite the file if already exists at
 #' the given path. Default \code{FALSE}.
@@ -26,10 +26,10 @@
 #' \dontrun{
 #' library(Matrix)
 #' ctrl.dense <- as.matrix(ctrl.sparse)
-#' h1 <- as.H5Mat(ctrl.dense, "ctrl_from_dense_to_dense.h5", 
+#' h1 <- as.H5Mat(ctrl.dense, "ctrl_from_dense_to_dense.h5",
 #'                dataPath = "data")
 #' h1
-#' h2 <- as.H5Mat(ctrl.sparse, "ctrl_from_sparse_to_dense.h5", 
+#' h2 <- as.H5Mat(ctrl.sparse, "ctrl_from_sparse_to_dense.h5",
 #'                dataPath = "data")
 #' h2
 #' }
@@ -56,7 +56,7 @@ as.H5Mat <- function(x, filename, dataPath = "data", overwrite = FALSE, ...) {
 #' @export
 #' @rdname H5Mat
 #' @method as.H5Mat matrix
-as.H5Mat.matrix <- function(x, filename, dataPath = "data", 
+as.H5Mat.matrix <- function(x, filename, dataPath = "data",
                             overwrite = FALSE, ...) {
   res <- .rcpp_mat_to_h5mat(x, filename, dataPath)
   H5Mat(res[1], res[2])
@@ -65,7 +65,7 @@ as.H5Mat.matrix <- function(x, filename, dataPath = "data",
 #' @export
 #' @rdname H5Mat
 #' @method as.H5Mat dgCMatrix
-as.H5Mat.dgCMatrix <- function(x, filename, dataPath = "data", 
+as.H5Mat.dgCMatrix <- function(x, filename, dataPath = "data",
                                overwrite = FALSE, ...) {
   res <- .rcpp_spmat_to_h5mat(x@x, x@i, x@p, nrow(x), ncol(x), filename, dataPath)
   H5Mat(res[1], res[2])
@@ -74,12 +74,12 @@ as.H5Mat.dgCMatrix <- function(x, filename, dataPath = "data",
 #' @export
 #' @rdname H5Mat
 #' @method as.H5Mat default
-as.H5Mat.default <- function(x, filename, dataPath = "data", 
+as.H5Mat.default <- function(x, filename, dataPath = "data",
                              overwrite = FALSE, ...) {
   if (methods::canCoerce(x, "matrix")) x <- as.matrix(x)
   else if (methods::canCoerce(x, "CsparseMatrix")) x <- methods::as(x, 'CsparseMatrix')
   else {
-    stop("No method for coercing \"", class(x)[1], "\" to \"matrix\" or ", 
+    stop("No method for coercing \"", class(x)[1], "\" to \"matrix\" or ",
          "\"dgCMatrix\"")
   }
   as.H5Mat(x, filename, dataPath, ...)
@@ -123,29 +123,29 @@ print.H5Mat <- function(x, ...) {
 
 #' Argument list object for using a sparse matrix stored in HDF5 file
 #' @description
-#' For running \code{\link{inmf}}, \code{\link{onlineINMF}} or 
-#' \code{\link{uinmf}} with sparse matrix stored in HDF5 file, users will need 
-#' to construct an argument list for the filename of the HDF5 file as well as 
-#' the paths in the file storing the arrays that construct the CSC (compressed 
-#' sparse column) matrix. \code{H5SpMat} is provided as an instructed 
-#' constructor. Meanwhile, since the INMF functions require that all datasets 
-#' should be of the same type, \code{as.H5SpMat} is provided for writing 
-#' in-memory data into a new HDF5 file on disk and returning the 
-#' constructed argument list. 
-#' 
+#' For running \code{\link{inmf}}, \code{\link{onlineINMF}} or
+#' \code{\link{uinmf}} with sparse matrix stored in HDF5 file, users will need
+#' to construct an argument list for the filename of the HDF5 file as well as
+#' the paths in the file storing the arrays that construct the CSC (compressed
+#' sparse column) matrix. \code{H5SpMat} is provided as an instructed
+#' constructor. Meanwhile, since the INMF functions require that all datasets
+#' should be of the same type, \code{as.H5SpMat} is provided for writing
+#' in-memory data into a new HDF5 file on disk and returning the
+#' constructed argument list.
+#'
 #' @param x For \code{as.H5SpMat}, matrix of either dense or sparse type to be
-#' written; for \code{print}, a \code{H5SpMat} argument list object. 
+#' written; for \code{print}, a \code{H5SpMat} argument list object.
 #' @param filename Filename of the HDF5 file
 #' @param valuePath Path in the HDF5 file that points to a 1D array storing the
-#' non-zero values of the sparse matrix. Default \code{"data"} when using 
+#' non-zero values of the sparse matrix. Default \code{"data"} when using
 #' \code{as.H5SpMat}.
 #' @param rowindPath Path in the HDF5 file that points to a 1D integer array
-#' storing the row indices of non-zero values in each column of the sparse 
+#' storing the row indices of non-zero values in each column of the sparse
 #' matrix. Default \code{"indices"} when using \code{as.H5SpMat}.
 #' @param colptrPath Path in the HDF5 file that points to a 1D integer array
-#' storing the number of non-zero values in each column of the sparse matrix. 
+#' storing the number of non-zero values in each column of the sparse matrix.
 #' Default \code{"indptr"} when using \code{as.H5SpMat}.
-#' @param nrow,ncol Integer, the true dimensionality of the sparse matrix. 
+#' @param nrow,ncol Integer, the true dimensionality of the sparse matrix.
 #' @param overwrite Logical, whether to overwrite the file if already exists at
 #' the given path. Default \code{FALSE}.
 #' @param ... not used
@@ -158,14 +158,14 @@ print.H5Mat <- function(x, ...) {
 #' \dontrun{
 #' library(Matrix)
 #' ctrl.dense <- as.matrix(ctrl.sparse)
-#' h1 <- as.H5SpMat(ctrl.sparse, "ctrl_from_sparse_to_sparse.h5", 
-#'                  valuePath = "data", rowindPath = "indices", 
-#'                  colptrPath = "indptr", nrow = nrow(ctrl.sparse), 
+#' h1 <- as.H5SpMat(ctrl.sparse, "ctrl_from_sparse_to_sparse.h5",
+#'                  valuePath = "data", rowindPath = "indices",
+#'                  colptrPath = "indptr", nrow = nrow(ctrl.sparse),
 #'                  ncol = ncol(ctrl.sparse))
 #' h1
-#' h2 <- as.H5SpMat(ctrl.dense, "ctrl_from_dense_to_sparse.h5", 
-#'                  valuePath = "data", rowindPath = "indices", 
-#'                  colptrPath = "indptr", nrow = nrow(ctrl.sparse), 
+#' h2 <- as.H5SpMat(ctrl.dense, "ctrl_from_dense_to_sparse.h5",
+#'                  valuePath = "data", rowindPath = "indices",
+#'                  colptrPath = "indptr", nrow = nrow(ctrl.sparse),
 #'                  ncol = ncol(ctrl.sparse))
 #' h2
 #' }
@@ -192,8 +192,8 @@ H5SpMat <- function(
 
 #' @export
 #' @rdname H5SpMat
-as.H5SpMat <- function(x, filename, valuePath = "data", 
-                       rowindPath = "indices", colptrPath = "indptr", 
+as.H5SpMat <- function(x, filename, valuePath = "data",
+                       rowindPath = "indices", colptrPath = "indptr",
                        overwrite = FALSE, ...) {
   if (isFALSE(overwrite) && file.exists(filename)) {
     filename <- normalizePath(filename)
@@ -205,22 +205,22 @@ as.H5SpMat <- function(x, filename, valuePath = "data",
 #' @export
 #' @rdname H5SpMat
 #' @method as.H5SpMat matrix
-as.H5SpMat.matrix <- function(x, filename, valuePath = "data", 
-                              rowindPath = "indices", colptrPath = "indptr", 
+as.H5SpMat.matrix <- function(x, filename, valuePath = "data",
+                              rowindPath = "indices", colptrPath = "indptr",
                               overwrite = FALSE, ...) {
   x <- methods::as(x, "CsparseMatrix")
-  as.H5SpMat.dgCMatrix(x, filename = filename, valuePath = valuePath, 
-                       rowindPath = rowindPath, colptrPath = colptrPath, 
+  as.H5SpMat.dgCMatrix(x, filename = filename, valuePath = valuePath,
+                       rowindPath = rowindPath, colptrPath = colptrPath,
                        overwrite = overwrite)
 }
 
 #' @export
 #' @rdname H5SpMat
 #' @method as.H5SpMat dgCMatrix
-as.H5SpMat.dgCMatrix <- function(x, filename, valuePath = "data", 
-                                 rowindPath = "indices", colptrPath = "indptr", 
+as.H5SpMat.dgCMatrix <- function(x, filename, valuePath = "data",
+                                 rowindPath = "indices", colptrPath = "indptr",
                                  overwrite = FALSE, ...) {
-  res <- .rcpp_spmat_to_h5spmat(x@x, x@i, x@p, nrow(x), ncol(x), filename, 
+  res <- .rcpp_spmat_to_h5spmat(x@x, x@i, x@p, nrow(x), ncol(x), filename,
                                 valuePath, rowindPath, colptrPath)
   H5SpMat(res[1], res[2], res[3], res[4], nrow(x), ncol(x))
 }
@@ -228,8 +228,8 @@ as.H5SpMat.dgCMatrix <- function(x, filename, valuePath = "data",
 #' @export
 #' @rdname H5SpMat
 #' @method as.H5SpMat default
-as.H5SpMat.default <- function(x, filename, valuePath = "data", 
-                               rowindPath = "indices", colptrPath = "indptr", 
+as.H5SpMat.default <- function(x, filename, valuePath = "data",
+                               rowindPath = "indices", colptrPath = "indptr",
                                overwrite = FALSE, ...) {
   if (methods::canCoerce(x, "CsparseMatrix")) {
       x <- methods::as(x, "CsparseMatrix")
@@ -239,8 +239,8 @@ as.H5SpMat.default <- function(x, filename, valuePath = "data",
   } else {
     stop("No method for coercing \"", class(x)[1], "\" to \"dgCMatrix\"")
   }
-  as.H5SpMat(x, filename = filename, valuePath = valuePath, 
-             rowindPath = rowindPath, colptrPath = colptrPath, 
+  as.H5SpMat(x, filename = filename, valuePath = valuePath,
+             rowindPath = rowindPath, colptrPath = colptrPath,
              overwrite = overwrite, ...)
 }
 
@@ -284,7 +284,7 @@ print.H5SpMat <- function(x, ...) {
 #' @method dim H5SpMat
 #' @param x H5SpMat argument list object
 #' @param value Numeric vector of two, for number of rows and number of columns.
-#' @return Retriever returns a vector of two (nrow and ncol), setter sets the 
+#' @return Retriever returns a vector of two (nrow and ncol), setter sets the
 #' value of that in the argument list.
 #' @rdname dim-H5SpMat
 #' @export
@@ -316,4 +316,12 @@ dim.H5SpMat <- function(x) {return(c(x$nrow, x$ncol))}
       stop("Datasets of class `", classes[1], "` is currently not supported.")
     }
     return(classes[1])
+}
+
+.makeUnsharedIdx <- function(EiNames, PiNames) {
+    res <- rep(-1L, length(EiNames))
+    for (i in seq_along(EiNames)) {
+        res[i] <- match(EiNames[i], PiNames) - 1
+    }
+    return(res)
 }

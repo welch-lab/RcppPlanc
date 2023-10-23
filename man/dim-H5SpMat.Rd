@@ -15,7 +15,7 @@
 \item{value}{Numeric vector of two, for number of rows and number of columns.}
 }
 \value{
-Retriever returns a vector of two (nrow and ncol), setter sets the 
+Retriever returns a vector of two (nrow and ncol), setter sets the
 value of that in the argument list.
 }
 \description{

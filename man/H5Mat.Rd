@@ -21,7 +21,7 @@ as.H5Mat(x, filename, dataPath = "data", overwrite = FALSE, ...)
 \arguments{
 \item{filename}{Filename of the HDF5 file}
 
-\item{dataPath}{Path in the HDF5 file that points to a 2D dense matrix. 
+\item{dataPath}{Path in the HDF5 file that points to a 2D dense matrix.
 Default \code{"data"} when using \code{as.H5Mat}.}
 
 \item{x}{For \code{as.H5Mat}, matrix of either dense or sparse type to be
@@ -36,13 +36,13 @@ the given path. Default \code{FALSE}.}
 H5Mat object, indeed a list object.
 }
 \description{
-For running \code{\link{inmf}}, \code{\link{onlineINMF}} or 
-\code{\link{uinmf}} with dense matrix stored in HDF5 file, users will need 
-to construct an argument list for the filename of the HDF5 file as well as 
+For running \code{\link{inmf}}, \code{\link{onlineINMF}} or
+\code{\link{uinmf}} with dense matrix stored in HDF5 file, users will need
+to construct an argument list for the filename of the HDF5 file as well as
 the path in the file storing the matrix. \code{H5Mat} is provided as an
 instructed constructor. Meanwhile, since the INMF functions require that
-all datasets should be of the same type, \code{as.H5Mat} is provided for 
-writing in-memory data into a new HDF5 file on disk and returning the 
+all datasets should be of the same type, \code{as.H5Mat} is provided for
+writing in-memory data into a new HDF5 file on disk and returning the
 constructed argument list.
 }
 \examples{
@@ -52,10 +52,10 @@ print(h)
 \dontrun{
 library(Matrix)
 ctrl.dense <- as.matrix(ctrl.sparse)
-h1 <- as.H5Mat(ctrl.dense, "ctrl_from_dense_to_dense.h5", 
+h1 <- as.H5Mat(ctrl.dense, "ctrl_from_dense_to_dense.h5",
                dataPath = "data")
 h1
-h2 <- as.H5Mat(ctrl.sparse, "ctrl_from_sparse_to_dense.h5", 
+h2 <- as.H5Mat(ctrl.sparse, "ctrl_from_sparse_to_dense.h5",
                dataPath = "data")
 h2
 }

@@ -1112,6 +1112,7 @@ Rcpp::List onlineINMF_S23_h5sparse(
 template <typename T>
 Rcpp::List uinmf_mem(std::vector<T> objectList,
                     std::vector<T> unsharedList,
+                    std::vector<int> whichUnshared,
                     arma::uword k, arma::vec lambda,
                     arma::uword niter, bool verbose)
 {
@@ -1119,17 +1120,20 @@ Rcpp::List uinmf_mem(std::vector<T> objectList,
     std::vector<std::unique_ptr<T>> unsharedPtrVec;
     matPtrVec = initMemMatPtr<T>(objectList);
     unsharedPtrVec = initMemMatPtr<T>(unsharedList);
-    planc::UINMF<T> solver(matPtrVec, unsharedPtrVec, k, lambda);
+    planc::UINMF<T> solver(matPtrVec, unsharedPtrVec, whichUnshared, k, lambda);
     solver.optimizeUANLS(niter, verbose);
 
     Rcpp::List HList(objectList.size());
-    Rcpp::List UList(objectList.size());
     Rcpp::List VList(objectList.size());
+    Rcpp::List UList(unsharedList.size());
     for (arma::uword i = 0; i < objectList.size(); ++i)
     {
         HList[i] = solver.getHi(i);
         VList[i] = solver.getVi(i);
-        UList[i] = solver.getUi(i);
+        int uidx = whichUnshared[i];
+        if (uidx >= 0) {
+            UList[uidx] = solver.getUi(uidx);
+        }
     }
     Rcpp::List output = Rcpp::List::create(
         Rcpp::Named("H") = Rcpp::wrap(HList),
@@ -1143,16 +1147,20 @@ Rcpp::List uinmf_mem(std::vector<T> objectList,
 
 // [[Rcpp::export(.uinmf_rcpp)]]
 Rcpp::List uinmf_rcpp(Rcpp::List objectList, const Rcpp::List& unsharedList,
-                 arma::uword k, const arma::vec& lambda,
-                 arma::uword niter, bool verbose) {
+                      std::vector<int> whichUnshared, arma::uword k,
+                      const arma::vec& lambda, arma::uword niter, bool verbose) {
     if (Rf_isS4(objectList[0])) {
-        return uinmf_mem<arma::sp_mat>(Rcpp::as<std::vector<arma::sp_mat>>(objectList),
-                                Rcpp::as<std::vector<arma::sp_mat>>(unsharedList),
-                                k, lambda, niter, verbose);
+        return uinmf_mem<arma::sp_mat>(
+            Rcpp::as<std::vector<arma::sp_mat>>(objectList),
+            Rcpp::as<std::vector<arma::sp_mat>>(unsharedList),
+            whichUnshared, k, lambda, niter, verbose
+        );
     } else {
-        return uinmf_mem<arma::mat>(Rcpp::as<std::vector<arma::mat>>(objectList),
-                                Rcpp::as<std::vector<arma::mat>>(unsharedList),
-                                k, lambda, niter, verbose);
+        return uinmf_mem<arma::mat>(
+            Rcpp::as<std::vector<arma::mat>>(objectList),
+            Rcpp::as<std::vector<arma::mat>>(unsharedList),
+            whichUnshared, k, lambda, niter, verbose
+        );
     }
     return Rcpp::List::create();
 }
@@ -1162,6 +1170,7 @@ Rcpp::List uinmf_h5dense(std::vector<std::string> filenames,
                          std::vector<std::string> dataPaths,
                          std::vector<std::string> unsharedFilenames,
                          std::vector<std::string> unsharedDataPaths,
+                         std::vector<int> whichUnshared,
                          arma::uword k, const arma::vec& lambda,
                          arma::uword niter, bool verbose) {
     std::vector<std::unique_ptr<planc::H5Mat>> matPtrVec;
@@ -1175,18 +1184,21 @@ Rcpp::List uinmf_h5dense(std::vector<std::string> filenames,
         std::unique_ptr<planc::H5Mat> ptr_unshared = std::make_unique<planc::H5Mat>(E_unshared);
         unsharedPtrVec.push_back(std::move(ptr_unshared));
     }
-    planc::UINMF<planc::H5Mat> solver(matPtrVec, unsharedPtrVec, k, lambda);
+    planc::UINMF<planc::H5Mat> solver(matPtrVec, unsharedPtrVec, whichUnshared, k, lambda);
 
     solver.optimizeUANLS(niter, verbose);
 
     Rcpp::List HList(matPtrVec.size());
-    Rcpp::List UList(matPtrVec.size());
     Rcpp::List VList(matPtrVec.size());
+    Rcpp::List UList(matPtrVec.size());
     for (arma::uword i = 0; i < matPtrVec.size(); ++i)
     {
         HList[i] = solver.getHi(i);
         VList[i] = solver.getVi(i);
-        UList[i] = solver.getUi(i);
+        int uidx = whichUnshared[i];
+        if (uidx >= 0) {
+            UList[uidx] = solver.getUi(uidx);
+        }
     }
     Rcpp::List output = Rcpp::List::create(
         Rcpp::Named("H") = Rcpp::wrap(HList),
@@ -1209,6 +1221,7 @@ Rcpp::List uinmf_h5sparse(std::vector<std::string> filenames,
                           std::vector<std::string> unsharedColptrPaths,
                           std::vector<std::string> unsharedValuePaths,
                           arma::uvec unsharedNrows, arma::uvec unsharedNcols,
+                          std::vector<int> whichUnshared,
                           arma::uword k, const arma::vec& lambda,
                           arma::uword niter, bool verbose) {
     std::vector<std::unique_ptr<planc::H5SpMat>> matPtrVec;
@@ -1222,16 +1235,19 @@ Rcpp::List uinmf_h5sparse(std::vector<std::string> filenames,
         std::unique_ptr<planc::H5SpMat> ptr_unshared = std::make_unique<planc::H5SpMat>(E_unshared);
         unsharedPtrVec.push_back(std::move(ptr_unshared));
     }
-    planc::UINMF<planc::H5SpMat> solver(matPtrVec, unsharedPtrVec, k, lambda);
+    planc::UINMF<planc::H5SpMat> solver(matPtrVec, unsharedPtrVec, whichUnshared, k, lambda);
     solver.optimizeUANLS(niter, verbose);
     Rcpp::List HList(matPtrVec.size());
-    Rcpp::List UList(matPtrVec.size());
     Rcpp::List VList(matPtrVec.size());
+    Rcpp::List UList(matPtrVec.size());
     for (arma::uword i = 0; i < matPtrVec.size(); ++i)
     {
         HList[i] = solver.getHi(i);
         VList[i] = solver.getVi(i);
-        UList[i] = solver.getUi(i);
+        int uidx = whichUnshared[i];
+        if (uidx >= 0) {
+            UList[uidx] = solver.getUi(uidx);
+        }
     }
     Rcpp::List output = Rcpp::List::create(
         Rcpp::Named("H") = Rcpp::wrap(HList),

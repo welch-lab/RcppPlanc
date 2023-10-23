@@ -30,9 +30,9 @@ perform. Default \code{30}.}
 Default \code{TRUE}.}
 }
 \value{
-A list of the following elements: 
+A list of the following elements:
 \itemize{
- \item{\code{H} - a list of result \eqn{H_i} matrices of size 
+ \item{\code{H} - a list of result \eqn{H_i} matrices of size
  \eqn{n_i \times k}}
  \item{\code{V} - a list of result \eqn{V_i} matrices}
  \item{\code{W} - the result \eqn{W} matrix}
@@ -46,7 +46,7 @@ Kriebel, 2022) to return factorized \eqn{H}, \eqn{W}, \eqn{V} and \eqn{U}
 matrices. The objective function is stated as
 
 \deqn{\arg\min_{H\ge0,W\ge0,V\ge0,U\ge0}\sum_{i}^{d}
-||\begin{bmatrix}E_i \\ P_i \end{bmatrix} - 
+||\begin{bmatrix}E_i \\ P_i \end{bmatrix} -
 (\begin{bmatrix}W \\ 0 \end{bmatrix}+
 \begin{bmatrix}V_i \\ U_i \end{bmatrix})Hi||^2_F+
 \lambda_i\sum_{i}^{d}||\begin{bmatrix}V_i \\ U_i \end{bmatrix}H_i||_F^2}
