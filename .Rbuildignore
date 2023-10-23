@@ -3,6 +3,11 @@
 ^LICENSE-GPL\.md$
 ^LICENSE-UT\.md$
 ^.*\.vscode
+^.*\.vs
+^.*\.cmake-build-release
+^.*\.cmake-build-debug
+^.*\.idea
+^.*\obj
 ^.*out
 ^.*_deps
 ^.*CMakeFiles
