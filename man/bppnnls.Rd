@@ -33,8 +33,8 @@ pre-calculating \eqn{C^\mathsf{T}C} and \eqn{C^\mathsf{T}B} is cheap.
 }
 \examples{
 set.seed(1)
-C <- matrix(rnorm(1000), nrow = 100)
-B <- matrix(rnorm(1500), nrow = 100)
+C <- matrix(rnorm(250), nrow = 25)
+B <- matrix(rnorm(375), nrow = 25)
 res1 <- bppnnls(C, B)
 dim(res1)
 res2 <- bppnnls_prod(t(C) \%*\% C, t(C) \%*\% B)

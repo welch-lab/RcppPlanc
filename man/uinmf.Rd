@@ -66,7 +66,7 @@ ANLS algorithm.
 \examples{
 if (FALSE) {
     res1 <- uinmf(list(sparse1, sparse2),
-                  list(sparse.unshare1, sparse.unshare2))
+                  list(sparse.unshare1, sparse.unshare2), k = 10, niter = 10)
 }
 }
 \references{

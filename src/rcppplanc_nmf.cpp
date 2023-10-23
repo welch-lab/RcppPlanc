@@ -333,7 +333,7 @@ Rcpp::List symNMF(const SEXP& x, const arma::uword& k, const arma::uword& niter,
 // //' @param W_init Initial left-hand factor matrix (Optional)
 // //' @returns The calculated factor matrices as an Rcpp::List
 // //' @examplesIf require("Matrix")
-// //' aoadmmnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
+// //' aoadmmnmf(rsparsematrix(nrow = 25, ncol = 25, nnz = 5, symmetric = TRUE), 10, 10)
 // // [[Rcpp::export]]
 // Rcpp::List aoadmmnmf(const arma::sp_mat &x, const int &k, const int &niter,
 //                      const Rcpp::Nullable<Rcpp::NumericMatrix> &W_init = R_NilValue,
@@ -361,7 +361,7 @@ Rcpp::List symNMF(const SEXP& x, const arma::uword& k, const arma::uword& niter,
 // //' @param W_init Initial left-hand factor matrix (Optional)
 // //' @returns The calculated factor matrices as an Rcpp::List
 // //' @examplesIf require("Matrix")
-// //' gnsymnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
+// //' gnsymnmf(rsparsematrix(nrow = 25, ncol = 25, nnz = 5, symmetric = TRUE), 10, 10)
 // // [[Rcpp::export]]
 // Rcpp::List gnsymnmf(const arma::sp_mat &x, const int &k, const int &niter,
 //                     const Rcpp::Nullable<Rcpp::NumericMatrix> &W_init = R_NilValue,
@@ -390,7 +390,7 @@ Rcpp::List symNMF(const SEXP& x, const arma::uword& k, const arma::uword& niter,
 // //' @param W_init Initial left-hand factor matrix (Optional)
 // //' @returns The calculated factor matrices as an Rcpp::List
 // //' @examplesIf require("Matrix")
-// //' halsnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
+// //' halsnmf(rsparsematrix(nrow = 25, ncol = 25, nnz = 5, symmetric = TRUE), 10, 10)
 // // [[Rcpp::export]]
 // Rcpp::List halsnmf(const arma::sp_mat &x, const int &k, const int &niter,
 //                    const Rcpp::Nullable<Rcpp::NumericMatrix> &W_init = R_NilValue,
@@ -418,7 +418,7 @@ Rcpp::List symNMF(const SEXP& x, const arma::uword& k, const arma::uword& niter,
 // //' @param W_init Initial left-hand factor matrix (Optional)
 // //' @returns The calculated factor matrices as an Rcpp::List
 // //' @examplesIf require("Matrix")
-// //' halsnmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
+// //' halsnmf(rsparsematrix(nrow = 25, ncol = 25, nnz = 5, symmetric = TRUE), 10, 10)
 // // [[Rcpp::export]]
 // Rcpp::List munmf(const arma::sp_mat &x, const int &k, const int &niter,
 //                  const Rcpp::Nullable<Rcpp::NumericMatrix> &W_init = R_NilValue,
@@ -446,7 +446,7 @@ Rcpp::List symNMF(const SEXP& x, const arma::uword& k, const arma::uword& niter,
 // //' @param W_init Initial left-hand factor matrix (Optional)
 // //' @returns The calculated factor matrices as an Rcpp::List
 // //' @examplesIf require("Matrix")
-// //' munmf(rsparsematrix(nrow = 100, ncol = 100, nnz = 10, symmetric = TRUE), 10, 10)
+// //' munmf(rsparsematrix(nrow = 25, ncol = 25, nnz = 5, symmetric = TRUE), 10, 10)
 // // [[Rcpp::export]]
 // Rcpp::List bppnmf(const arma::sp_mat & x, const int & k, const int & niter,
 //                   const Rcpp::Nullable<Rcpp::NumericMatrix> &W_init = R_NilValue,
@@ -505,8 +505,8 @@ arma::mat runbppnnls(const arma::mat &C, const T &B) {
 //' @rdname bppnnls
 //' @examples
 //' set.seed(1)
-//' C <- matrix(rnorm(1000), nrow = 100)
-//' B <- matrix(rnorm(1500), nrow = 100)
+//' C <- matrix(rnorm(250), nrow = 25)
+//' B <- matrix(rnorm(375), nrow = 25)
 //' res1 <- bppnnls(C, B)
 //' dim(res1)
 //' res2 <- bppnnls_prod(t(C) %*% C, t(C) %*% B)

@@ -120,5 +120,6 @@
         "-DCMAKE_MAKE_PROGRAM=C:\\Rtools43\\mingw64\\bin\\ninja.exe",
         "-DR_EXECUTABLE=C:\\Program Files\\R\\R-4.3.1\\bin\\x64\\R.exe",
     ],
-    "terminal.integrated.env.windows": {}
+    "terminal.integrated.env.windows": {},
+    "memory-view.showMemoryPanel": true
 }

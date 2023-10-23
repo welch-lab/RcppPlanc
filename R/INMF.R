@@ -49,9 +49,9 @@
 #' @examples
 #' library(Matrix)
 #' set.seed(1)
-#' res1 <- inmf(list(ctrl.sparse, stim.sparse))
+#' res1 <- inmf(list(ctrl.sparse, stim.sparse), k = 10, niter = 10)
 #' set.seed(1)
-#' res2 <- inmf(list(as.matrix(ctrl.sparse), as.matrix(stim.sparse)))
+#' res2 <- inmf(list(as.matrix(ctrl.sparse), as.matrix(stim.sparse)), k=10, niter=10)
 #' all.equal(res1, res2)
 inmf <- function(
     objectList,
@@ -175,7 +175,7 @@ inmf <- function(
 #' 
 #' # Scenario 1 with sparse matrices
 #' set.seed(1)
-#' res1 <- onlineINMF(list(ctrl.sparse, stim.sparse), minibatchSize = 50)
+#' res1 <- onlineINMF(list(ctrl.sparse, stim.sparse), minibatchSize = 50, k = 10, niter = 10)
 #' set.seed(1)
 #' res2 <- onlineINMF(list(ctrl.h5sp, stim.h5sp), minibatchSize = 50)
 #' all.equal(res1, res2)
@@ -362,7 +362,7 @@ onlineINMF <- function(
 #' @examples
 #' if (FALSE) {
 #'     res1 <- uinmf(list(sparse1, sparse2),
-#'                   list(sparse.unshare1, sparse.unshare2))
+#'                   list(sparse.unshare1, sparse.unshare2), k = 10, niter = 10)
 #' }
 uinmf <- function(
     objectList,
