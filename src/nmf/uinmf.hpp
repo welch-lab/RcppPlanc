@@ -14,12 +14,13 @@ template <typename T>
 class UINMF : public INMF<T> {
 private:
     arma::mat giventGiven;
-    std::vector<std::unique_ptr<T>> ulist;
-    std::vector<std::unique_ptr<T>> ulistT;
+    std::vector<std::unique_ptr<T>> Pi;
+    std::vector<std::unique_ptr<T>> PiT;
     std::vector<std::unique_ptr<arma::mat>> Ui;
     arma::uvec u;
     arma::vec lambda_i;
     bool uinmf_cleared = false;
+    std::vector<bool> has_unshared;
 
     void sampleUandV() {
         // U and V must be sampled from the same random set of cells, thus put together
@@ -34,7 +35,7 @@ private:
             arma::uvec indices = arma::randperm(this->ncol_E[i]).head(this->k);
             arma::mat* Uptr = U.get();
             arma::mat* Vptr = V.get();
-            *Uptr = this->ulist[i].get()->cols(indices);
+            *Uptr = this->Pi[i].get()->cols(indices);
             *Vptr = this->Ei[i].get()->cols(indices);
             this->Ui.push_back(std::move(U));
             this->Vi.push_back(std::move(V));
@@ -71,13 +72,13 @@ private:
         arma::mat L(this->m, this->k);
         for (arma::uword i = 0; i < this->nDatasets; ++i) {
             T* Eptr = this->Ei[i].get();
-            T* usptr = this->ulist[i].get();
+            T* Pptr = this->Pi[i].get();
             arma::mat* Hptr = this->Hi[i].get();
             arma::mat* Vptr = this->Vi[i].get();
             arma::mat* Uptr = this->Ui[i].get();
             double sqnormE = arma::norm<T>(*Eptr, "fro");
             sqnormE *= sqnormE;
-            double sqnormUs = arma::norm<T>(*usptr, "fro");
+            double sqnormUs = arma::norm<T>(*Pptr, "fro");
             sqnormUs *= sqnormUs;
             L = *Wptr + *Vptr;
             arma::mat LtL = L.t() * L;
@@ -85,7 +86,7 @@ private:
             arma::mat VtV = Vptr->t() * *Vptr;
             arma::mat UtU = Uptr->t() * *Uptr;
             arma::mat EtL = Eptr->t() * L;
-            arma::mat UstU = usptr->t() * *Uptr;
+            arma::mat UstU = Pptr->t() * *Uptr;
             double TrLtLHtH = arma::trace(LtL * HtH);
             double TrUtUHtH = arma::trace(UtU * HtH);
             double TrHtEtL = arma::trace(Hptr->t() * EtL);
@@ -110,7 +111,7 @@ private:
             arma::mat* Hptr = this->Hi[i].get();
             arma::mat* Uptr = this->Ui[i].get();
             T* Eptr = this->Ei[i].get();
-            T* usptr = this->ulist[i].get();
+            T* Pptr = this->Pi[i].get();
             arma::mat WV = *Wptr + *Vptr;
             giventGiven = WV.t() * WV;
             giventGiven += (*Vptr).t() * (*Vptr) * this->lambda_i[i];
@@ -119,13 +120,13 @@ private:
             unsigned int dataSize = this->ncol_E[i];
             unsigned int numChunks = dataSize / this->INMF_CHUNK_SIZE;
             if (numChunks * this->INMF_CHUNK_SIZE < dataSize) numChunks++;
-#pragma omp parallel for schedule(dynamic) default(none) shared(Eptr, usptr, i, Uptr, WV, Hptr, numChunks, dataSize)
+#pragma omp parallel for schedule(dynamic) default(none) shared(Eptr, Pptr, i, Uptr, WV, Hptr, numChunks, dataSize)
             for (unsigned int j = 0; j < numChunks; ++j) {
                 unsigned int spanStart = j * this->INMF_CHUNK_SIZE;
                 unsigned int spanEnd = (j + 1) * this->INMF_CHUNK_SIZE - 1;
                 if (spanEnd > dataSize - 1) spanEnd = dataSize - 1;
                 arma::mat giventInput = WV.t() * (*Eptr).cols(spanStart, spanEnd);
-                if (this->u[i] > 0) giventInput += (*Uptr).t() * usptr->cols(spanStart, spanEnd);
+                if (this->u[i] > 0) giventInput += (*Uptr).t() * Pptr->cols(spanStart, spanEnd);
                 BPPNNLS<arma::mat, arma::vec> subProbH(giventGiven, giventInput, true);
                 subProbH.solveNNLS();
                 (*Hptr).rows(spanStart, spanEnd) = subProbH.getSolutionMatrix().t();
@@ -190,8 +191,8 @@ private:
             arma::mat* Uptr = this->Ui[i].get();
             giventGiven = (*Hptr).t() * (*Hptr);
             giventGiven *= 1 + this->lambda_i[i];
-            // T* USptr = this->ulist[i].get();
-            T* USTptr = this->ulistT[i].get();
+            // T* Pptr = this->Pi[i].get();
+            T* USTptr = this->PiT[i].get();
             unsigned int numChunks = this->u[i] / this->INMF_CHUNK_SIZE;
             if (numChunks * this->INMF_CHUNK_SIZE < this->u[i]) numChunks++;
 #pragma omp parallel for schedule(dynamic) default(none) shared(i, Uptr, Hptr, numChunks, USTptr)
@@ -265,17 +266,17 @@ private:
 
 public:
     UINMF(std::vector<std::unique_ptr<T>>& Ei,
-          std::vector<std::unique_ptr<T>>& ulist,
+          std::vector<std::unique_ptr<T>>& Pi,
           arma::uword k, const arma::vec& lambda) : INMF<T>(Ei, k, 0, true) {
-        this->ulist = std::move(ulist);
+        this->Pi = std::move(Pi);
         this->lambda_i = lambda;
         u = arma::zeros<arma::uvec>(this->nDatasets);
         for (arma::uword i=0; i<this->nDatasets; ++i) {
-            u[i] = this->ulist[i]->n_rows;
-            T* us = this->ulist[i].get();
+            u[i] = this->Pi[i]->n_rows;
+            T* us = this->Pi[i].get();
             T ut = us->t();
             std::unique_ptr<T> USTptr = std::make_unique<T>(ut);
-            this->ulistT.push_back(std::move(USTptr));
+            this->PiT.push_back(std::move(USTptr));
         }
     }
 
@@ -318,7 +319,7 @@ public:
         if (!this->uinmf_cleared) {
             for (unsigned int i = 0; i < this->Ui.size(); ++i) {
                 this->Ui[i].reset();
-                this->ulist[i].reset();
+                this->Pi[i].reset();
             }
             this->cleared = true;
         }
@@ -332,13 +333,13 @@ double UINMF<H5Mat>::computeObjectiveError() {
     arma::mat L(this->m, this->k);
     for (arma::uword i = 0; i < this->nDatasets; ++i) {
         H5Mat* Eptr = this->Ei[i].get();
-        H5Mat* usptr = this->ulist[i].get();
+        H5Mat* Pptr = this->Pi[i].get();
         arma::mat* Hptr = this->Hi[i].get();
         arma::mat* Vptr = this->Vi[i].get();
         arma::mat* Uptr = this->Ui[i].get();
         double sqnormE = Eptr->normF();
         sqnormE *= sqnormE;
-        double sqnormUs = usptr->normF();
+        double sqnormUs = Pptr->normF();
         sqnormUs *= sqnormUs;
         L = *Wptr + *Vptr;
         arma::mat LtL = L.t() * L;
@@ -356,13 +357,13 @@ double UINMF<H5Mat>::computeObjectiveError() {
         }
 
         arma::mat UstU(this->ncol_E[i], this->k);
-        numChunks = usptr->n_cols / usptr->colChunkSize;
-        if (numChunks * usptr->colChunkSize < usptr->n_cols) numChunks++;
+        numChunks = Pptr->n_cols / Pptr->colChunkSize;
+        if (numChunks * Pptr->colChunkSize < Pptr->n_cols) numChunks++;
         for (arma::uword j = 0; j < numChunks; ++j) {
-            arma::uword spanStart = j * usptr->colChunkSize;
-            arma::uword spanEnd = (j + 1) * usptr->colChunkSize - 1;
-            if (spanEnd > usptr->n_cols - 1) spanEnd = usptr->n_cols - 1;
-            UstU.rows(spanStart, spanEnd) = usptr->cols(spanStart, spanEnd).t() * *Uptr;
+            arma::uword spanStart = j * Pptr->colChunkSize;
+            arma::uword spanEnd = (j + 1) * Pptr->colChunkSize - 1;
+            if (spanEnd > Pptr->n_cols - 1) spanEnd = Pptr->n_cols - 1;
+            UstU.rows(spanStart, spanEnd) = Pptr->cols(spanStart, spanEnd).t() * *Uptr;
         }
 
         double TrLtLHtH = arma::trace(LtL * HtH);
@@ -384,13 +385,13 @@ double UINMF<H5SpMat>::computeObjectiveError() {
     arma::mat L(this->m, this->k);
     for (arma::uword i = 0; i < this->nDatasets; ++i) {
         H5SpMat* Eptr = this->Ei[i].get();
-        H5SpMat* usptr = this->ulist[i].get();
+        H5SpMat* Pptr = this->Pi[i].get();
         arma::mat* Hptr = this->Hi[i].get();
         arma::mat* Vptr = this->Vi[i].get();
         arma::mat* Uptr = this->Ui[i].get();
         double sqnormE = Eptr->normF();
         sqnormE *= sqnormE;
-        double sqnormUs = usptr->normF();
+        double sqnormUs = Pptr->normF();
         sqnormUs *= sqnormUs;
         L = *Wptr + *Vptr;
         arma::mat LtL = L.t() * L;
@@ -406,7 +407,7 @@ double UINMF<H5SpMat>::computeObjectiveError() {
             arma::uword spanEnd = (j + 1) * this->INMF_CHUNK_SIZE - 1;
             if (spanEnd > Eptr->n_cols - 1) spanEnd = Eptr->n_cols - 1;
             EtL.rows(spanStart, spanEnd) = Eptr->cols(spanStart, spanEnd).t() * L;
-            UstU.rows(spanStart, spanEnd) = usptr->cols(spanStart, spanEnd).t() * *Uptr;
+            UstU.rows(spanStart, spanEnd) = Pptr->cols(spanStart, spanEnd).t() * *Uptr;
         }
         double TrLtLHtH = arma::trace(LtL * HtH);
         double TrUtUHtH = arma::trace(UtU * HtH);
