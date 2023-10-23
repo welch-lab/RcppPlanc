@@ -7,7 +7,7 @@
 ^.*\.cmake-build-release
 ^.*\.cmake-build-debug
 ^.*\.idea
-^.*\obj
+^.*\\obj
 ^.*out
 ^.*_deps
 ^.*CMakeFiles
