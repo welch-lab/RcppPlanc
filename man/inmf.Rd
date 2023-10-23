@@ -74,9 +74,9 @@ strategy.
 \examples{
 library(Matrix)
 set.seed(1)
-res1 <- inmf(list(ctrl.sparse, stim.sparse))
+res1 <- inmf(list(ctrl.sparse, stim.sparse), k = 10, niter = 10)
 set.seed(1)
-res2 <- inmf(list(as.matrix(ctrl.sparse), as.matrix(stim.sparse)))
+res2 <- inmf(list(as.matrix(ctrl.sparse), as.matrix(stim.sparse)), k=10, niter=10)
 all.equal(res1, res2)
 }
 \references{
