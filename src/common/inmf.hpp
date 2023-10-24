@@ -61,17 +61,17 @@ namespace planc {
         }
 
         void constructObject(std::vector<std::unique_ptr<T>>& inputEi, arma::uword inputk, double inputlambda, bool makeTranspose) {
-            this->cleared = false;
             this->Ei = std::move(inputEi);
             this->k = inputk;
             this->m = this->Ei[0].get()->n_rows;
+            if (this->k > this->m) {
+                throw std::invalid_argument("k must be <= m");
+            }
+            this->cleared = false;
+            this->INMF_CHUNK_SIZE = chunk_size_dense<double>(k);
             this->nMax = 0;
             this->nSum = 0;
             this->nDatasets = 0;
-            if (this->k > this->m) {
-                std::destroy_at<std::vector<std::unique_ptr<T>>>(&(this->Ei));
-                throw std::invalid_argument("k must be <= m");
-            }
 #ifdef _VERBOSE
             std::cout << "k=" << k << "; m=" << m << std::endl;
 #endif
@@ -121,7 +121,6 @@ namespace planc {
         }
     public:
         INMF(std::vector<std::unique_ptr<T>>& Ei, arma::uword k, double lambda, bool makeTranspose = true) {
-            this->INMF_CHUNK_SIZE = chunk_size_dense<double>(k);
             this->constructObject(Ei, k, lambda, makeTranspose);
             // this->initHWV();
         }
