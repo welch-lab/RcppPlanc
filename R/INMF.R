@@ -176,7 +176,7 @@ inmf <- function(
 #'
 #' # Scenario 1 with sparse matrices
 #' set.seed(1)
-#' res1 <- onlineINMF(list(ctrl.sparse, stim.sparse), minibatchSize = 50, k = 10, niter = 10)
+#' res1 <- onlineINMF(list(ctrl.sparse, stim.sparse), minibatchSize = 50, k = 10)
 #' set.seed(1)
 #' res2 <- onlineINMF(list(ctrl.h5sp, stim.h5sp), minibatchSize = 50)
 #' all.equal(res1, res2)

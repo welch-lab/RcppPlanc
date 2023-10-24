@@ -68,7 +68,10 @@ namespace planc {
             this->nMax = 0;
             this->nSum = 0;
             this->nDatasets = 0;
-            if (this->k > this->m) throw std::invalid_argument("k must be <= m");
+            if (this->k > this->m) {
+                std::destroy_at<std::vector<std::unique_ptr<T>>>(&(this->Ei));
+                throw std::invalid_argument("k must be <= m");
+            }
 #ifdef _VERBOSE
             std::cout << "k=" << k << "; m=" << m << std::endl;
 #endif
