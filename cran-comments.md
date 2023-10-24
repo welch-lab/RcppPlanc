@@ -10,13 +10,16 @@
   * r-hub/containers/ubuntu-clang (R-Devel r85316) -- additional packages: libdeflate-dev, libstdc++-12-dev
   * r-hub/containers/atlas (Fedora 38, R-Devel r85316)
   * r-hub/containers/gcc13 (Fedora 38, R-Devel r85316)
-  * r-hub/containers/intel (Fedora 38, R-Devel r85316) -- additional packages: intel-oneapi-mkl-devel
-  * r-hub/containers/mkl (Fedora 38, R-Devel r85316) -- additional packages: intel-oneapi-mkl-devel
+  * r-hub/containers/intel (Fedora 38, R-Devel r85316)
+  * r-hub/containers/mkl (Fedora 38, R-Devel r85316)
   * r-hub/containers/nold  (Ubuntu 22.04, R-Devel r85316) -- additional packages: libdeflate-dev
+  * r-hub/containers/clang-asan (Ubuntu 22.04, R-Devel r85316) -- additional packages: libdeflate-dev
 * win-builder:
   * Windows Server 2022, Devel
 * R-hub Builder (<https://builder.r-hub.io>)
   * Windows Server 2022 R-Devel
+  * Ubuntu Linux 20.04.1 LTS, R-devel with rchk
+
 
 ## R CMD check results
 
@@ -47,7 +50,6 @@ This warning is exclusive to the intel compiler and is an issue with RcppArmadil
 
 ❯ Found the following directories with names of version control directories:
     ./src/_deps/highfive-src/.git
-    ./src/_deps/hwloc-src/.git
 ```
 
   These are not included in the tarball, they are downloaded at configure time from version control tags.
@@ -73,7 +75,7 @@ The R-Hub ubuntu containers appear to not have locales installed. At least, some
   The dataset(s) may use package(s) not declared in Depends/Imports.
   ```
 
-Matrix is declared in Suggests.
+Matrix is declared in Suggests. This error does not appear to occur on R-devel.
 
 ``` <!-- language: lang-none -->
 ❯ checking line endings in Makefiles ... WARNING
@@ -136,16 +138,6 @@ These are generated at configure time by CMake. I imagine that it does not use G
 
 These are vendored source files. If need be, we can patch them.
 
-``` <!-- language: lang-none -->
-❯ checking CRAN incoming feasibility ... [13s] NOTE
-  Maintainer: 'Andrew Robbins <robbiand@med.umich.edu>'
-
-  New submission
-
-  The Date field is not in ISO 8601 yyyy-mm-dd format.
-  ```
-
-  This is temporary and will be changed on submission.
 
   ``` <!-- language: lang-none -->
 
@@ -156,7 +148,8 @@ These are vendored source files. If need be, we can patch them.
 ```
 
 Static linkage of quite a few libraries will do this. Reported size is from my Windows machine. Unix-alike installs
-use dynamic linkage and embedded hwloc and will be smaller.
+use dynamic linkage and embedded hwloc and will be smaller. Linux builds are typically ~5MB even with statically linked
+hwloc.
 
 ``` <!-- language: lang-none -->
 
@@ -641,247 +634,10 @@ This is CMake standard practice. If need be, they can be moved to src or another
     src/_deps/highfive-src/tests/unit/tests_high_five_multi_dims.cpp
     src/_deps/highfive-src/tests/unit/tests_high_five_parallel.cpp
     src/_deps/highfive-src/tests/unit/tests_import_public_headers.cpp
-    src/_deps/hwloc-build/include/hwloc/autogen/config.h
-    src/_deps/hwloc-build/include/private/autogen/config.h
-    src/_deps/hwloc-build/include/static-components.h
-    src/_deps/hwloc-src/contrib/android/AndroidApp/lstopo/src/main/cpp/lib.c
-    src/_deps/hwloc-src/contrib/android/include/hwloc/autogen/config.h
-    src/_deps/hwloc-src/contrib/android/include/private/autogen/config.h
-    src/_deps/hwloc-src/contrib/android/include/static-components.h
-    src/_deps/hwloc-src/contrib/coverity-model.c
-    src/_deps/hwloc-src/contrib/misc/hwloc-tweak-osindex.c
-    src/_deps/hwloc-src/contrib/windows/hwloc_config.h
-    src/_deps/hwloc-src/contrib/windows/private_config.h
-    src/_deps/hwloc-src/contrib/windows/static-components.h
-    src/_deps/hwloc-src/doc/examples/cpuset+bitmap+cpubind.c
-    src/_deps/hwloc-src/doc/examples/get-knl-modes.c
-    src/_deps/hwloc-src/doc/examples/gpu.c
-    src/_deps/hwloc-src/doc/examples/hwloc-hello.c
-    src/_deps/hwloc-src/doc/examples/memory-attributes.c
-    src/_deps/hwloc-src/doc/examples/nodeset+membind+policy.c
-    src/_deps/hwloc-src/doc/examples/sharedcaches.c
-    src/_deps/hwloc-src/hwloc/base64.c
-    src/_deps/hwloc-src/hwloc/bind.c
-    src/_deps/hwloc-src/hwloc/bitmap.c
-    src/_deps/hwloc-src/hwloc/components.c
-    src/_deps/hwloc-src/hwloc/cpukinds.c
-    src/_deps/hwloc-src/hwloc/diff.c
-    src/_deps/hwloc-src/hwloc/distances.c
-    src/_deps/hwloc-src/hwloc/memattrs.c
-    src/_deps/hwloc-src/hwloc/misc.c
-    src/_deps/hwloc-src/hwloc/pci-common.c
-    src/_deps/hwloc-src/hwloc/shmem.c
-    src/_deps/hwloc-src/hwloc/topology-aix.c
-    src/_deps/hwloc-src/hwloc/topology-bgq.c
-    src/_deps/hwloc-src/hwloc/topology-cuda.c
-    src/_deps/hwloc-src/hwloc/topology-darwin.c
-    src/_deps/hwloc-src/hwloc/topology-fake.c
-    src/_deps/hwloc-src/hwloc/topology-freebsd.c
-    src/_deps/hwloc-src/hwloc/topology-gl.c
-    src/_deps/hwloc-src/hwloc/topology-hardwired.c
-    src/_deps/hwloc-src/hwloc/topology-hpux.c
-    src/_deps/hwloc-src/hwloc/topology-levelzero.c
-    src/_deps/hwloc-src/hwloc/topology-linux.c
-    src/_deps/hwloc-src/hwloc/topology-netbsd.c
-    src/_deps/hwloc-src/hwloc/topology-noos.c
-    src/_deps/hwloc-src/hwloc/topology-nvml.c
-    src/_deps/hwloc-src/hwloc/topology-opencl.c
-    src/_deps/hwloc-src/hwloc/topology-pci.c
-    src/_deps/hwloc-src/hwloc/topology-rsmi.c
-    src/_deps/hwloc-src/hwloc/topology-solaris-chiptype.c
-    src/_deps/hwloc-src/hwloc/topology-solaris.c
-    src/_deps/hwloc-src/hwloc/topology-synthetic.c
-    src/_deps/hwloc-src/hwloc/topology-windows.c
-    src/_deps/hwloc-src/hwloc/topology-x86.c
-    src/_deps/hwloc-src/hwloc/topology-xml-libxml.c
-    src/_deps/hwloc-src/hwloc/topology-xml-nolibxml.c
-    src/_deps/hwloc-src/hwloc/topology-xml.c
-    src/_deps/hwloc-src/hwloc/topology.c
-    src/_deps/hwloc-src/hwloc/traversal.c
-    src/_deps/hwloc-src/include/hwloc.h
-    src/_deps/hwloc-src/include/hwloc/bitmap.h
-    src/_deps/hwloc-src/include/hwloc/cpukinds.h
-    src/_deps/hwloc-src/include/hwloc/cuda.h
-    src/_deps/hwloc-src/include/hwloc/cudart.h
-    src/_deps/hwloc-src/include/hwloc/deprecated.h
-    src/_deps/hwloc-src/include/hwloc/diff.h
-    src/_deps/hwloc-src/include/hwloc/distances.h
-    src/_deps/hwloc-src/include/hwloc/export.h
-    src/_deps/hwloc-src/include/hwloc/gl.h
-    src/_deps/hwloc-src/include/hwloc/glibc-sched.h
-    src/_deps/hwloc-src/include/hwloc/helper.h
-    src/_deps/hwloc-src/include/hwloc/inlines.h
-    src/_deps/hwloc-src/include/hwloc/levelzero.h
-    src/_deps/hwloc-src/include/hwloc/linux-libnuma.h
-    src/_deps/hwloc-src/include/hwloc/linux.h
-    src/_deps/hwloc-src/include/hwloc/memattrs.h
-    src/_deps/hwloc-src/include/hwloc/nvml.h
-    src/_deps/hwloc-src/include/hwloc/opencl.h
-    src/_deps/hwloc-src/include/hwloc/openfabrics-verbs.h
-    src/_deps/hwloc-src/include/hwloc/plugins.h
-    src/_deps/hwloc-src/include/hwloc/rename.h
-    src/_deps/hwloc-src/include/hwloc/rsmi.h
-    src/_deps/hwloc-src/include/hwloc/shmem.h
-    src/_deps/hwloc-src/include/hwloc/windows.h
-    src/_deps/hwloc-src/include/netloc.h
-    src/_deps/hwloc-src/include/netloc/utarray.h
-    src/_deps/hwloc-src/include/netloc/uthash.h
-    src/_deps/hwloc-src/include/netlocscotch.h
-    src/_deps/hwloc-src/include/private/components.h
-    src/_deps/hwloc-src/include/private/cpuid-x86.h
-    src/_deps/hwloc-src/include/private/debug.h
-    src/_deps/hwloc-src/include/private/internal-components.h
-    src/_deps/hwloc-src/include/private/misc.h
-    src/_deps/hwloc-src/include/private/netloc.h
-    src/_deps/hwloc-src/include/private/private.h
-    src/_deps/hwloc-src/include/private/solaris-chiptype.h
-    src/_deps/hwloc-src/include/private/windows.h
-    src/_deps/hwloc-src/include/private/xml.h
-    src/_deps/hwloc-src/netloc/architecture.c
-    src/_deps/hwloc-src/netloc/edge.c
-    src/_deps/hwloc-src/netloc/hwloc.c
-    src/_deps/hwloc-src/netloc/mpicomm.c
-    src/_deps/hwloc-src/netloc/node.c
-    src/_deps/hwloc-src/netloc/path.c
-    src/_deps/hwloc-src/netloc/physical_link.c
-    src/_deps/hwloc-src/netloc/scotch.c
-    src/_deps/hwloc-src/netloc/support.c
-    src/_deps/hwloc-src/netloc/topology.c
-    src/_deps/hwloc-src/tests/hwloc/cpukinds.c
-    src/_deps/hwloc-src/tests/hwloc/cpuset_nodeset.c
-    src/_deps/hwloc-src/tests/hwloc/cuda.c
-    src/_deps/hwloc-src/tests/hwloc/cudart.c
-    src/_deps/hwloc-src/tests/hwloc/embedded/do_test.c
-    src/_deps/hwloc-src/tests/hwloc/embedded/main.c
-    src/_deps/hwloc-src/tests/hwloc/gl.c
-    src/_deps/hwloc-src/tests/hwloc/glibc-sched.c
-    src/_deps/hwloc-src/tests/hwloc/hwloc_api_version.c
-    src/_deps/hwloc-src/tests/hwloc/hwloc_backends.c
-    src/_deps/hwloc-src/tests/hwloc/hwloc_bind.c
-    src/_deps/hwloc-src/tests/hwloc/hwloc_bitmap.c
-    src/_deps/hwloc-src/tests/hwloc/hwloc_bitmap_compare_inclusion.c
-    src/_deps/hwloc-src/tests/hwloc/hwloc_bitmap_first_last_weight.c
-    src/_deps/hwloc-src/tests/hwloc/hwloc_bitmap_singlify.c
-    src/_deps/hwloc-src/tests/hwloc/hwloc_bitmap_string.c
-    src/_deps/hwloc-src/tests/hwloc/hwloc_distances.c
-    src/_deps/hwloc-src/tests/hwloc/hwloc_get_area_memlocation.c
-    src/_deps/hwloc-src/tests/hwloc/hwloc_get_cache_covering_cpuset.c
-    src/_deps/hwloc-src/tests/hwloc/hwloc_get_closest_objs.c
-    src/_deps/hwloc-src/tests/hwloc/hwloc_get_largest_objs_inside_cpuset.c
-    src/_deps/hwloc-src/tests/hwloc/hwloc_get_last_cpu_location.c
-    src/_deps/hwloc-src/tests/hwloc/hwloc_get_next_obj_covering_cpuset.c
-    src/_deps/hwloc-src/tests/hwloc/hwloc_get_obj_below_array_by_type.c
-    src/_deps/hwloc-src/tests/hwloc/hwloc_get_obj_covering_cpuset.c
-    src/_deps/hwloc-src/tests/hwloc/hwloc_get_obj_inside_cpuset.c
-    src/_deps/hwloc-src/tests/hwloc/hwloc_get_obj_with_same_locality.c
-    src/_deps/hwloc-src/tests/hwloc/hwloc_get_shared_cache_covering_obj.c
-    src/_deps/hwloc-src/tests/hwloc/hwloc_groups.c
-    src/_deps/hwloc-src/tests/hwloc/hwloc_insert_misc.c
-    src/_deps/hwloc-src/tests/hwloc/hwloc_iodevs.c
-    src/_deps/hwloc-src/tests/hwloc/hwloc_is_thissystem.c
-    src/_deps/hwloc-src/tests/hwloc/hwloc_list_components.c
-    src/_deps/hwloc-src/tests/hwloc/hwloc_obj_infos.c
-    src/_deps/hwloc-src/tests/hwloc/hwloc_object_userdata.c
-    src/_deps/hwloc-src/tests/hwloc/hwloc_pci_backend.c
-    src/_deps/hwloc-src/tests/hwloc/hwloc_synthetic.c
-    src/_deps/hwloc-src/tests/hwloc/hwloc_topology_abi.c
-    src/_deps/hwloc-src/tests/hwloc/hwloc_topology_allow.c
-    src/_deps/hwloc-src/tests/hwloc/hwloc_topology_diff.c
-    src/_deps/hwloc-src/tests/hwloc/hwloc_topology_dup.c
-    src/_deps/hwloc-src/tests/hwloc/hwloc_topology_restrict.c
-    src/_deps/hwloc-src/tests/hwloc/hwloc_type_depth.c
-    src/_deps/hwloc-src/tests/hwloc/hwloc_type_sscanf.c
-    src/_deps/hwloc-src/tests/hwloc/levelzero.c
-    src/_deps/hwloc-src/tests/hwloc/linux-libnuma.c
-    src/_deps/hwloc-src/tests/hwloc/memattrs.c
-    src/_deps/hwloc-src/tests/hwloc/memtiers.c
-    src/_deps/hwloc-src/tests/hwloc/nvml.c
-    src/_deps/hwloc-src/tests/hwloc/opencl.c
-    src/_deps/hwloc-src/tests/hwloc/openfabrics-verbs.c
-    src/_deps/hwloc-src/tests/hwloc/ports/include/aix/procinfo.h
-    src/_deps/hwloc-src/tests/hwloc/ports/include/aix/sys/processor.h
-    src/_deps/hwloc-src/tests/hwloc/ports/include/aix/sys/rset.h
-    src/_deps/hwloc-src/tests/hwloc/ports/include/aix/sys/systemcfg.h
-    src/_deps/hwloc-src/tests/hwloc/ports/include/aix/sys/thread.h
-    src/_deps/hwloc-src/tests/hwloc/ports/include/bgq/spi/include/kernel/location.h
-    src/_deps/hwloc-src/tests/hwloc/ports/include/bgq/spi/include/kernel/process.h
-    src/_deps/hwloc-src/tests/hwloc/ports/include/cuda/cuda.h
-    src/_deps/hwloc-src/tests/hwloc/ports/include/cuda/cuda_runtime_api.h
-    src/_deps/hwloc-src/tests/hwloc/ports/include/darwin/Availability.h
-    src/_deps/hwloc-src/tests/hwloc/ports/include/darwin/CoreFoundation/CoreFoundation.h
-    src/_deps/hwloc-src/tests/hwloc/ports/include/darwin/IOKit/IOKitLib.h
-    src/_deps/hwloc-src/tests/hwloc/ports/include/darwin/sys/sysctl.h
-    src/_deps/hwloc-src/tests/hwloc/ports/include/freebsd/pthread.h
-    src/_deps/hwloc-src/tests/hwloc/ports/include/freebsd/pthread_np.h
-    src/_deps/hwloc-src/tests/hwloc/ports/include/freebsd/sys/cpuset.h
-    src/_deps/hwloc-src/tests/hwloc/ports/include/freebsd/sys/domainset.h
-    src/_deps/hwloc-src/tests/hwloc/ports/include/freebsd/sys/param.h
-    src/_deps/hwloc-src/tests/hwloc/ports/include/freebsd/sys/sysctl.h
-    src/_deps/hwloc-src/tests/hwloc/ports/include/freebsd/sys/thr.h
-    src/_deps/hwloc-src/tests/hwloc/ports/include/freebsd/sys/user.h
-    src/_deps/hwloc-src/tests/hwloc/ports/include/gl/NVCtrl/NVCtrl.h
-    src/_deps/hwloc-src/tests/hwloc/ports/include/gl/NVCtrl/NVCtrlLib.h
-    src/_deps/hwloc-src/tests/hwloc/ports/include/gl/X11/Xlib.h
-    src/_deps/hwloc-src/tests/hwloc/ports/include/hpux/sys/mpctl.h
-    src/_deps/hwloc-src/tests/hwloc/ports/include/levelzero/level_zero/ze_api.h
-    src/_deps/hwloc-src/tests/hwloc/ports/include/levelzero/level_zero/zes_api.h
-    src/_deps/hwloc-src/tests/hwloc/ports/include/netbsd/pthread.h
-    src/_deps/hwloc-src/tests/hwloc/ports/include/netbsd/sched.h
-    src/_deps/hwloc-src/tests/hwloc/ports/include/netbsd/sys/sysctl.h
-    src/_deps/hwloc-src/tests/hwloc/ports/include/nvml/nvml.h
-    src/_deps/hwloc-src/tests/hwloc/ports/include/opencl/CL/cl.h
-    src/_deps/hwloc-src/tests/hwloc/ports/include/rsmi/rocm_smi/rocm_smi.h
-    src/_deps/hwloc-src/tests/hwloc/ports/include/solaris/kstat.h
-    src/_deps/hwloc-src/tests/hwloc/ports/include/solaris/picl.h
-    src/_deps/hwloc-src/tests/hwloc/ports/include/solaris/sys/lgrp_user.h
-    src/_deps/hwloc-src/tests/hwloc/ports/include/solaris/sys/processor.h
-    src/_deps/hwloc-src/tests/hwloc/ports/include/solaris/sys/procset.h
-    src/_deps/hwloc-src/tests/hwloc/ports/include/solaris/sys/systeminfo.h
-    src/_deps/hwloc-src/tests/hwloc/ports/include/windows/windows.h
-    src/_deps/hwloc-src/tests/hwloc/ports/include/windows/windowsx.h
-    src/_deps/hwloc-src/tests/hwloc/rename/main.c
-    src/_deps/hwloc-src/tests/hwloc/rsmi.c
-    src/_deps/hwloc-src/tests/hwloc/shmem.c
-    src/_deps/hwloc-src/tests/hwloc/windows_processor_groups.c
-    src/_deps/hwloc-src/tests/hwloc/xmlbuffer.c
-    src/_deps/hwloc-src/utils/hwloc/common-ps.c
-    src/_deps/hwloc-src/utils/hwloc/common-ps.h
-    src/_deps/hwloc-src/utils/hwloc/hwloc-annotate.c
-    src/_deps/hwloc-src/utils/hwloc/hwloc-bind.c
-    src/_deps/hwloc-src/utils/hwloc/hwloc-calc.c
-    src/_deps/hwloc-src/utils/hwloc/hwloc-calc.h
-    src/_deps/hwloc-src/utils/hwloc/hwloc-diff.c
-    src/_deps/hwloc-src/utils/hwloc/hwloc-distrib.c
-    src/_deps/hwloc-src/utils/hwloc/hwloc-dump-hwdata-knl.c
-    src/_deps/hwloc-src/utils/hwloc/hwloc-dump-hwdata.c
-    src/_deps/hwloc-src/utils/hwloc/hwloc-gather-cpuid.c
-    src/_deps/hwloc-src/utils/hwloc/hwloc-info.c
-    src/_deps/hwloc-src/utils/hwloc/hwloc-patch.c
-    src/_deps/hwloc-src/utils/hwloc/hwloc-ps.c
-    src/_deps/hwloc-src/utils/hwloc/misc.h
-    src/_deps/hwloc-src/utils/lstopo/lstopo-android.c
-    src/_deps/hwloc-src/utils/lstopo/lstopo-ascii.c
-    src/_deps/hwloc-src/utils/lstopo/lstopo-cairo.c
-    src/_deps/hwloc-src/utils/lstopo/lstopo-draw.c
-    src/_deps/hwloc-src/utils/lstopo/lstopo-fig.c
-    src/_deps/hwloc-src/utils/lstopo/lstopo-shmem.c
-    src/_deps/hwloc-src/utils/lstopo/lstopo-svg.c
-    src/_deps/hwloc-src/utils/lstopo/lstopo-text.c
-    src/_deps/hwloc-src/utils/lstopo/lstopo-tikz.c
-    src/_deps/hwloc-src/utils/lstopo/lstopo-windows.c
-    src/_deps/hwloc-src/utils/lstopo/lstopo-xml.c
-    src/_deps/hwloc-src/utils/lstopo/lstopo.c
-    src/_deps/hwloc-src/utils/lstopo/lstopo.h
-    src/_deps/hwloc-src/utils/netloc/draw/netloc_draw_to_json.c
-    src/_deps/hwloc-src/utils/netloc/infiniband/netloc_ib_extract_dats.c
-    src/_deps/hwloc-src/utils/netloc/mpi/netloc_mpi_find_hosts.c
-    src/_deps/hwloc-src/utils/netloc/mpi/netloc_mpi_rank_file.c
-    src/_deps/hwloc-src/utils/netloc/mpi/netloc_rank_order.c
-    src/_deps/hwloc-src/utils/netloc/scotch/netlocscotch_get_arch.c
   Some Unix compilers require LF line endings.
 ```
 
-  These are not included in the tarball, they are downloaded at configure time. On UNIX-alikes this note is limited to
+  These are not included in the tarball, they are downloaded at configure time by git. On UNIX-alikes this note is limited to
   `src/_deps/hwloc-src/contrib/android/AndroidApp/lstopo/src/main/cpp/lib.c`
 
 ``` <!-- language: lang-none -->
@@ -911,7 +667,9 @@ These compilation flags are checked at configure time and will not be used if th
 
   ```
 
-This is likely from the exception handling routines of included libraries. If need be, they can be patched out, but there are enough guards on our R wrappers that they will never be called.
+This is likely from the exception handling routines of included libraries.
+If need be, they can be patched out, but there are enough guards on our R
+wrappers that they will never be called.
 
   ``` <!-- language: lang-none -->
 ❯ checking for non-standard things in the check directory ... NOTE
@@ -956,7 +714,7 @@ Per <https://github.com/r-hub/rhub/issues/440> this appears to be a bug.
 
 ```
 
-Will vary by platform-appears to be timing out winbuilder.
+Will vary by platform. This was recorded before the example arguments were lowered substantially.
 
 ``` <!-- language: lang-none -->
 * checking tests ...
@@ -969,6 +727,33 @@ Re-building vignettes had CPU time 9.4 times elapsed time
 ```
 
 Only occurs in ubuntu-based docker containers. Likely the default openblas-pthread conflicting with openmp.
+
+```c++
+  Direct leak of 16 byte(s) in 1 object(s) allocated from:
+#0 0x555ffa2c6318 in __interceptor_calloc (/opt/R/devel-asan/lib/R/bin/exec/R+0xb8318) (BuildId: f9ace1cd1e557acb45d82ef6d66e646229ab6542)
+#1 0x7f81f807ea0f  (/usr/lib/x86_64-linux-gnu/libc++abi.so.1+0x25a0f) (BuildId: 47782717d7fe8d90800ba4d11684a17cfa249698)
+#2 0x7f815f03f2a4 in planc::INMF<arma::Mat<double>>::INMF(std::__1::vector<std::__1::unique_ptr<arma::Mat<double>, std::__1::default_delete<arma::Mat<double>>>, std::__1::allocator<std::__1::unique_ptr<arma::Mat<double>, std::__1::default_delete<arma::Mat<double>>>>>&, unsigned int, double, bool) /check/RcppPlanc.Rcheck/00_pkg_src/RcppPlanc/src/common/inmf.hpp:125:19
+#3 0x7f815f035237 in planc::BPPINMF<arma::Mat<double>>::BPPINMF(std::__1::vector<std::__1::unique_ptr<arma::Mat<double>, std::__1::default_delete<arma::Mat<double>>>, std::__1::allocator<std::__1::unique_ptr<arma::Mat<double>, std::__1::default_delete<arma::Mat<double>>>>>&, unsigned int, double) /check/RcppPlanc.Rcheck/00_pkg_src/RcppPlanc/src/nmf/bppinmf.hpp:137:82
+#4 0x7f815f035237 in Rcpp::Vector<19, Rcpp::PreserveStorage> runINMF<arma::Mat<double>>(std::__1::vector<arma::Mat<double>, std::__1::allocator<arma::Mat<double>>>, unsigned int, double, unsigned int, bool) /check/RcppPlanc.Rcheck/00_pkg_src/RcppPlanc/src/rcppplanc_nmf.cpp:572:23
+#5 0x7f815ed901f5 in bppinmf_dense(std::__1::vector<arma::Mat<double>, std::__1::allocator<arma::Mat<double>>> const&, unsigned int, double, unsigned int, bool, Rcpp::Nullable<std::__1::vector<arma::Mat<double>, std::__1::allocator<arma::Mat<double>>>>, Rcpp::Nullable<std::__1::vector<arma::Mat<double>, std::__1::allocator<arma::Mat<double>>>>, Rcpp::Nullable<arma::Mat<double>>) /check/RcppPlanc.Rcheck/00_pkg_src/RcppPlanc/src/rcppplanc_nmf.cpp:632:16
+#6 0x7f815eda1d36 in bppinmf(Rcpp::Vector<19, Rcpp::PreserveStorage>, unsigned int, double, unsigned int, bool, Rcpp::Nullable<std::__1::vector<arma::Mat<double>, std::__1::allocator<arma::Mat<double>>>>, Rcpp::Nullable<std::__1::vector<arma::Mat<double>, std::__1::allocator<arma::Mat<double>>>>, Rcpp::Nullable<arma::Mat<double>>) /check/RcppPlanc.Rcheck/00_pkg_src/RcppPlanc/src/rcppplanc_nmf.cpp:666:16
+#7 0x7f815f1cc172 in _RcppPlanc_bppinmf /check/RcppPlanc.Rcheck/00_pkg_src/RcppPlanc/src/RcppExports.cpp:134:34
+#8 0x7f81f8283262 in R_doDotCall /tmp/R-devel/src/main/dotcode.c
+```
+This appears to be a libc++ issue with exception throwing per https://stackoverflow.com/questions/61015622/throw-with-clang-shows-possible-memory-leak.
+
+```<!-- language: lang-none -->
+Function Rcpp::Vector<19, Rcpp::PreserveStorage> onlineINMF_S1_mem<arma::Mat<double> >(std::__1::vector<arma::Mat<double>, std::__1::allocator<arma::Mat<double> > >, unsigned int, double, unsigned int, unsigned int, unsigned int, bool)
+  [UP] ignoring variable <unnamed var:   %36 = alloca %struct.SEXPREC*, align 8> as it has address taken, results will be incomplete 
+  [UP] ignoring variable <unnamed var:   %40 = alloca %struct.SEXPREC*, align 8> as it has address taken, results will be incomplete 
+  [UP] ignoring variable <unnamed var:   %44 = alloca %struct.SEXPREC*, align 8> as it has address taken, results will be incomplete 
+  [UP] ignoring variable <unnamed var:   %49 = alloca %struct.SEXPREC*, align 8> as it has address taken, results will be incomplete 
+  [UP] ignoring variable <unnamed var:   %53 = alloca %struct.SEXPREC*, align 8> as it has address taken, results will be incomplete 
+  [UP] ignoring variable <unnamed var:   %57 = alloca %struct.SEXPREC*, align 8> as it has address taken, results will be incomplete 
+  and similar rchk errors
+```
+These appear to be issues with rchk's handling of Armadillo's template metaprogramming.
+
 
 0 errors ✔ | 5 warnings ✖ | 7 notes ✖
 

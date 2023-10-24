@@ -65,7 +65,6 @@ namespace planc {
             this->k = inputk;
             this->m = this->Ei[0].get()->n_rows;
             if (this->k > this->m) {
-                std::destroy_at(&(this->k));
                 throw std::invalid_argument("k must be <= m");
             }
             this->cleared = false;
