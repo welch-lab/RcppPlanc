@@ -226,7 +226,7 @@ namespace planc {
             }
         }
 
-        void initW(arma::mat Winit, bool transpose = true) {
+        void initW(const arma::mat& Winit, bool transpose = true) {
 #ifdef _VERBOSE
             std::cout << "Taking initialized W matrix" << std::endl;
 #endif

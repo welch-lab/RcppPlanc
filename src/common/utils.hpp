@@ -210,7 +210,7 @@ double computeObjectiveError(const INPUTTYPE &A, const LRTYPE &W,
   LRTYPE Qw(m, k);
   LRTYPE Qh(n, k);
   LRTYPE RwRh(k, k);
-#pragma omp parallel for reduction(+ : nnzsse, nnzwh)
+#pragma omp parallel for reduction(+ : nnzsse, nnzwh) default(none)
   for (arma::uword jj = 1; jj <= A.n_cols; jj++) {
     arma::uword startIdx = A.col_ptrs[jj - 1];
     arma::uword endIdx = A.col_ptrs[jj];
@@ -425,3 +425,4 @@ return (get_l1_data_cache() / (rank * sizeof(T)));
 return (get_l2_data_cache() / (rank * sizeof(T)));
 #endif
 }
+
