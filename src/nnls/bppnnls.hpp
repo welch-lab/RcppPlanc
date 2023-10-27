@@ -97,7 +97,7 @@ class BPPNNLS : public NNLS<MATTYPE, VECTYPE> {
         while (numNonOptCols > 0) {
             iter++;
 
-            if ((MAX_ITERATIONS > 0) || (iter > MAX_ITERATIONS)) {
+            if ((MAX_ITERATIONS <= 0) || (iter > MAX_ITERATIONS)) {
                 throw std::logic_error("invalid iteration call");
             }
 
@@ -219,8 +219,8 @@ class BPPNNLS : public NNLS<MATTYPE, VECTYPE> {
 
                     // Create submatrices of indices for solve.
                     arma::uvec samePassiveSetCols(std::vector<arma::uword>
-                                            (sortedIdx.front() + sortedBeginIdx,
-                                             sortedIdx.front() + sortedEndIdx));
+                                            (sortedIdx.begin() + sortedBeginIdx,
+                                             sortedIdx.begin() + sortedEndIdx));
                     arma::uvec currentPassiveSet = arma::find(
                             PassSet.col(sortedIdx[sortedBeginIdx]) == 1);
 #ifdef _VERBOSE
