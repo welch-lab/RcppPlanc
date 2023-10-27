@@ -261,7 +261,7 @@ namespace planc {
             return this->objective_err;
         }
 
-        arma::mat getHi(int i) {
+        arma::mat getHi(arma::uword i) {
             return *(this->Hi[i].get());
         }
 
@@ -269,7 +269,7 @@ namespace planc {
             return this->Hi;
         }
 
-        arma::mat getVi(int i) {
+        arma::mat getVi(arma::uword i) {
             return *(this->Vi[i].get());
         }
 
@@ -291,14 +291,14 @@ namespace planc {
                 for (unsigned int i = 0; i < EiT.size(); ++i) {
                     EiT[i].reset();
                 }
-                for (unsigned int i = 0; i < Hi.size(); ++i) {
-                    Hi[i].reset();
+                for (auto & i : Hi) {
+                    i.reset();
                 }
-                for (unsigned int i = 0; i < Vi.size(); ++i) {
-                    Vi[i].reset();
+                for (auto & i : Vi) {
+                    i.reset();
                 }
-                for (unsigned int i = 0; i < ViT.size(); ++i) {
-                    ViT[i].reset();
+                for (auto & i : ViT) {
+                    i.reset();
                 }
                 this->W.reset();
                 if (this->WT.get() != nullptr) this->WT.reset();

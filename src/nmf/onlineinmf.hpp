@@ -136,7 +136,7 @@ private:
         }
     }
 
-    void initMinibatch(arma::uword minibatchSize) {
+    void initMinibatch(int minibatchSize) {
         // Divide the user specified minibatchSize according to dataset sizes
         this->minibatchIdx.clear();
         this->minibatchIdx.resize(this->nDatasets);
@@ -663,7 +663,7 @@ public:
     }
 
     // %%%%%%%%%%%%%%% Results Getters %%%%%%%%%%%%%%%%%%%%%%%
-    arma::mat getAi(int i) {
+    arma::mat getAi(arma::uword i) {
         return *(this->Ai[i].get());
     }
 
@@ -671,7 +671,7 @@ public:
         return this->Ai;
     }
 
-    arma::mat getBi(int i) {
+    arma::mat getBi(arma::uword i) {
         return *(this->Bi[i].get());
     }
 

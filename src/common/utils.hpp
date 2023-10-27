@@ -256,8 +256,8 @@ void cblas_sgemm(const arma::mat &A, const arma::mat &B, double *C) {
   arma::uword k = A.n_cols;
   double alpha = 1.0;
   double beta = 0.0;
-  cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, m, n, k, alpha,
-              A.memptr(), m, B.memptr(), k, beta, C, m);
+  cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, (int32_t)m, (int32_t)n, (int32_t)k, alpha,
+              A.memptr(), (int32_t)m, B.memptr(), (int32_t)k, beta, C, (int32_t)m);
 }
 
 /**
@@ -272,12 +272,12 @@ void cblas_sgemm(const arma::mat &A, const arma::mat &B, double *C) {
  * @param[in] trans is a flag to indicate that Xt is sent in.
  * @param[in] mseed is the seed for the first column of the matrix
  */
-void gen_discard(int row_start, int nrows, int k,
+void gen_discard(arma::uword row_start, arma::uword nrows, arma::uword k,
         arma::mat &X, bool trans, int mseed=7907) {
-  for(int j = 0; j < k; ++j) {
+  for(unsigned int j = 0; j < k; ++j) {
     std::mt19937 gen(mseed + j);
     gen.discard(row_start);
-    for(int i = 0; i < nrows; ++i) {
+    for(unsigned int i = 0; i < nrows; ++i) {
       if (trans) {
           X(j, i) =  ((double)gen()) / std::mt19937::max();
       } else {

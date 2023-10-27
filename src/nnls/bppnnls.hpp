@@ -1,7 +1,6 @@
 #pragma once
 /*Copyright 2016 Ramakrishnan Kannan*/
 
-#include <cassert>
 #include "nnls.hpp"
 #include "utils.hpp"
 #include <set>
@@ -38,7 +37,7 @@ class BPPNNLS : public NNLS<MATTYPE, VECTYPE> {
      *
      * Special case of the multi RHS solver.
      */
-    int solveNNLSOneRHS() {
+    unsigned int solveNNLSOneRHS() {
         // Set the RHS matrix
         this->AtB.zeros(this->n, this->k);
         this->AtB.col(0) = this->Atb;
@@ -48,7 +47,7 @@ class BPPNNLS : public NNLS<MATTYPE, VECTYPE> {
         this->X.col(0) = this->x;
 
         // Call matrix method
-        int iter = solveNNLSMultipleRHS();
+        unsigned int iter = solveNNLSMultipleRHS();
 
         this->x = this->X.col(0);
 
@@ -62,15 +61,15 @@ class BPPNNLS : public NNLS<MATTYPE, VECTYPE> {
      * Based on the nnlsm_blockpivot subroutine from the MATLAB code
      * associated with the paper.
      */
-    int solveNNLSMultipleRHS() {
-        int iter = 0;
+    unsigned int solveNNLSMultipleRHS() {
+        unsigned int iter = 0;
         unsigned int MAX_ITERATIONS = this->n * 5;
 
         // Set the initial feasible solution
         MATTYPE Y = (this->AtA * this->X) - this->AtB;
         arma::umat PassiveSet = (this->X > 0);
 
-        int pbar = 3;
+        unsigned int pbar = 3;
         arma::urowvec P(this->k);
         P.fill(pbar);
 
@@ -98,7 +97,9 @@ class BPPNNLS : public NNLS<MATTYPE, VECTYPE> {
         while (numNonOptCols > 0) {
             iter++;
 
-            assert(!((MAX_ITERATIONS > 0) && (iter > MAX_ITERATIONS)));
+            if ((MAX_ITERATIONS > 0) || (iter > MAX_ITERATIONS)) {
+                throw std::logic_error("invalid iteration call");
+            }
 
             Cols1 = NotOptCols % (NotGood < Ninf);
             Cols2 = NotOptCols % (NotGood >= Ninf) % (P >= 1);
@@ -218,8 +219,8 @@ class BPPNNLS : public NNLS<MATTYPE, VECTYPE> {
 
                     // Create submatrices of indices for solve.
                     arma::uvec samePassiveSetCols(std::vector<arma::uword>
-                                            (sortedIdx.begin() + sortedBeginIdx,
-                                             sortedIdx.begin() + sortedEndIdx));
+                                            (sortedIdx.front() + sortedBeginIdx,
+                                             sortedIdx.front() + sortedEndIdx));
                     arma::uvec currentPassiveSet = arma::find(
                             PassSet.col(sortedIdx[sortedBeginIdx]) == 1);
 #ifdef _VERBOSE

@@ -1260,6 +1260,6 @@ Rcpp::List uinmf_h5sparse(std::vector<std::string> filenames,
 }
 
 // [[Rcpp::export(.testCacheCalc)]]
-int testcacheCalc(int rank) {
+arma::uword testcacheCalc(int rank) {
     return chunk_size_dense<double>(rank);
 }

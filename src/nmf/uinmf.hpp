@@ -294,7 +294,7 @@ public:
         }
     }
 
-    void optimizeUANLS(int niter=30, bool verbose=true) {
+    void optimizeUANLS(arma::uword niter=30, bool verbose=true) {
         if (verbose) {
             Rcpp::Rcerr << "UINMF started, niter=" << niter << std::endl;
         }
@@ -303,7 +303,7 @@ public:
         this->initW2();
         this->initH();
         Progress p(niter, verbose);
-        for (int iter=0; iter<niter; iter++) {
+        for (unsigned int iter=0; iter<niter; iter++) {
             Rcpp::checkUserInterrupt();
             this->solveH();
             this->solveV();

@@ -106,3 +106,5 @@ Makefile
 build/**
 out/**
 src/Makefile.ucrt
+/doc/
+/Meta/

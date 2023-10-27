@@ -187,7 +187,7 @@ namespace planc {
             // H5::DataSpace dataspace = H5DT.getSpace();
             unsigned int nChunks = this->n_rows / this->colChunkSize;
             if (nChunks * this->colChunkSize < this->n_rows) nChunks++;
-            for (int i=0; i < nChunks; ++i) {
+            for (unsigned int i=0; i < nChunks; ++i) {
                 arma::uword start = i * this->colChunkSize;
                 arma::uword end = (i + 1) * this->colChunkSize - 1;
                 if (end > this->n_rows - 1) end = this->n_rows - 1;

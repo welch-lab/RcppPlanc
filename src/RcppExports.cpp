@@ -379,7 +379,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // testcacheCalc
-int testcacheCalc(int rank);
+arma::uword testcacheCalc(int rank);
 RcppExport SEXP _RcppPlanc_testcacheCalc(SEXP rankSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
