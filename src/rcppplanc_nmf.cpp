@@ -984,7 +984,7 @@ Rcpp::List onlineINMF_S23(
 Rcpp::List onlineINMF_S23_h5dense(
     std::vector<std::string> filenames, std::vector<std::string> dataPaths,
     std::vector<std::string> filenamesNew, std::vector<std::string> dataPathsNew,
-    std::vector<arma::mat> Vinit, arma::mat Winit,
+    std::vector<arma::mat> Vinit, const arma::mat& Winit,
     std::vector<arma::mat> Ainit, std::vector<arma::mat> Binit,
     arma::uword k, double lambda, bool project = false, arma::uword maxEpoch = 5,
     arma::uword minibatchSize = 5000, arma::uword maxHALSIter = 1, bool verbose = true) {
@@ -1004,7 +1004,7 @@ Rcpp::List onlineINMF_S23_h5dense(
     }
     planc::ONLINEINMF<planc::H5Mat, arma::mat> solver(matPtrVec, k, lambda);
     solver.initV(Vinit, false);
-    solver.initW(std::move(Winit), false);
+    solver.initW(Winit, false);
     solver.initA(Ainit);
     solver.initB(Binit);
     solver.runOnlineINMF(matPtrVecNew, project, minibatchSize, maxEpoch, maxHALSIter, verbose);
@@ -1050,7 +1050,7 @@ Rcpp::List onlineINMF_S23_h5sparse(
     std::vector<std::string> filenamesNew, std::vector<std::string> valuePathsNew,
     std::vector<std::string> rowindPathsNew, std::vector<std::string> colptrPathsNew,
     arma::uvec nrowsNew, arma::uvec ncolsNew,
-    std::vector<arma::mat> Vinit, arma::mat Winit,
+    std::vector<arma::mat> Vinit, const arma::mat& Winit,
     std::vector<arma::mat> Ainit, std::vector<arma::mat> Binit,
     arma::uword k, double lambda, bool project = false, arma::uword maxEpoch = 5,
     arma::uword minibatchSize = 5000, arma::uword maxHALSIter = 1, bool verbose = true) {
@@ -1070,7 +1070,7 @@ Rcpp::List onlineINMF_S23_h5sparse(
     }
     planc::ONLINEINMF<planc::H5SpMat, arma::sp_mat> solver(matPtrVec, k, lambda);
     solver.initV(Vinit, false);
-    solver.initW(std::move(Winit), false);
+    solver.initW(Winit, false);
     solver.initA(Ainit);
     solver.initB(Binit);
     solver.runOnlineINMF(matPtrVecNew, project, minibatchSize, maxEpoch, maxHALSIter, verbose);
@@ -1147,7 +1147,7 @@ Rcpp::List uinmf_mem(std::vector<T> objectList,
 
 // [[Rcpp::export(.uinmf_rcpp)]]
 Rcpp::List uinmf_rcpp(Rcpp::List objectList, const Rcpp::List& unsharedList,
-                      std::vector<int> whichUnshared, arma::uword k,
+                      const std::vector<int>& whichUnshared, arma::uword k,
                       const arma::vec& lambda, arma::uword niter, bool verbose) {
     if (Rf_isS4(objectList[0])) {
         return uinmf_mem<arma::sp_mat>(
