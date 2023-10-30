@@ -1263,3 +1263,8 @@ Rcpp::List uinmf_h5sparse(std::vector<std::string> filenames,
 arma::uword testcacheCalc(int rank) {
     return chunk_size_dense<double>(rank);
 }
+
+// [[Rcpp::export(.getBoundThreads)]]
+arma::uword getBoundThreadCount() {
+    return get_num_bound_threads();
+}

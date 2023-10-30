@@ -171,3 +171,7 @@ bppnnls_prod <- function(CtC, CtB) {
     .Call(`_RcppPlanc_testcacheCalc`, rank)
 }
 
+.getBoundThreads <- function() {
+    .Call(`_RcppPlanc_getBoundThreadCount`)
+}
+
