@@ -96,11 +96,18 @@ class BPPNNLS : public NNLS<MATTYPE, VECTYPE> {
 
         while (numNonOptCols > 0) {
             iter++;
-
+            try {
             if ((MAX_ITERATIONS <= 0) || (iter > MAX_ITERATIONS)) {
                 throw std::logic_error("invalid iteration call");
             }
-
+            }  catch(std::exception &ex) {
+#ifdef USING_R
+                std::string ex_str = ex.what();
+                Rcpp::stop(ex_str);
+#else
+                throw ex;
+#endif
+            }
             Cols1 = NotOptCols % (NotGood < Ninf);
             Cols2 = NotOptCols % (NotGood >= Ninf) % (P >= 1);
             arma::urowvec Cols3Ix = arma::conv_to<arma::urowvec>::from(

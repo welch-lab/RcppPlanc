@@ -74,14 +74,29 @@ namespace planc {
         arma::uword n_cols, n_rows, colChunkSize, rowChunkSize;
 
         arma::mat cols(arma::uword start, arma::uword end) {
-            if (start < 0) {
-                throw std::invalid_argument("`start` must be an unsigned int, got (" + std::to_string(start) + ", " + std::to_string(end) + ").");
-            }
-            if (start > end) {
-                throw std::invalid_argument("`start` must be less than or equal to `end`, got (" + std::to_string(start) + ", " + std::to_string(end) + ").");
-            }
-            if (end >= this->n_cols) {
-                throw std::invalid_argument("`end` must be less than the number of columns, got (" + std::to_string(start) + ", " + std::to_string(end) + ").");
+            try {
+                if (start < 0) {
+                    throw std::invalid_argument(
+                            "`start` must be an unsigned int, got (" + std::to_string(start) + ", " +
+                            std::to_string(end) + ").");
+                }
+                if (start > end) {
+                    throw std::invalid_argument(
+                            "`start` must be less than or equal to `end`, got (" + std::to_string(start) + ", " +
+                            std::to_string(end) + ").");
+                }
+                if (end >= this->n_cols) {
+                    throw std::invalid_argument(
+                            "`end` must be less than the number of columns, got (" + std::to_string(start) + ", " +
+                            std::to_string(end) + ").");
+                }
+            }  catch(std::exception &ex) {
+#ifdef USING_R
+                std::string ex_str = ex.what();
+                Rcpp::stop(ex_str);
+#else
+                throw ex;
+#endif
             }
             arma::mat chunk(this->n_rows, end - start + 1);
             std::vector<size_t> offset;
@@ -108,8 +123,17 @@ namespace planc {
             arma::uword outStart = 0, outEnd = 0;
             for (arma::uword i = 1; i < index.size(); ++i) {
                 curr = index[i];
-                if (curr > this->n_cols - 1) {
-                    throw std::invalid_argument("Index " + std::to_string(curr) + " is out of range.");
+                try {
+                    if (curr > this->n_cols - 1) {
+                        throw std::invalid_argument("Index " + std::to_string(curr) + " is out of range.");
+                    }
+                }  catch(std::exception &ex) {
+#ifdef USING_R
+                    std::string ex_str = ex.what();
+                    Rcpp::stop(ex_str);
+#else
+                    throw ex;
+#endif
                 }
                 if (curr == end + 1) {
                     // Still contiguous
@@ -127,14 +151,29 @@ namespace planc {
         }
 
         arma::mat rows(arma::uword start, arma::uword end) {
-            if (start < 0) {
-                throw std::invalid_argument("`start` must be an unsigned int, got (" + std::to_string(start) + ", " + std::to_string(end) + ").");
-            }
-            if (start > end) {
-                throw std::invalid_argument("`start` must be less than or equal to `end`, got (" + std::to_string(start) + ", " + std::to_string(end) + ").");
-            }
-            if (end >= this->n_rows) {
-                throw std::invalid_argument("`end` must be less than the number of rows, got (" + std::to_string(start) + ", " + std::to_string(end) + ").");
+            try {
+                if (start < 0) {
+                    throw std::invalid_argument(
+                            "`start` must be an unsigned int, got (" + std::to_string(start) + ", " +
+                            std::to_string(end) + ").");
+                }
+                if (start > end) {
+                    throw std::invalid_argument(
+                            "`start` must be less than or equal to `end`, got (" + std::to_string(start) + ", " +
+                            std::to_string(end) + ").");
+                }
+                if (end >= this->n_rows) {
+                    throw std::invalid_argument(
+                            "`end` must be less than the number of rows, got (" + std::to_string(start) + ", " +
+                            std::to_string(end) + ").");
+                }
+            }  catch(std::exception &ex) {
+#ifdef USING_R
+                std::string ex_str = ex.what();
+                Rcpp::stop(ex_str);
+#else
+                throw ex;
+#endif
             }
             arma::mat chunk(end - start + 1, this->n_cols);
             std::vector<size_t> offset;
@@ -348,14 +387,29 @@ namespace planc {
         arma::uword n_rows, n_cols, nnz;
 
         arma::sp_mat cols(arma::uword start, arma::uword end) {
-            if (start < 0) {
-                throw std::invalid_argument("`start` must be an unsigned int, got (" + std::to_string(start) + ", " + std::to_string(end) + ").");
-            }
-            if (start > end) {
-                throw std::invalid_argument("`start` must be less than or equal to `end`, got (" + std::to_string(start) + ", " + std::to_string(end) + ").");
-            }
-            if (end >= this->n_cols) {
-                throw std::invalid_argument("`end` must be less than the number of columns, got (" + std::to_string(start) + ", " + std::to_string(end) + ").");
+            try {
+                if (start < 0) {
+                    throw std::invalid_argument(
+                            "`start` must be an unsigned int, got (" + std::to_string(start) + ", " +
+                            std::to_string(end) + ").");
+                }
+                if (start > end) {
+                    throw std::invalid_argument(
+                            "`start` must be less than or equal to `end`, got (" + std::to_string(start) + ", " +
+                            std::to_string(end) + ").");
+                }
+                if (end >= this->n_cols) {
+                    throw std::invalid_argument(
+                            "`end` must be less than the number of columns, got (" + std::to_string(start) + ", " +
+                            std::to_string(end) + ").");
+                }
+            }  catch(std::exception &ex) {
+#ifdef USING_R
+                std::string ex_str = ex.what();
+                Rcpp::stop(ex_str);
+#else
+                throw ex;
+#endif
             }
 
             // Construct subsetted colptr
@@ -379,8 +433,17 @@ namespace planc {
             arma::uword outStart = 0, outEnd = 0;
             for (arma::uword i = 1; i < index.size(); ++i) {
                 curr = index[i];
-                if (curr > this->n_cols - 1) {
-                    throw std::invalid_argument("Index " + std::to_string(curr) + " is out of range.");
+                try {
+                    if (curr > this->n_cols - 1) {
+                        throw std::invalid_argument("Index " + std::to_string(curr) + " is out of range.");
+                    }
+                }  catch(std::exception &ex) {
+#ifdef USING_R
+                    std::string ex_str = ex.what();
+                    Rcpp::stop(ex_str);
+#else
+                    throw ex;
+#endif
                 }
                 if (curr == end + 1) {
                     // Still contiguous

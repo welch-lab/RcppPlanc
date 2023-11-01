@@ -219,7 +219,6 @@ namespace planc {
                 this->Hi.push_back(std::move(H));
             }
         }
-
         void initV(std::vector<arma::mat>& Vinit, bool transpose = true) {
 #ifdef _VERBOSE
             std::cout << "Taking initialized V matrices" << std::endl;
@@ -235,7 +234,6 @@ namespace planc {
 #ifdef USING_R
                 std::string ex_str = ex.what();
                 Rcpp::stop(ex_str);
-
 #else
                 throw ex;
 #endif

@@ -6,5 +6,7 @@
     <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/highfive-src/deps/catch2" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/cmake-build-release/_deps/highfive-src" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/cmake-build-release/_deps/highfive-src/deps/catch2" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/src/_deps/highfive-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/src/_deps/highfive-src/deps/catch2" vcs="Git" />
   </component>
 </project>

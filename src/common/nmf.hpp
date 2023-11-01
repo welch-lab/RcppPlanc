@@ -217,7 +217,12 @@ class NMF {
     }
     catch(const std::logic_error& e)
     {
-      throw;
+#ifdef USING_R
+        std::string ex_str = e.what();
+        Rcpp::stop(ex_str);
+#else
+        throw e;
+#endif
     }
     // this->A = input;
     this->W = leftlowrankfactor;
