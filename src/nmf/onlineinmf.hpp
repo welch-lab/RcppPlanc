@@ -149,10 +149,20 @@ private:
             idx = this->dataIdxNew[i];
             double ratio = (double)this->ncol_E[idx] / (double)arma::accu(this->nCellsNew);
             this->minibatchSizes[idx] = round(ratio * minibatchSize);
-            if (this->minibatchSizes[idx] < 1) {
-                throw std::invalid_argument("Please set a larger `minibatchSize`.");
-            } else if (this->minibatchSizes[idx] > this->ncol_E[idx]) {
-                throw std::invalid_argument("Please set a smaller `minibatchSize`.");
+            try {
+                if (this->minibatchSizes[idx] < 1) {
+                    throw std::invalid_argument("Please set a larger `minibatchSize`.");
+                } else if (this->minibatchSizes[idx] > this->ncol_E[idx]) {
+                    throw std::invalid_argument("Please set a smaller `minibatchSize`.");
+                }
+            } catch(std::exception &ex) {
+#ifdef USING_R
+                forward_exception_to_r(ex);
+            } catch(...) {
+                ::Rf_error("c++ exception (unknown reason)");
+#else
+                throw ex;
+#endif
             }
             this->minibatchIdx[idx] = arma::zeros<arma::uvec>(this->minibatchSizes[idx]);
         }
@@ -552,18 +562,41 @@ public:
 #endif
         std::unique_ptr<arma::mat> A;
         std::unique_ptr<arma::mat> Aold;
-        if (Ainit.size() != this->nDatasets) {
-            std::string msg = "Must provide " +
-                              std::string(std::to_string(this->nDatasets)) +
-                              " A matrices";
-            throw std::invalid_argument(msg);
-        }
-        for (arma::uword i = 0; i < this->nDatasets; ++i) {
-            if (Ainit[i].n_rows != this->k || Ainit[i].n_cols != this->k) {
-                std::string msg = "Given As must all be of size " +
-                                  std::string(std::to_string(this->k)) + " x " +
-                                    std::string(std::to_string(this->k));
+        try {
+            if (Ainit.size() != this->nDatasets) {
+                std::string msg = "Must provide " +
+                                  std::string(std::to_string(this->nDatasets)) +
+                                  " A matrices";
                 throw std::invalid_argument(msg);
+
+            }
+        }
+        catch(std::exception &ex) {
+#ifdef USING_R
+        forward_exception_to_r(ex);
+        } catch(...) {
+        ::Rf_error("c++ exception (unknown reason)");
+#else
+        throw ex;
+#endif
+    }
+
+        for (arma::uword i = 0; i < this->nDatasets; ++i) {
+            try {
+                if (Ainit[i].n_rows != this->k || Ainit[i].n_cols != this->k) {
+                    std::string msg = "Given As must all be of size " +
+                                      std::string(std::to_string(this->k)) + " x " +
+                                      std::string(std::to_string(this->k));
+                    throw std::invalid_argument(msg);
+                }
+            } catch(std::exception &ex) {
+#ifdef USING_R
+                forward_exception_to_r(ex);
+            } catch(...) {
+                ::Rf_error("c++ exception (unknown reason)");
+#else
+                throw ex;
+#endif
             }
             A = std::make_unique<arma::mat>();
             arma::mat* Aptr = A.get();
@@ -579,20 +612,40 @@ public:
 #ifdef _VERBOSE
     std::cout << "Taking initialized B matrices" << std::endl;
 #endif
-        if (Binit.size() != this->nDatasets) {
-            std::string msg = "Must provide " +
-                              std::string(std::to_string(this->nDatasets)) +
-                              " B matrices";
-            throw std::invalid_argument(msg);
+        try {
+            if (Binit.size() != this->nDatasets) {
+                std::string msg = "Must provide " +
+                                  std::string(std::to_string(this->nDatasets)) +
+                                  " B matrices";
+                throw std::invalid_argument(msg);
+            }
+        } catch(std::exception &ex) {
+#ifdef USING_R
+            forward_exception_to_r(ex);
+        } catch(...) {
+            ::Rf_error("c++ exception (unknown reason)");
+#else
+            throw ex;
+#endif
         }
         std::unique_ptr<arma::mat> B;
         std::unique_ptr<arma::mat> Bold;
         for (arma::uword i = 0; i < this->nDatasets; ++i) {
-            if (Binit[i].n_rows != this->m || Binit[i].n_cols != this->k) {
-                std::string msg = "Given Bs must all be of size " +
-                                  std::string(std::to_string(this->m)) + " x " +
-                                    std::string(std::to_string(this->k));
-                throw std::invalid_argument(msg);
+            try {
+                if (Binit[i].n_rows != this->m || Binit[i].n_cols != this->k) {
+                    std::string msg = "Given Bs must all be of size " +
+                                      std::string(std::to_string(this->m)) + " x " +
+                                      std::string(std::to_string(this->k));
+                    throw std::invalid_argument(msg);
+                }
+            } catch(std::exception &ex) {
+#ifdef USING_R
+                forward_exception_to_r(ex);
+            } catch(...) {
+                ::Rf_error("c++ exception (unknown reason)");
+#else
+                throw ex;
+#endif
             }
             B = std::make_unique<arma::mat>();
             arma::mat* Bptr = B.get();

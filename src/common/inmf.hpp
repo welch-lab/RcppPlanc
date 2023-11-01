@@ -102,21 +102,41 @@ namespace planc {
 
         void checkK() {
             for (unsigned int i = 0; i < this->nDatasets; ++i) {
-                if (this->k != this->Hi[i]->n_cols) {
-                    std::string msg = "Preset `k` (" + std::to_string(this->k) +
-                                      ") does not match with H[" + std::to_string(i) + "]";
-                    throw std::invalid_argument(msg);
-                }
-                if (this->k != this->Vi[i]->n_cols) {
-                    std::string msg = "Preset `k` (" + std::to_string(this->k) +
-                                      ") does not match with V[" + std::to_string(i) + "]";
-                    throw std::invalid_argument(msg);
+                try {
+                    if (this->k != this->Hi[i]->n_cols) {
+                        std::string msg = "Preset `k` (" + std::to_string(this->k) +
+                                          ") does not match with H[" + std::to_string(i) + "]";
+                        throw std::invalid_argument(msg);
+                    }
+                    if (this->k != this->Vi[i]->n_cols) {
+                        std::string msg = "Preset `k` (" + std::to_string(this->k) +
+                                          ") does not match with V[" + std::to_string(i) + "]";
+                        throw std::invalid_argument(msg);
+                    }
+                } catch(std::exception &ex) {
+#ifdef USING_R
+                    forward_exception_to_r(ex);
+                } catch(...) {
+                    ::Rf_error("c++ exception (unknown reason)");
+#else
+                    throw ex;
+#endif
                 }
             }
-            if (this->k != this->W.get()->n_cols) {
-                std::string msg = "Preset `k` (" + std::to_string(this->k) +
-                                  ") does not match with W";
-                throw std::invalid_argument(msg);
+            try {
+                if (this->k != this->W.get()->n_cols) {
+                    std::string msg = "Preset `k` (" + std::to_string(this->k) +
+                                      ") does not match with W";
+                    throw std::invalid_argument(msg);
+                }
+            } catch(std::exception &ex) {
+#ifdef USING_R
+                forward_exception_to_r(ex);
+            } catch(...) {
+                ::Rf_error("c++ exception (unknown reason)");
+#else
+                throw ex;
+#endif
             }
         }
     public:
@@ -155,10 +175,20 @@ namespace planc {
             }
             std::unique_ptr<arma::mat> H;
             for (arma::uword i = 0; i < this->nDatasets; ++i) {
-                if (Hinit[i].n_cols != this->k || Hinit[i].n_rows != this->ncol_E[i]) {
-                    std::string msg = "Each given H must be of size Ei[i].n_cols x " +
-                                      std::to_string(this->k);
-                    throw std::invalid_argument(msg);
+                try {
+                    if (Hinit[i].n_cols != this->k || Hinit[i].n_rows != this->ncol_E[i]) {
+                        std::string msg = "Each given H must be of size Ei[i].n_cols x " +
+                                          std::to_string(this->k);
+                        throw std::invalid_argument(msg);
+                    }
+                } catch(std::exception &ex) {
+#ifdef USING_R
+                    forward_exception_to_r(ex);
+                } catch(...) {
+                    ::Rf_error("c++ exception (unknown reason)");
+#else
+                    throw ex;
+#endif
                 }
                 H = std::make_unique<arma::mat>();
                 *H = Hinit[i];
@@ -183,11 +213,21 @@ namespace planc {
 #ifdef _VERBOSE
             std::cout << "Taking initialized V matrices" << std::endl;
 #endif
-            if (Vinit.size() != this->nDatasets) {
-                std::string msg = "Must provide " +
-                                  std::to_string(this->nDatasets) +
-                                  " V matrices";
-                throw std::invalid_argument(msg);
+            try {
+                if (Vinit.size() != this->nDatasets) {
+                    std::string msg = "Must provide " +
+                                      std::to_string(this->nDatasets) +
+                                      " V matrices";
+                    throw std::invalid_argument(msg);
+                }
+            }  catch(std::exception &ex) {
+#ifdef USING_R
+                forward_exception_to_r(ex);
+            } catch(...) {
+                ::Rf_error("c++ exception (unknown reason)");
+#else
+                throw ex;
+#endif
             }
             std::unique_ptr<arma::mat> V;
             std::unique_ptr<arma::mat> VT;
