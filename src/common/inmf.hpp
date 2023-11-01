@@ -64,9 +64,19 @@ namespace planc {
             this->Ei = std::move(inputEi);
             this->k = inputk;
             this->m = this->Ei[0].get()->n_rows;
-            if (this->k > this->m) {
-                throw std::invalid_argument("k must be <= m");
-            }
+            try {
+                if (this->k > this->m) {
+                    throw std::invalid_argument("k must be <= m");
+                }
+            } catch(std::exception &ex) {
+#ifdef USING_R
+                std::string ex_str = ex.what();
+                Rcpp::stop(ex_str);
+
+#else
+                throw ex;
+#endif
+        }
             this->cleared = false;
             this->INMF_CHUNK_SIZE = chunk_size_dense<double>(k);
             this->nMax = 0;
@@ -113,32 +123,33 @@ namespace planc {
                                           ") does not match with V[" + std::to_string(i) + "]";
                         throw std::invalid_argument(msg);
                     }
-                } catch(std::exception &ex) {
+                } catch (std::exception &ex) {
 #ifdef USING_R
-                    forward_exception_to_r(ex);
-                } catch(...) {
-                    ::Rf_error("c++ exception (unknown reason)");
+                    std::string ex_str = ex.what();
+                    Rcpp::stop(ex_str);
+
+#else
+                    throw ex;
+#endif
+
+                }
+            }
+                try {
+                    if (this->k != this->W.get()->n_cols) {
+                        std::string msg = "Preset `k` (" + std::to_string(this->k) +
+                                          ") does not match with W";
+                        throw std::invalid_argument(msg);
+                    }
+                } catch (std::exception &ex) {
+#ifdef USING_R
+                    std::string ex_str = ex.what();
+                    Rcpp::stop(ex_str);
+
 #else
                     throw ex;
 #endif
                 }
             }
-            try {
-                if (this->k != this->W.get()->n_cols) {
-                    std::string msg = "Preset `k` (" + std::to_string(this->k) +
-                                      ") does not match with W";
-                    throw std::invalid_argument(msg);
-                }
-            } catch(std::exception &ex) {
-#ifdef USING_R
-                forward_exception_to_r(ex);
-            } catch(...) {
-                ::Rf_error("c++ exception (unknown reason)");
-#else
-                throw ex;
-#endif
-            }
-        }
     public:
         INMF(std::vector<std::unique_ptr<T>>& Ei, arma::uword k, double lambda, bool makeTranspose = true) {
             this->constructObject(Ei, k, lambda, makeTranspose);
@@ -181,11 +192,11 @@ namespace planc {
                                           std::to_string(this->k);
                         throw std::invalid_argument(msg);
                     }
-                } catch(std::exception &ex) {
+                } catch (std::exception &ex) {
 #ifdef USING_R
-                    forward_exception_to_r(ex);
-                } catch(...) {
-                    ::Rf_error("c++ exception (unknown reason)");
+                    std::string ex_str = ex.what();
+                    Rcpp::stop(ex_str);
+
 #else
                     throw ex;
 #endif
@@ -193,9 +204,9 @@ namespace planc {
                 H = std::make_unique<arma::mat>();
                 *H = Hinit[i];
                 this->Hi.push_back(std::move(H));
+
             }
         }
-
         virtual void initH() {
 #ifdef _VERBOSE
             std::cout << "Randomly initializing H matrices" << std::endl;
@@ -222,9 +233,9 @@ namespace planc {
                 }
             }  catch(std::exception &ex) {
 #ifdef USING_R
-                forward_exception_to_r(ex);
-            } catch(...) {
-                ::Rf_error("c++ exception (unknown reason)");
+                std::string ex_str = ex.what();
+                Rcpp::stop(ex_str);
+
 #else
                 throw ex;
 #endif

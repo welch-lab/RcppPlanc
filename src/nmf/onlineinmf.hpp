@@ -157,9 +157,9 @@ private:
                 }
             } catch(std::exception &ex) {
 #ifdef USING_R
-                forward_exception_to_r(ex);
-            } catch(...) {
-                ::Rf_error("c++ exception (unknown reason)");
+                std::string ex_str = ex.what();
+                Rcpp::stop(ex_str);
+
 #else
                 throw ex;
 #endif
@@ -573,9 +573,9 @@ public:
         }
         catch(std::exception &ex) {
 #ifdef USING_R
-        forward_exception_to_r(ex);
-        } catch(...) {
-        ::Rf_error("c++ exception (unknown reason)");
+        std::string ex_str = ex.what();
+        Rcpp::stop(ex_str);
+
 #else
         throw ex;
 #endif
@@ -591,9 +591,9 @@ public:
                 }
             } catch(std::exception &ex) {
 #ifdef USING_R
-                forward_exception_to_r(ex);
-            } catch(...) {
-                ::Rf_error("c++ exception (unknown reason)");
+                std::string ex_str = ex.what();
+                Rcpp::stop(ex_str);
+
 #else
                 throw ex;
 #endif
@@ -621,9 +621,9 @@ public:
             }
         } catch(std::exception &ex) {
 #ifdef USING_R
-            forward_exception_to_r(ex);
-        } catch(...) {
-            ::Rf_error("c++ exception (unknown reason)");
+            std::string ex_str = ex.what();
+            Rcpp::stop(ex_str);
+
 #else
             throw ex;
 #endif
@@ -640,9 +640,9 @@ public:
                 }
             } catch(std::exception &ex) {
 #ifdef USING_R
-                forward_exception_to_r(ex);
-            } catch(...) {
-                ::Rf_error("c++ exception (unknown reason)");
+                std::string ex_str = ex.what();
+                Rcpp::stop(ex_str);
+
 #else
                 throw ex;
 #endif
