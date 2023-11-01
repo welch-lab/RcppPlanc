@@ -10,8 +10,14 @@ Authors@R: c(
   person(given = 'Ramakrishnan', family = 'Kannan', role = c('cph'), comment = "The original PLANC code"),
   person("UT-Batelle", role = c('cph'), comment = "The original PLANC code"))
 Maintainer: Andrew Robbins <robbiand@med.umich.edu>
-Description: Rcpp bindings for PLANC, a highly parallel
-              and extensible NMF/NTF library.
+Description: 'Rcpp' bindings for 'PLANC', a highly parallel
+             and extensible NMF/NTF library. Wraps algorithms described in
+             Kannan et. al (2018) <doi:10.1109/TKDE.2017.2767592> and
+             Eswar et. al (2021) <doi:10.1145/3432185>.
+             Implements algorithms described in
+             Welch et al. (2019) <doi:10.1016/j.cell.2019.05.006>,
+             Gao et al. (2021) <doi:10.1038/s41587-021-00867-x>, and
+             Kriebel & Welch (2022) <doi:10.1038/s41467-022-28431-4>.
 Encoding: UTF-8
 Imports:
     methods,
@@ -24,7 +30,7 @@ Suggests:
 LinkingTo: Rcpp, RcppArmadillo, RcppProgress
 License: GPL (>= 2)
 RoxygenNote: 7.2.3
-SystemRequirements: C++17, cmake >= 3.16.0, hdf5, git, v8, gnumake, automake, libtool
+SystemRequirements: C++17, cmake >= 3.16.0, hdf5, git, v8, gnumake, automake, hwloc
 Config/testthat/edition: 3
 Depends:
     R (>= 2.10)
