@@ -6,7 +6,7 @@ RcppPlanc is, as the name implies, an Rcpp wrapper for [planc](https://github.co
 implements wrappers for the vanilla NMF and NNLS algorithms. It also implements integrative NMF as described in
 [Welch, J. D. et al, 2019](https://doi.org/10.1016/j.cell.2019.05.006), online integrative NMF as described in
 [Gao, C. et al, 2021](https://doi.org/10.1038/s41587-021-00867-x) and unshared integrative NMF as described in
-[Kriebel and Welch, 2022](https://doi.org/10.1038/s41467-022-28431-4).
+[Kriebel and Welch, 2022](https://doi.org/10.1038/s41467-022-28431-4). This is, at present, the fastest NMF implementation on CRAN.
 
 ## Requirements
 
