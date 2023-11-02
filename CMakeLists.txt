@@ -116,16 +116,16 @@ else()
 endif()
 if(WIN32)
     CPMAddPackage(NAME HighFive
-        GIT_TAG v2.7.1
+        GIT_TAG v2.8.0
         GITHUB_REPOSITORY BlueBrain/HighFive
-        OPTIONS "HIGHFIVE_EXAMPLES OFF" "HIGHFIVE_BUILD_DOCS OFF" "HIGHFIVE_USE_BOOST OFF"
-        DOWNLOAD_ONLY TRUE)
+        OPTIONS "HIGHFIVE_EXAMPLES OFF" "HIGHFIVE_BUILD_DOCS OFF" "HIGHFIVE_USE_BOOST OFF" "HIGHFIVE_STATIC_HDF5"
+        )
     target_include_directories(RcppPlanc PRIVATE "${HighFive_SOURCE_DIR}/include")
     target_link_libraries(hw_detect PRIVATE hwloc)
     target_link_libraries(RcppPlanc PRIVATE -lhdf5 -lsz -lz -lopenblas -lgfortran -lgomp -lpthread -ldl -lm -lquadmath "${R_HOME}/bin/x64/R.dll")
 else()
     CPMAddPackage(NAME HighFive
-        GIT_TAG v2.7.1
+        GIT_TAG v2.8.0
         GITHUB_REPOSITORY BlueBrain/HighFive
         OPTIONS "HIGHFIVE_EXAMPLES OFF" "HIGHFIVE_BUILD_DOCS OFF" "HIGHFIVE_USE_BOOST OFF")
     target_link_libraries(RcppPlanc PUBLIC ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} HighFive)
