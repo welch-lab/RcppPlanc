@@ -20,7 +20,7 @@ RTOOLS=`"${R_HOME}/bin/R" CMD config R_TOOLS_SOFT`
 FC="$RTOOLS"/bin/gfortran.exe
 
 cd src
-cmake .. \
+cmake ../tools \
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_POSITION_INDEPENDENT_CODE:bool=ON \
   -DR_HOME="$R_HOME"

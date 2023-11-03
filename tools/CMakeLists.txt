@@ -19,13 +19,13 @@ if(APPLE)
     set(CMAKE_INCLUDE_PATH /opt/R/${CMAKE_HOST_SYSTEM_PROCESSOR}/include)
 endif()
 
-add_library(RcppPlanc SHARED "${PROJECT_SOURCE_DIR}/src/rcppplanc_nmf.cpp" "${PROJECT_SOURCE_DIR}/src/RcppExports.cpp" "${PROJECT_SOURCE_DIR}/src/conversion.cpp")
+add_library(RcppPlanc SHARED "${PROJECT_SOURCE_DIR}/../src/rcppplanc_nmf.cpp" "${PROJECT_SOURCE_DIR}/../src/RcppExports.cpp" "${PROJECT_SOURCE_DIR}/../src/conversion.cpp")
 set_target_properties(RcppPlanc PROPERTIES PREFIX "")
 if(APPLE)
 set_target_properties(RcppPlanc PROPERTIES SUFFIX ".so")
 endif()
 target_include_directories(RcppPlanc
-PRIVATE "${PROJECT_SOURCE_DIR}/src/common;${PROJECT_SOURCE_DIR}/src/nnls;${PROJECT_SOURCE_DIR}/src/nmf")
+PRIVATE "${PROJECT_SOURCE_DIR}/../src/common;${PROJECT_SOURCE_DIR}/../src/nnls;${PROJECT_SOURCE_DIR}/../src/nmf")
 
 set(MKL_DIR "${PROJECT_SOURCE_DIR}/cmake")
 find_package(MKL QUIET)
@@ -72,7 +72,7 @@ else()
 message(FATAL_ERROR "missing RcppProgress")
 endif()
 
-add_library(hw_detect OBJECT "${PROJECT_SOURCE_DIR}/src/common/hw_detect.c")
+add_library(hw_detect OBJECT "${PROJECT_SOURCE_DIR}/../src/common/hw_detect.c")
 
 if(WIN32)
     CPMAddPackage(NAME hwloc

@@ -4,8 +4,8 @@
 ^LICENSE-UT\.md$
 ^.*\.vscode
 ^.*\.vs
-^cmake-build-release
-^cmake-build-debug
+cmake-build-release
+cmake-build-debug
 ^.*\.idea
 ^.*\\obj
 ^.*out
@@ -15,3 +15,4 @@
 ^Meta$
 ^cran-comments\.md$
 ^CMakePresets\.json$
+^CRAN-SUBMISSION$
