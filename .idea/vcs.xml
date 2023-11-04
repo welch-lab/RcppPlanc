@@ -2,9 +2,9 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/highfive-src" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/cmake-build-debug/_deps/highfive-src/deps/catch2" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/cmake-build-release/_deps/highfive-src" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/cmake-build-release/_deps/highfive-src/deps/catch2" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/src/_deps/highfive-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/src/_deps/highfive-src/deps/catch2" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/tools/cmake-build-debug/_deps/highfive-src" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/tools/cmake-build-release/_deps/highfive-src" vcs="Git" />
   </component>
 </project>
