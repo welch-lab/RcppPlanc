@@ -140,6 +140,16 @@ else()
             OPTIONS "HIGHFIVE_EXAMPLES OFF" "HIGHFIVE_BUILD_DOCS OFF" "HIGHFIVE_USE_BOOST OFF" "HIGHFIVE_UNIT_TESTS OFF"
             "HIGHFIVE_HAS_CONCEPTS OFF")
 endif()
+target_link_libraries(RcppPlanc PRIVATE ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} HighFive hw_detect)
+file(MAKE_DIRECTORY ${HighFive_BINARY_DIR}/include)
+get_target_property(RCPPPLANC_SOURCES RcppPlanc SOURCES)
+add_custom_command(OUTPUT "${HighFive_BINARY_DIR}/include/highfive/bits/H5Inspector_misc.hpp"
+COMMAND ${CMAKE_COMMAND} -Din_file:FILEPATH=${HighFive_SOURCE_DIR}/include/highfive/bits/H5Inspector_misc.hpp
+        -Dpatch_file:FILEPATH=${PROJECT_SOURCE_DIR}/patch/remove_assert_highfive.patch
+        -Dout_file:FILEPATH=${HighFive_BINARY_DIR}/include/highfive/bits/H5Inspector_misc.hpp
+        -P${PROJECT_SOURCE_DIR}/cmake/PatchFile.cmake)
+set_property(SOURCE ${RCPPPLANC_SOURCES} APPEND PROPERTY OBJECT_DEPENDS "${HighFive_BINARY_DIR}/include/highfive/bits/H5Inspector_misc.hpp")
+target_include_directories(RcppPlanc BEFORE PRIVATE ${HighFive_BINARY_DIR}/include)
 
 target_link_libraries(RcppPlanc PRIVATE hw_detect)
 
