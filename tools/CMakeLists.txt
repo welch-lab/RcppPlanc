@@ -29,14 +29,19 @@ PRIVATE "${PROJECT_SOURCE_DIR}/../src/common;${PROJECT_SOURCE_DIR}/../src/nnls;$
 
 set(MKL_DIR "${PROJECT_SOURCE_DIR}/cmake")
 find_package(MKL QUIET)
-if(MKL_FOUND AND NOT DEFINED BLAS_VENDOR AND NOT WIN32)
+if(MKL_FOUND AND NOT DEFINED BLAS_VENDOR)
     message(STATUS "found MKL")
     set(USE_MKL)
     set(BLAS_LIBRARIES "${MKL_LIBRARIES}")
     set(LAPACK_LIBRARIES "${MKL_LAPACK_LIBRARIES}")
     target_compile_definitions(RcppPlanc PRIVATE "MKL_FOUND")
     set(CBLAS_H_DIR "${MKL_INCLUDE_DIR}")
-elseif(NOT WIN32)
+elseif(WIN32)
+    find_package(OpenBLAS CONFIG REQUIRED)
+    set(BLAS_LIBRARIES "${OpenBLAS_LIBRARIES}")
+    set(LAPACK_LIBRARIES "")
+    set(CBLAS_H_DIR "${OpenBLAS_INCLUDE_DIR}")
+else(NOT WIN32)
     find_package(BLAS REQUIRED)
     find_package(LAPACK REQUIRED)
 endif()
@@ -120,19 +125,20 @@ if(WIN32)
             GITHUB_REPOSITORY BlueBrain/HighFive
             GIT_SUBMODULES "doc"
             #this is a work around for failure to pass empty args per CMP0097. doc is obviously not a submodule, which is intentional.
-            OPTIONS "HIGHFIVE_EXAMPLES OFF" "HIGHFIVE_BUILD_DOCS OFF" "HIGHFIVE_USE_BOOST OFF" "HIGHFIVE_STATIC_HDF5" "HIGHFIVE_UNIT_TESTS OFF"
+            OPTIONS "HIGHFIVE_EXAMPLES OFF" "HIGHFIVE_BUILD_DOCS OFF" "HIGHFIVE_USE_BOOST OFF" "HIGHFIVE_STATIC_HDF5 ON" "HIGHFIVE_UNIT_TESTS OFF"
+            "HIGHFIVE_HAS_CONCEPTS OFF"
         )
-    target_include_directories(RcppPlanc PRIVATE "${HighFive_SOURCE_DIR}/include")
+
     target_link_libraries(hw_detect PRIVATE hwloc)
-    target_link_libraries(RcppPlanc PRIVATE -lhdf5 -lsz -lz -lopenblas -lgfortran -lgomp -lpthread -ldl -lm -lquadmath "${R_HOME}/bin/x64/R.dll")
+    target_link_libraries(RcppPlanc PRIVATE "${R_HOME}/bin/x64/R.dll")
 else()
     CPMAddPackage(NAME HighFive
             GIT_TAG v2.8.0
             GITHUB_REPOSITORY BlueBrain/HighFive
             GIT_SUBMODULES "doc"
             #this is a work around for failure to pass empty args per CMP0097. doc is obviously not a submodule, which is intentional.
-            OPTIONS "HIGHFIVE_EXAMPLES OFF" "HIGHFIVE_BUILD_DOCS OFF" "HIGHFIVE_USE_BOOST OFF" "HIGHFIVE_UNIT_TESTS OFF")
-    target_link_libraries(RcppPlanc PUBLIC ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} HighFive)
+            OPTIONS "HIGHFIVE_EXAMPLES OFF" "HIGHFIVE_BUILD_DOCS OFF" "HIGHFIVE_USE_BOOST OFF" "HIGHFIVE_UNIT_TESTS OFF"
+            "HIGHFIVE_HAS_CONCEPTS OFF")
 endif()
 
 target_link_libraries(RcppPlanc PRIVATE hw_detect)
