@@ -78,9 +78,11 @@ message(FATAL_ERROR "missing RcppProgress")
 endif()
 add_custom_target(hwloc_patch DEPENDS $<TARGET_PROPERTY:hwloc_patch,PATCH_GENERATED>)
 define_property(TARGET
-        PROPERTY "PATCH_GENERATED")
+        PROPERTY "PATCH_GENERATED"
+        BRIEF_DOCS "Sources patched by patchtool")
 define_property(TARGET
-        PROPERTY "BUILD_REQUIRES")
+        PROPERTY "BUILD_REQUIRES"
+        BRIEF_DOCS "generator-friendly dependencies for target")
 add_library(hw_detect OBJECT "${PROJECT_SOURCE_DIR}/../src/common/hw_detect.c")
     find_package(HWLOC)
     if(HWLOC_FOUND)
