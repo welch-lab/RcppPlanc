@@ -1,0 +1,940 @@
+Index: hwloc/topology.c
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/hwloc/topology.c b/hwloc/topology.c
+--- a/hwloc/topology.c	(revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
++++ b/hwloc/topology.c	(date 1699069200664)
+@@ -10,7 +10,7 @@
+ #include "private/autogen/config.h"
+
+ #define _ATFILE_SOURCE
+-#include <assert.h>
++//#include <assert.h>
+ #include <sys/types.h>
+ #ifdef HAVE_DIRENT_H
+ #include <dirent.h>
+@@ -590,7 +590,7 @@
+   return 0;
+
+  failed:
+-  assert(!tma || !tma->dontfree); /* this tma cannot fail to allocate */
++  //assert(!tma || !tma->dontfree); /* this tma cannot fail to allocate */
+   for(j=0; j<=i; j++) {
+     free(newi[i].name);
+     free(newi[i].value);
+@@ -699,7 +699,7 @@
+ insert_siblings_list(hwloc_obj_t *firstp, hwloc_obj_t firstnew, hwloc_obj_t newparent)
+ {
+   hwloc_obj_t tmp;
+-  assert(firstnew);
++  //assert(firstnew);
+   *firstp = tmp = firstnew;
+   tmp->parent = newparent;
+   while (tmp->next_sibling) {
+@@ -780,11 +780,11 @@
+     /* Misc object */
+
+     /* no normal children */
+-    assert(!old->first_child);
++    //assert(!old->first_child);
+     /* no memory children */
+-    assert(!old->memory_first_child);
++    //assert(!old->memory_first_child);
+     /* no I/O children */
+-    assert(!old->io_first_child);
++    //assert(!old->io_first_child);
+
+     if (old->misc_first_child)
+       /* insert old misc object children as new siblings below parent instead of old */
+@@ -798,9 +798,9 @@
+     /* I/O object */
+
+     /* no normal children */
+-    assert(!old->first_child);
++    //assert(!old->first_child);
+     /* no memory children */
+-    assert(!old->memory_first_child);
++    //assert(!old->memory_first_child);
+
+     if (old->io_first_child)
+       /* insert old I/O object children as new siblings below parent instead of old */
+@@ -818,9 +818,9 @@
+     /* memory object */
+
+     /* no normal children */
+-    assert(!old->first_child);
++    //assert(!old->first_child);
+     /* no I/O children */
+-    assert(!old->io_first_child);
++    //assert(!old->io_first_child);
+
+     if (old->memory_first_child)
+       /* insert old memory object children as new siblings below parent instead of old */
+@@ -877,7 +877,7 @@
+   /* either we're duplicating to an already allocated new root, which has no newparent,
+    * or we're duplicating to a non-yet allocated new non-root, which will have a newparent.
+    */
+-  assert(!newparent == !!newobj);
++  //assert(!newparent == !!newobj);
+
+   if (!newobj) {
+     newobj = hwloc_alloc_setup_object(newtopology, src->type, src->os_index);
+@@ -933,7 +933,7 @@
+     level_width = newtopology->level_nbobjects[src->depth];
+   }
+   /* place us for real */
+-  assert(newobj->logical_index < level_width);
++  //assert(newobj->logical_index < level_width);
+   level[newobj->logical_index] = newobj;
+   /* link to already-inserted cousins */
+   if (newobj->logical_index > 0 && level[newobj->logical_index-1]) {
+@@ -1083,16 +1083,16 @@
+   new->userdata_import_cb = old->userdata_import_cb;
+   new->userdata_not_decoded = old->userdata_not_decoded;
+
+-  assert(!old->machine_memory.local_memory);
+-  assert(!old->machine_memory.page_types_len);
+-  assert(!old->machine_memory.page_types);
++  //assert(!old->machine_memory.local_memory);
++  //assert(!old->machine_memory.page_types_len);
++  //assert(!old->machine_memory.page_types);
+
+   for(i = HWLOC_OBJ_TYPE_MIN; i < HWLOC_OBJ_TYPE_MAX; i++)
+     new->type_depth[i] = old->type_depth[i];
+
+   /* duplicate levels and we'll place objects there when duplicating objects */
+   new->nb_levels = old->nb_levels;
+-  assert(new->nb_levels_allocated >= new->nb_levels);
++  //assert(new->nb_levels_allocated >= new->nb_levels);
+   for(i=1 /* root level already allocated */ ; i<new->nb_levels; i++) {
+     new->level_nbobjects[i] = old->level_nbobjects[i];
+     new->levels[i] = hwloc_tma_calloc(tma, new->level_nbobjects[i] * sizeof(*new->levels[i]));
+@@ -1137,7 +1137,7 @@
+   return 0;
+
+  out_with_topology:
+-  assert(!tma || !tma->dontfree); /* this tma cannot fail to allocate */
++  //assert(!tma || !tma->dontfree); /* this tma cannot fail to allocate */
+   hwloc_topology_destroy(new);
+  out:
+   return -1;
+@@ -1310,8 +1310,8 @@
+ {
+   hwloc_bitmap_t set1, set2;
+
+-  assert(!hwloc__obj_type_is_special(obj1->type));
+-  assert(!hwloc__obj_type_is_special(obj2->type));
++  //assert(!hwloc__obj_type_is_special(obj1->type));
++  //assert(!hwloc__obj_type_is_special(obj2->type));
+
+   /* compare cpusets first */
+   if (obj1->complete_cpuset && obj2->complete_cpuset) {
+@@ -1492,7 +1492,7 @@
+   /* Pointer where OBJ should be put */
+   hwloc_obj_t *putp = NULL; /* OBJ position isn't found yet */
+
+-  assert(!hwloc__obj_type_is_memory(obj->type));
++  //assert(!hwloc__obj_type_is_memory(obj->type));
+
+   /* Iteration with prefetching to be completely safe against CHILD removal.
+    * The list is already sorted by cpuset, and there's no intersection between siblings.
+@@ -1556,8 +1556,8 @@
+     }
+   }
+   /* cur/obj_children points to last CUR/OBJ child next_sibling pointer, which must be NULL. */
+-  assert(!*obj_children);
+-  assert(!*cur_children);
++  //assert(!*obj_children);
++  //assert(!*cur_children);
+
+   /* Put OBJ where it belongs, or in last in CUR's children.  */
+   if (!putp)
+@@ -1629,7 +1629,7 @@
+     if (parent->type == HWLOC_OBJ_PU) {
+       /* Never attach to PU, try parent */
+       parent = parent->parent;
+-      assert(parent);
++      //assert(parent);
+     }
+
+     /* TODO: if root->cpuset was updated earlier, we would be sure whether the group will remain identical to root */
+@@ -1668,7 +1668,7 @@
+     return parent;
+   }
+
+-  assert(result == group);
++  //assert(result == group);
+   return group;
+ }
+
+@@ -1702,12 +1702,12 @@
+           report_insert_error(obj, cur, "NUMAnodes with identical nodesets", reason);
+ 	  return NULL;
+ 	}
+-	assert(cur->type == HWLOC_OBJ_MEMCACHE);
++	//assert(cur->type == HWLOC_OBJ_MEMCACHE);
+ 	/* insert the new NUMA node below that existing memcache */
+ 	return hwloc___attach_memory_object_by_nodeset(topology, cur, obj, reason);
+
+       } else {
+-	assert(obj->type == HWLOC_OBJ_MEMCACHE);
++	//assert(obj->type == HWLOC_OBJ_MEMCACHE);
+ 	if (cur->type == HWLOC_OBJ_MEMCACHE) {
+ 	  if (cur->attr->cache.depth == obj->attr->cache.depth)
+ 	    /* memcache with same nodeset and depth, ignore the new one */
+@@ -1757,8 +1757,8 @@
+ {
+   hwloc_obj_t result;
+
+-  assert(parent);
+-  assert(hwloc__obj_type_is_normal(parent->type));
++  //assert(parent);
++  //assert(hwloc__obj_type_is_normal(parent->type));
+
+   /* Check the nodeset */
+   if (!obj->nodeset || hwloc_bitmap_iszero(obj->nodeset))
+@@ -1770,7 +1770,7 @@
+     return NULL;
+   }
+   /* Neither ACPI nor Linux support multinode mscache */
+-  assert(hwloc_bitmap_weight(obj->nodeset) == 1);
++  //assert(hwloc_bitmap_weight(obj->nodeset) == 1);
+
+ #if 0
+   /* TODO: enable this instead of hack in fixup_sets once NUMA nodes are inserted late */
+@@ -1806,10 +1806,10 @@
+   struct hwloc_obj *result;
+
+ #ifdef HWLOC_DEBUG
+-  assert(!hwloc__obj_type_is_special(obj->type));
++  //assert(!hwloc__obj_type_is_special(obj->type));
+
+   /* we need at least one non-NULL set (normal or complete, cpuset or nodeset) */
+-  assert(obj->cpuset || obj->complete_cpuset || obj->nodeset || obj->complete_nodeset);
++  //assert(obj->cpuset || obj->complete_cpuset || obj->nodeset || obj->complete_nodeset);
+   /* we support the case where all of them are empty.
+    * it may happen when hwloc__find_insert_memory_parent()
+    * inserts a Group for a CPU-less NUMA-node.
+@@ -1902,7 +1902,7 @@
+   obj->gp_index = topology->next_gp_index++;
+   obj->attr = hwloc_tma_malloc(topology->tma, sizeof(*obj->attr));
+   if (!obj->attr) {
+-    assert(!topology->tma || !topology->tma->dontfree); /* this tma cannot fail to allocate */
++    //assert(!topology->tma || !topology->tma->dontfree); /* this tma cannot fail to allocate */
+     free(obj);
+     return NULL;
+   }
+@@ -2148,7 +2148,7 @@
+     return largeparent;
+
+   /* Group couldn't get merged or we would have gotten the right largeparent earlier */
+-  assert(parent == group_obj);
++  //assert(parent == group_obj);
+
+   /* Group inserted without being merged, everything OK, setup its sets */
+   hwloc_obj_add_children_sets(group_obj);
+@@ -2456,7 +2456,7 @@
+     if (!hwloc_bitmap_iszero(obj->cpuset))
+       return;
+   } else {
+-    assert(hwloc__obj_type_is_memory(obj->type));
++    //assert(hwloc__obj_type_is_memory(obj->type));
+     if (!hwloc_bitmap_iszero(obj->nodeset))
+       return;
+   }
+@@ -3417,8 +3417,8 @@
+      * but HWLOC_ANNOTATE_GLOBAL_COMPONENTS=1 allows optional ANNOTATE steps.
+      */
+     struct hwloc_backend *global_backend = topology->backends;
+-    assert(global_backend);
+-    assert(global_backend->phases == HWLOC_DISC_PHASE_GLOBAL);
++    //assert(global_backend);
++    //assert(global_backend->phases == HWLOC_DISC_PHASE_GLOBAL);
+
+     /*
+      * Perform the single-component-based GLOBAL discovery
+@@ -4230,8 +4230,8 @@
+       hwloc_free_object_siblings_and_children(obj->misc_first_child);
+       obj->misc_first_child = NULL;
+     }
+-    assert(!obj->first_child);
+-    assert(!obj->memory_first_child);
++    //assert(!obj->first_child);
++    //assert(!obj->memory_first_child);
+     unlink_and_free_single_object(pobj);
+     topology->modified = 1;
+   }
+@@ -4289,8 +4289,8 @@
+       hwloc_free_object_siblings_and_children(obj->misc_first_child);
+       obj->misc_first_child = NULL;
+     }
+-    assert(!obj->first_child);
+-    assert(!obj->memory_first_child);
++    //assert(!obj->first_child);
++    //assert(!obj->memory_first_child);
+     unlink_and_free_single_object(pobj);
+     topology->modified = 1;
+   }
+@@ -4352,7 +4352,7 @@
+     /* cpuset to clear */
+     if (flags & HWLOC_RESTRICT_FLAG_REMOVE_MEMLESS) {
+       hwloc_obj_t pu = hwloc_get_obj_by_type(topology, HWLOC_OBJ_PU, 0);
+-      assert(pu);
++      //assert(pu);
+       do {
+ 	/* PU will be removed if cpuset gets or was empty */
+ 	if (hwloc_bitmap_iszero(pu->cpuset)
+@@ -4388,7 +4388,7 @@
+     /* nodeset to clear */
+     if (flags & HWLOC_RESTRICT_FLAG_REMOVE_CPULESS) {
+       hwloc_obj_t node = hwloc_get_obj_by_type(topology, HWLOC_OBJ_NUMANODE, 0);
+-      assert(node);
++      //assert(node);
+       do {
+ 	/* node will be removed if nodeset gets or was empty */
+ 	if (hwloc_bitmap_iszero(node->cpuset)
+@@ -4601,25 +4601,25 @@
+ 			    unsigned arity, unsigned i,
+ 			    hwloc_obj_t child, hwloc_obj_t prev)
+ {
+-  assert(child->parent == parent);
++  //assert(child->parent == parent);
+
+-  assert(child->sibling_rank == i);
+-  if (array)
+-    assert(child == array[i]);
++  //assert(child->sibling_rank == i);
++  //if (array)
++    //assert(child == array[i]);
+
+-  if (prev)
+-    assert(prev->next_sibling == child);
+-  assert(child->prev_sibling == prev);
++  //if (prev)
++    //assert(prev->next_sibling == child);
++  //assert(child->prev_sibling == prev);
+
+-  if (!i)
+-    assert(child->prev_sibling == NULL);
+-  else
+-    assert(child->prev_sibling != NULL);
++  //if (!i)
++    //assert(child->prev_sibling == NULL);
++  //else
++    //assert(child->prev_sibling != NULL);
+
+-  if (i == arity-1)
+-    assert(child->next_sibling == NULL);
+-  else
+-    assert(child->next_sibling != NULL);
++  //if (i == arity-1)
++    //assert(child->next_sibling == NULL);
++  //else
++    //assert(child->next_sibling != NULL);
+ }
+
+ static void
+@@ -4634,38 +4634,38 @@
+
+   if (!parent->arity) {
+     /* check whether that parent has no children for real */
+-    assert(!parent->children);
+-    assert(!parent->first_child);
+-    assert(!parent->last_child);
++    //assert(!parent->children);
++    //assert(!parent->first_child);
++    //assert(!parent->last_child);
+     return;
+   }
+   /* check whether that parent has children for real */
+-  assert(parent->children);
+-  assert(parent->first_child);
+-  assert(parent->last_child);
++  //assert(parent->children);
++  //assert(parent->first_child);
++  //assert(parent->last_child);
+
+   /* sibling checks */
+   for(prev = NULL, child = parent->first_child, j = 0;
+       child;
+       prev = child, child = child->next_sibling, j++) {
+     /* normal child */
+-    assert(hwloc__obj_type_is_normal(child->type));
++    //assert(hwloc__obj_type_is_normal(child->type));
+     /* check depth */
+-    assert(child->depth > parent->depth);
++    //assert(child->depth > parent->depth);
+     /* check siblings */
+     hwloc__check_child_siblings(parent, parent->children, parent->arity, j, child, prev);
+     /* recurse */
+     hwloc__check_object(topology, gp_indexes, child);
+   }
+   /* check arity */
+-  assert(j == parent->arity);
++  //assert(j == parent->arity);
+
+-  assert(parent->first_child == parent->children[0]);
+-  assert(parent->last_child == parent->children[parent->arity-1]);
++  //assert(parent->first_child == parent->children[0]);
++  //assert(parent->last_child == parent->children[parent->arity-1]);
+
+   /* no normal children below a PU */
+-  if (parent->type == HWLOC_OBJ_PU)
+-    assert(!parent->arity);
++  //if (parent->type == HWLOC_OBJ_PU)
++    //assert(!parent->arity);
+ }
+
+ static void
+@@ -4677,33 +4677,33 @@
+
+   if (obj->type == HWLOC_OBJ_PU) {
+     /* PU cpuset is just itself, with no normal children */
+-    assert(hwloc_bitmap_weight(obj->cpuset) == 1);
+-    assert(hwloc_bitmap_first(obj->cpuset) == (int) obj->os_index);
+-    assert(hwloc_bitmap_weight(obj->complete_cpuset) == 1);
+-    assert(hwloc_bitmap_first(obj->complete_cpuset) == (int) obj->os_index);
++    //assert(hwloc_bitmap_weight(obj->cpuset) == 1);
++    //assert(hwloc_bitmap_first(obj->cpuset) == (int) obj->os_index);
++    //assert(hwloc_bitmap_weight(obj->complete_cpuset) == 1);
++    //assert(hwloc_bitmap_first(obj->complete_cpuset) == (int) obj->os_index);
+     if (!(topology->flags & HWLOC_TOPOLOGY_FLAG_INCLUDE_DISALLOWED)) {
+-      assert(hwloc_bitmap_isset(topology->allowed_cpuset, (int) obj->os_index));
++      //assert(hwloc_bitmap_isset(topology->allowed_cpuset, (int) obj->os_index));
+     }
+-    assert(!obj->arity);
++    //assert(!obj->arity);
+   } else if (hwloc__obj_type_is_memory(obj->type)) {
+     /* memory object cpuset is equal to its parent */
+-    assert(hwloc_bitmap_isequal(obj->parent->cpuset, obj->cpuset));
+-    assert(!obj->arity);
++    //assert(hwloc_bitmap_isequal(obj->parent->cpuset, obj->cpuset));
++    //assert(!obj->arity);
+   } else if (!hwloc__obj_type_is_special(obj->type)) {
+     hwloc_bitmap_t set;
+     /* other obj cpuset is an exclusive OR of normal children, except for PUs */
+     set = hwloc_bitmap_alloc();
+     for_each_child(child, obj) {
+-      assert(!hwloc_bitmap_intersects(set, child->cpuset));
++      //assert(!hwloc_bitmap_intersects(set, child->cpuset));
+       hwloc_bitmap_or(set, set, child->cpuset);
+     }
+-    assert(hwloc_bitmap_isequal(set, obj->cpuset));
++    //assert(hwloc_bitmap_isequal(set, obj->cpuset));
+     hwloc_bitmap_free(set);
+   }
+
+   /* check that memory children have same cpuset */
+   for_each_memory_child(child, obj)
+-    assert(hwloc_bitmap_isequal(obj->cpuset, child->cpuset));
++    //assert(hwloc_bitmap_isequal(obj->cpuset, child->cpuset));
+
+   /* check that children complete_cpusets are properly ordered, empty ones may be anywhere
+    * (can be wrong for main cpuset since removed PUs can break the ordering).
+@@ -4713,8 +4713,8 @@
+   for_each_child(child, obj) {
+     int first = hwloc_bitmap_first(child->complete_cpuset);
+     if (first >= 0) {
+-      assert(!prev_empty); /* no objects with CPU after objects without CPU */
+-      assert(prev_first < first);
++      //assert(!prev_empty); /* no objects with CPU after objects without CPU */
++      //assert(prev_first < first);
+     } else {
+       prev_empty = 1;
+     }
+@@ -4730,29 +4730,29 @@
+
+   if (!parent->memory_arity) {
+     /* check whether that parent has no children for real */
+-    assert(!parent->memory_first_child);
++    //assert(!parent->memory_first_child);
+     return;
+   }
+   /* check whether that parent has children for real */
+-  assert(parent->memory_first_child);
++  //assert(parent->memory_first_child);
+
+   for(prev = NULL, child = parent->memory_first_child, j = 0;
+       child;
+       prev = child, child = child->next_sibling, j++) {
+-    assert(hwloc__obj_type_is_memory(child->type));
++    //assert(hwloc__obj_type_is_memory(child->type));
+     /* check siblings */
+     hwloc__check_child_siblings(parent, NULL, parent->memory_arity, j, child, prev);
+     /* only Memory and Misc children, recurse */
+-    assert(!child->first_child);
+-    assert(!child->io_first_child);
++    //assert(!child->first_child);
++    //assert(!child->io_first_child);
+     hwloc__check_object(topology, gp_indexes, child);
+   }
+   /* check arity */
+-  assert(j == parent->memory_arity);
++  //assert(j == parent->memory_arity);
+
+   /* no memory children below a NUMA node */
+-  if (parent->type == HWLOC_OBJ_NUMANODE)
+-    assert(!parent->memory_arity);
++  //if (parent->type == HWLOC_OBJ_NUMANODE)
++    //assert(!parent->memory_arity);
+ }
+
+ static void
+@@ -4763,26 +4763,26 @@
+
+   if (!parent->io_arity) {
+     /* check whether that parent has no children for real */
+-    assert(!parent->io_first_child);
++    //assert(!parent->io_first_child);
+     return;
+   }
+   /* check whether that parent has children for real */
+-  assert(parent->io_first_child);
++  //assert(parent->io_first_child);
+
+   for(prev = NULL, child = parent->io_first_child, j = 0;
+       child;
+       prev = child, child = child->next_sibling, j++) {
+     /* all children must be I/O */
+-    assert(hwloc__obj_type_is_io(child->type));
++    //assert(hwloc__obj_type_is_io(child->type));
+     /* check siblings */
+     hwloc__check_child_siblings(parent, NULL, parent->io_arity, j, child, prev);
+     /* only I/O and Misc children, recurse */
+-    assert(!child->first_child);
+-    assert(!child->memory_first_child);
++    //assert(!child->first_child);
++    //assert(!child->memory_first_child);
+     hwloc__check_object(topology, gp_indexes, child);
+   }
+   /* check arity */
+-  assert(j == parent->io_arity);
++  //assert(j == parent->io_arity);
+ }
+
+ static void
+@@ -4793,27 +4793,27 @@
+
+   if (!parent->misc_arity) {
+     /* check whether that parent has no children for real */
+-    assert(!parent->misc_first_child);
++    //assert(!parent->misc_first_child);
+     return;
+   }
+   /* check whether that parent has children for real */
+-  assert(parent->misc_first_child);
++  //assert(parent->misc_first_child);
+
+   for(prev = NULL, child = parent->misc_first_child, j = 0;
+       child;
+       prev = child, child = child->next_sibling, j++) {
+     /* all children must be Misc */
+-    assert(child->type == HWLOC_OBJ_MISC);
++    //assert(child->type == HWLOC_OBJ_MISC);
+     /* check siblings */
+     hwloc__check_child_siblings(parent, NULL, parent->misc_arity, j, child, prev);
+     /* only Misc children, recurse */
+-    assert(!child->first_child);
+-    assert(!child->memory_first_child);
+-    assert(!child->io_first_child);
++    //assert(!child->first_child);
++    //assert(!child->memory_first_child);
++    //assert(!child->io_first_child);
+     hwloc__check_object(topology, gp_indexes, child);
+   }
+   /* check arity */
+-  assert(j == parent->misc_arity);
++  //assert(j == parent->misc_arity);
+ }
+
+ static void
+@@ -4822,61 +4822,61 @@
+   hwloc_uint64_t total_memory;
+   hwloc_obj_t child;
+
+-  assert(!hwloc_bitmap_isset(gp_indexes, obj->gp_index));
++  //assert(!hwloc_bitmap_isset(gp_indexes, obj->gp_index));
+   hwloc_bitmap_set(gp_indexes, obj->gp_index);
+
+   HWLOC_BUILD_ASSERT(HWLOC_OBJ_TYPE_MIN == 0);
+-  assert((unsigned) obj->type < HWLOC_OBJ_TYPE_MAX);
++  //assert((unsigned) obj->type < HWLOC_OBJ_TYPE_MAX);
+
+-  assert(hwloc_filter_check_keep_object(topology, obj));
++  //assert(hwloc_filter_check_keep_object(topology, obj));
+
+   /* check that sets and depth */
+-  if (hwloc__obj_type_is_special(obj->type)) {
+-    assert(!obj->cpuset);
+-    if (obj->type == HWLOC_OBJ_BRIDGE)
+-      assert(obj->depth == HWLOC_TYPE_DEPTH_BRIDGE);
+-    else if (obj->type == HWLOC_OBJ_PCI_DEVICE)
+-      assert(obj->depth == HWLOC_TYPE_DEPTH_PCI_DEVICE);
+-    else if (obj->type == HWLOC_OBJ_OS_DEVICE)
+-      assert(obj->depth == HWLOC_TYPE_DEPTH_OS_DEVICE);
+-    else if (obj->type == HWLOC_OBJ_MISC)
+-      assert(obj->depth == HWLOC_TYPE_DEPTH_MISC);
+-  } else {
+-    assert(obj->cpuset);
+-    if (obj->type == HWLOC_OBJ_NUMANODE)
+-      assert(obj->depth == HWLOC_TYPE_DEPTH_NUMANODE);
+-    else if (obj->type == HWLOC_OBJ_MEMCACHE)
+-      assert(obj->depth == HWLOC_TYPE_DEPTH_MEMCACHE);
+-    else
+-      assert(obj->depth >= 0);
+-  }
++  //if (hwloc__obj_type_is_special(obj->type)) {
++    //assert(!obj->cpuset);
++    //if (obj->type == HWLOC_OBJ_BRIDGE)
++      //assert(obj->depth == HWLOC_TYPE_DEPTH_BRIDGE);
++    //else if (obj->type == HWLOC_OBJ_PCI_DEVICE)
++      //assert(obj->depth == HWLOC_TYPE_DEPTH_PCI_DEVICE);
++    //else if (obj->type == HWLOC_OBJ_OS_DEVICE)
++      //assert(obj->depth == HWLOC_TYPE_DEPTH_OS_DEVICE);
++    //else if (obj->type == HWLOC_OBJ_MISC)
++      //assert(obj->depth == HWLOC_TYPE_DEPTH_MISC);
++  //} else {
++    //assert(obj->cpuset);
++    //if (obj->type == HWLOC_OBJ_NUMANODE)
++      //assert(obj->depth == HWLOC_TYPE_DEPTH_NUMANODE);
++    //else if (obj->type == HWLOC_OBJ_MEMCACHE)
++      //assert(obj->depth == HWLOC_TYPE_DEPTH_MEMCACHE);
++    //else
++      //assert(obj->depth >= 0);
++  //}
+
+   /* group depth cannot be -1 anymore in v2.0+ */
+-  if (obj->type == HWLOC_OBJ_GROUP) {
+-    assert(obj->attr->group.depth != (unsigned) -1);
+-  }
++  //if (obj->type == HWLOC_OBJ_GROUP) {
++    //assert(obj->attr->group.depth != (unsigned) -1);
++  //}
+
+   /* there's other cpusets and nodesets if and only if there's a main cpuset */
+-  assert(!!obj->cpuset == !!obj->complete_cpuset);
+-  assert(!!obj->cpuset == !!obj->nodeset);
+-  assert(!!obj->nodeset == !!obj->complete_nodeset);
++  //assert(!!obj->cpuset == !!obj->complete_cpuset);
++  //assert(!!obj->cpuset == !!obj->nodeset);
++  //assert(!!obj->nodeset == !!obj->complete_nodeset);
+
+   /* check that complete/inline sets are larger than the main sets */
+   if (obj->cpuset) {
+-    assert(hwloc_bitmap_isincluded(obj->cpuset, obj->complete_cpuset));
+-    assert(hwloc_bitmap_isincluded(obj->nodeset, obj->complete_nodeset));
++    //assert(hwloc_bitmap_isincluded(obj->cpuset, obj->complete_cpuset));
++    //assert(hwloc_bitmap_isincluded(obj->nodeset, obj->complete_nodeset));
+   }
+
+   /* check cache type/depth vs type */
+   if (hwloc__obj_type_is_cache(obj->type)) {
+-    if (hwloc__obj_type_is_icache(obj->type))
+-      assert(obj->attr->cache.type == HWLOC_OBJ_CACHE_INSTRUCTION);
+-    else if (hwloc__obj_type_is_dcache(obj->type))
+-      assert(obj->attr->cache.type == HWLOC_OBJ_CACHE_DATA
+-	     || obj->attr->cache.type == HWLOC_OBJ_CACHE_UNIFIED);
+-    else
+-      assert(0);
+-    assert(hwloc_cache_type_by_depth_type(obj->attr->cache.depth, obj->attr->cache.type) == obj->type);
++    //if (hwloc__obj_type_is_icache(obj->type))
++      //assert(obj->attr->cache.type == HWLOC_OBJ_CACHE_INSTRUCTION);
++    //else if (hwloc__obj_type_is_dcache(obj->type))
++      //assert(obj->attr->cache.type == HWLOC_OBJ_CACHE_DATA
++	//     || obj->attr->cache.type == HWLOC_OBJ_CACHE_UNIFIED);
++    //else
++      //assert(0);
++    //assert(hwloc_cache_type_by_depth_type(obj->attr->cache.depth, obj->attr->cache.type) == obj->type);
+   }
+
+   /* check total memory */
+@@ -4889,7 +4889,7 @@
+   for_each_memory_child(child, obj) {
+     total_memory += child->total_memory;
+   }
+-  assert(total_memory == obj->total_memory);
++  //assert(total_memory == obj->total_memory);
+
+   /* check children */
+   hwloc__check_normal_children(topology, gp_indexes, obj);
+@@ -4908,16 +4908,16 @@
+
+   if (obj->type == HWLOC_OBJ_NUMANODE) {
+     /* NUMANODE nodeset is just itself, with no memory/normal children */
+-    assert(hwloc_bitmap_weight(obj->nodeset) == 1);
+-    assert(hwloc_bitmap_first(obj->nodeset) == (int) obj->os_index);
+-    assert(hwloc_bitmap_weight(obj->complete_nodeset) == 1);
+-    assert(hwloc_bitmap_first(obj->complete_nodeset) == (int) obj->os_index);
++    //assert(hwloc_bitmap_weight(obj->nodeset) == 1);
++    //assert(hwloc_bitmap_first(obj->nodeset) == (int) obj->os_index);
++    //assert(hwloc_bitmap_weight(obj->complete_nodeset) == 1);
++    //assert(hwloc_bitmap_first(obj->complete_nodeset) == (int) obj->os_index);
+     if (!(topology->flags & HWLOC_TOPOLOGY_FLAG_INCLUDE_DISALLOWED)) {
+-      assert(hwloc_bitmap_isset(topology->allowed_nodeset, (int) obj->os_index));
++      //assert(hwloc_bitmap_isset(topology->allowed_nodeset, (int) obj->os_index));
+     }
+-    assert(!obj->arity);
+-    assert(!obj->memory_arity);
+-    assert(hwloc_bitmap_isincluded(obj->nodeset, parentset));
++    //assert(!obj->arity);
++    //assert(!obj->memory_arity);
++    //assert(hwloc_bitmap_isincluded(obj->nodeset, parentset));
+   } else {
+     hwloc_bitmap_t myset;
+     hwloc_bitmap_t childset;
+@@ -4925,11 +4925,11 @@
+     /* the local nodeset is an exclusive OR of memory children */
+     myset = hwloc_bitmap_alloc();
+     for_each_memory_child(child, obj) {
+-      assert(!hwloc_bitmap_intersects(myset, child->nodeset));
++      //assert(!hwloc_bitmap_intersects(myset, child->nodeset));
+       hwloc_bitmap_or(myset, myset, child->nodeset);
+     }
+     /* the local nodeset cannot intersect with parents' local nodeset */
+-    assert(!hwloc_bitmap_intersects(myset, parentset));
++    //assert(!hwloc_bitmap_intersects(myset, parentset));
+     hwloc_bitmap_or(parentset, parentset, myset);
+     hwloc_bitmap_free(myset);
+     /* parentset now contains parent+local contribution */
+@@ -4942,16 +4942,16 @@
+       /* extract this child contribution */
+       hwloc_bitmap_andnot(set, set, parentset);
+       /* save it */
+-      assert(!hwloc_bitmap_intersects(childset, set));
++      //assert(!hwloc_bitmap_intersects(childset, set));
+       hwloc_bitmap_or(childset, childset, set);
+       hwloc_bitmap_free(set);
+     }
+     /* combine child contribution into parentset */
+-    assert(!hwloc_bitmap_intersects(parentset, childset));
++    //assert(!hwloc_bitmap_intersects(parentset, childset));
+     hwloc_bitmap_or(parentset, parentset, childset);
+     hwloc_bitmap_free(childset);
+     /* now check that our nodeset is combination of parent, local and children */
+-    assert(hwloc_bitmap_isequal(obj->nodeset, parentset));
++    //assert(hwloc_bitmap_isequal(obj->nodeset, parentset));
+   }
+
+   /* check that children complete_nodesets are properly ordered, empty ones may be anywhere
+@@ -4960,7 +4960,7 @@
+   prev_first = -1; /* -1 works fine with first comparisons below */
+   for_each_memory_child(child, obj) {
+     int first = hwloc_bitmap_first(child->complete_nodeset);
+-    assert(prev_first < first);
++    //assert(prev_first < first);
+     prev_first = first;
+   }
+ }
+@@ -4978,52 +4978,52 @@
+   for(j=0; j<width; j++) {
+     obj = hwloc_get_obj_by_depth(topology, depth, j);
+     /* check that the object is corrected placed horizontally and vertically */
+-    assert(obj);
+-    assert(obj->depth == depth);
+-    assert(obj->logical_index == j);
++    //assert(obj);
++    //assert(obj->depth == depth);
++    //assert(obj->logical_index == j);
+     /* check that all objects in the level have the same type */
+     if (prev) {
+-      assert(hwloc_type_cmp(obj, prev) == HWLOC_OBJ_EQUAL);
+-      assert(prev->next_cousin == obj);
++      //assert(hwloc_type_cmp(obj, prev) == HWLOC_OBJ_EQUAL);
++      //assert(prev->next_cousin == obj);
+     }
+-    assert(obj->prev_cousin == prev);
++    //assert(obj->prev_cousin == prev);
+
+     /* check that PUs and NUMA nodes have correct cpuset/nodeset */
+     if (obj->type == HWLOC_OBJ_NUMANODE) {
+-      assert(hwloc_bitmap_weight(obj->complete_nodeset) == 1);
+-      assert(hwloc_bitmap_first(obj->complete_nodeset) == (int) obj->os_index);
++      //assert(hwloc_bitmap_weight(obj->complete_nodeset) == 1);
++      //assert(hwloc_bitmap_first(obj->complete_nodeset) == (int) obj->os_index);
+     }
+     prev = obj;
+   }
+   if (prev)
+-    assert(prev->next_cousin == NULL);
++    //assert(prev->next_cousin == NULL);
+
+   if (width) {
+     /* check first object of the level */
+     obj = hwloc_get_obj_by_depth(topology, depth, 0);
+-    assert(obj);
+-    assert(!obj->prev_cousin);
++    //assert(obj);
++    //assert(!obj->prev_cousin);
+     /* check type */
+-    assert(hwloc_get_depth_type(topology, depth) == obj->type);
+-    assert(depth == hwloc_get_type_depth(topology, obj->type)
+-	   || HWLOC_TYPE_DEPTH_MULTIPLE == hwloc_get_type_depth(topology, obj->type));
++    //assert(hwloc_get_depth_type(topology, depth) == obj->type);
++    //assert(depth == hwloc_get_type_depth(topology, obj->type)
++	//   || HWLOC_TYPE_DEPTH_MULTIPLE == hwloc_get_type_depth(topology, obj->type));
+     /* check last object of the level */
+     obj = hwloc_get_obj_by_depth(topology, depth, width-1);
+-    assert(obj);
+-    assert(!obj->next_cousin);
++    //assert(obj);
++    //assert(!obj->next_cousin);
+   }
+
+   if (depth < 0) {
+-    assert(first == hwloc_get_obj_by_depth(topology, depth, 0));
+-    assert(last == hwloc_get_obj_by_depth(topology, depth, width-1));
++    //assert(first == hwloc_get_obj_by_depth(topology, depth, 0));
++    //assert(last == hwloc_get_obj_by_depth(topology, depth, width-1));
+   } else {
+-    assert(!first);
+-    assert(!last);
++    //assert(!first);
++    //assert(!last);
+   }
+
+   /* check last+1 object of the level */
+   obj = hwloc_get_obj_by_depth(topology, depth, width);
+-  assert(!obj);
++  //assert(!obj);
+ }
+
+ /* check a whole topology structure */
+@@ -5065,51 +5065,51 @@
+   HWLOC_BUILD_ASSERT(sizeof(obj_type_priority)/sizeof(*obj_type_priority) == HWLOC_OBJ_TYPE_MAX);
+
+   /* make sure group are not entirely ignored */
+-  assert(topology->type_filter[HWLOC_OBJ_GROUP] != HWLOC_TYPE_FILTER_KEEP_ALL);
++  //assert(topology->type_filter[HWLOC_OBJ_GROUP] != HWLOC_TYPE_FILTER_KEEP_ALL);
+
+   /* make sure order arrays are coherent */
+   for(type=HWLOC_OBJ_TYPE_MIN; type<HWLOC_OBJ_TYPE_MAX; type++)
+-    assert(obj_order_type[obj_type_order[type]] == type);
++    //assert(obj_order_type[obj_type_order[type]] == type);
+   for(i=HWLOC_OBJ_TYPE_MIN; i<HWLOC_OBJ_TYPE_MAX; i++)
+-    assert(obj_type_order[obj_order_type[i]] == i);
++    //assert(obj_type_order[obj_order_type[i]] == i);
+
+   depth = hwloc_topology_get_depth(topology);
+
+-  assert(!topology->modified);
++  //assert(!topology->modified);
+
+   /* check that first level is Machine.
+    * Root object cannot be ignored. And Machine can only be merged into PU,
+    * but there must be a NUMA node below Machine, and it cannot be below PU.
+    */
+-  assert(hwloc_get_depth_type(topology, 0) == HWLOC_OBJ_MACHINE);
++  //assert(hwloc_get_depth_type(topology, 0) == HWLOC_OBJ_MACHINE);
+
+   /* check that last level is PU and that it doesn't have memory */
+-  assert(hwloc_get_depth_type(topology, depth-1) == HWLOC_OBJ_PU);
+-  assert(hwloc_get_nbobjs_by_depth(topology, depth-1) > 0);
++  //assert(hwloc_get_depth_type(topology, depth-1) == HWLOC_OBJ_PU);
++  //assert(hwloc_get_nbobjs_by_depth(topology, depth-1) > 0);
+   for(i=0; i<hwloc_get_nbobjs_by_depth(topology, depth-1); i++) {
+     obj = hwloc_get_obj_by_depth(topology, depth-1, i);
+-    assert(obj);
+-    assert(obj->type == HWLOC_OBJ_PU);
+-    assert(!obj->memory_first_child);
++    //assert(obj);
++    //assert(obj->type == HWLOC_OBJ_PU);
++    //assert(!obj->memory_first_child);
+   }
+   /* check that other levels are not PU or Machine */
+   for(j=1; j<depth-1; j++) {
+-    assert(hwloc_get_depth_type(topology, j) != HWLOC_OBJ_PU);
+-    assert(hwloc_get_depth_type(topology, j) != HWLOC_OBJ_MACHINE);
++    //assert(hwloc_get_depth_type(topology, j) != HWLOC_OBJ_PU);
++    //assert(hwloc_get_depth_type(topology, j) != HWLOC_OBJ_MACHINE);
+   }
+
+   /* check normal levels */
+   for(j=0; j<depth; j++) {
+     int d;
+     type = hwloc_get_depth_type(topology, j);
+-    assert(type != HWLOC_OBJ_NUMANODE);
+-    assert(type != HWLOC_OBJ_MEMCACHE);
+-    assert(type != HWLOC_OBJ_PCI_DEVICE);
+-    assert(type != HWLOC_OBJ_BRIDGE);
+-    assert(type != HWLOC_OBJ_OS_DEVICE);
+-    assert(type != HWLOC_OBJ_MISC);
++    //assert(type != HWLOC_OBJ_NUMANODE);
++    //assert(type != HWLOC_OBJ_MEMCACHE);
++    //assert(type != HWLOC_OBJ_PCI_DEVICE);
++    //assert(type != HWLOC_OBJ_BRIDGE);
++    //assert(type != HWLOC_OBJ_OS_DEVICE);
++    //assert(type != HWLOC_OBJ_MISC);
+     d = hwloc_get_type_depth(topology, type);
+-    assert(d == j || d == HWLOC_TYPE_DEPTH_MULTIPLE);
++    //assert(d == j || d == HWLOC_TYPE_DEPTH_MULTIPLE);
+   }
+
+   /* check type depths, even if there's no such level */
+@@ -5117,43 +5117,43 @@
+     int d;
+     d = hwloc_get_type_depth(topology, type);
+     if (type == HWLOC_OBJ_NUMANODE) {
+-      assert(d == HWLOC_TYPE_DEPTH_NUMANODE);
+-      assert(hwloc_get_depth_type(topology, d) == HWLOC_OBJ_NUMANODE);
++      //assert(d == HWLOC_TYPE_DEPTH_NUMANODE);
++      //assert(hwloc_get_depth_type(topology, d) == HWLOC_OBJ_NUMANODE);
+     } else if (type == HWLOC_OBJ_MEMCACHE) {
+-      assert(d == HWLOC_TYPE_DEPTH_MEMCACHE);
+-      assert(hwloc_get_depth_type(topology, d) == HWLOC_OBJ_MEMCACHE);
++      //assert(d == HWLOC_TYPE_DEPTH_MEMCACHE);
++      //assert(hwloc_get_depth_type(topology, d) == HWLOC_OBJ_MEMCACHE);
+     } else if (type == HWLOC_OBJ_BRIDGE) {
+-      assert(d == HWLOC_TYPE_DEPTH_BRIDGE);
+-      assert(hwloc_get_depth_type(topology, d) == HWLOC_OBJ_BRIDGE);
++      //assert(d == HWLOC_TYPE_DEPTH_BRIDGE);
++      //assert(hwloc_get_depth_type(topology, d) == HWLOC_OBJ_BRIDGE);
+     } else if (type == HWLOC_OBJ_PCI_DEVICE) {
+-      assert(d == HWLOC_TYPE_DEPTH_PCI_DEVICE);
+-      assert(hwloc_get_depth_type(topology, d) == HWLOC_OBJ_PCI_DEVICE);
++      //assert(d == HWLOC_TYPE_DEPTH_PCI_DEVICE);
++      //assert(hwloc_get_depth_type(topology, d) == HWLOC_OBJ_PCI_DEVICE);
+     } else if (type == HWLOC_OBJ_OS_DEVICE) {
+-      assert(d == HWLOC_TYPE_DEPTH_OS_DEVICE);
+-      assert(hwloc_get_depth_type(topology, d) == HWLOC_OBJ_OS_DEVICE);
++      //assert(d == HWLOC_TYPE_DEPTH_OS_DEVICE);
++      //assert(hwloc_get_depth_type(topology, d) == HWLOC_OBJ_OS_DEVICE);
+     } else if (type == HWLOC_OBJ_MISC) {
+-      assert(d == HWLOC_TYPE_DEPTH_MISC);
+-      assert(hwloc_get_depth_type(topology, d) == HWLOC_OBJ_MISC);
++      //assert(d == HWLOC_TYPE_DEPTH_MISC);
++      //assert(hwloc_get_depth_type(topology, d) == HWLOC_OBJ_MISC);
+     } else {
+-      assert(d >=0 || d == HWLOC_TYPE_DEPTH_UNKNOWN || d == HWLOC_TYPE_DEPTH_MULTIPLE);
++      //assert(d >=0 || d == HWLOC_TYPE_DEPTH_UNKNOWN || d == HWLOC_TYPE_DEPTH_MULTIPLE);
+     }
+   }
+
+   /* top-level specific checks */
+-  assert(hwloc_get_nbobjs_by_depth(topology, 0) == 1);
++  //assert(hwloc_get_nbobjs_by_depth(topology, 0) == 1);
+   obj = hwloc_get_root_obj(topology);
+-  assert(obj);
+-  assert(!obj->parent);
+-  assert(obj->cpuset);
+-  assert(!obj->depth);
++  //assert(obj);
++  //assert(!obj->parent);
++  //assert(obj->cpuset);
++  //assert(!obj->depth);
+
+   /* check that allowed sets are larger than the main sets */
+   if (topology->flags & HWLOC_TOPOLOGY_FLAG_INCLUDE_DISALLOWED) {
+-    assert(hwloc_bitmap_isincluded(topology->allowed_cpuset, obj->cpuset));
+-    assert(hwloc_bitmap_isincluded(topology->allowed_nodeset, obj->nodeset));
++    //assert(hwloc_bitmap_isincluded(topology->allowed_cpuset, obj->cpuset));
++    //assert(hwloc_bitmap_isincluded(topology->allowed_nodeset, obj->nodeset));
+   } else {
+-    assert(hwloc_bitmap_isequal(topology->allowed_cpuset, obj->cpuset));
+-    assert(hwloc_bitmap_isequal(topology->allowed_nodeset, obj->nodeset));
++    //assert(hwloc_bitmap_isequal(topology->allowed_cpuset, obj->cpuset));
++    //assert(hwloc_bitmap_isequal(topology->allowed_nodeset, obj->nodeset));
+   }
+
+   /* check each level */

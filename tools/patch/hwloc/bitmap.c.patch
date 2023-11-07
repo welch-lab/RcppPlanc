@@ -1,0 +1,39 @@
+Index: hwloc/bitmap.c
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/hwloc/bitmap.c b/hwloc/bitmap.c
+--- a/hwloc/bitmap.c	(revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
++++ b/hwloc/bitmap.c	(date 1699069055166)
+@@ -16,7 +16,7 @@
+
+ #include <stdarg.h>
+ #include <stdio.h>
+-#include <assert.h>
++//#include <assert.h>
+ #include <errno.h>
+ #include <ctype.h>
+
+@@ -56,9 +56,9 @@
+ /* overzealous check in debug-mode, not as powerful as valgrind but still useful */
+ #ifdef HWLOC_DEBUG
+ #define HWLOC__BITMAP_CHECK(set) do {				\
+-  assert((set)->magic == HWLOC_BITMAP_MAGIC);			\
+-  assert((set)->ulongs_count >= 1);				\
+-  assert((set)->ulongs_allocated >= (set)->ulongs_count);	\
++  //assert((set)->magic == HWLOC_BITMAP_MAGIC);			\
++  //assert((set)->ulongs_count >= 1);				\
++  //assert((set)->ulongs_allocated >= (set)->ulongs_count);	\
+ } while (0)
+ #else
+ #define HWLOC__BITMAP_CHECK(set)
+@@ -392,7 +392,7 @@
+     char *next;
+     val = strtoul(current, &next, 16);
+
+-    assert(count > 0);
++    //assert(count > 0);
+     count--;
+
+     accum |= (val << ((count * HWLOC_BITMAP_SUBSTRING_SIZE) % HWLOC_BITS_PER_LONG));

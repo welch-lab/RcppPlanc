@@ -1,0 +1,17 @@
+Index: hwloc/topology-hpux.c
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/hwloc/topology-hpux.c b/hwloc/topology-hpux.c
+--- a/hwloc/topology-hpux.c	(revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
++++ b/hwloc/topology-hpux.c	(date 1699071121245)
+@@ -190,7 +190,7 @@
+   hwloc_obj_t *nodes, obj;
+   int i, nbnodes = 0;
+
+-  assert(dstatus->phase == HWLOC_DISC_PHASE_CPU);
++  //assert(dstatus->phase == HWLOC_DISC_PHASE_CPU);
+
+   if (topology->levels[0][0]->cpuset)
+     /* somebody discovered things */

@@ -1,0 +1,17 @@
+Index: hwloc/topology-levelzero.c
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/hwloc/topology-levelzero.c b/hwloc/topology-levelzero.c
+--- a/hwloc/topology-levelzero.c	(revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
++++ b/hwloc/topology-levelzero.c	(date 1699071121218)
+@@ -611,7 +611,7 @@
+
+   hwloc__levelzero_ports_init(&hports);
+
+-  assert(dstatus->phase == HWLOC_DISC_PHASE_IO);
++  //assert(dstatus->phase == HWLOC_DISC_PHASE_IO);
+
+   hwloc_topology_get_type_filter(topology, HWLOC_OBJ_OS_DEVICE, &filter);
+   if (filter == HWLOC_TYPE_FILTER_KEEP_NONE)

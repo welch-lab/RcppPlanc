@@ -1,0 +1,44 @@
+Index: hwloc/topology-nvml.c
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/hwloc/topology-nvml.c b/hwloc/topology-nvml.c
+--- a/hwloc/topology-nvml.c	(revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
++++ b/hwloc/topology-nvml.c	(date 1699071311368)
+@@ -169,7 +169,7 @@
+   int found_nvlinks = 0;
+ #endif
+
+-  assert(dstatus->phase == HWLOC_DISC_PHASE_IO);
++  //assert(dstatus->phase == HWLOC_DISC_PHASE_IO);
+
+   hwloc_topology_get_type_filter(topology, HWLOC_OBJ_OS_DEVICE, &filter);
+   if (filter == HWLOC_TYPE_FILTER_KEEP_NONE)
+@@ -215,7 +215,7 @@
+     char buffer[64];
+
+     ret = nvmlDeviceGetHandleByIndex(i, &device);
+-    assert(ret == NVML_SUCCESS);
++    //assert(ret == NVML_SUCCESS);
+
+     osdev = hwloc_alloc_setup_object(topology, HWLOC_OBJ_OS_DEVICE, HWLOC_UNKNOWN_INDEX);
+     snprintf(buffer, sizeof(buffer), "nvml%u", i);
+@@ -284,7 +284,7 @@
+     nvmlPciInfo_t pci;
+
+     ret = nvmlDeviceGetHandleByIndex(i, &device);
+-    assert(ret == NVML_SUCCESS);
++    //assert(ret == NVML_SUCCESS);
+
+     hwloc_debug("looking at NVLinks for NVML GPU #%u...\n", i);
+     for(j=0; j<NVML_NVLINK_MAX_LINKS; j++) {
+@@ -331,7 +331,7 @@
+     for(i=0; i<nb; i++) {
+       nvmlDevice_t device;
+       ret = nvmlDeviceGetHandleByIndex(i, &device);
+-      assert(ret == NVML_SUCCESS);
++      //assert(ret == NVML_SUCCESS);
+
+       for(j=0; j<NVML_NVLINK_MAX_LINKS; j++) {
+         unsigned version;

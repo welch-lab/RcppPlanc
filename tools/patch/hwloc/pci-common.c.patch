@@ -1,0 +1,54 @@
+Index: hwloc/pci-common.c
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/hwloc/pci-common.c b/hwloc/pci-common.c
+--- a/hwloc/pci-common.c	(revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
++++ b/hwloc/pci-common.c	(date 1699070527191)
+@@ -217,8 +217,8 @@
+     if (pcidev->attr->bridge.downstream_type == HWLOC_OBJ_BRIDGE_PCI)
+       hwloc_debug(" to %04x:[%02x:%02x]\n",
+                   pcidev->attr->bridge.downstream.pci.domain, pcidev->attr->bridge.downstream.pci.secondary_bus, pcidev->attr->bridge.downstream.pci.subordinate_bus);
+-    else
+-      assert(0);
++    //else
++    //  assert(0);
+   } else
+     hwloc_debug("%s Device [%04x:%04x (%04x:%04x) rev=%02x class=%04x]\n", busid,
+ 		pcidev->attr->pcidev.vendor_id, pcidev->attr->pcidev.device_id,
+@@ -251,10 +251,10 @@
+ hwloc_pci_compare_busids(struct hwloc_obj *a, struct hwloc_obj *b)
+ {
+ #ifdef HWLOC_DEBUG
+-  if (a->type == HWLOC_OBJ_BRIDGE)
+-    assert(a->attr->bridge.upstream_type == HWLOC_OBJ_BRIDGE_PCI);
+-  if (b->type == HWLOC_OBJ_BRIDGE)
+-    assert(b->attr->bridge.upstream_type == HWLOC_OBJ_BRIDGE_PCI);
++  //if (a->type == HWLOC_OBJ_BRIDGE)
++  //  assert(a->attr->bridge.upstream_type == HWLOC_OBJ_BRIDGE_PCI);
++  //if (b->type == HWLOC_OBJ_BRIDGE)
++  //  assert(b->attr->bridge.upstream_type == HWLOC_OBJ_BRIDGE_PCI);
+ #endif
+
+   if (a->attr->pcidev.domain < b->attr->pcidev.domain)
+@@ -653,8 +653,8 @@
+     else
+       pciobj = obj;
+     /* now we have a pci device or a pci bridge */
+-    assert(pciobj->type == HWLOC_OBJ_PCI_DEVICE
+-	   || (pciobj->type == HWLOC_OBJ_BRIDGE && pciobj->attr->bridge.upstream_type == HWLOC_OBJ_BRIDGE_PCI));
++    //assert(pciobj->type == HWLOC_OBJ_PCI_DEVICE
++	//   || (pciobj->type == HWLOC_OBJ_BRIDGE && pciobj->attr->bridge.upstream_type == HWLOC_OBJ_BRIDGE_PCI));
+
+     if (obj->type == HWLOC_OBJ_BRIDGE && obj->attr->bridge.downstream_type == HWLOC_OBJ_BRIDGE_PCI) {
+       domain = obj->attr->bridge.downstream.pci.domain;
+@@ -807,7 +807,7 @@
+   while (loc) {
+     if (loc->domain == domain && loc->bus_min <= bus && loc->bus_max >= bus) {
+       parent = loc->parent;
+-      assert(parent);
++      //assert(parent);
+       hwloc_debug("  found pci locality for %04x:[%02x:%02x]\n",
+ 		  loc->domain, loc->bus_min, loc->bus_max);
+       break;

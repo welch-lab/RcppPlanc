@@ -1,0 +1,17 @@
+Index: hwloc/topology-bgq.c
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/hwloc/topology-bgq.c b/hwloc/topology-bgq.c
+--- a/hwloc/topology-bgq.c	(revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
++++ b/hwloc/topology-bgq.c	(date 1699071121228)
+@@ -57,7 +57,7 @@
+   hwloc_obj_t obj;
+   unsigned i;
+
+-  assert(dstatus->phase == HWLOC_DISC_PHASE_GLOBAL);
++  //assert(dstatus->phase == HWLOC_DISC_PHASE_GLOBAL);
+
+   if (topology->levels[0][0]->cpuset)
+     /* somebody discovered things */

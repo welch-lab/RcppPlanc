@@ -1,0 +1,48 @@
+Index: hwloc/cpukinds.c
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/hwloc/cpukinds.c b/hwloc/cpukinds.c
+--- a/hwloc/cpukinds.c	(revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
++++ b/hwloc/cpukinds.c	(date 1699070381618)
+@@ -61,7 +61,7 @@
+     if (hwloc__tma_dup_infos(tma,
+                              &kinds[i].infos, &kinds[i].nr_infos,
+                              old->cpukinds[i].infos, old->cpukinds[i].nr_infos) < 0) {
+-      assert(!tma || !tma->dontfree); /* this tma cannot fail to allocate */
++      //assert(!tma || !tma->dontfree); /* this tma cannot fail to allocate */
+       hwloc_bitmap_free(kinds[i].cpuset);
+       new->nr_cpukinds = i;
+       goto failed;
+@@ -203,8 +203,8 @@
+       /* clear cpuset PUs that were taken care of */
+       hwloc_bitmap_andnot(cpuset, cpuset, kinds[i].cpuset);
+
+-    } else {
+-      assert(res == HWLOC_BITMAP_DIFFERENT);
++    //} else {
++      //assert(res == HWLOC_BITMAP_DIFFERENT);
+       /* nothing to do */
+     }
+
+@@ -439,7 +439,7 @@
+       kind->ranking_value = summary->summaries[i].base_freq;
+     }
+
+-  } else assert(0);
++  }// else assert(0);
+
+   return hwloc__cpukinds_check_duplicate_rankings(topology);
+ }
+@@ -570,8 +570,8 @@
+     hwloc_debug("cpukind #%u got ranking value %llu\n", i, (unsigned long long) topology->cpukinds[i].ranking_value);
+   hwloc__cpukinds_finalize_ranking(topology);
+ #ifdef HWLOC_DEBUG
+-  for(i=0; i<topology->nr_cpukinds; i++)
+-    assert(topology->cpukinds[i].efficiency == (int) i);
++  //for(i=0; i<topology->nr_cpukinds; i++)
++    //assert(topology->cpukinds[i].efficiency == (int) i);
+ #endif
+   hwloc_debug("\n");
+   return 0;

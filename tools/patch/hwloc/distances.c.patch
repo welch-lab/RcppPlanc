@@ -1,0 +1,44 @@
+Index: hwloc/distances.c
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/hwloc/distances.c b/hwloc/distances.c
+--- a/hwloc/distances.c	(revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
++++ b/hwloc/distances.c	(date 1699069836799)
+@@ -135,7 +135,7 @@
+   if (olddist->name) {
+     newdist->name = hwloc_tma_strdup(tma, olddist->name);
+     if (!newdist->name) {
+-      assert(!tma || !tma->dontfree); /* this tma cannot fail to allocate */
++      //assert(!tma || !tma->dontfree); /* this tma cannot fail to allocate */
+       hwloc_internal_distances_free(newdist);
+       return -1;
+     }
+@@ -146,7 +146,7 @@
+   if (olddist->different_types) {
+     newdist->different_types = hwloc_tma_malloc(tma, nbobjs * sizeof(*newdist->different_types));
+     if (!newdist->different_types) {
+-      assert(!tma || !tma->dontfree); /* this tma cannot fail to allocate */
++      //assert(!tma || !tma->dontfree); /* this tma cannot fail to allocate */
+       hwloc_internal_distances_free(newdist);
+       return -1;
+     }
+@@ -163,7 +163,7 @@
+   newdist->iflags = olddist->iflags & ~HWLOC_INTERNAL_DIST_FLAG_OBJS_VALID; /* must be revalidated after dup() */
+   newdist->values = hwloc_tma_malloc(tma, nbobjs*nbobjs * sizeof(*newdist->values));
+   if (!newdist->indexes || !newdist->objs || !newdist->values) {
+-    assert(!tma || !tma->dontfree); /* this tma cannot fail to allocate */
++    //assert(!tma || !tma->dontfree); /* this tma cannot fail to allocate */
+     hwloc_internal_distances_free(newdist);
+     return -1;
+   }
+@@ -825,7 +825,7 @@
+     next = dist->next;
+
+     if (hwloc_internal_distances_refresh_one(topology, dist) < 0) {
+-      assert(!topology->tma || !topology->tma->dontfree); /* this tma cannot fail to allocate */
++      //assert(!topology->tma || !topology->tma->dontfree); /* this tma cannot fail to allocate */
+       if (dist->prev)
+ 	dist->prev->next = next;
+       else

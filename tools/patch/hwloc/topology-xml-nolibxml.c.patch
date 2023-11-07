@@ -1,0 +1,44 @@
+Index: hwloc/topology-xml-nolibxml.c
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/hwloc/topology-xml-nolibxml.c b/hwloc/topology-xml-nolibxml.c
+--- a/hwloc/topology-xml-nolibxml.c	(revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
++++ b/hwloc/topology-xml-nolibxml.c	(date 1699071121189)
+@@ -15,7 +15,7 @@
+ #include "private/debug.h"
+
+ #include <string.h>
+-#include <assert.h>
++//#include <assert.h>
+ #include <sys/types.h>
+ #include <sys/stat.h>
+ #ifdef HAVE_UNISTD_H
+@@ -594,7 +594,7 @@
+   hwloc__nolibxml_export_state_data_t ndata = (void *) state->data;
+   int res;
+
+-  assert(!npdata->has_content);
++  //assert(!npdata->has_content);
+   if (!npdata->nr_children) {
+     res = hwloc_snprintf(npdata->buffer, npdata->remaining, ">\n");
+     hwloc__nolibxml_export_update_buffer(npdata, res);
+@@ -637,7 +637,7 @@
+   hwloc__nolibxml_export_state_data_t npdata = (void *) state->parent->data;
+   int res;
+
+-  assert (!(ndata->has_content && ndata->nr_children));
++  //assert (!(ndata->has_content && ndata->nr_children));
+   if (ndata->has_content) {
+     res = hwloc_snprintf(ndata->buffer, ndata->remaining, "</%s>\n", name);
+   } else if (ndata->nr_children) {
+@@ -658,7 +658,7 @@
+   hwloc__nolibxml_export_state_data_t ndata = (void *) state->data;
+   int res;
+
+-  assert(!ndata->nr_children);
++  //assert(!ndata->nr_children);
+   if (!ndata->has_content) {
+     res = hwloc_snprintf(ndata->buffer, ndata->remaining, ">");
+     hwloc__nolibxml_export_update_buffer(ndata, res);

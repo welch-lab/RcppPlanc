@@ -1,0 +1,25 @@
+Index: hwloc/topology-pci.c
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/hwloc/topology-pci.c b/hwloc/topology-pci.c
+--- a/hwloc/topology-pci.c	(revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
++++ b/hwloc/topology-pci.c	(date 1699071311378)
+@@ -20,7 +20,7 @@
+ #include <stdio.h>
+ #include <fcntl.h>
+ #include <string.h>
+-#include <assert.h>
++//#include <assert.h>
+ #include <stdarg.h>
+ #ifdef HWLOC_LINUX_SYS
+ #include <dirent.h>
+@@ -162,7 +162,7 @@
+     hwloc_pci_get_names(topology);
+     return 0;
+   }
+-  assert(dstatus->phase == HWLOC_DISC_PHASE_PCI);
++  //assert(dstatus->phase == HWLOC_DISC_PHASE_PCI);
+
+   hwloc_debug("%s", "\nScanning PCI buses...\n");

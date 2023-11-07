@@ -1,0 +1,80 @@
+Index: hwloc/topology-linux.c
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/hwloc/topology-linux.c b/hwloc/topology-linux.c
+--- a/hwloc/topology-linux.c	(revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
++++ b/hwloc/topology-linux.c	(date 1699071121253)
+@@ -20,7 +20,7 @@
+ #include <stdio.h>
+ #include <fcntl.h>
+ #include <errno.h>
+-#include <assert.h>
++//#include <assert.h>
+ #ifdef HAVE_DIRENT_H
+ #include <dirent.h>
+ #endif
+@@ -1431,7 +1431,7 @@
+      size_t setsize;
+
+      last = hwloc_bitmap_last(topology->levels[0][0]->complete_cpuset);
+-     assert (last != -1);
++     //assert (last != -1);
+
+      setsize = CPU_ALLOC_SIZE(last+1);
+      plinux_set = CPU_ALLOC(last+1);
+@@ -1722,7 +1722,7 @@
+
+ #ifdef HWLOC_DEBUG
+   /* max_os_index comes from hwloc_linux_find_kernel_max_numnodes() so it's a multiple of HWLOC_BITS_PER_LONG */
+-  assert(!(max_os_index%HWLOC_BITS_PER_LONG));
++  //assert(!(max_os_index%HWLOC_BITS_PER_LONG));
+ #endif
+
+   hwloc_bitmap_zero(nodeset);
+@@ -3835,7 +3835,7 @@
+   nodeset = hwloc__alloc_read_path_as_cpulist("/sys/devices/system/node/online", data->root_fd);
+   if (nodeset) {
+     int _nbnodes = hwloc_bitmap_weight(nodeset);
+-    assert(_nbnodes >= 1);
++    //assert(_nbnodes >= 1);
+     nbnodes = (unsigned)_nbnodes;
+     hwloc_debug_bitmap("possible NUMA nodes %s\n", nodeset);
+     goto found;
+@@ -3864,7 +3864,7 @@
+   }
+   closedir(dir);
+
+-  assert(nbnodes >= 1); /* linux cannot have a "node/" subdirectory without at least one "node%d" */
++  //assert(nbnodes >= 1); /* linux cannot have a "node/" subdirectory without at least one "node%d" */
+
+   /* we don't know if sysfs returns nodes in order, we can't merge above and below loops */
+
+@@ -3942,7 +3942,7 @@
+   for(node=hwloc_get_next_obj_by_type(topology, HWLOC_OBJ_NUMANODE, NULL);
+       node != NULL;
+       node = hwloc_get_next_obj_by_type(topology, HWLOC_OBJ_NUMANODE, node)) {
+-    assert(node); /* list_sysfsnode() ensured that sysfs nodes and existing nodes match */
++    //assert(node); /* list_sysfsnode() ensured that sysfs nodes and existing nodes match */
+
+     /* hwloc_parse_nodes_distances() requires nodes in physical index order,
+      * and inserting distances requires nodes[] and indexes[] in same order.
+@@ -4210,7 +4210,7 @@
+ 	  cur_obj = tree;
+ 	  cur_type = cur_obj->type;
+ 	  tree = cur_obj->memory_first_child;
+-	  assert(!cur_obj->next_sibling);
++	  //assert(!cur_obj->next_sibling);
+ 	  res_obj = hwloc__insert_object_by_cpuset(topology, NULL, cur_obj, "linux:sysfs:numa");
+ 	  if (res_obj != cur_obj && cur_type == HWLOC_OBJ_NUMANODE) {
+ 	    /* This NUMA node got merged somehow, could be a buggy BIOS reporting wrong NUMA node cpuset.
+@@ -4362,7 +4362,7 @@
+     if (cpukinds->sets[first].value == value)
+       break;
+   /* it must exist since we're downgrading some values to an existing one */
+-  assert(first < cpukinds->nr_sets);
++  //assert(first < cpukinds->nr_sets);
+
+   /* merge affected sets with the existing one */
+   for(i=0; i<cpukinds->nr_sets; i++) {

@@ -1,0 +1,18 @@
+
+Index: hwloc/topology-opencl.c
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/hwloc/topology-opencl.c b/hwloc/topology-opencl.c
+--- a/hwloc/topology-opencl.c	(revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
++++ b/hwloc/topology-opencl.c	(date 1699071311382)
+@@ -53,7 +53,7 @@
+   cl_int clret;
+   unsigned j;
+
+-  assert(dstatus->phase == HWLOC_DISC_PHASE_IO);
++  //assert(dstatus->phase == HWLOC_DISC_PHASE_IO);
+
+   hwloc_topology_get_type_filter(topology, HWLOC_OBJ_OS_DEVICE, &filter);
+   if (filter == HWLOC_TYPE_FILTER_KEEP_NONE)

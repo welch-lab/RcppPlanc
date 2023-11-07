@@ -1,0 +1,35 @@
+Index: include/hwloc/helper.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/include/hwloc/helper.h b/include/hwloc/helper.h
+--- a/include/hwloc/helper.h	(revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
++++ b/include/hwloc/helper.h	(date 1699071508955)
+@@ -993,7 +993,7 @@
+ 	 * (the first chunk cannot be empty)
+ 	 * so that this root doesn't get ignored.
+ 	 */
+-	assert(given);
++	//assert(given);
+ 	hwloc_bitmap_or(cpusetp[-1], cpusetp[-1], cpuset);
+       }
+     } else {
+@@ -1146,7 +1146,7 @@
+ {
+ 	int depth = hwloc_get_type_depth(topology, HWLOC_OBJ_NUMANODE);
+ 	hwloc_obj_t obj = NULL;
+-	assert(depth != HWLOC_TYPE_DEPTH_UNKNOWN);
++	//assert(depth != HWLOC_TYPE_DEPTH_UNKNOWN);
+ 	hwloc_bitmap_zero(nodeset);
+ 	while ((obj = hwloc_get_next_obj_covering_cpuset_by_depth(topology, _cpuset, depth, obj)) != NULL)
+ 		if (hwloc_bitmap_set(nodeset, obj->os_index) < 0)
+@@ -1173,7 +1173,7 @@
+ {
+ 	int depth = hwloc_get_type_depth(topology, HWLOC_OBJ_NUMANODE);
+ 	hwloc_obj_t obj = NULL;
+-	assert(depth != HWLOC_TYPE_DEPTH_UNKNOWN);
++	//assert(depth != HWLOC_TYPE_DEPTH_UNKNOWN);
+ 	hwloc_bitmap_zero(_cpuset);
+ 	while ((obj = hwloc_get_next_obj_by_depth(topology, depth, obj)) != NULL) {
+ 		if (hwloc_bitmap_isset(nodeset, obj->os_index))

@@ -1,0 +1,259 @@
+Subject: [PATCH] remove_assert_hwloc
+---
+Index: hwloc/topology-xml.c
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/hwloc/topology-xml.c b/hwloc/topology-xml.c
+--- a/hwloc/topology-xml.c	(revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
++++ b/hwloc/topology-xml.c	(date 1699375502729)
+@@ -459,7 +459,7 @@
+ 	    memory->page_types = malloc(sizeof(*memory->page_types));
+ 	    memory->page_types_len = 1;
+ 	  }
+-	  assert(memory->page_types);
++	  //assert(memory->page_types);
+ 	  memory->page_types[0].size = lvalue << 10;
+ 	} else if (hwloc__xml_verbose()) {
+ 	  fprintf(stderr, "%s: ignoring huge_page_size_kB attribute for non-NUMAnode non-root object\n",
+@@ -474,7 +474,7 @@
+ 	    memory->page_types = malloc(sizeof(*memory->page_types));
+ 	    memory->page_types_len = 1;
+ 	  }
+-	  assert(memory->page_types);
++	  //assert(memory->page_types);
+ 	  memory->page_types[0].count = lvalue;
+ 	} else if (hwloc__xml_verbose()) {
+ 	  fprintf(stderr, "%s: ignoring huge_page_free attribute for non-NUMAnode non-root object\n",
+@@ -670,7 +670,7 @@
+ 
+     if (nbobjs < 2) {
+       /* distances with a single object are useless, even if the XML isn't invalid */
+-      assert(nbobjs == 1);
++      //assert(nbobjs == 1);
+       if (hwloc__xml_verbose())
+ 	fprintf(stderr, "%s: ignoring invalid distance matrix with only 1 object\n",
+ 		state->global->msgprefix);
+@@ -755,7 +755,7 @@
+ 	char *decoded_buffer = malloc(length+1);
+ 	if (!decoded_buffer)
+ 	  return -1;
+-	assert(encoded_buffer[encoded_length] == 0);
++	//assert(encoded_buffer[encoded_length] == 0);
+ 	ret = hwloc_decode_from_base64(encoded_buffer, decoded_buffer, length+1);
+ 	if (ret != (int) length) {
+ 	  free(decoded_buffer);
+@@ -995,7 +995,7 @@
+     /* attach pre-v2.0 children of NUMA nodes to normal parent */
+     if (parent && parent->type == HWLOC_OBJ_NUMANODE) {
+       parent = parent->parent;
+-      assert(parent);
++      //assert(parent);
+     }
+ 
+     /* insert a group above pre-v2.0 NUMA nodes if needed */
+@@ -1051,7 +1051,7 @@
+ 
+     /* fixup attribute-less caches imported from pre-v2.0 XMLs */
+     if (attribute_less_cache) {
+-      assert(obj->type == _HWLOC_OBJ_CACHE_OLD);
++      //(obj->type == _HWLOC_OBJ_CACHE_OLD);
+       obj->type = hwloc_cache_type_by_depth_type(obj->attr->cache.depth, obj->attr->cache.type);
+     }
+ 
+@@ -2078,11 +2078,11 @@
+   hwloc_localeswitch_declare;
+   int ret;
+ 
+-  assert(dstatus->phase == HWLOC_DISC_PHASE_GLOBAL);
++  //assert(dstatus->phase == HWLOC_DISC_PHASE_GLOBAL);
+ 
+   state.global = data;
+ 
+-  assert(!root->cpuset);
++  //assert(!root->cpuset);
+ 
+   hwloc_localeswitch_init();
+ 
+@@ -2111,7 +2111,7 @@
+   if (ret < 0)
+     goto failed;
+   state.global->close_child(&childstate);
+-  assert(!gotignored);
++  //assert(!gotignored);
+ 
+   /* the root may have changed if we had to reinsert a Machine */
+   root = topology->levels[0][0];
+@@ -2193,8 +2193,8 @@
+           && !(topology->flags & HWLOC_TOPOLOGY_FLAG_NO_DISTANCES)) {
+ 	hwloc_obj_t *objs = malloc(nbobjs*sizeof(hwloc_obj_t));
+ 	uint64_t *values = malloc(nbobjs*nbobjs*sizeof(*values));
+-        assert(data->nbnumanodes > 0); /* v1dist->nbobjs is >0 after import */
+-        assert(data->first_numanode);
++        //assert(data->nbnumanodes > 0); /* v1dist->nbobjs is >0 after import */
++        //assert(data->first_numanode);
+ 	if (objs && values) {
+ 	  hwloc_obj_t node;
+ 	  unsigned i;
+@@ -2314,7 +2314,7 @@
+   fakedata.msgprefix = strdup(local_basename);
+ 
+   hwloc_components_init();
+-  assert(hwloc_nolibxml_callbacks);
++  //assert(hwloc_nolibxml_callbacks);
+ 
+   hwloc_localeswitch_init();
+ 
+@@ -2353,7 +2353,7 @@
+   fakedata.msgprefix = strdup("xmldiffbuffer");
+ 
+   hwloc_components_init();
+-  assert(hwloc_nolibxml_callbacks);
++  //assert(hwloc_nolibxml_callbacks);
+ 
+   hwloc_localeswitch_init();
+ 
+@@ -2787,7 +2787,7 @@
+  find_first:
+   while (cur->type != HWLOC_OBJ_NUMANODE)
+     cur = cur->memory_first_child;
+-  assert(cur);
++  //assert(cur);
+   return cur;
+ }
+ 
+@@ -2805,14 +2805,14 @@
+   /* we're sure there's at least one numa node */
+ 
+   nr = hwloc_bitmap_weight(obj->nodeset);
+-  assert(nr > 0);
++  //assert(nr > 0);
+   /* these are local nodes, but some of them may be attached above instead of here */
+ 
+   nodes = calloc(nr, sizeof(*nodes));
+   if (!nodes) {
+     /* only return the first node */
+     cur = hwloc__xml_v1export_object_next_numanode(obj, NULL);
+-    assert(cur);
++    //assert(cur);
+     *first_p = cur;
+     *nodes_p = NULL;
+     return 1;
+@@ -3114,8 +3114,8 @@
+         free(setstring);
+         break;
+       }
+-      default:
+-        assert(0);
++      //default:
++      //  assert(0);
+       }
+       vstate.end_object(&vstate, "memattr_value");
+     }
+@@ -3296,8 +3296,8 @@
+       }
+ 
+       break;
+-    default:
+-      assert(0);
++    //default:
++    //  assert(0);
+     }
+     state.end_object(&state, "diff");
+ 
+@@ -3322,7 +3322,7 @@
+     return -1;
+   }
+ 
+-  assert(hwloc_nolibxml_callbacks); /* the core called components_init() for the topology */
++  //assert(hwloc_nolibxml_callbacks); /* the core called components_init() for the topology */
+ 
+   if (flags & ~HWLOC_TOPOLOGY_EXPORT_XML_FLAG_V1) {
+     errno = EINVAL;
+@@ -3370,7 +3370,7 @@
+     return -1;
+   }
+ 
+-  assert(hwloc_nolibxml_callbacks); /* the core called components_init() for the topology */
++  //assert(hwloc_nolibxml_callbacks); /* the core called components_init() for the topology */
+ 
+   if (flags & ~HWLOC_TOPOLOGY_EXPORT_XML_FLAG_V1) {
+     errno = EINVAL;
+@@ -3425,7 +3425,7 @@
+   }
+ 
+   hwloc_components_init();
+-  assert(hwloc_nolibxml_callbacks);
++  //assert(hwloc_nolibxml_callbacks);
+ 
+   hwloc_localeswitch_init();
+ 
+@@ -3466,7 +3466,7 @@
+   }
+ 
+   hwloc_components_init();
+-  assert(hwloc_nolibxml_callbacks);
++  //assert(hwloc_nolibxml_callbacks);
+ 
+   hwloc_localeswitch_init();
+ 
+@@ -3491,7 +3491,7 @@
+ {
+   int force_nolibxml;
+ 
+-  assert(hwloc_nolibxml_callbacks); /* the core called components_init() for the topology */
++  //assert(hwloc_nolibxml_callbacks); /* the core called components_init() for the topology */
+ 
+   force_nolibxml = hwloc_nolibxml_export();
+   if (!hwloc_libxml_callbacks || (hwloc_nolibxml_callbacks && force_nolibxml))
+@@ -3547,19 +3547,19 @@
+     int encoded;
+     size_t encoded_length;
+     const char *realname;
+-    assert(name);
++    //assert(name);
+     if (!strncmp(name, "base64", 6)) {
+       encoded = 1;
+       encoded_length = BASE64_ENCODED_LENGTH(length);
+     } else {
+-      assert(!strncmp(name, "normal", 6));
++      //assert(!strncmp(name, "normal", 6));
+       encoded = 0;
+       encoded_length = length;
+     }
+     if (name[6] == ':')
+       realname = name+7;
+     else {
+-      assert(!strcmp(name+6, "-anon"));
++      //assert(!strcmp(name+6, "-anon"));
+       realname = NULL;
+     }
+     hwloc__export_obj_userdata(state, encoded, realname, length, buffer, encoded_length);
+@@ -3585,7 +3585,7 @@
+     return -1;
+   }
+ 
+-  assert(!topology->userdata_not_decoded);
++  //assert(!topology->userdata_not_decoded);
+ 
+   if (name && hwloc__xml_export_check_buffer(name, strlen(name)) < 0) {
+     errno = EINVAL;
+@@ -3600,7 +3600,7 @@
+   }
+ 
+   ret = hwloc_encode_to_base64(buffer, length, encoded_buffer, encoded_length+1);
+-  assert(ret == (int) encoded_length);
++  //assert(ret == (int) encoded_length);
+ 
+   hwloc__export_obj_userdata(state, 1, name, length, encoded_buffer, encoded_length);
+ 
+@@ -3646,7 +3646,7 @@
+   const char *local_basename;
+   int err;
+ 
+-  assert(hwloc_nolibxml_callbacks); /* the core called components_init() for the component's topology */
++  //assert(hwloc_nolibxml_callbacks); /* the core called components_init() for the component's topology */
+ 
+   if (!xmlpath && !xmlbuffer) {
+     env = getenv("HWLOC_XMLFILE");

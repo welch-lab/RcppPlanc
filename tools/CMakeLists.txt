@@ -76,18 +76,12 @@ target_include_directories(RcppPlanc PRIVATE "${R_RCPPPROGRESS}/include")
 else()
 message(FATAL_ERROR "missing RcppProgress")
 endif()
-
+add_custom_target(hwloc_patch DEPENDS $<TARGET_PROPERTY:hwloc_patch,PATCH_GENERATED>)
+define_property(TARGET
+        PROPERTY "PATCH_GENERATED")
+define_property(TARGET
+        PROPERTY "BUILD_REQUIRES")
 add_library(hw_detect OBJECT "${PROJECT_SOURCE_DIR}/../src/common/hw_detect.c")
-
-if(WIN32)
-    CPMAddPackage(NAME hwloc
-        URL https://download.open-mpi.org/release/hwloc/v2.9/hwloc-2.9.3.tar.gz
-        URL_HASH SHA256=5985db3a30bbe51234c2cd26ebe4ae9b4c3352ab788b1a464c40c0483bf4de59
-        VERSION 2.9.3
-        SOURCE_SUBDIR contrib/windows-cmake
-        OPTIONS "HWLOC_ENABLE_TESTING OFF" "HWLOC_SKIP_LSTOPO ON" "HWLOC_SKIP_TOOLS ON"
-    )
-else()
     find_package(HWLOC)
     if(HWLOC_FOUND)
     target_link_libraries(hw_detect PRIVATE "${HWLOC_LDFLAGS}")
@@ -99,22 +93,43 @@ else()
             VERSION 2.9.3
             DOWNLOAD_ONLY
         )
-    find_package(Autotools REQUIRED)
+        file(STRINGS ${PROJECT_SOURCE_DIR}/cmakeData/remove_assert_hwloc.txt hwloc_ASSERT_PATCH_LIST)
 
+        #list(TRANSFORM "hwloc_ASSERT_PATCH_LIST" PREPEND "${hwloc_SOURCE_DIR}/")
+        foreach(targetfile IN LISTS hwloc_ASSERT_PATCH_LIST)
+            file(COPY_FILE "${hwloc_SOURCE_DIR}/${targetfile}" "${hwloc_SOURCE_DIR}/${targetfile}.old")
+            add_custom_command(OUTPUT ${targetfile}
+                    COMMAND ${CMAKE_COMMAND} -Din_file:FILEPATH="${targetfile}.old"
+                    -Dpatch_file:FILEPATH="${PROJECT_SOURCE_DIR}/patch/${targetfile}.patch"
+                    -Dout_file:FILEPATH="${targetfile}"
+                    -P${PROJECT_SOURCE_DIR}/cmake/PatchFile.cmake
+                    WORKING_DIRECTORY "${hwloc_SOURCE_DIR}"
+            )
+            set_property(TARGET hwloc_patch APPEND PROPERTY PATCH_GENERATED ${targetfile})
+        endforeach()
+        if(WIN32)
     add_custom_command(OUTPUT "${hwloc_SOURCE_DIR}/Makefile"
-    COMMAND ${hwloc_SOURCE_DIR}/configure --with-pic --prefix=${hwloc_SOURCE_DIR}/out/ --disable-picky --enable-shared=no --enable-static=yes
+            DEPENDS hwloc_patch
+    COMMAND ${hwloc_SOURCE_DIR}/configure --target=x86_64-pc-mingw64 --with-pic --prefix=${hwloc_SOURCE_DIR}/out/ --disable-picky --enable-shared=no --enable-static=yes
     --disable-cairo --disable-libxml2 --disable-io --disable-plugin-dlopen --disable-plugin-ltdl --enable-embedded-mode
     WORKING_DIRECTORY "${hwloc_SOURCE_DIR}"
     VERBATIM)
+        else()
+            add_custom_command(OUTPUT "${hwloc_SOURCE_DIR}/Makefile"
+                    DEPENDS hwloc_patch
+                    COMMAND ${hwloc_SOURCE_DIR}/configure --with-pic --prefix=${hwloc_SOURCE_DIR}/out/ --disable-picky --enable-shared=no --enable-static=yes
+                    --disable-cairo --disable-libxml2 --disable-io --disable-plugin-dlopen --disable-plugin-ltdl --enable-embedded-mode
+                    WORKING_DIRECTORY "${hwloc_SOURCE_DIR}"
+                    VERBATIM)
+        endif()
     add_custom_command(OUTPUT "${hwloc_SOURCE_DIR}/hwloc/.libs/libhwloc_embedded.a"
     DEPENDS "${hwloc_SOURCE_DIR}/Makefile"
     COMMAND "${CMAKE_MAKE_PROGRAM}"
     WORKING_DIRECTORY "${hwloc_SOURCE_DIR}")
-    add_custom_target(hwloc DEPENDS "${hwloc_SOURCE_DIR}/hwloc/.libs/libhwloc_embedded.a")
-    target_include_directories(hw_detect PRIVATE "${hwloc_SOURCE_DIR}/include")
+        add_custom_target(hwloc DEPENDS "${hwloc_SOURCE_DIR}/hwloc/.libs/libhwloc_embedded.a")
+        target_include_directories(hw_detect PRIVATE "${hwloc_SOURCE_DIR}/include")
     add_dependencies(hw_detect hwloc)
     target_link_libraries(hw_detect PRIVATE "${hwloc_SOURCE_DIR}/hwloc/.libs/libhwloc_embedded.a")
-    endif()
     if(APPLE)
         target_link_libraries(hw_detect INTERFACE "-framework Foundation" "-framework IOKit" "-framework OpenCL")
     endif()
@@ -128,8 +143,6 @@ if(WIN32)
             OPTIONS "HIGHFIVE_EXAMPLES OFF" "HIGHFIVE_BUILD_DOCS OFF" "HIGHFIVE_USE_BOOST OFF" "HIGHFIVE_STATIC_HDF5 ON" "HIGHFIVE_UNIT_TESTS OFF"
             "HIGHFIVE_HAS_CONCEPTS OFF"
         )
-
-    target_link_libraries(hw_detect PRIVATE hwloc)
     target_link_libraries(RcppPlanc PRIVATE "${R_HOME}/bin/x64/R.dll")
 else()
     CPMAddPackage(NAME HighFive
@@ -141,7 +154,7 @@ else()
             "HIGHFIVE_HAS_CONCEPTS OFF")
 endif()
 target_link_libraries(RcppPlanc PRIVATE ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} HighFive hw_detect)
-file(MAKE_DIRECTORY ${HighFive_BINARY_DIR}/include)
+file(MAKE_DIRECTORY ${HighFive_BINARY_DIR}/include/highfive/bits)
 get_target_property(RCPPPLANC_SOURCES RcppPlanc SOURCES)
 add_custom_command(OUTPUT "${HighFive_BINARY_DIR}/include/highfive/bits/H5Inspector_misc.hpp"
 COMMAND ${CMAKE_COMMAND} -Din_file:FILEPATH=${HighFive_SOURCE_DIR}/include/highfive/bits/H5Inspector_misc.hpp
@@ -150,8 +163,6 @@ COMMAND ${CMAKE_COMMAND} -Din_file:FILEPATH=${HighFive_SOURCE_DIR}/include/highf
         -P${PROJECT_SOURCE_DIR}/cmake/PatchFile.cmake)
 set_property(SOURCE ${RCPPPLANC_SOURCES} APPEND PROPERTY OBJECT_DEPENDS "${HighFive_BINARY_DIR}/include/highfive/bits/H5Inspector_misc.hpp")
 target_include_directories(RcppPlanc BEFORE PRIVATE ${HighFive_BINARY_DIR}/include)
-
-target_link_libraries(RcppPlanc PRIVATE hw_detect)
 
 if(OpenMP_CXX_FOUND)
 target_compile_options(RcppPlanc PRIVATE ${OpenMP_CXX_FLAGS})

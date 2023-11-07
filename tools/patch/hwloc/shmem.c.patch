@@ -1,0 +1,41 @@
+Index: hwloc/shmem.c
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/hwloc/shmem.c b/hwloc/shmem.c
+--- a/hwloc/shmem.c	(revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
++++ b/hwloc/shmem.c	(date 1699068523777)
+@@ -14,7 +14,7 @@
+ #ifdef HAVE_UNISTD_H
+ #include <unistd.h>
+ #endif
+-#include <assert.h>
++//#include <assert.h>
+
+ #define HWLOC_SHMEM_HEADER_VERSION 1
+
+@@ -131,9 +131,9 @@
+   err = hwloc__topology_dup(&new, topology, &tma);
+   if (err < 0)
+     return err;
+-  assert((char*)new == (char*)mmap_address + sizeof(header));
++  //assert((char*)new == (char*)mmap_address + sizeof(header));
+
+-  assert((char *)mmap_res <= (char *)mmap_address + length);
++  //assert((char *)mmap_res <= (char *)mmap_address + length);
+
+   /* now refresh the new distances/memattrs so that adopters can use them without refreshing the R/O shmem mapping */
+   hwloc_internal_distances_refresh(new);
+@@ -193,9 +193,9 @@
+   }
+
+   /* enforced by dup() inside shmem_topology_write() */
+-  assert(old->is_loaded);
+-  assert(old->backends == NULL);
+-  assert(old->get_pci_busid_cpuset_backend == NULL);
++  //assert(old->is_loaded);
++  //assert(old->backends == NULL);
++  //assert(old->get_pci_busid_cpuset_backend == NULL);
+
+   hwloc_components_init();

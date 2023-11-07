@@ -1,0 +1,17 @@
+Index: hwloc/topology-netbsd.c
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/hwloc/topology-netbsd.c b/hwloc/topology-netbsd.c
+--- a/hwloc/topology-netbsd.c	(revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
++++ b/hwloc/topology-netbsd.c	(date 1699071121203)
+@@ -145,7 +145,7 @@
+   struct hwloc_topology *topology = backend->topology;
+   int64_t memsize;
+
+-  assert(dstatus->phase == HWLOC_DISC_PHASE_CPU);
++  //assert(dstatus->phase == HWLOC_DISC_PHASE_CPU);
+
+   if (!topology->levels[0][0]->cpuset) {
+     /* Nobody (even the x86 backend) created objects yet, setup basic objects */
