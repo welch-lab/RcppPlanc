@@ -140,14 +140,6 @@ diff --git a/hwloc/topology-linux.c b/hwloc/topology-linux.c
      if (hwloc_read_path_as_uint(mscpath, &associativity, data->root_fd) < 0)
        continue;
      /* 0 for direct-mapped, 1 for indexed (don't know how many ways), 2 for custom/other */
-@@ -3864,6 +3864,6 @@
-   }
-   closedir(dir);
-
--  assert(nbnodes >= 1); /* linux cannot have a "node/" subdirectory without at least one "node%d" */
-+  //assert(nbnodes >= 1); /* linux cannot have a "node/" subdirectory without at least one "node%d" */
-
-   /* we don't know if sysfs returns nodes in order, we can't merge above and below loops */
 @@ -3835,7 +3835,7 @@
    nodeset = hwloc__alloc_read_path_as_cpulist("/sys/devices/system/node/online", data->root_fd);
    if (nodeset) {
@@ -157,6 +149,14 @@ diff --git a/hwloc/topology-linux.c b/hwloc/topology-linux.c
      nbnodes = (unsigned)_nbnodes;
      hwloc_debug_bitmap("possible NUMA nodes %s\n", nodeset);
      goto found;
+@@ -3864,6 +3864,6 @@
+   }
+   closedir(dir);
+
+-  assert(nbnodes >= 1); /* linux cannot have a "node/" subdirectory without at least one "node%d" */
++  //assert(nbnodes >= 1); /* linux cannot have a "node/" subdirectory without at least one "node%d" */
+
+   /* we don't know if sysfs returns nodes in order, we can't merge above and below loops */
 @@ -3942,7 +3942,7 @@
    for(node=hwloc_get_next_obj_by_type(topology, HWLOC_OBJ_NUMANODE, NULL);
        node != NULL;
