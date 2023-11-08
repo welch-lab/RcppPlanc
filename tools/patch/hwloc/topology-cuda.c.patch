@@ -1,3 +1,5 @@
+Subject: [PATCH] clean
+---
 Index: hwloc/topology-cuda.c
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
@@ -5,13 +7,22 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 ===================================================================
 diff --git a/hwloc/topology-cuda.c b/hwloc/topology-cuda.c
 --- a/hwloc/topology-cuda.c	(revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
-+++ b/hwloc/topology-cuda.c	(date 1699071121211)
++++ b/hwloc/topology-cuda.c	(date 1699466981227)
 @@ -75,7 +75,7 @@
    cudaError_t cures;
    int nb, i;
-
+ 
 -  assert(dstatus->phase == HWLOC_DISC_PHASE_IO);
 +  //assert(dstatus->phase == HWLOC_DISC_PHASE_IO);
-
+ 
    hwloc_topology_get_type_filter(topology, HWLOC_OBJ_OS_DEVICE, &filter);
    if (filter == HWLOC_TYPE_FILTER_KEEP_NONE)
+@@ -85,7 +85,7 @@
+   if (cures) {
+     if (cures != cudaErrorNoDevice && HWLOC_SHOW_ALL_ERRORS()) {
+       const char *error = cudaGetErrorString(cures);
+-      fprintf(stderr, "hwloc/cuda: Failed to get number of devices with cudaGetDeviceCount(): %s\n", error);
++      // fprintf(stderr, "hwloc/cuda: Failed to get number of devices with cudaGetDeviceCount(): %s\n", error);
+     }
+     return -1;
+   }

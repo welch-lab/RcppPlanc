@@ -1,3 +1,5 @@
+Subject: [PATCH] topology-levelzero.c.patch
+---
 Index: hwloc/topology-levelzero.c
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
@@ -5,13 +7,63 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 ===================================================================
 diff --git a/hwloc/topology-levelzero.c b/hwloc/topology-levelzero.c
 --- a/hwloc/topology-levelzero.c	(revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
-+++ b/hwloc/topology-levelzero.c	(date 1699071121218)
++++ b/hwloc/topology-levelzero.c	(date 1699470772740)
+@@ -90,8 +90,8 @@
+     case ZE_DEVICE_TYPE_MCA: type = "MCA"; break;
+     case ZE_DEVICE_TYPE_VPU: type = "VPU"; break;
+     default:
+-      if (HWLOC_SHOW_ALL_ERRORS())
+-        fprintf(stderr, "hwloc/levelzero: unexpected device type %u\n", (unsigned) prop.type);
++      // if (HWLOC_SHOW_ALL_ERRORS())
++      //  fprintf(stderr, "hwloc/levelzero: unexpected device type %u\n", (unsigned) prop.type);
+       type = "Unknown";
+     }
+     hwloc_obj_add_info(osdev, "LevelZeroDeviceType", type);
+@@ -140,10 +140,10 @@
+   } else {
+     static int warned = 0;
+     if (!warned) {
+-      if (sysman_maybe_missing == 1 && HWLOC_SHOW_ALL_ERRORS())
+-        fprintf(stderr, "hwloc/levelzero: zesDeviceGetProperties() failed (ZES_ENABLE_SYSMAN=1 set too late?).\n");
+-      else if (sysman_maybe_missing == 2 && HWLOC_SHOW_ALL_ERRORS())
+-        fprintf(stderr, "hwloc/levelzero: zesDeviceGetProperties() failed (ZES_ENABLE_SYSMAN=0).\n");
++      // if (sysman_maybe_missing == 1 && HWLOC_SHOW_ALL_ERRORS())
++      //  fprintf(stderr, "hwloc/levelzero: zesDeviceGetProperties() failed (ZES_ENABLE_SYSMAN=1 set too late?).\n");
++      // else if (sysman_maybe_missing == 2 && HWLOC_SHOW_ALL_ERRORS())
++      //  fprintf(stderr, "hwloc/levelzero: zesDeviceGetProperties() failed (ZES_ENABLE_SYSMAN=0).\n");
+       warned = 1;
+     }
+     /* continue in degraded mode, we'll miss locality and some attributes */
+@@ -227,8 +227,8 @@
+ 
+           if (mprop.onSubdevice) {
+             if (mprop.subdeviceId >= nr_osdevs || !nr_osdevs || !sub_osdevs) {
+-              if (HWLOC_SHOW_ALL_ERRORS())
+-                fprintf(stderr, "hwloc/levelzero: memory module #%u on unexpected subdeviceId #%u\n", m, mprop.subdeviceId);
++              // if (HWLOC_SHOW_ALL_ERRORS())
++              //  fprintf(stderr, "hwloc/levelzero: memory module #%u on unexpected subdeviceId #%u\n", m, mprop.subdeviceId);
+               osdev = NULL; /* we'll ignore it but we'll still agregate its subdevice memories into totalHBM/DDRkB */
+             } else {
+               osdev = sub_osdevs[mprop.subdeviceId];
 @@ -611,7 +611,7 @@
-
+ 
    hwloc__levelzero_ports_init(&hports);
-
+ 
 -  assert(dstatus->phase == HWLOC_DISC_PHASE_IO);
 +  //assert(dstatus->phase == HWLOC_DISC_PHASE_IO);
-
+ 
    hwloc_topology_get_type_filter(topology, HWLOC_OBJ_OS_DEVICE, &filter);
    if (filter == HWLOC_TYPE_FILTER_KEEP_NONE)
+@@ -639,9 +639,9 @@
+ 
+   res = zeInit(0);
+   if (res != ZE_RESULT_SUCCESS) {
+-    if (HWLOC_SHOW_ALL_ERRORS()) {
+-      fprintf(stderr, "hwloc/levelzero: Failed to initialize in zeInit(): 0x%x\n", (unsigned)res);
+-    }
++    //if (HWLOC_SHOW_ALL_ERRORS()) {
++    //  fprintf(stderr, "hwloc/levelzero: Failed to initialize in zeInit(): 0x%x\n", (unsigned)res);
++    //}
+     return 0;
+   }
+ 

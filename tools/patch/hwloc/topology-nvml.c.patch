@@ -1,3 +1,5 @@
+Subject: [PATCH] topology-nvml.c.patch
+---
 Index: hwloc/topology-nvml.c
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
@@ -5,32 +7,75 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 ===================================================================
 diff --git a/hwloc/topology-nvml.c b/hwloc/topology-nvml.c
 --- a/hwloc/topology-nvml.c	(revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
-+++ b/hwloc/topology-nvml.c	(date 1699071311368)
++++ b/hwloc/topology-nvml.c	(date 1699470705646)
+@@ -41,9 +41,9 @@
+     /* we need PCI devices to be filtered-in */
+     if (pfilter != HWLOC_TYPE_FILTER_KEEP_NONE) {
+       static int warned = 0;
+-      if (!warned && HWLOC_SHOW_ALL_ERRORS())
+-        fprintf(stderr, "hwloc/nvml: failed to find NVLink peer %04x:%02x:%02x\n",
+-                peer_bdf.domain, peer_bdf.bus, peer_bdf.device);
++      // if (!warned && HWLOC_SHOW_ALL_ERRORS())
++        // fprintf(stderr, "hwloc/nvml: failed to find NVLink peer %04x:%02x:%02x\n",
++        //        peer_bdf.domain, peer_bdf.bus, peer_bdf.device);
+       warned = 1;
+     } else {
+       static int warned = 0;
+@@ -89,10 +89,10 @@
+   }
+   default: {
+     static int warned = 0;
+-    if (!warned && HWLOC_SHOW_ALL_ERRORS())
+-      fprintf(stderr, "hwloc/nvml: failed to recognize NVLink peer %04x:%02x:%02x class %04x vendor %04x device %04x\n",
+-              peer_bdf.domain, peer_bdf.bus, peer_bdf.device,
+-              obj->attr->pcidev.class_id, obj->attr->pcidev.vendor_id, obj->attr->pcidev.device_id);
++    // if (!warned && HWLOC_SHOW_ALL_ERRORS())
++    //  fprintf(stderr, "hwloc/nvml: failed to recognize NVLink peer %04x:%02x:%02x class %04x vendor %04x device %04x\n",
++    //          peer_bdf.domain, peer_bdf.bus, peer_bdf.device,
++    //          obj->attr->pcidev.class_id, obj->attr->pcidev.vendor_id, obj->attr->pcidev.device_id);
+     warned = 1;
+     return NULL;
+   }
 @@ -169,7 +169,7 @@
    int found_nvlinks = 0;
  #endif
-
+ 
 -  assert(dstatus->phase == HWLOC_DISC_PHASE_IO);
 +  //assert(dstatus->phase == HWLOC_DISC_PHASE_IO);
-
+ 
    hwloc_topology_get_type_filter(topology, HWLOC_OBJ_OS_DEVICE, &filter);
    if (filter == HWLOC_TYPE_FILTER_KEEP_NONE)
+@@ -177,10 +177,10 @@
+ 
+   ret = nvmlInit();
+   if (NVML_SUCCESS != ret) {
+-    if (HWLOC_SHOW_ALL_ERRORS()) {
+-      const char *error = nvmlErrorString(ret);
+-      fprintf(stderr, "hwloc/nvml: Failed to initialize with nvmlInit(): %s\n", error);
+-    }
++    //if (HWLOC_SHOW_ALL_ERRORS()) {
++    //  const char *error = nvmlErrorString(ret);
++    //  fprintf(stderr, "hwloc/nvml: Failed to initialize with nvmlInit(): %s\n", error);
++    //}
+     return -1;
+   }
+   ret = nvmlDeviceGetCount(&nb);
 @@ -215,7 +215,7 @@
      char buffer[64];
-
+ 
      ret = nvmlDeviceGetHandleByIndex(i, &device);
 -    assert(ret == NVML_SUCCESS);
 +    //assert(ret == NVML_SUCCESS);
-
+ 
      osdev = hwloc_alloc_setup_object(topology, HWLOC_OBJ_OS_DEVICE, HWLOC_UNKNOWN_INDEX);
      snprintf(buffer, sizeof(buffer), "nvml%u", i);
 @@ -284,7 +284,7 @@
      nvmlPciInfo_t pci;
-
+ 
      ret = nvmlDeviceGetHandleByIndex(i, &device);
 -    assert(ret == NVML_SUCCESS);
 +    //assert(ret == NVML_SUCCESS);
-
+ 
      hwloc_debug("looking at NVLinks for NVML GPU #%u...\n", i);
      for(j=0; j<NVML_NVLINK_MAX_LINKS; j++) {
 @@ -331,7 +331,7 @@
@@ -39,6 +84,17 @@ diff --git a/hwloc/topology-nvml.c b/hwloc/topology-nvml.c
        ret = nvmlDeviceGetHandleByIndex(i, &device);
 -      assert(ret == NVML_SUCCESS);
 +      //assert(ret == NVML_SUCCESS);
-
+ 
        for(j=0; j<NVML_NVLINK_MAX_LINKS; j++) {
          unsigned version;
+@@ -366,8 +366,8 @@
+           bw = 25000; /* multiple links may connect same GPUs */
+         } else {
+           static int warned = 0;
+-          if (!warned && HWLOC_SHOW_ALL_ERRORS())
+-            fprintf(stderr, "hwloc/nvml: Failed to recognize NVLink version %u\n", version);
++          // if (!warned && HWLOC_SHOW_ALL_ERRORS())
++          //  fprintf(stderr, "hwloc/nvml: Failed to recognize NVLink version %u\n", version);
+           warned = 1;
+           continue;
+         }

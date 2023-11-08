@@ -1,3 +1,5 @@
+Subject: [PATCH] distances.c.patch
+---
 Index: hwloc/distances.c
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
@@ -5,7 +7,34 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 ===================================================================
 diff --git a/hwloc/distances.c b/hwloc/distances.c
 --- a/hwloc/distances.c	(revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
-+++ b/hwloc/distances.c	(date 1699069836799)
++++ b/hwloc/distances.c	(date 1699469682368)
+@@ -36,16 +36,16 @@
+   int gp = !HWLOC_DIST_TYPE_USE_OS_INDEX(dist->unique_type);
+   unsigned i, j;
+ 
+-  fprintf(stderr, "%s", gp ? "gp_index" : "os_index");
+-  for(j=0; j<nbobjs; j++)
+-    fprintf(stderr, " % 5d", (int)(gp ? objs[j]->gp_index : objs[j]->os_index));
+-  fprintf(stderr, "\n");
+-  for(i=0; i<nbobjs; i++) {
+-    fprintf(stderr, "  % 5d", (int)(gp ? objs[i]->gp_index : objs[i]->os_index));
+-    for(j=0; j<nbobjs; j++)
+-      fprintf(stderr, " % 5lld", (long long) values[i*nbobjs + j]);
+-    fprintf(stderr, "\n");
+-  }
++  // fprintf(stderr, "%s", gp ? "gp_index" : "os_index");
++  //for(j=0; j<nbobjs; j++)
++  //  fprintf(stderr, " % 5d", (int)(gp ? objs[j]->gp_index : objs[j]->os_index));
++  //fprintf(stderr, "\n");
++  //for(i=0; i<nbobjs; i++) {
++  //  fprintf(stderr, "  % 5d", (int)(gp ? objs[i]->gp_index : objs[i]->os_index));
++  //  for(j=0; j<nbobjs; j++)
++  //    fprintf(stderr, " % 5lld", (long long) values[i*nbobjs + j]);
++   // fprintf(stderr, "\n");
++//  }
+ }
+ 
+ /******************************************************
 @@ -135,7 +135,7 @@
    if (olddist->name) {
      newdist->name = hwloc_tma_strdup(tma, olddist->name);
@@ -33,12 +62,70 @@ diff --git a/hwloc/distances.c b/hwloc/distances.c
      hwloc_internal_distances_free(newdist);
      return -1;
    }
+@@ -507,7 +507,7 @@
+     }
+ 
+     if (topology->grouping_verbose) {
+-      fprintf(stderr, "Trying to group objects using distance matrix:\n");
++      //fprintf(stderr, "Trying to group objects using distance matrix:\n");
+       hwloc_internal_distances_print_matrix(dist);
+     }
+ 
 @@ -825,7 +825,7 @@
      next = dist->next;
-
+ 
      if (hwloc_internal_distances_refresh_one(topology, dist) < 0) {
 -      assert(!topology->tma || !topology->tma->dontfree); /* this tma cannot fail to allocate */
 +      //assert(!topology->tma || !topology->tma->dontfree); /* this tma cannot fail to allocate */
        if (dist->prev)
  	dist->prev->next = next;
        else
+@@ -1139,9 +1139,9 @@
+ 
+     /* valid this group */
+     groupid++;
+-    if (verbose)
+-      fprintf(stderr, " Found transitive graph with %u objects with minimal distance %llu accuracy %f\n",
+-	      size, (unsigned long long) min_distance, accuracy);
++    //if (verbose)
++      //fprintf(stderr, " Found transitive graph with %u objects with minimal distance %llu accuracy %f\n",
++	   //   size, (unsigned long long) min_distance, accuracy);
+   }
+ 
+   if (groupid == 2 && !skipped)
+@@ -1161,16 +1161,16 @@
+     for(j=i+1; j<nbobjs; j++) {
+       /* should be symmetric */
+       if (hwloc_compare_values(VALUE(i, j), VALUE(j, i), accuracy)) {
+-	if (verbose)
+-	  fprintf(stderr, " Distance matrix asymmetric ([%u,%u]=%llu != [%u,%u]=%llu), aborting\n",
+-		  i, j, (unsigned long long) VALUE(i, j), j, i, (unsigned long long) VALUE(j, i));
++	//if (verbose)
++	  //fprintf(stderr, " Distance matrix asymmetric ([%u,%u]=%llu != [%u,%u]=%llu), aborting\n",
++	//	  i, j, (unsigned long long) VALUE(i, j), j, i, (unsigned long long) VALUE(j, i));
+ 	return -1;
+       }
+       /* diagonal is smaller than everything else */
+       if (hwloc_compare_values(VALUE(i, j), VALUE(i, i), accuracy) <= 0) {
+-	if (verbose)
+-	  fprintf(stderr, " Distance to self not strictly minimal ([%u,%u]=%llu <= [%u,%u]=%llu), aborting\n",
+-		  i, j, (unsigned long long) VALUE(i, j), i, i, (unsigned long long) VALUE(i, i));
++	//if (verbose)
++	 // fprintf(stderr, " Distance to self not strictly minimal ([%u,%u]=%llu <= [%u,%u]=%llu), aborting\n",
++	//	  i, j, (unsigned long long) VALUE(i, j), i, i, (unsigned long long) VALUE(i, i));
+ 	return -1;
+       }
+     }
+@@ -1213,9 +1213,9 @@
+     return;
+ 
+   for(i=0; i<nbaccuracies; i++) {
+-    if (verbose)
+-      fprintf(stderr, "Trying to group %u %s objects according to physical distances with accuracy %f\n",
+-	      nbobjs, hwloc_obj_type_string(objs[0]->type), accuracies[i]);
++    //if (verbose)
++    //  fprintf(stderr, "Trying to group %u %s objects according to physical distances with accuracy %f\n",
++	//      nbobjs, hwloc_obj_type_string(objs[0]->type), accuracies[i]);
+     if (needcheck && hwloc__check_grouping_matrix(nbobjs, _values, accuracies[i], verbose) < 0)
+       continue;
+     nbgroups = hwloc__find_groups_by_min_distance(nbobjs, _values, accuracies[i], groupids, verbose);

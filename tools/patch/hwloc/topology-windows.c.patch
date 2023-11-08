@@ -1,3 +1,5 @@
+Subject: [PATCH] topology-windows.c.patch
+---
 Index: hwloc/topology-windows.c
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
@@ -5,19 +7,30 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 ===================================================================
 diff --git a/hwloc/topology-windows.c b/hwloc/topology-windows.c
 --- a/hwloc/topology-windows.c	(revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
-+++ b/hwloc/topology-windows.c	(date 1699070925134)
++++ b/hwloc/topology-windows.c	(date 1699468210124)
+@@ -366,8 +366,8 @@
+   hwloc_debug("found %lu windows processor groups\n", nr_processor_groups);
+ 
+   if (nr_processor_groups > 1 && SIZEOF_VOID_P == 4) {
+-    if (HWLOC_SHOW_ALL_ERRORS())
+-      fprintf(stderr, "hwloc/windows: multiple processor groups found on 32bits Windows, topology may be invalid/incomplete.\n");
++    // if (HWLOC_SHOW_ALL_ERRORS())
++    //  fprintf(stderr, "hwloc/windows: multiple processor groups found on 32bits Windows, topology may be invalid/incomplete.\n");
+   }
+ 
+   length = 0;
 @@ -393,7 +393,7 @@
         procInfo = (void*) ((uintptr_t) procInfo + procInfo->Size)) {
      unsigned id;
-
+ 
 -    assert(procInfo->Relationship == RelationGroup);
 +    //assert(procInfo->Relationship == RelationGroup);
-
+ 
      hwloc_debug("Found %u active windows processor groups\n",
                  (unsigned) procInfo->Group.ActiveGroupCount);
 @@ -490,7 +490,7 @@
    }
-
+ 
    if (!processor_group_cpusets) {
 -    assert(nr_processor_groups == 1);
 +    //assert(nr_processor_groups == 1);
@@ -30,51 +43,51 @@ diff --git a/hwloc/topology-windows.c b/hwloc/topology-windows.c
  {
 -  assert(GetCurrentProcessorNumberExProc || (GetCurrentProcessorNumberProc && nr_processor_groups == 1));
 +  //assert(GetCurrentProcessorNumberExProc || (GetCurrentProcessorNumberProc && nr_processor_groups == 1));
-
+ 
    if (nr_processor_groups > 1 || !GetCurrentProcessorNumberProc) {
      PROCESSOR_NUMBER num;
 @@ -566,7 +566,7 @@
      return -1;
    }
-
+ 
 -  assert(nr_processor_groups == 1 || SetThreadGroupAffinityProc);
 +  //assert(nr_processor_groups == 1 || SetThreadGroupAffinityProc);
-
+ 
    if (nr_processor_groups > 1) {
      GROUP_AFFINITY aff;
 @@ -627,7 +627,7 @@
  {
    GROUP_AFFINITY aff;
-
+ 
 -  assert(GetThreadGroupAffinityProc);
 +  //assert(GetThreadGroupAffinityProc);
-
+ 
    if (!GetThreadGroupAffinityProc(thread, &aff))
      return -1;
 @@ -665,7 +665,7 @@
  {
    DWORD_PTR mask;
-
+ 
 -  assert(nr_processor_groups == 1);
 +  //assert(nr_processor_groups == 1);
-
+ 
    if (flags & HWLOC_CPUBIND_NOMEMBIND) {
      errno = ENOSYS;
 @@ -737,7 +737,7 @@
  {
    DWORD_PTR proc_mask, sys_mask;
-
+ 
 -  assert(nr_processor_groups == 1);
 +  //assert(nr_processor_groups == 1);
-
+ 
    if (flags & HWLOC_CPUBIND_NOMEMBIND) {
      errno = ENOSYS;
 @@ -993,7 +993,7 @@
    char *env = getenv("HWLOC_WINDOWS_PROCESSOR_GROUP_OBJS");
    int keep_pgroup_objs = (env && atoi(env));
-
+ 
 -  assert(dstatus->phase == HWLOC_DISC_PHASE_CPU);
 +  //assert(dstatus->phase == HWLOC_DISC_PHASE_CPU);
-
+ 
    if (topology->levels[0][0]->cpuset)
      /* somebody discovered things */

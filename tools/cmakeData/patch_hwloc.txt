@@ -41,3 +41,4 @@ hwloc/topology-levelzero.c
 hwloc/bitmap.c
 hwloc/topology-x86.c
 hwloc/pci-common.c
+hwloc/topology-xml-libxml.c

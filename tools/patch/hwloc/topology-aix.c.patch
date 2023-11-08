@@ -1,3 +1,5 @@
+Subject: [PATCH] topology-aix.c.patch
+---
 Index: hwloc/topology-aix.c
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
@@ -5,7 +7,27 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 ===================================================================
 diff --git a/hwloc/topology-aix.c b/hwloc/topology-aix.c
 --- a/hwloc/topology-aix.c	(revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
-+++ b/hwloc/topology-aix.c	(date 1699071121237)
++++ b/hwloc/topology-aix.c	(date 1699469968713)
+@@ -535,7 +535,7 @@
+   rsid_t rsid = { .at_subrange = &subrange };
+   uint_t aix_policy;
+   int ret;
+-  fprintf(stderr,"yop\n");
++  // fprintf(stderr,"yop\n");
+ 
+   if ((flags & (HWLOC_MEMBIND_MIGRATE|HWLOC_MEMBIND_STRICT))
+             == (HWLOC_MEMBIND_MIGRATE|HWLOC_MEMBIND_STRICT)) {
+@@ -626,8 +626,8 @@
+     unsigned os_index = HWLOC_UNKNOWN_INDEX; /* no os_index except for PU and NUMANODE below */
+ 
+     if (rs_getrad(rset, rad, sdl, i, 0)) {
+-      if (HWLOC_SHOW_CRITICAL_ERRORS())
+-        fprintf(stderr, "hwloc/aix: rs_getrad(%d) failed: %s\n", i, strerror(errno));
++      // if (HWLOC_SHOW_CRITICAL_ERRORS())
++      // fprintf(stderr, "hwloc/aix: rs_getrad(%d) failed: %s\n", i, strerror(errno));
+       continue;
+     }
+     if (!rs_getinfo(rad, R_NUMPROCS, 0))
 @@ -643,7 +643,7 @@
      if (type == HWLOC_OBJ_PU) {
        os_index = hwloc_bitmap_first(cpuset);
@@ -18,9 +40,9 @@ diff --git a/hwloc/topology-aix.c b/hwloc/topology-aix.c
 @@ -748,7 +748,7 @@
    struct hwloc_topology *topology = backend->topology;
    int i;
-
+ 
 -  assert(dstatus->phase == HWLOC_DISC_PHASE_CPU);
 +  //assert(dstatus->phase == HWLOC_DISC_PHASE_CPU);
-
+ 
    if (topology->levels[0][0]->cpuset)
      /* somebody discovered things */

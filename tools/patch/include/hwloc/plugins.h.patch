@@ -1,3 +1,5 @@
+Subject: [PATCH] plugins.h.patch
+---
 Index: include/hwloc/plugins.h
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
@@ -5,7 +7,7 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 ===================================================================
 diff --git a/include/hwloc/plugins.h b/include/hwloc/plugins.h
 --- a/include/hwloc/plugins.h	(revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
-+++ b/include/hwloc/plugins.h	(date 1699071508959)
++++ b/include/hwloc/plugins.h	(date 1699470019433)
 @@ -533,7 +533,7 @@
  {
    enum hwloc_type_filter_e filter = HWLOC_TYPE_FILTER_KEEP_NONE;
@@ -14,3 +16,4 @@ diff --git a/include/hwloc/plugins.h b/include/hwloc/plugins.h
 +  //assert(filter != HWLOC_TYPE_FILTER_KEEP_IMPORTANT); /* IMPORTANT only used for I/O */
    return filter == HWLOC_TYPE_FILTER_KEEP_NONE ? 0 : 1;
  }
+ 

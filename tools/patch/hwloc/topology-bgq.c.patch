@@ -1,3 +1,5 @@
+Subject: [PATCH] topology-bgq.c.patch
+---
 Index: hwloc/topology-bgq.c
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
@@ -5,13 +7,34 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 ===================================================================
 diff --git a/hwloc/topology-bgq.c b/hwloc/topology-bgq.c
 --- a/hwloc/topology-bgq.c	(revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
-+++ b/hwloc/topology-bgq.c	(date 1699071121228)
++++ b/hwloc/topology-bgq.c	(date 1699470641899)
 @@ -57,7 +57,7 @@
    hwloc_obj_t obj;
    unsigned i;
-
+ 
 -  assert(dstatus->phase == HWLOC_DISC_PHASE_GLOBAL);
 +  //assert(dstatus->phase == HWLOC_DISC_PHASE_GLOBAL);
-
+ 
    if (topology->levels[0][0]->cpuset)
      /* somebody discovered things */
+@@ -277,13 +277,13 @@
+   if (err || strcmp(utsname.sysname, "CNK") || strcmp(utsname.machine, "BGQ")) {
+     const char *env = getenv("HWLOC_FORCE_BGQ");
+     if (!env || !atoi(env)) {
+-      fprintf(stderr, "*** Found unexpected uname sysname `%s' machine `%s'.\n", utsname.sysname, utsname.machine);
+-      fprintf(stderr, "*** The BlueGene/Q backend (bgq) is only enabled by default on compute nodes\n"
+-		      "*** (where uname returns sysname=CNK and machine=BGQ).\n"
+-		      "*** If you know you *really* want to run the bgq backend on this non-compute node,\n"
+-		      "*** set HWLOC_FORCE_BGQ=1 in the environment.\n"
+-		      "*** If you just want to discover the native topology of this non-compute node,\n"
+-		      "*** do not pass any BlueGene/Q-specific options on the configure command-line.\n");
++      // fprintf(stderr, "*** Found unexpected uname sysname `%s' machine `%s'.\n", utsname.sysname, utsname.machine);
++      // fprintf(stderr, "*** The BlueGene/Q backend (bgq) is only enabled by default on compute nodes\n"
++		//      "*** (where uname returns sysname=CNK and machine=BGQ).\n"
++		//      "*** If you know you *really* want to run the bgq backend on this non-compute node,\n"
++		//      "*** set HWLOC_FORCE_BGQ=1 in the environment.\n"
++		//      "*** If you just want to discover the native topology of this non-compute node,\n"
++		//      "*** do not pass any BlueGene/Q-specific options on the configure command-line.\n");
+       return NULL;
+     } else {
+       forced_nonbgq = 1;
