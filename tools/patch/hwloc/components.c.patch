@@ -6,41 +6,41 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 <+>UTF-8
 ===================================================================
 diff --git a/hwloc/components.c b/hwloc/components.c
---- a/hwloc/components.c	(revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
-+++ b/hwloc/components.c	(date 1699468120612)
+--- a/hwloc/components.c        (revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
++++ b/hwloc/components.c        (date 1699468120612)
 @@ -45,7 +45,6 @@
-     SwitchToThread();								\
+     SwitchToThread();                                                          \
  } while (0)
- #define HWLOC_COMPONENTS_UNLOCK() do {						\
--  assert(hwloc_components_mutex == 1);						\
-   hwloc_components_mutex = 0;							\
+ #define HWLOC_COMPONENTS_UNLOCK() do {                                         \
+-  assert(hwloc_components_mutex == 1);                                         \
+   hwloc_components_mutex = 0;                                                  \
  } while (0)
- 
+
 @@ -123,8 +122,8 @@
      if (colon)
        *colon = '\0';
- 
+
 -    if (hwloc_plugins_verbose)
 -      fprintf(stderr, "hwloc:  Looking under %s\n", path);
 +    // if (hwloc_plugins_verbose)
 +    //  fprintf(stderr, "hwloc:  Looking under %s\n", path);
- 
+
      dir = opendir(path);
      if (!dir)
 @@ -197,8 +196,8 @@
    struct hwloc__plugin_desc *desc, **prevdesc;
    char *componentsymbolname;
- 
+
 -  if (hwloc_plugins_verbose)
 -    fprintf(stderr, "hwloc: Plugin dlforeach found `%s'\n", filename);
 +  // if (hwloc_plugins_verbose)
 +  //  fprintf(stderr, "hwloc: Plugin dlforeach found `%s'\n", filename);
- 
+
    basename = strrchr(filename, '/');
    if (!basename)
 @@ -207,62 +206,62 @@
      basename++;
- 
+
    if (hwloc_plugins_blacklist && strstr(hwloc_plugins_blacklist, basename)) {
 -    if (hwloc_plugins_verbose)
 -      fprintf(stderr, "hwloc: Plugin `%s' is blacklisted in the environment\n", basename);
@@ -48,7 +48,7 @@ diff --git a/hwloc/components.c b/hwloc/components.c
 +    //  fprintf(stderr, "hwloc: Plugin `%s' is blacklisted in the environment\n", basename);
      goto out;
    }
- 
+
    /* dlopen and get the component structure */
    handle = hwloc_dlopenext(filename);
    if (!handle) {
@@ -58,15 +58,15 @@ diff --git a/hwloc/components.c b/hwloc/components.c
 +    //  fprintf(stderr, "hwloc: Failed to load plugin: %s\n", hwloc_dlerror());
      goto out;
    }
- 
+
    componentsymbolname = malloc(strlen(basename)+10+1);
    if (!componentsymbolname) {
 -    if (hwloc_plugins_verbose)
 -      fprintf(stderr, "hwloc: Failed to allocation component `%s' symbol\n",
--	      basename);
+-             basename);
 +    // if (hwloc_plugins_verbose)
 +    //  fprintf(stderr, "hwloc: Failed to allocation component `%s' symbol\n",
-+	//      basename);
++       //      basename);
      goto out_with_handle;
    }
    sprintf(componentsymbolname, "%s_component", basename);
@@ -74,45 +74,45 @@ diff --git a/hwloc/components.c b/hwloc/components.c
    if (!component) {
 -    if (hwloc_plugins_verbose)
 -      fprintf(stderr, "hwloc: Failed to find component symbol `%s'\n",
--	      componentsymbolname);
+-             componentsymbolname);
 +    // if (hwloc_plugins_verbose)
 +    //  fprintf(stderr, "hwloc: Failed to find component symbol `%s'\n",
-+	//      componentsymbolname);
++       //      componentsymbolname);
      free(componentsymbolname);
      goto out_with_handle;
    }
    if (component->abi != HWLOC_COMPONENT_ABI) {
 -    if (hwloc_plugins_verbose)
 -      fprintf(stderr, "hwloc: Plugin symbol ABI %u instead of %d\n",
--	      component->abi, HWLOC_COMPONENT_ABI);
+-             component->abi, HWLOC_COMPONENT_ABI);
 +    // if (hwloc_plugins_verbose)
 +    //  fprintf(stderr, "hwloc: Plugin symbol ABI %u instead of %d\n",
-+	//      component->abi, HWLOC_COMPONENT_ABI);
++       //      component->abi, HWLOC_COMPONENT_ABI);
      free(componentsymbolname);
      goto out_with_handle;
    }
 -  if (hwloc_plugins_verbose)
 -    fprintf(stderr, "hwloc: Plugin contains expected symbol `%s'\n",
--	    componentsymbolname);
+-           componentsymbolname);
 +  // if (hwloc_plugins_verbose)
 +  //  fprintf(stderr, "hwloc: Plugin contains expected symbol `%s'\n",
 +  //  componentsymbolname);
    free(componentsymbolname);
- 
+
    if (HWLOC_COMPONENT_TYPE_DISC == component->type) {
      if (strncmp(basename, "hwloc_", 6)) {
 -      if (hwloc_plugins_verbose)
--	fprintf(stderr, "hwloc: Plugin name `%s' doesn't match its type DISCOVERY\n", basename);
+-       fprintf(stderr, "hwloc: Plugin name `%s' doesn't match its type DISCOVERY\n", basename);
 +      // if (hwloc_plugins_verbose)
-+	// fprintf(stderr, "hwloc: Plugin name `%s' doesn't match its type DISCOVERY\n", basename);
++       // fprintf(stderr, "hwloc: Plugin name `%s' doesn't match its type DISCOVERY\n", basename);
        goto out_with_handle;
      }
    } else if (HWLOC_COMPONENT_TYPE_XML == component->type) {
      if (strncmp(basename, "hwloc_xml_", 10)) {
 -      if (hwloc_plugins_verbose)
--	fprintf(stderr, "hwloc: Plugin name `%s' doesn't match its type XML\n", basename);
+-       fprintf(stderr, "hwloc: Plugin name `%s' doesn't match its type XML\n", basename);
 +      // if (hwloc_plugins_verbose)
-+	// fprintf(stderr, "hwloc: Plugin name `%s' doesn't match its type XML\n", basename);
++       // fprintf(stderr, "hwloc: Plugin name `%s' doesn't match its type XML\n", basename);
        goto out_with_handle;
      }
    } else {
@@ -120,7 +120,7 @@ diff --git a/hwloc/components.c b/hwloc/components.c
 -      fprintf(stderr, "hwloc: Plugin name `%s' has invalid type %u\n",
 +    // if (hwloc_plugins_verbose)
 +      // fprintf(stderr, "hwloc: Plugin name `%s' has invalid type %u\n",
- 	      basename, (unsigned) component->type);
+              basename, (unsigned) component->type);
      goto out_with_handle;
    }
 @@ -276,16 +275,16 @@
@@ -131,7 +131,7 @@ diff --git a/hwloc/components.c b/hwloc/components.c
 -    fprintf(stderr, "hwloc: Plugin descriptor `%s' ready\n", basename);
 +  // if (hwloc_plugins_verbose)
 +    // fprintf(stderr, "hwloc: Plugin descriptor `%s' ready\n", basename);
- 
+
    /* append to the list */
    prevdesc = &hwloc_plugins;
    while (*prevdesc)
@@ -142,23 +142,23 @@ diff --git a/hwloc/components.c b/hwloc/components.c
 +  // if (hwloc_plugins_verbose)
 +    // fprintf(stderr, "hwloc: Plugin descriptor `%s' queued\n", basename);
    return 0;
- 
+
   out_with_handle:
 @@ -299,8 +298,8 @@
  {
    struct hwloc__plugin_desc *desc, *next;
- 
+
 -  if (hwloc_plugins_verbose)
 -    fprintf(stderr, "hwloc: Closing all plugins\n");
 +  // if (hwloc_plugins_verbose)
 +    // fprintf(stderr, "hwloc: Closing all plugins\n");
- 
+
    desc = hwloc_plugins;
    while (desc) {
 @@ -339,8 +338,8 @@
- 
+
    hwloc_plugins = NULL;
- 
+
 -  if (hwloc_plugins_verbose)
 -    fprintf(stderr, "hwloc: Starting plugin dlforeach in %s\n", path);
 +  // if (hwloc_plugins_verbose)
@@ -167,7 +167,7 @@ diff --git a/hwloc/components.c b/hwloc/components.c
    if (err)
      goto out_with_init;
 @@ -363,16 +362,16 @@
- 
+
    /* check that the component name is valid */
    if (!strcmp(component->name, HWLOC_COMPONENT_STOP_NAME)) {
 -    if (hwloc_components_verbose)
@@ -181,17 +181,17 @@ diff --git a/hwloc/components.c b/hwloc/components.c
        || strcspn(component->name, HWLOC_COMPONENT_SEPS) != strlen(component->name)) {
 -    if (hwloc_components_verbose)
 -      fprintf(stderr, "hwloc: Cannot register discovery component with name `%s' containing reserved characters `%c" HWLOC_COMPONENT_SEPS "'\n",
--	      component->name, HWLOC_COMPONENT_EXCLUDE_CHAR);
+-             component->name, HWLOC_COMPONENT_EXCLUDE_CHAR);
 +    //if (hwloc_components_verbose)
 +      // fprintf(stderr, "hwloc: Cannot register discovery component with name `%s' containing reserved characters `%c" HWLOC_COMPONENT_SEPS "'\n",
-+	  //    component->name, HWLOC_COMPONENT_EXCLUDE_CHAR);
++         //    component->name, HWLOC_COMPONENT_EXCLUDE_CHAR);
      return -1;
    }
- 
+
 @@ -386,9 +385,9 @@
- 				   |HWLOC_DISC_PHASE_MISC
- 				   |HWLOC_DISC_PHASE_ANNOTATE
- 				   |HWLOC_DISC_PHASE_TWEAK))) {
+                                   |HWLOC_DISC_PHASE_MISC
+                                   |HWLOC_DISC_PHASE_ANNOTATE
+                                   |HWLOC_DISC_PHASE_TWEAK))) {
 -    if (HWLOC_SHOW_CRITICAL_ERRORS())
 -      fprintf(stderr, "hwloc: Cannot register discovery component `%s' with invalid phases 0x%x\n",
 -              component->name, component->phases);
@@ -200,45 +200,45 @@ diff --git a/hwloc/components.c b/hwloc/components.c
 +      //        component->name, component->phases);
      return -1;
    }
- 
+
 @@ -398,24 +397,24 @@
        /* if two components have the same name, only keep the highest priority one */
        if ((*prev)->priority < component->priority) {
- 	/* drop the existing component */
--	if (hwloc_components_verbose)
--	  fprintf(stderr, "hwloc: Dropping previously registered discovery component `%s', priority %u lower than new one %u\n",
--		  (*prev)->name, (*prev)->priority, component->priority);
-+	// if (hwloc_components_verbose)
-+	  //fprintf(stderr, "hwloc: Dropping previously registered discovery component `%s', priority %u lower than new one %u\n",
-+		//  (*prev)->name, (*prev)->priority, component->priority);
- 	*prev = (*prev)->next;
+        /* drop the existing component */
+-       if (hwloc_components_verbose)
+-         fprintf(stderr, "hwloc: Dropping previously registered discovery component `%s', priority %u lower than new one %u\n",
+-                 (*prev)->name, (*prev)->priority, component->priority);
++       // if (hwloc_components_verbose)
++         //fprintf(stderr, "hwloc: Dropping previously registered discovery component `%s', priority %u lower than new one %u\n",
++               //  (*prev)->name, (*prev)->priority, component->priority);
+        *prev = (*prev)->next;
        } else {
- 	/* drop the new one */
--	if (hwloc_components_verbose)
--	  fprintf(stderr, "hwloc: Ignoring new discovery component `%s', priority %u lower than previously registered one %u\n",
--		  component->name, component->priority, (*prev)->priority);
-+	// if (hwloc_components_verbose)
-+	  // fprintf(stderr, "hwloc: Ignoring new discovery component `%s', priority %u lower than previously registered one %u\n",
-+		  // component->name, component->priority, (*prev)->priority);
- 	return -1;
+        /* drop the new one */
+-       if (hwloc_components_verbose)
+-         fprintf(stderr, "hwloc: Ignoring new discovery component `%s', priority %u lower than previously registered one %u\n",
+-                 component->name, component->priority, (*prev)->priority);
++       // if (hwloc_components_verbose)
++         // fprintf(stderr, "hwloc: Ignoring new discovery component `%s', priority %u lower than previously registered one %u\n",
++                 // component->name, component->priority, (*prev)->priority);
+        return -1;
        }
      }
      prev = &((*prev)->next);
    }
 -  if (hwloc_components_verbose)
 -    fprintf(stderr, "hwloc: Registered discovery component `%s' phases 0x%x with priority %u (%s%s)\n",
--	    component->name, component->phases, component->priority,
--	    filename ? "from plugin " : "statically build", filename ? filename : "");
+-           component->name, component->phases, component->priority,
+-           filename ? "from plugin " : "statically build", filename ? filename : "");
 +  //if (hwloc_components_verbose)
 +  //  fprintf(stderr, "hwloc: Registered discovery component `%s' phases 0x%x with priority %u (%s%s)\n",
-+	//    component->name, component->phases, component->priority,
-+	//    filename ? "from plugin " : "statically build", filename ? filename : "");
- 
++       //    component->name, component->phases, component->priority,
++       //    filename ? "from plugin " : "statically build", filename ? filename : "");
+
    prev = &hwloc_disc_components;
    while (NULL != *prev) {
 @@ -443,7 +442,7 @@
    unsigned i;
- 
+
    HWLOC_COMPONENTS_LOCK();
 -  assert((unsigned) -1 != hwloc_components_users);
 +  //assert((unsigned) -1 != hwloc_components_users);
@@ -248,7 +248,7 @@ diff --git a/hwloc/components.c b/hwloc/components.c
 @@ -468,7 +467,7 @@
    if (hwloc_component_finalize_cb_count) {
      hwloc_component_finalize_cbs = calloc(hwloc_component_finalize_cb_count,
- 					  sizeof(*hwloc_component_finalize_cbs));
+                                          sizeof(*hwloc_component_finalize_cbs));
 -    assert(hwloc_component_finalize_cbs);
 +    //assert(hwloc_component_finalize_cbs);
      /* forget that max number and recompute the real one below */
@@ -266,13 +266,13 @@ diff --git a/hwloc/components.c b/hwloc/components.c
 +      //          hwloc_static_components[i]->flags);
        continue;
      }
- 
+
      /* initialize the component */
      if (hwloc_static_components[i]->init && hwloc_static_components[i]->init(0) < 0) {
 -      if (hwloc_components_verbose)
--	fprintf(stderr, "hwloc: Ignoring static component, failed to initialize\n");
+-       fprintf(stderr, "hwloc: Ignoring static component, failed to initialize\n");
 +    //  if (hwloc_components_verbose)
-+	//  fprintf(stderr, "hwloc: Ignoring static component, failed to initialize\n");
++       //  fprintf(stderr, "hwloc: Ignoring static component, failed to initialize\n");
        continue;
      }
      /* queue ->finalize() callback if any */
@@ -285,7 +285,7 @@ diff --git a/hwloc/components.c b/hwloc/components.c
 +    //else
 +      //assert(0);
    }
- 
+
    /* dynamic plugins */
  #ifdef HWLOC_HAVE_PLUGINS
    for(desc = hwloc_plugins; NULL != desc; desc = desc->next) {
@@ -298,13 +298,13 @@ diff --git a/hwloc/components.c b/hwloc/components.c
 +      //          desc->name, desc->component->flags);
        continue;
      }
- 
+
      /* initialize the component */
      if (desc->component->init && desc->component->init(0) < 0) {
 -      if (hwloc_components_verbose)
--	fprintf(stderr, "hwloc: Ignoring plugin `%s', failed to initialize\n", desc->name);
+-       fprintf(stderr, "hwloc: Ignoring plugin `%s', failed to initialize\n", desc->name);
 +    //  if (hwloc_components_verbose)
-+	// fprintf(stderr, "hwloc: Ignoring plugin `%s', failed to initialize\n", desc->name);
++       // fprintf(stderr, "hwloc: Ignoring plugin `%s', failed to initialize\n", desc->name);
        continue;
      }
      /* queue ->finalize() callback if any */
@@ -318,7 +318,7 @@ diff --git a/hwloc/components.c b/hwloc/components.c
 +      //assert(0);
    }
  #endif
- 
+
 @@ -610,8 +609,8 @@
    if (!strcmp(name, "linuxpci") || !strcmp(name, "linuxio")) {
      /* replace linuxpci and linuxio with linux (with IO phases)
@@ -329,20 +329,20 @@ diff --git a/hwloc/components.c b/hwloc/components.c
 +    //  fprintf(stderr, "hwloc: Replacing deprecated component `%s' with `linux' IO phases in blacklisting\n", name);
      comp = hwloc_disc_component_find("linux", NULL);
      phases = HWLOC_DISC_PHASE_PCI | HWLOC_DISC_PHASE_IO | HWLOC_DISC_PHASE_MISC | HWLOC_DISC_PHASE_ANNOTATE;
- 
+
 @@ -626,8 +625,8 @@
      return -1;
    }
- 
+
 -  if (hwloc_components_verbose)
 -    fprintf(stderr, "hwloc: Blacklisting component `%s` phases 0x%x\n", comp->name, phases);
 +  // if (hwloc_components_verbose)
 +  //  fprintf(stderr, "hwloc: Blacklisting component `%s` phases 0x%x\n", comp->name, phases);
- 
+
    for(i=0; i<topology->nr_blacklisted_components; i++) {
      if (topology->blacklisted_components[i].component == comp) {
 @@ -727,19 +726,19 @@
- 
+
    if (!(comp->phases & ~(topology->backend_excluded_phases | blacklisted_phases))) {
      /* all this backend phases are already excluded, exclude the backend entirely */
 -    if (hwloc_components_verbose)
@@ -350,14 +350,14 @@ diff --git a/hwloc/components.c b/hwloc/components.c
        /* do not warn if envvar_forced since system-wide HWLOC_COMPONENTS must be silently ignored after set_xml() etc.
         */
 -      fprintf(stderr, "hwloc: Excluding discovery component `%s' phases 0x%x, conflicts with excludes 0x%x\n",
--	      comp->name, comp->phases, topology->backend_excluded_phases);
+-             comp->name, comp->phases, topology->backend_excluded_phases);
 +      // fprintf(stderr, "hwloc: Excluding discovery component `%s' phases 0x%x, conflicts with excludes 0x%x\n",
-+	  //    comp->name, comp->phases, topology->backend_excluded_phases);
++         //    comp->name, comp->phases, topology->backend_excluded_phases);
      return -1;
    }
- 
+
    backend = comp->instantiate(topology, comp, topology->backend_excluded_phases | blacklisted_phases,
- 			      NULL, NULL, NULL);
+                              NULL, NULL, NULL);
    if (!backend) {
 -    if (hwloc_components_verbose || (envvar_forced && HWLOC_SHOW_CRITICAL_ERRORS()))
 -      fprintf(stderr, "hwloc: Failed to instantiate discovery component `%s'\n", comp->name);
@@ -365,44 +365,44 @@ diff --git a/hwloc/components.c b/hwloc/components.c
 +    //  fprintf(stderr, "hwloc: Failed to instantiate discovery component `%s'\n", comp->name);
      return -1;
    }
- 
+
 @@ -819,8 +818,8 @@
- 
- 	name = curenv;
- 	if (!strcmp(name, "linuxpci") || !strcmp(name, "linuxio")) {
--	  if (hwloc_components_verbose)
--	    fprintf(stderr, "hwloc: Replacing deprecated component `%s' with `linux' in envvar forcing\n", name);
-+	  // if (hwloc_components_verbose)
-+	  //  fprintf(stderr, "hwloc: Replacing deprecated component `%s' with `linux' in envvar forcing\n", name);
- 	  name = "linux";
- 	}
- 
+
+        name = curenv;
+        if (!strcmp(name, "linuxpci") || !strcmp(name, "linuxio")) {
+-         if (hwloc_components_verbose)
+-           fprintf(stderr, "hwloc: Replacing deprecated component `%s' with `linux' in envvar forcing\n", name);
++         // if (hwloc_components_verbose)
++         //  fprintf(stderr, "hwloc: Replacing deprecated component `%s' with `linux' in envvar forcing\n", name);
+          name = "linux";
+        }
+
 @@ -834,9 +833,9 @@
- 	    }
- 	  if (comp->phases & ~blacklisted_phases)
- 	    hwloc_disc_component_try_enable(topology, comp, 1 /* envvar forced */, blacklisted_phases);
--	} else {
+            }
+          if (comp->phases & ~blacklisted_phases)
+            hwloc_disc_component_try_enable(topology, comp, 1 /* envvar forced */, blacklisted_phases);
+-       } else {
 -          if (HWLOC_SHOW_CRITICAL_ERRORS())
 -            fprintf(stderr, "hwloc: Cannot find discovery component `%s'\n", name);
-+	// } else {
++       // } else {
 +          // if (HWLOC_SHOW_CRITICAL_ERRORS())
 +          //  fprintf(stderr, "hwloc: Cannot find discovery component `%s'\n", name);
- 	}
- 
- 	/* restore chars (the second loop below needs env to be unmodified) */
+        }
+
+        /* restore chars (the second loop below needs env to be unmodified) */
 @@ -867,9 +866,9 @@
- 	}
- 
+        }
+
        if (!(comp->phases & ~blacklisted_phases)) {
--	if (hwloc_components_verbose)
--	  fprintf(stderr, "hwloc: Excluding blacklisted discovery component `%s' phases 0x%x\n",
--		  comp->name, comp->phases);
-+	// if (hwloc_components_verbose)
-+	  // fprintf(stderr, "hwloc: Excluding blacklisted discovery component `%s' phases 0x%x\n",
-+		//  comp->name, comp->phases);
- 	goto nextcomp;
+-       if (hwloc_components_verbose)
+-         fprintf(stderr, "hwloc: Excluding blacklisted discovery component `%s' phases 0x%x\n",
+-                 comp->name, comp->phases);
++       // if (hwloc_components_verbose)
++         // fprintf(stderr, "hwloc: Excluding blacklisted discovery component `%s' phases 0x%x\n",
++               //  comp->name, comp->phases);
+        goto nextcomp;
        }
- 
+
 @@ -883,13 +882,13 @@
      /* print a summary */
      int first = 1;
@@ -418,11 +418,11 @@ diff --git a/hwloc/components.c b/hwloc/components.c
 -    fprintf(stderr, "\n");
 +    // fprintf(stderr, "\n");
    }
- 
+
    free(env);
 @@ -901,7 +900,7 @@
    unsigned i;
- 
+
    HWLOC_COMPONENTS_LOCK();
 -  assert(0 != hwloc_components_users);
 +  //assert(0 != hwloc_components_users);
@@ -435,15 +435,15 @@ diff --git a/hwloc/components.c b/hwloc/components.c
    backend->phases = component->phases & ~topology->backend_excluded_phases;
 -  if (backend->phases != component->phases && hwloc_components_verbose)
 -    fprintf(stderr, "hwloc: Trying discovery component `%s' with phases 0x%x instead of 0x%x\n",
--	    component->name, backend->phases, component->phases);
+-           component->name, backend->phases, component->phases);
 +  // if (backend->phases != component->phases && hwloc_components_verbose)
 +  //  fprintf(stderr, "hwloc: Trying discovery component `%s' with phases 0x%x instead of 0x%x\n",
-+	//    component->name, backend->phases, component->phases);
++       //    component->name, backend->phases, component->phases);
    backend->flags = 0;
    backend->discover = NULL;
    backend->get_pci_busid_cpuset = NULL;
 @@ -967,9 +966,9 @@
- 
+
    /* check backend flags */
    if (backend->flags) {
 -    if (HWLOC_SHOW_CRITICAL_ERRORS())
@@ -454,29 +454,30 @@ diff --git a/hwloc/components.c b/hwloc/components.c
 +    //          backend->component->name, backend->component->phases, backend->flags);
      return -1;
    }
- 
+
 @@ -977,8 +976,8 @@
    pprev = &topology->backends;
    while (NULL != *pprev) {
      if ((*pprev)->component == backend->component) {
 -      if (hwloc_components_verbose)
--	fprintf(stderr, "hwloc: Cannot enable  discovery component `%s' phases 0x%x twice\n",
+-       fprintf(stderr, "hwloc: Cannot enable  discovery component `%s' phases 0x%x twice\n",
+-               backend->component->name, backend->component->phases);
 +    // if (hwloc_components_verbose)
-+	// fprintf(stderr, "hwloc: Cannot enable  discovery component `%s' phases 0x%x twice\n",
- 		backend->component->name, backend->component->phases);
++       // fprintf(stderr, "hwloc: Cannot enable  discovery component `%s' phases 0x%x twice\n",
++               // backend->component->name, backend->component->phases);
        hwloc_backend_disable(backend);
        errno = EBUSY;
 @@ -987,9 +986,9 @@
      pprev = &((*pprev)->next);
    }
- 
+
 -  if (hwloc_components_verbose)
 -    fprintf(stderr, "hwloc: Enabling discovery component `%s' with phases 0x%x (among 0x%x)\n",
--	    backend->component->name, backend->phases, backend->component->phases);
+-           backend->component->name, backend->phases, backend->component->phases);
 +  // if (hwloc_components_verbose)
 +  //  fprintf(stderr, "hwloc: Enabling discovery component `%s' with phases 0x%x (among 0x%x)\n",
-+	//    backend->component->name, backend->phases, backend->component->phases);
- 
++       //    backend->component->name, backend->phases, backend->component->phases);
+
    /* enqueue at the end */
    pprev = &topology->backends;
 @@ -1022,7 +1021,7 @@
@@ -498,15 +499,15 @@ diff --git a/hwloc/components.c b/hwloc/components.c
      }
      backend = backend->next;
 @@ -1071,9 +1070,9 @@
- 
+
    while (NULL != (backend = topology->backends)) {
      struct hwloc_backend *next = backend->next;
 -    if (hwloc_components_verbose)
 -      fprintf(stderr, "hwloc: Disabling discovery component `%s'\n",
--	      backend->component->name);
+-             backend->component->name);
 +    // if (hwloc_components_verbose)
 +    //  fprintf(stderr, "hwloc: Disabling discovery component `%s'\n",
-+	//      backend->component->name);
++       //      backend->component->name);
      hwloc_backend_disable(backend);
      topology->backends = next;
    }
@@ -516,6 +517,6 @@ diff --git a/hwloc/components.c b/hwloc/components.c
    /* hwloc_backends_disable_all() must have been called earlier */
 -  assert(!topology->backends);
 +  //assert(!topology->backends);
- 
+
    free(topology->blacklisted_components);
  }
