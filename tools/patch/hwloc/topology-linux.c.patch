@@ -42,42 +42,6 @@ diff --git a/hwloc/topology-linux.c b/hwloc/topology-linux.c
      nbnodes = (unsigned)_nbnodes;
      hwloc_debug_bitmap("possible NUMA nodes %s\n", nodeset);
      goto found;
-@@ -3864,7 +3864,7 @@
-   }
-   closedir(dir);
-
--  assert(nbnodes >= 1); /* linux cannot have a "node/" subdirectory without at least one "node%d" */
-+  //assert(nbnodes >= 1); /* linux cannot have a "node/" subdirectory without at least one "node%d" */
-
-   /* we don't know if sysfs returns nodes in order, we can't merge above and below loops */
-
-@@ -3942,7 +3942,7 @@
-   for(node=hwloc_get_next_obj_by_type(topology, HWLOC_OBJ_NUMANODE, NULL);
-       node != NULL;
-       node = hwloc_get_next_obj_by_type(topology, HWLOC_OBJ_NUMANODE, node)) {
--    assert(node); /* list_sysfsnode() ensured that sysfs nodes and existing nodes match */
-+    //assert(node); /* list_sysfsnode() ensured that sysfs nodes and existing nodes match */
-
-     /* hwloc_parse_nodes_distances() requires nodes in physical index order,
-      * and inserting distances requires nodes[] and indexes[] in same order.
-@@ -4210,7 +4210,7 @@
- 	  cur_obj = tree;
- 	  cur_type = cur_obj->type;
- 	  tree = cur_obj->memory_first_child;
--	  assert(!cur_obj->next_sibling);
-+	  //assert(!cur_obj->next_sibling);
- 	  res_obj = hwloc__insert_object_by_cpuset(topology, NULL, cur_obj, "linux:sysfs:numa");
- 	  if (res_obj != cur_obj && cur_type == HWLOC_OBJ_NUMANODE) {
- 	    /* This NUMA node got merged somehow, could be a buggy BIOS reporting wrong NUMA node cpuset.
-@@ -4362,7 +4362,7 @@
-     if (cpukinds->sets[first].value == value)
-       break;
-   /* it must exist since we're downgrading some values to an existing one */
--  assert(first < cpukinds->nr_sets);
-+  //assert(first < cpukinds->nr_sets);
-
-   /* merge affected sets with the existing one */
-   for(i=0; i<cpukinds->nr_sets; i++) {
 @@ -2588,7 +2588,7 @@
    uint64_t remaining_local_memory;
    int err;
@@ -104,7 +68,6 @@ diff --git a/hwloc/topology-linux.c b/hwloc/topology-linux.c
 +    snprintf(distancepath, 41, "/sys/devices/system/node/node%u/distance", osnode);
      if (hwloc_read_path_by_length(distancepath, string, len, fsroot_fd) <= 0)
        goto out_with_string;
-
 @@ -3568,10 +3568,10 @@
     * access0 contains the fastest of GI and CPU. access1 contains the fastest of CPU.
     * Try access1 to avoid GI if any, or fallback to access0 otherwise.
@@ -185,6 +148,24 @@ diff --git a/hwloc/topology-linux.c b/hwloc/topology-linux.c
      if (hwloc_read_path_as_uint(mscpath, &associativity, data->root_fd) < 0)
        continue;
      /* 0 for direct-mapped, 1 for indexed (don't know how many ways), 2 for custom/other */
+@@ -3864,7 +3864,7 @@
+   }
+   closedir(dir);
+
+-  assert(nbnodes >= 1); /* linux cannot have a "node/" subdirectory without at least one "node%d" */
++  //assert(nbnodes >= 1); /* linux cannot have a "node/" subdirectory without at least one "node%d" */
+
+   /* we don't know if sysfs returns nodes in order, we can't merge above and below loops */
+
+@@ -3942,7 +3942,7 @@
+   for(node=hwloc_get_next_obj_by_type(topology, HWLOC_OBJ_NUMANODE, NULL);
+       node != NULL;
+       node = hwloc_get_next_obj_by_type(topology, HWLOC_OBJ_NUMANODE, node)) {
+-    assert(node); /* list_sysfsnode() ensured that sysfs nodes and existing nodes match */
++    //assert(node); /* list_sysfsnode() ensured that sysfs nodes and existing nodes match */
+
+     /* hwloc_parse_nodes_distances() requires nodes in physical index order,
+      * and inserting distances requires nodes[] and indexes[] in same order.
 @@ -4028,7 +4028,7 @@
      hwloc_bitmap_t cpuset;
 
@@ -194,6 +175,24 @@ diff --git a/hwloc/topology-linux.c b/hwloc/topology-linux.c
      cpuset = hwloc__alloc_read_path_as_cpumask(nodepath, data->root_fd);
      if (!cpuset) {
        /* This NUMA object won't be inserted, we'll ignore distances */
+@@ -4210,7 +4210,7 @@
+ 	  cur_obj = tree;
+ 	  cur_type = cur_obj->type;
+ 	  tree = cur_obj->memory_first_child;
+-	  assert(!cur_obj->next_sibling);
++	  //assert(!cur_obj->next_sibling);
+ 	  res_obj = hwloc__insert_object_by_cpuset(topology, NULL, cur_obj, "linux:sysfs:numa");
+ 	  if (res_obj != cur_obj && cur_type == HWLOC_OBJ_NUMANODE) {
+ 	    /* This NUMA node got merged somehow, could be a buggy BIOS reporting wrong NUMA node cpuset.
+@@ -4362,7 +4362,7 @@
+     if (cpukinds->sets[first].value == value)
+       break;
+   /* it must exist since we're downgrading some values to an existing one */
+-  assert(first < cpukinds->nr_sets);
++  //assert(first < cpukinds->nr_sets);
+
+   /* merge affected sets with the existing one */
+   for(i=0; i<cpukinds->nr_sets; i++) {
 @@ -4466,12 +4466,12 @@
    hwloc_bitmap_foreach_begin(i, topology->levels[0][0]->cpuset) {
      unsigned maxfreq = 0, basefreq = 0;

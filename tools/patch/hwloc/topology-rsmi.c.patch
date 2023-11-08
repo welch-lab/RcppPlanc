@@ -6,15 +6,6 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 diff --git a/hwloc/topology-rsmi.c b/hwloc/topology-rsmi.c
 --- a/hwloc/topology-rsmi.c	(revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
 +++ b/hwloc/topology-rsmi.c	(date 1699071311357)
-@@ -248,7 +248,7 @@
-   int may_shutdown;
-   unsigned nb, i, j;
-
--  assert(dstatus->phase == HWLOC_DISC_PHASE_IO);
-+  //assert(dstatus->phase == HWLOC_DISC_PHASE_IO);
-
-   hwloc_topology_get_type_filter(topology, HWLOC_OBJ_OS_DEVICE, &filter);
-   if (filter == HWLOC_TYPE_FILTER_KEEP_NONE)
 @@ -160,7 +160,7 @@
    if (rsmi_rc != RSMI_STATUS_SUCCESS) {
      return -1;
@@ -32,7 +23,15 @@ diff --git a/hwloc/topology-rsmi.c b/hwloc/topology-rsmi.c
 +  snprintf(buffer, sizeof(hive_id), "%llx", (unsigned long long) hive_id);
    return 0;
  }
+@@ -248,7 +248,7 @@
+   int may_shutdown;
+   unsigned nb, i, j;
 
+-  assert(dstatus->phase == HWLOC_DISC_PHASE_IO);
++  //assert(dstatus->phase == HWLOC_DISC_PHASE_IO);
+
+   hwloc_topology_get_type_filter(topology, HWLOC_OBJ_OS_DEVICE, &filter);
+   if (filter == HWLOC_TYPE_FILTER_KEEP_NONE)
 @@ -347,7 +347,7 @@
            continue;
          if ((get_device_io_link_type(i, j, &type, &hops) == 0) &&
