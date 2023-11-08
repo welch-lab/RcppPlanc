@@ -11,7 +11,7 @@ diff --git a/hwloc/topology-freebsd.c b/hwloc/topology-freebsd.c
    }
    for(int i = 0 ; i < ndomains ; i++){
 -    sprintf(nb, "%d:", i);
-+      snprintf(nb, 4, "%d:", i);
++      snprintf(nb, 32, "%d:", i);
      ptr = strstr(locality, nb);
      ptr = ptr + 2;
      for(int j = 0 ; j < ndomains ; j++){
