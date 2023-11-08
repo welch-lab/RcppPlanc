@@ -33,15 +33,6 @@ diff --git a/hwloc/topology-linux.c b/hwloc/topology-linux.c
  #endif
 
    hwloc_bitmap_zero(nodeset);
-@@ -3835,7 +3835,7 @@
-   nodeset = hwloc__alloc_read_path_as_cpulist("/sys/devices/system/node/online", data->root_fd);
-   if (nodeset) {
-     int _nbnodes = hwloc_bitmap_weight(nodeset);
--    assert(_nbnodes >= 1);
-+    //assert(_nbnodes >= 1);
-     nbnodes = (unsigned)_nbnodes;
-     hwloc_debug_bitmap("possible NUMA nodes %s\n", nodeset);
-     goto found;
 @@ -2588,7 +2588,7 @@
    uint64_t remaining_local_memory;
    int err;
@@ -156,7 +147,15 @@ diff --git a/hwloc/topology-linux.c b/hwloc/topology-linux.c
 +  //assert(nbnodes >= 1); /* linux cannot have a "node/" subdirectory without at least one "node%d" */
 
    /* we don't know if sysfs returns nodes in order, we can't merge above and below loops */
-
+@@ -3835,7 +3835,7 @@
+   nodeset = hwloc__alloc_read_path_as_cpulist("/sys/devices/system/node/online", data->root_fd);
+   if (nodeset) {
+     int _nbnodes = hwloc_bitmap_weight(nodeset);
+-    assert(_nbnodes >= 1);
++    //assert(_nbnodes >= 1);
+     nbnodes = (unsigned)_nbnodes;
+     hwloc_debug_bitmap("possible NUMA nodes %s\n", nodeset);
+     goto found;
 @@ -3942,7 +3942,7 @@
    for(node=hwloc_get_next_obj_by_type(topology, HWLOC_OBJ_NUMANODE, NULL);
        node != NULL;
