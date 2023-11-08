@@ -435,7 +435,7 @@ diff --git a/hwloc/topology-synthetic.c b/hwloc/topology-synthetic.c
 
    os_index = hwloc_synthetic_next_index(&curlevel->indexes, type);
 
-@@ -1005,17 +1005,17 @@
+@@ -1005,8 +1005,8 @@
    hwloc_bitmap_t cpuset = hwloc_bitmap_alloc();
    unsigned i;
 
@@ -446,15 +446,14 @@ diff --git a/hwloc/topology-synthetic.c b/hwloc/topology-synthetic.c
 +  //assert(!topology->levels[0][0]->cpuset);
 
    hwloc_alloc_root_sets(topology->levels[0][0]);
- @@ -1270,7 +1270,7 @@
-        hwloc_obj_t *level;
-
-        if (obj->depth < 0) {
- -       assert(obj->depth == HWLOC_TYPE_DEPTH_NUMANODE);
- +       //assert(obj->depth == HWLOC_TYPE_DEPTH_NUMANODE);
-         total = topology->slevels[HWLOC_SLEVEL_NUMANODE].nbobjs;
-         level = topology->slevels[HWLOC_SLEVEL_NUMANODE].objs;
-        } else {
+@@ -1270,6 +1270,6 @@
+       hwloc_obj_t *level;
+       if (obj->depth < 0) {
+-       assert(obj->depth == HWLOC_TYPE_DEPTH_NUMANODE);
++       //assert(obj->depth == HWLOC_TYPE_DEPTH_NUMANODE);
+        total = topology->slevels[HWLOC_SLEVEL_NUMANODE].nbobjs;
+        level = topology->slevels[HWLOC_SLEVEL_NUMANODE].objs;
+       } else {
 @@ -1362,8 +1362,8 @@
      /* v1: export a single NUMA child */
      if (parent->memory_arity > 1 || mchild->type != HWLOC_OBJ_NUMANODE) {
@@ -530,7 +529,7 @@ diff --git a/hwloc/topology-synthetic.c b/hwloc/topology-synthetic.c
      errno = EINVAL;
      return -1;
    }
-@@ -1535,15 +1535,15 @@
+@@ -1535,16 +1535,16 @@
      signed pdepth;
 
      node = hwloc_get_obj_by_type(topology, HWLOC_OBJ_NUMANODE, 0);
