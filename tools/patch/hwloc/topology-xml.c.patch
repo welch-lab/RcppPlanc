@@ -1,57 +1,55 @@
-Subject: [PATCH] remove_assert_hwloc
----
 Index: hwloc/topology-xml.c
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 <+>UTF-8
 ===================================================================
 diff --git a/hwloc/topology-xml.c b/hwloc/topology-xml.c
---- a/hwloc/topology-xml.c	(revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
-+++ b/hwloc/topology-xml.c	(date 1699375502729)
+--- a/hwloc/topology-xml.c      (revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
++++ b/hwloc/topology-xml.c      (date 1699375502729)
 @@ -459,7 +459,7 @@
- 	    memory->page_types = malloc(sizeof(*memory->page_types));
- 	    memory->page_types_len = 1;
- 	  }
--	  assert(memory->page_types);
-+	  //assert(memory->page_types);
- 	  memory->page_types[0].size = lvalue << 10;
- 	} else if (hwloc__xml_verbose()) {
- 	  fprintf(stderr, "%s: ignoring huge_page_size_kB attribute for non-NUMAnode non-root object\n",
+            memory->page_types = malloc(sizeof(*memory->page_types));
+            memory->page_types_len = 1;
+          }
+-         assert(memory->page_types);
++         //assert(memory->page_types);
+          memory->page_types[0].size = lvalue << 10;
+        } else if (hwloc__xml_verbose()) {
+          fprintf(stderr, "%s: ignoring huge_page_size_kB attribute for non-NUMAnode non-root object\n",
 @@ -474,7 +474,7 @@
- 	    memory->page_types = malloc(sizeof(*memory->page_types));
- 	    memory->page_types_len = 1;
- 	  }
--	  assert(memory->page_types);
-+	  //assert(memory->page_types);
- 	  memory->page_types[0].count = lvalue;
- 	} else if (hwloc__xml_verbose()) {
- 	  fprintf(stderr, "%s: ignoring huge_page_free attribute for non-NUMAnode non-root object\n",
+            memory->page_types = malloc(sizeof(*memory->page_types));
+            memory->page_types_len = 1;
+          }
+-         assert(memory->page_types);
++         //assert(memory->page_types);
+          memory->page_types[0].count = lvalue;
+        } else if (hwloc__xml_verbose()) {
+          fprintf(stderr, "%s: ignoring huge_page_free attribute for non-NUMAnode non-root object\n",
 @@ -670,7 +670,7 @@
- 
+
      if (nbobjs < 2) {
        /* distances with a single object are useless, even if the XML isn't invalid */
 -      assert(nbobjs == 1);
 +      //assert(nbobjs == 1);
        if (hwloc__xml_verbose())
- 	fprintf(stderr, "%s: ignoring invalid distance matrix with only 1 object\n",
- 		state->global->msgprefix);
-@@ -741,7 +741,7 @@
+        fprintf(stderr, "%s: ignoring invalid distance matrix with only 1 object\n",
+                state->global->msgprefix);
+@@ -741,6 +741,6 @@
        fakename = malloc(6 + 1 + (name ? strlen(name) : 4) + 1);
        if (!fakename)
- 	return -1;
+        return -1;
 -      sprintf(fakename, encoded ? "base64%c%s" : "normal%c%s", name ? ':' : '-', name ? name : "anon");
 +      snprintf(fakename, sizeof(fakename), encoded ? "base64%c%s" : "normal%c%s", name ? ':' : '-', name ? name : "anon");
        topology->userdata_import_cb(topology, obj, fakename, buffer, length);
        free(fakename);
 @@ -755,7 +755,7 @@
- 	char *decoded_buffer = malloc(length+1);
- 	if (!decoded_buffer)
- 	  return -1;
--	assert(encoded_buffer[encoded_length] == 0);
-+	//assert(encoded_buffer[encoded_length] == 0);
- 	ret = hwloc_decode_from_base64(encoded_buffer, decoded_buffer, length+1);
- 	if (ret != (int) length) {
- 	  free(decoded_buffer);
+        char *decoded_buffer = malloc(length+1);
+        if (!decoded_buffer)
+          return -1;
+-       assert(encoded_buffer[encoded_length] == 0);
++       //assert(encoded_buffer[encoded_length] == 0);
+        ret = hwloc_decode_from_base64(encoded_buffer, decoded_buffer, length+1);
+        if (ret != (int) length) {
+          free(decoded_buffer);
 @@ -995,7 +995,7 @@
      /* attach pre-v2.0 children of NUMA nodes to normal parent */
      if (parent && parent->type == HWLOC_OBJ_NUMANODE) {
@@ -59,17 +57,17 @@ diff --git a/hwloc/topology-xml.c b/hwloc/topology-xml.c
 -      assert(parent);
 +      //assert(parent);
      }
- 
+
      /* insert a group above pre-v2.0 NUMA nodes if needed */
-@@ -1051,7 +1051,7 @@
- 
+@@ -1051,6 +1051,6 @@
+
      /* fixup attribute-less caches imported from pre-v2.0 XMLs */
      if (attribute_less_cache) {
 -      assert(obj->type == _HWLOC_OBJ_CACHE_OLD);
 +      //(obj->type == _HWLOC_OBJ_CACHE_OLD);
        obj->type = hwloc_cache_type_by_depth_type(obj->attr->cache.depth, obj->attr->cache.type);
      }
-@@ -2057,7 +2057,7 @@
+@@ -2057,6 +2057,6 @@
     * Not perfect since we may have multiple of them,
     * and some distances might disappear in case of restrict, etc.
     */
@@ -80,55 +78,55 @@ diff --git a/hwloc/topology-xml.c b/hwloc/topology-xml.c
 @@ -2078,11 +2078,11 @@
    hwloc_localeswitch_declare;
    int ret;
- 
+
 -  assert(dstatus->phase == HWLOC_DISC_PHASE_GLOBAL);
 +  //assert(dstatus->phase == HWLOC_DISC_PHASE_GLOBAL);
- 
+
    state.global = data;
- 
+
 -  assert(!root->cpuset);
 +  //assert(!root->cpuset);
- 
+
    hwloc_localeswitch_init();
- 
+
 @@ -2111,7 +2111,7 @@
    if (ret < 0)
      goto failed;
    state.global->close_child(&childstate);
 -  assert(!gotignored);
 +  //assert(!gotignored);
- 
+
    /* the root may have changed if we had to reinsert a Machine */
    root = topology->levels[0][0];
 @@ -2193,8 +2193,8 @@
            && !(topology->flags & HWLOC_TOPOLOGY_FLAG_NO_DISTANCES)) {
- 	hwloc_obj_t *objs = malloc(nbobjs*sizeof(hwloc_obj_t));
- 	uint64_t *values = malloc(nbobjs*nbobjs*sizeof(*values));
+        hwloc_obj_t *objs = malloc(nbobjs*sizeof(hwloc_obj_t));
+        uint64_t *values = malloc(nbobjs*nbobjs*sizeof(*values));
 -        assert(data->nbnumanodes > 0); /* v1dist->nbobjs is >0 after import */
 -        assert(data->first_numanode);
 +        //assert(data->nbnumanodes > 0); /* v1dist->nbobjs is >0 after import */
 +        //assert(data->first_numanode);
- 	if (objs && values) {
- 	  hwloc_obj_t node;
- 	  unsigned i;
+        if (objs && values) {
+          hwloc_obj_t node;
+          unsigned i;
 @@ -2314,7 +2314,7 @@
    fakedata.msgprefix = strdup(local_basename);
- 
+
    hwloc_components_init();
 -  assert(hwloc_nolibxml_callbacks);
 +  //assert(hwloc_nolibxml_callbacks);
- 
+
    hwloc_localeswitch_init();
- 
-@@ -2353,7 +2353,7 @@
+
+@@ -2353,6 +2353,6 @@
    fakedata.msgprefix = strdup("xmldiffbuffer");
- 
+
    hwloc_components_init();
 -  assert(hwloc_nolibxml_callbacks);
 +  //assert(hwloc_nolibxml_callbacks);
- 
+
    hwloc_localeswitch_init();
-@@ -2430,7 +2430,7 @@
+@@ -2430,6 +2430,6 @@
      state->new_prop(state, "type", hwloc_obj_type_string(obj->type));
 
    if (obj->os_index != HWLOC_UNKNOWN_INDEX) {
@@ -214,26 +212,26 @@ diff --git a/hwloc/topology-xml.c b/hwloc/topology-xml.c
      if (obj->attr->bridge.downstream_type == HWLOC_OBJ_BRIDGE_PCI) {
 -      sprintf(tmp, "%04x:[%02x-%02x]",
 +      snprintf(tmp, 17, "%04x:[%02x-%02x]",
- 	      (unsigned) obj->attr->bridge.downstream.pci.domain,
- 	      (unsigned) obj->attr->bridge.downstream.pci.secondary_bus,
- 	      (unsigned) obj->attr->bridge.downstream.pci.subordinate_bus);
+              (unsigned) obj->attr->bridge.downstream.pci.domain,
+              (unsigned) obj->attr->bridge.downstream.pci.secondary_bus,
+              (unsigned) obj->attr->bridge.downstream.pci.subordinate_bus);
 @@ -2596,23 +2598,23 @@
        break;
      /* FALLTHRU */
    case HWLOC_OBJ_PCI_DEVICE:
 -    sprintf(tmp, "%04x:%02x:%02x.%01x",
 +    snprintf(tmp, 20, "%04x:%02x:%02x.%01x",
- 	    (unsigned) obj->attr->pcidev.domain,
- 	    (unsigned) obj->attr->pcidev.bus,
- 	    (unsigned) obj->attr->pcidev.dev,
- 	    (unsigned) obj->attr->pcidev.func);
+            (unsigned) obj->attr->pcidev.domain,
+            (unsigned) obj->attr->pcidev.bus,
+            (unsigned) obj->attr->pcidev.dev,
+            (unsigned) obj->attr->pcidev.func);
      state->new_prop(state, "pci_busid", tmp);
 -    sprintf(tmp, "%04x [%04x:%04x] [%04x:%04x] %02x",
 +    snprintf(tmp, 34, "%04x [%04x:%04x] [%04x:%04x] %02x",
- 	    (unsigned) obj->attr->pcidev.class_id,
- 	    (unsigned) obj->attr->pcidev.vendor_id, (unsigned) obj->attr->pcidev.device_id,
- 	    (unsigned) obj->attr->pcidev.subvendor_id, (unsigned) obj->attr->pcidev.subdevice_id,
- 	    (unsigned) obj->attr->pcidev.revision);
+            (unsigned) obj->attr->pcidev.class_id,
+            (unsigned) obj->attr->pcidev.vendor_id, (unsigned) obj->attr->pcidev.device_id,
+            (unsigned) obj->attr->pcidev.subvendor_id, (unsigned) obj->attr->pcidev.subdevice_id,
+            (unsigned) obj->attr->pcidev.revision);
      state->new_prop(state, "pci_type", tmp);
 -    sprintf(tmp, "%f", obj->attr->pcidev.linkspeed);
 +    snprintf(tmp, 3, "%f", obj->attr->pcidev.linkspeed);
@@ -261,15 +259,15 @@ diff --git a/hwloc/topology-xml.c b/hwloc/topology-xml.c
        for(i=0; i<nbobjs; i++) {
          for(j=0; j<nbobjs; j++) {
 @@ -2721,7 +2723,7 @@
- 	  unsigned k = logical_to_v2array[i]*nbobjs+logical_to_v2array[j];
- 	  struct hwloc__xml_export_state_s greatchildstate;
- 	  childstate.new_child(&childstate, &greatchildstate, "latency");
--	  sprintf(tmp, "%f", (float) dist->values[k]);
-+	  snprintf(tmp, 3, "%f", (float) dist->values[k]);
- 	  greatchildstate.new_prop(&greatchildstate, "value", tmp);
- 	  greatchildstate.end_object(&greatchildstate, "latency");
- 	}
-@@ -2787,7 +2787,7 @@
+          unsigned k = logical_to_v2array[i]*nbobjs+logical_to_v2array[j];
+          struct hwloc__xml_export_state_s greatchildstate;
+          childstate.new_child(&childstate, &greatchildstate, "latency");
+-         sprintf(tmp, "%f", (float) dist->values[k]);
++         snprintf(tmp, 3, "%f", (float) dist->values[k]);
+          greatchildstate.new_prop(&greatchildstate, "value", tmp);
+          greatchildstate.end_object(&greatchildstate, "latency");
+        }
+@@ -2787,7 +2789,7 @@
   find_first:
    while (cur->type != HWLOC_OBJ_NUMANODE)
      cur = cur->memory_first_child;
@@ -277,15 +275,15 @@ diff --git a/hwloc/topology-xml.c b/hwloc/topology-xml.c
 +  //assert(cur);
    return cur;
  }
- 
-@@ -2805,14 +2805,14 @@
+
+@@ -2805,14 +2807,14 @@
    /* we're sure there's at least one numa node */
- 
+
    nr = hwloc_bitmap_weight(obj->nodeset);
 -  assert(nr > 0);
 +  //assert(nr > 0);
    /* these are local nodes, but some of them may be attached above instead of here */
- 
+
    nodes = calloc(nr, sizeof(*nodes));
    if (!nodes) {
      /* only return the first node */
@@ -297,8 +295,8 @@ diff --git a/hwloc/topology-xml.c b/hwloc/topology-xml.c
      return 1;
 @@ -2931,9 +2933,9 @@
      for(_j=0; \
- 	_i+_j<(nr) && _j<maxperline; \
- 	_j++) \
+        _i+_j<(nr) && _j<maxperline; \
+        _j++) \
 -      _len += sprintf(_tmp+_len, format " ", (type) (values)[_i+_j]); \
 +      _len += snprintf(_tmp+_len, 255, format " ", (type) (values)[_i+_j]); \
      _i += _j; \
@@ -309,8 +307,8 @@ diff --git a/hwloc/topology-xml.c b/hwloc/topology-xml.c
      _childstate.end_object(&_childstate, tagname); \
 @@ -2952,9 +2954,9 @@
      for(_j=0; \
- 	_i+_j<(nr) && _j<maxperline; \
- 	_j++) \
+        _i+_j<(nr) && _j<maxperline; \
+        _j++) \
 -      _len += sprintf(_tmp+_len, "%s:%llu ", hwloc_obj_type_string((objs)[_i+_j]->type), (unsigned long long) (objs)[_i+_j]->gp_index); \
 +      _len += snprintf(_tmp+_len, 255, "%s:%llu ", hwloc_obj_type_string((objs)[_i+_j]->type), (unsigned long long) (objs)[_i+_j]->gp_index); \
      _i += _j; \
@@ -340,7 +338,7 @@ diff --git a/hwloc/topology-xml.c b/hwloc/topology-xml.c
          state.new_prop(&state, "value", tmp);                   \
        }                                                         \
        state.end_object(&state, "support");                      \
-@@ -3114,8 +3114,8 @@
+@@ -3114,8 +3116,8 @@
          free(setstring);
          break;
        }
@@ -374,23 +372,23 @@ diff --git a/hwloc/topology-xml.c b/hwloc/topology-xml.c
 
        switch (diff->obj_attr.diff.generic.type) {
        case HWLOC_TOPOLOGY_DIFF_OBJ_ATTR_SIZE:
--	sprintf(tmp, "%llu", (unsigned long long) diff->obj_attr.diff.uint64.index);
-+	snprintf(tmp, sizeof(diff->obj_attr.diff.uint64.index), "%llu",
+-       sprintf(tmp, "%llu", (unsigned long long) diff->obj_attr.diff.uint64.index);
++       snprintf(tmp, sizeof(diff->obj_attr.diff.uint64.index), "%llu",
 +             (unsigned long long) diff->obj_attr.diff.uint64.index);
- 	state.new_prop(&state, "obj_attr_index", tmp);
--	sprintf(tmp, "%llu", (unsigned long long) diff->obj_attr.diff.uint64.oldvalue);
-+	snprintf(tmp, sizeof(diff->obj_attr.diff.uint64.oldvalue),
+        state.new_prop(&state, "obj_attr_index", tmp);
+-       sprintf(tmp, "%llu", (unsigned long long) diff->obj_attr.diff.uint64.oldvalue);
++       snprintf(tmp, sizeof(diff->obj_attr.diff.uint64.oldvalue),
 +            "%llu", (unsigned long long) diff->obj_attr.diff.uint64.oldvalue);
- 	state.new_prop(&state, "obj_attr_oldvalue", tmp);
--	sprintf(tmp, "%llu", (unsigned long long) diff->obj_attr.diff.uint64.newvalue);
-+	snprintf(tmp, sizeof(diff->obj_attr.diff.uint64.newvalue),
+        state.new_prop(&state, "obj_attr_oldvalue", tmp);
+-       sprintf(tmp, "%llu", (unsigned long long) diff->obj_attr.diff.uint64.newvalue);
++       snprintf(tmp, sizeof(diff->obj_attr.diff.uint64.newvalue),
 +             "%llu", (unsigned long long) diff->obj_attr.diff.uint64.newvalue);
- 	state.new_prop(&state, "obj_attr_newvalue", tmp);
- 	break;
+        state.new_prop(&state, "obj_attr_newvalue", tmp);
+        break;
        case HWLOC_TOPOLOGY_DIFF_OBJ_ATTR_NAME:
-@@ -3296,8 +3296,8 @@
+@@ -3296,8 +3301,8 @@
        }
- 
+
        break;
 -    default:
 -      assert(0);
@@ -398,50 +396,50 @@ diff --git a/hwloc/topology-xml.c b/hwloc/topology-xml.c
 +    //  assert(0);
      }
      state.end_object(&state, "diff");
- 
-@@ -3322,7 +3322,7 @@
+
+@@ -3322,7 +3327,7 @@
      return -1;
    }
- 
+
 -  assert(hwloc_nolibxml_callbacks); /* the core called components_init() for the topology */
 +  //assert(hwloc_nolibxml_callbacks); /* the core called components_init() for the topology */
- 
+
    if (flags & ~HWLOC_TOPOLOGY_EXPORT_XML_FLAG_V1) {
      errno = EINVAL;
-@@ -3370,7 +3370,7 @@
+@@ -3370,7 +3375,7 @@
      return -1;
    }
- 
+
 -  assert(hwloc_nolibxml_callbacks); /* the core called components_init() for the topology */
 +  //assert(hwloc_nolibxml_callbacks); /* the core called components_init() for the topology */
- 
+
    if (flags & ~HWLOC_TOPOLOGY_EXPORT_XML_FLAG_V1) {
      errno = EINVAL;
-@@ -3425,7 +3425,7 @@
+@@ -3425,7 +3430,7 @@
    }
- 
+
    hwloc_components_init();
 -  assert(hwloc_nolibxml_callbacks);
 +  //assert(hwloc_nolibxml_callbacks);
- 
+
    hwloc_localeswitch_init();
- 
-@@ -3466,7 +3466,7 @@
+
+@@ -3466,7 +3471,7 @@
    }
- 
+
    hwloc_components_init();
 -  assert(hwloc_nolibxml_callbacks);
 +  //assert(hwloc_nolibxml_callbacks);
- 
+
    hwloc_localeswitch_init();
- 
-@@ -3491,7 +3491,7 @@
+
+@@ -3491,7 +3496,7 @@
  {
    int force_nolibxml;
- 
+
 -  assert(hwloc_nolibxml_callbacks); /* the core called components_init() for the topology */
 +  //assert(hwloc_nolibxml_callbacks); /* the core called components_init() for the topology */
- 
+
    force_nolibxml = hwloc_nolibxml_export();
    if (!hwloc_libxml_callbacks || (hwloc_nolibxml_callbacks && force_nolibxml))
 @@ -3516,7 +3521,7 @@
@@ -453,7 +451,7 @@ diff --git a/hwloc/topology-xml.c b/hwloc/topology-xml.c
    state.new_prop(&state, "length", tmp);
    if (encoded)
      state.new_prop(&state, "encoding", "base64");
-@@ -3547,19 +3547,19 @@
+@@ -3547,19 +3552,19 @@
      int encoded;
      size_t encoded_length;
      const char *realname;
@@ -476,30 +474,30 @@ diff --git a/hwloc/topology-xml.c b/hwloc/topology-xml.c
        realname = NULL;
      }
      hwloc__export_obj_userdata(state, encoded, realname, length, buffer, encoded_length);
-@@ -3585,7 +3585,7 @@
+@@ -3585,7 +3590,7 @@
      return -1;
    }
- 
+
 -  assert(!topology->userdata_not_decoded);
 +  //assert(!topology->userdata_not_decoded);
- 
+
    if (name && hwloc__xml_export_check_buffer(name, strlen(name)) < 0) {
      errno = EINVAL;
-@@ -3600,7 +3600,7 @@
+@@ -3600,7 +3605,7 @@
    }
- 
+
    ret = hwloc_encode_to_base64(buffer, length, encoded_buffer, encoded_length+1);
 -  assert(ret == (int) encoded_length);
 +  //assert(ret == (int) encoded_length);
- 
+
    hwloc__export_obj_userdata(state, 1, name, length, encoded_buffer, encoded_length);
- 
-@@ -3646,7 +3646,7 @@
+
+@@ -3646,7 +3651,7 @@
    const char *local_basename;
    int err;
- 
+
 -  assert(hwloc_nolibxml_callbacks); /* the core called components_init() for the component's topology */
 +  //assert(hwloc_nolibxml_callbacks); /* the core called components_init() for the component's topology */
- 
+
    if (!xmlpath && !xmlbuffer) {
      env = getenv("HWLOC_XMLFILE");

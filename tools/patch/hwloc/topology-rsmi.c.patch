@@ -4,8 +4,8 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 <+>UTF-8
 ===================================================================
 diff --git a/hwloc/topology-rsmi.c b/hwloc/topology-rsmi.c
---- a/hwloc/topology-rsmi.c	(revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
-+++ b/hwloc/topology-rsmi.c	(date 1699071311357)
+--- a/hwloc/topology-rsmi.c     (revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
++++ b/hwloc/topology-rsmi.c     (date 1699071311357)
 @@ -160,7 +160,7 @@
    if (rsmi_rc != RSMI_STATUS_SUCCESS) {
      return -1;
@@ -15,7 +15,7 @@ diff --git a/hwloc/topology-rsmi.c b/hwloc/topology-rsmi.c
    return 0;
  }
 
-@@ -200,7 +200,7 @@
+@@ -200,6 +200,6 @@
      }
      return -1;
    }

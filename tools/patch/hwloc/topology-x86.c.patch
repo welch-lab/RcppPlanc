@@ -4,8 +4,8 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 <+>UTF-8
 ===================================================================
 diff --git a/hwloc/topology-x86.c b/hwloc/topology-x86.c
---- a/hwloc/topology-x86.c	(revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
-+++ b/hwloc/topology-x86.c	(date 1699071121182)
+--- a/hwloc/topology-x86.c      (revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
++++ b/hwloc/topology-x86.c      (date 1699071121182)
 @@ -312,7 +312,7 @@
    struct cacheinfo *cache;
 
