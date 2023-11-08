@@ -1,3 +1,11 @@
+include/hwloc/cuda.h
+include/hwloc/cudart.h
+include/hwloc/levelzero.h
+include/hwloc/nvml.h
+include/hwloc/opencl.h
+include/hwloc/openfabrics-verbs.h
+include/hwloc/rsmi.h
+hwloc/topology-freebsd.c
 hwloc/topology-pci.c
 hwloc/topology-cuda.c
 hwloc/topology-synthetic.c

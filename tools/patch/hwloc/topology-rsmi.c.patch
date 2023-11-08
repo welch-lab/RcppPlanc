@@ -15,3 +15,30 @@ diff --git a/hwloc/topology-rsmi.c b/hwloc/topology-rsmi.c
 
    hwloc_topology_get_type_filter(topology, HWLOC_OBJ_OS_DEVICE, &filter);
    if (filter == HWLOC_TYPE_FILTER_KEEP_NONE)
+@@ -160,7 +160,7 @@
+   if (rsmi_rc != RSMI_STATUS_SUCCESS) {
+     return -1;
+   }
+-  sprintf(buffer, "%llx", (unsigned long long) id);
++  snprintf(buffer, sizeof(id), "%llx", (unsigned long long) id);
+   return 0;
+ }
+
+@@ -200,7 +200,7 @@
+     }
+     return -1;
+   }
+-  sprintf(buffer, "%llx", (unsigned long long) hive_id);
++  snprintf(buffer, sizeof(hive_id), "%llx", (unsigned long long) hive_id);
+   return 0;
+ }
+
+@@ -347,7 +347,7 @@
+           continue;
+         if ((get_device_io_link_type(i, j, &type, &hops) == 0) &&
+             (type == RSMI_IOLINK_TYPE_XGMI)) {
+-          xgmi_peers_ptr += sprintf(xgmi_peers_ptr, "rsmi%u ", j);
++          xgmi_peers_ptr += snprintf(xgmi_peers_ptr, 8, "rsmi%u ", j);
+           xgmi_bws[i*nb+j] = 100000; /* TODO: verify the XGMI version before putting 100GB/s here? */
+           xgmi_hops[i*nb+j] = hops;
+           got_xgmi_bws = 1;

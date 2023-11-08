@@ -257,3 +257,253 @@ diff --git a/hwloc/topology-xml.c b/hwloc/topology-xml.c
  
    if (!xmlpath && !xmlbuffer) {
      env = getenv("HWLOC_XMLFILE");
+@@ -741,7 +741,7 @@
+       fakename = malloc(6 + 1 + (name ? strlen(name) : 4) + 1);
+       if (!fakename)
+ 	return -1;
+-      sprintf(fakename, encoded ? "base64%c%s" : "normal%c%s", name ? ':' : '-', name ? name : "anon");
++      snprintf(fakename, sizeof(fakename), encoded ? "base64%c%s" : "normal%c%s", name ? ':' : '-', name ? name : "anon");
+       topology->userdata_import_cb(topology, obj, fakename, buffer, length);
+       free(fakename);
+@@ -2057,7 +2057,7 @@
+    * Not perfect since we may have multiple of them,
+    * and some distances might disappear in case of restrict, etc.
+    */
+-  sprintf(scalestring, "%f", scale);
++  snprintf(scalestring, 3, "%f", scale);
+   hwloc_obj_add_info(hwloc_get_root_obj(topology), "xmlv1DistancesScale", scalestring);
+ }
+@@ -2430,7 +2430,7 @@
+     state->new_prop(state, "type", hwloc_obj_type_string(obj->type));
+
+   if (obj->os_index != HWLOC_UNKNOWN_INDEX) {
+-    sprintf(tmp, "%u", obj->os_index);
++    snprintf(tmp, 3, "%u", obj->os_index);
+     state->new_prop(state, "os_index", tmp);
+   }
+
+
+@@ -2510,7 +2510,7 @@
+   }
+
+   if (!v1export) {
+-    sprintf(tmp, "%llu", (unsigned long long) obj->gp_index);
++    snprintf(tmp, sizeof(obj->gp_index), "%llu", (unsigned long long) obj->gp_index);
+     state->new_prop(state, "gp_index", tmp);
+   }
+
+@@ -2532,15 +2532,17 @@
+   switch (obj->type) {
+   case HWLOC_OBJ_NUMANODE:
+     if (obj->attr->numanode.local_memory) {
+-      sprintf(tmp, "%llu", (unsigned long long) obj->attr->numanode.local_memory);
++      snprintf(tmp, sizeof(obj->attr->numanode.local_memory), "%llu", (unsigned long long) obj->attr->numanode.local_memory);
+       state->new_prop(state, "local_memory", tmp);
+     }
+     for(i=0; i<obj->attr->numanode.page_types_len; i++) {
+       struct hwloc__xml_export_state_s childstate;
+       state->new_child(state, &childstate, "page_type");
+-      sprintf(tmp, "%llu", (unsigned long long) obj->attr->numanode.page_types[i].size);
++      snprintf(tmp, sizeof(obj->attr->numanode.page_types[i].size),
++               "%llu", (unsigned long long) obj->attr->numanode.page_types[i].size);
+       childstate.new_prop(&childstate, "size", tmp);
+-      sprintf(tmp, "%llu", (unsigned long long) obj->attr->numanode.page_types[i].count);
++      snprintf(tmp, sizeof(obj->attr->numanode.page_types[i].count),
++               "%llu", (unsigned long long) obj->attr->numanode.page_types[i].count);
+       childstate.new_prop(&childstate, "count", tmp);
+       childstate.end_object(&childstate, "page_type");
+     }
+@@ -2554,39 +2556,39 @@
+   case HWLOC_OBJ_L2ICACHE:
+   case HWLOC_OBJ_L3ICACHE:
+   case HWLOC_OBJ_MEMCACHE:
+-    sprintf(tmp, "%llu", (unsigned long long) obj->attr->cache.size);
++    snprintf(tmp, sizeof(obj->attr->cache.size), "%llu", (unsigned long long) obj->attr->cache.size);
+     state->new_prop(state, "cache_size", tmp);
+-    sprintf(tmp, "%u", obj->attr->cache.depth);
++    snprintf(tmp, 3,"%u", obj->attr->cache.depth);
+     state->new_prop(state, "depth", tmp);
+-    sprintf(tmp, "%u", (unsigned) obj->attr->cache.linesize);
++    snprintf(tmp, 3, "%u", (unsigned) obj->attr->cache.linesize);
+     state->new_prop(state, "cache_linesize", tmp);
+-    sprintf(tmp, "%d", obj->attr->cache.associativity);
++    snprintf(tmp, 3, "%d", obj->attr->cache.associativity);
+     state->new_prop(state, "cache_associativity", tmp);
+-    sprintf(tmp, "%d", (int) obj->attr->cache.type);
++    snprintf(tmp, 3, "%d", (int) obj->attr->cache.type);
+     state->new_prop(state, "cache_type", tmp);
+     break;
+   case HWLOC_OBJ_GROUP:
+     if (v1export) {
+-      sprintf(tmp, "%u", obj->attr->group.depth);
++      snprintf(tmp, 3, "%u", obj->attr->group.depth);
+       state->new_prop(state, "depth", tmp);
+       if (obj->attr->group.dont_merge)
+         state->new_prop(state, "dont_merge", "1");
+     } else {
+-      sprintf(tmp, "%u", obj->attr->group.kind);
++      snprintf(tmp, 3, "%u", obj->attr->group.kind);
+       state->new_prop(state, "kind", tmp);
+-      sprintf(tmp, "%u", obj->attr->group.subkind);
++      snprintf(tmp, 3, "%u", obj->attr->group.subkind);
+       state->new_prop(state, "subkind", tmp);
+       if (obj->attr->group.dont_merge)
+         state->new_prop(state, "dont_merge", "1");
+     }
+     break;
+   case HWLOC_OBJ_BRIDGE:
+-    sprintf(tmp, "%d-%d", (int) obj->attr->bridge.upstream_type, (int) obj->attr->bridge.downstream_type);
++    snprintf(tmp, 6, "%d-%d", (int) obj->attr->bridge.upstream_type, (int) obj->attr->bridge.downstream_type);
+     state->new_prop(state, "bridge_type", tmp);
+-    sprintf(tmp, "%u", obj->attr->bridge.depth);
++    snprintf(tmp, 3, "%u", obj->attr->bridge.depth);
+     state->new_prop(state, "depth", tmp);
+     if (obj->attr->bridge.downstream_type == HWLOC_OBJ_BRIDGE_PCI) {
+-      sprintf(tmp, "%04x:[%02x-%02x]",
++      snprintf(tmp, 17, "%04x:[%02x-%02x]",
+ 	      (unsigned) obj->attr->bridge.downstream.pci.domain,
+ 	      (unsigned) obj->attr->bridge.downstream.pci.secondary_bus,
+ 	      (unsigned) obj->attr->bridge.downstream.pci.subordinate_bus);
+@@ -2596,23 +2598,23 @@
+       break;
+     /* FALLTHRU */
+   case HWLOC_OBJ_PCI_DEVICE:
+-    sprintf(tmp, "%04x:%02x:%02x.%01x",
++    snprintf(tmp, 20, "%04x:%02x:%02x.%01x",
+ 	    (unsigned) obj->attr->pcidev.domain,
+ 	    (unsigned) obj->attr->pcidev.bus,
+ 	    (unsigned) obj->attr->pcidev.dev,
+ 	    (unsigned) obj->attr->pcidev.func);
+     state->new_prop(state, "pci_busid", tmp);
+-    sprintf(tmp, "%04x [%04x:%04x] [%04x:%04x] %02x",
++    snprintf(tmp, 34, "%04x [%04x:%04x] [%04x:%04x] %02x",
+ 	    (unsigned) obj->attr->pcidev.class_id,
+ 	    (unsigned) obj->attr->pcidev.vendor_id, (unsigned) obj->attr->pcidev.device_id,
+ 	    (unsigned) obj->attr->pcidev.subvendor_id, (unsigned) obj->attr->pcidev.subdevice_id,
+ 	    (unsigned) obj->attr->pcidev.revision);
+     state->new_prop(state, "pci_type", tmp);
+-    sprintf(tmp, "%f", obj->attr->pcidev.linkspeed);
++    snprintf(tmp, 3, "%f", obj->attr->pcidev.linkspeed);
+     state->new_prop(state, "pci_link_speed", tmp);
+     break;
+   case HWLOC_OBJ_OS_DEVICE:
+-    sprintf(tmp, "%d", (int) obj->attr->osdev.type);
++    snprintf(tmp, 3, "%d", (int) obj->attr->osdev.type);
+     state->new_prop(state, "osdev_type", tmp);
+     break;
+   default:
+@@ -2709,11 +2711,11 @@
+       }
+
+       state->new_child(state, &childstate, "distances");
+-      sprintf(tmp, "%u", nbobjs);
++      snprintf(tmp, 3, "%u", nbobjs);
+       childstate.new_prop(&childstate, "nbobjs", tmp);
+-      sprintf(tmp, "%d", depth);
++      snprintf(tmp, 3, "%d", depth);
+       childstate.new_prop(&childstate, "relative_depth", tmp);
+-      sprintf(tmp, "%f", 1.f);
++      snprintf(tmp, 3, "%f", 1.f);
+       childstate.new_prop(&childstate, "latency_base", tmp);
+       for(i=0; i<nbobjs; i++) {
+         for(j=0; j<nbobjs; j++) {
+@@ -2721,7 +2723,7 @@
+ 	  unsigned k = logical_to_v2array[i]*nbobjs+logical_to_v2array[j];
+ 	  struct hwloc__xml_export_state_s greatchildstate;
+ 	  childstate.new_child(&childstate, &greatchildstate, "latency");
+-	  sprintf(tmp, "%f", (float) dist->values[k]);
++	  snprintf(tmp, 3, "%f", (float) dist->values[k]);
+ 	  greatchildstate.new_prop(&greatchildstate, "value", tmp);
+ 	  greatchildstate.end_object(&greatchildstate, "latency");
+ 	}
+@@ -2931,9 +2933,9 @@
+     for(_j=0; \
+ 	_i+_j<(nr) && _j<maxperline; \
+ 	_j++) \
+-      _len += sprintf(_tmp+_len, format " ", (type) (values)[_i+_j]); \
++      _len += snprintf(_tmp+_len, 255, format " ", (type) (values)[_i+_j]); \
+     _i += _j; \
+-    sprintf(_tmp2, "%lu", (unsigned long) _len); \
++    snprintf(_tmp2, 16, "%lu", (unsigned long) _len); \
+     _childstate.new_prop(&_childstate, "length", _tmp2); \
+     _childstate.add_content(&_childstate, _tmp, _len); \
+     _childstate.end_object(&_childstate, tagname); \
+@@ -2952,9 +2954,9 @@
+     for(_j=0; \
+ 	_i+_j<(nr) && _j<maxperline; \
+ 	_j++) \
+-      _len += sprintf(_tmp+_len, "%s:%llu ", hwloc_obj_type_string((objs)[_i+_j]->type), (unsigned long long) (objs)[_i+_j]->gp_index); \
++      _len += snprintf(_tmp+_len, 255, "%s:%llu ", hwloc_obj_type_string((objs)[_i+_j]->type), (unsigned long long) (objs)[_i+_j]->gp_index); \
+     _i += _j; \
+-    sprintf(_tmp2, "%lu", (unsigned long) _len); \
++    snprintf(_tmp2, "%lu", 16, (unsigned long) _len); \
+     _childstate.new_prop(&_childstate, "length", _tmp2); \
+     _childstate.add_content(&_childstate, _tmp, _len); \
+     _childstate.end_object(&_childstate, tagname); \
+@@ -2975,9 +2977,9 @@
+     state.new_prop(&state, "type", hwloc_obj_type_string(dist->unique_type));
+   }
+
+-  sprintf(tmp, "%u", nbobjs);
++  snprintf(tmp, 3, "%u", nbobjs);
+   state.new_prop(&state, "nbobjs", tmp);
+-  sprintf(tmp, "%lu", dist->kind);
++  snprintf(tmp, sizeof(dist->kind), "%lu", dist->kind);
+   state.new_prop(&state, "kind", tmp);
+   if (dist->name)
+     state.new_prop(&state, "name", dist->name);
+@@ -3029,7 +3031,7 @@
+       parentstate->new_child(parentstate, &state, "support");   \
+       state.new_prop(&state, "name", #_cat "." #_name);         \
+       if (topology->support._cat->_name != 1) {                 \
+-        sprintf(tmp, "%u", topology->support._cat->_name); \
++        snprintf(tmp, 3, "%u", topology->support._cat->_name); \
+         state.new_prop(&state, "value", tmp);                   \
+       }                                                         \
+       state.end_object(&state, "support");                      \
+@@ -3264,26 +3266,29 @@
+
+     parentstate->new_child(parentstate, &state, "diff");
+
+-    sprintf(tmp, "%d", (int) diff->generic.type);
++    snprintf(tmp, 3, "%d", (int) diff->generic.type);
+     state.new_prop(&state, "type", tmp);
+
+     switch (diff->generic.type) {
+     case HWLOC_TOPOLOGY_DIFF_OBJ_ATTR:
+-      sprintf(tmp, "%d", diff->obj_attr.obj_depth);
++      snprintf(tmp, 3, "%d", diff->obj_attr.obj_depth);
+       state.new_prop(&state, "obj_depth", tmp);
+-      sprintf(tmp, "%u", diff->obj_attr.obj_index);
++      snprintf(tmp, 3, "%u", diff->obj_attr.obj_index);
+       state.new_prop(&state, "obj_index", tmp);
+
+-      sprintf(tmp, "%d", (int) diff->obj_attr.diff.generic.type);
++      snprintf(tmp, 3, "%d", (int) diff->obj_attr.diff.generic.type);
+       state.new_prop(&state, "obj_attr_type", tmp);
+
+       switch (diff->obj_attr.diff.generic.type) {
+       case HWLOC_TOPOLOGY_DIFF_OBJ_ATTR_SIZE:
+-	sprintf(tmp, "%llu", (unsigned long long) diff->obj_attr.diff.uint64.index);
++	snprintf(tmp, sizeof(diff->obj_attr.diff.uint64.index), "%llu",
++             (unsigned long long) diff->obj_attr.diff.uint64.index);
+ 	state.new_prop(&state, "obj_attr_index", tmp);
+-	sprintf(tmp, "%llu", (unsigned long long) diff->obj_attr.diff.uint64.oldvalue);
++	snprintf(tmp, sizeof(diff->obj_attr.diff.uint64.oldvalue),
++            "%llu", (unsigned long long) diff->obj_attr.diff.uint64.oldvalue);
+ 	state.new_prop(&state, "obj_attr_oldvalue", tmp);
+-	sprintf(tmp, "%llu", (unsigned long long) diff->obj_attr.diff.uint64.newvalue);
++	snprintf(tmp, sizeof(diff->obj_attr.diff.uint64.newvalue),
++             "%llu", (unsigned long long) diff->obj_attr.diff.uint64.newvalue);
+ 	state.new_prop(&state, "obj_attr_newvalue", tmp);
+ 	break;
+       case HWLOC_TOPOLOGY_DIFF_OBJ_ATTR_NAME:
+@@ -3516,7 +3521,7 @@
+   parentstate->new_child(parentstate, &state, "userdata");
+   if (name)
+     state.new_prop(&state, "name", name);
+-  sprintf(tmp, "%lu", (unsigned long) length);
++  snprintf(tmp, sizeof(length), "%lu", (unsigned long) length);
+   state.new_prop(&state, "length", tmp);
+   if (encoded)
+     state.new_prop(&state, "encoding", "base64");

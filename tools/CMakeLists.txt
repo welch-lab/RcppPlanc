@@ -97,10 +97,8 @@ add_library(hw_detect OBJECT "${PROJECT_SOURCE_DIR}/../src/common/hw_detect.c")
             VERSION 2.9.3
             DOWNLOAD_ONLY
         )
-        file(STRINGS ${PROJECT_SOURCE_DIR}/cmakeData/remove_assert_hwloc.txt hwloc_ASSERT_PATCH_LIST)
-
-        #list(TRANSFORM "hwloc_ASSERT_PATCH_LIST" PREPEND "${hwloc_SOURCE_DIR}/")
-        foreach(targetfile IN LISTS hwloc_ASSERT_PATCH_LIST)
+        file(STRINGS ${PROJECT_SOURCE_DIR}/cmakeData/patch_hwloc.txt hwloc_PATCH_LIST)
+        foreach(targetfile IN LISTS hwloc_PATCH_LIST)
             file(COPY_FILE "${hwloc_SOURCE_DIR}/${targetfile}" "${hwloc_SOURCE_DIR}/${targetfile}.old")
             add_custom_command(OUTPUT ${targetfile}
                     COMMAND ${CMAKE_COMMAND} -Din_file:FILEPATH="${targetfile}.old"

@@ -1,0 +1,26 @@
+Index: include/hwloc/rsmi.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/include/hwloc/rsmi.h b/include/hwloc/rsmi.h
+--- a/include/hwloc/rsmi.h	(revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
++++ b/include/hwloc/rsmi.h	(date 1699413113258)
+@@ -85,7 +85,7 @@
+   bus = ((bdfid & 0xffff)>>8) & 0xff;
+   device = ((bdfid & 0xff)>>3) & 0x1f;
+
+-  sprintf(path, "/sys/bus/pci/devices/%04x:%02x:%02x.0/local_cpus", domain, bus, device);
++  snprintf(path, HWLOC_RSMI_DEVICE_SYSFS_PATH_MAX, "/sys/bus/pci/devices/%04x:%02x:%02x.0/local_cpus", domain, bus, device);
+   if (hwloc_linux_read_path_as_cpumask(path, set) < 0
+       || hwloc_bitmap_iszero(set))
+     hwloc_bitmap_copy(set, hwloc_topology_get_complete_cpuset(topology));
+@@ -169,7 +169,7 @@
+   if (RSMI_STATUS_SUCCESS != ret)
+     uuid[0] = '\0';
+   else
+-    sprintf(uuid, "%lx", id);
++    snprintf(uuid, sizeof(id), "%lx", id);
+
+   osdev = NULL;
+   while ((osdev = hwloc_get_next_osdev(topology, osdev)) != NULL) {

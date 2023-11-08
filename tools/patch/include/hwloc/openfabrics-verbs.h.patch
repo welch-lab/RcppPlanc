@@ -1,0 +1,17 @@
+Index: include/hwloc/openfabrics-verbs.h
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/include/hwloc/openfabrics-verbs.h b/include/hwloc/openfabrics-verbs.h
+--- a/include/hwloc/openfabrics-verbs.h	(revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
++++ b/include/hwloc/openfabrics-verbs.h	(date 1699413113265)
+@@ -76,7 +76,7 @@
+     return -1;
+   }
+
+-  sprintf(path, "/sys/class/infiniband/%s/device/local_cpus",
++  snprintf(path, HWLOC_OPENFABRICS_VERBS_SYSFS_PATH_MAX, "/sys/class/infiniband/%s/device/local_cpus",
+ 	  ibv_get_device_name(ibdev));
+   if (hwloc_linux_read_path_as_cpumask(path, set) < 0
+       || hwloc_bitmap_iszero(set))

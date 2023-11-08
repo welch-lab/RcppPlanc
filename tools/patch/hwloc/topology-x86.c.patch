@@ -42,3 +42,12 @@ diff --git a/hwloc/topology-x86.c b/hwloc/topology-x86.c
        data->nbprocs = hwloc_bitmap_weight(set);
      } else {
        fprintf(stderr, "hwloc/x86: Ignoring dumped cpuid directory.\n");
+@@ -1728,7 +1728,7 @@
+   path = malloc(strlen(src_cpuiddump_path) + strlen("/hwloc-cpuid-info") + 1);
+   if (!path)
+     goto out_with_dir;
+-  sprintf(path, "%s/hwloc-cpuid-info", src_cpuiddump_path);
++  snprintf(path, 20, "%s/hwloc-cpuid-info", src_cpuiddump_path);
+   file = fopen(path, "r");
+   if (!file) {
+     fprintf(stderr, "hwloc/x86: Couldn't open dumped cpuid summary %s\n", path);
