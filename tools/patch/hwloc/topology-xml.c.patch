@@ -338,18 +338,17 @@ diff --git a/hwloc/topology-xml.c b/hwloc/topology-xml.c
          state.new_prop(&state, "value", tmp);                   \
        }                                                         \
        state.end_object(&state, "support");                      \
-@@ -3114,8 +3116,8 @@
+@@ -3114,9 +3116,8 @@
          free(setstring);
          break;
        }
--      default:
+       default:
 -        assert(0);
-+      //default:
-+      //  assert(0);
+         break;
        }
        vstate.end_object(&vstate, "memattr_value");
      }
-@@ -3264,26 +3266,29 @@
+@@ -3264,26 +3265,29 @@
 
      parentstate->new_child(parentstate, &state, "diff");
 
@@ -386,18 +385,17 @@ diff --git a/hwloc/topology-xml.c b/hwloc/topology-xml.c
         state.new_prop(&state, "obj_attr_newvalue", tmp);
         break;
        case HWLOC_TOPOLOGY_DIFF_OBJ_ATTR_NAME:
-@@ -3296,8 +3301,8 @@
+@@ -3296,8 +3300,8 @@
        }
 
        break;
--    default:
+     default:
 -      assert(0);
-+    //default:
-+    //  assert(0);
++      break;
      }
      state.end_object(&state, "diff");
 
-@@ -3322,7 +3327,7 @@
+@@ -3322,7 +3326,7 @@
      return -1;
    }
 
@@ -406,7 +404,7 @@ diff --git a/hwloc/topology-xml.c b/hwloc/topology-xml.c
 
    if (flags & ~HWLOC_TOPOLOGY_EXPORT_XML_FLAG_V1) {
      errno = EINVAL;
-@@ -3370,7 +3375,7 @@
+@@ -3370,7 +3374,7 @@
      return -1;
    }
 
@@ -415,7 +413,7 @@ diff --git a/hwloc/topology-xml.c b/hwloc/topology-xml.c
 
    if (flags & ~HWLOC_TOPOLOGY_EXPORT_XML_FLAG_V1) {
      errno = EINVAL;
-@@ -3425,7 +3430,7 @@
+@@ -3425,7 +3429,7 @@
    }
 
    hwloc_components_init();
@@ -424,7 +422,7 @@ diff --git a/hwloc/topology-xml.c b/hwloc/topology-xml.c
 
    hwloc_localeswitch_init();
 
-@@ -3466,7 +3471,7 @@
+@@ -3466,7 +3470,7 @@
    }
 
    hwloc_components_init();
@@ -433,7 +431,7 @@ diff --git a/hwloc/topology-xml.c b/hwloc/topology-xml.c
 
    hwloc_localeswitch_init();
 
-@@ -3491,7 +3496,7 @@
+@@ -3491,7 +3495,7 @@
  {
    int force_nolibxml;
 
@@ -442,7 +440,7 @@ diff --git a/hwloc/topology-xml.c b/hwloc/topology-xml.c
 
    force_nolibxml = hwloc_nolibxml_export();
    if (!hwloc_libxml_callbacks || (hwloc_nolibxml_callbacks && force_nolibxml))
-@@ -3516,7 +3521,7 @@
+@@ -3516,7 +3520,7 @@
    parentstate->new_child(parentstate, &state, "userdata");
    if (name)
      state.new_prop(&state, "name", name);
@@ -451,7 +449,7 @@ diff --git a/hwloc/topology-xml.c b/hwloc/topology-xml.c
    state.new_prop(&state, "length", tmp);
    if (encoded)
      state.new_prop(&state, "encoding", "base64");
-@@ -3547,19 +3552,19 @@
+@@ -3547,19 +3551,19 @@
      int encoded;
      size_t encoded_length;
      const char *realname;
@@ -474,7 +472,7 @@ diff --git a/hwloc/topology-xml.c b/hwloc/topology-xml.c
        realname = NULL;
      }
      hwloc__export_obj_userdata(state, encoded, realname, length, buffer, encoded_length);
-@@ -3585,7 +3590,7 @@
+@@ -3585,7 +3589,7 @@
      return -1;
    }
 
@@ -483,7 +481,7 @@ diff --git a/hwloc/topology-xml.c b/hwloc/topology-xml.c
 
    if (name && hwloc__xml_export_check_buffer(name, strlen(name)) < 0) {
      errno = EINVAL;
-@@ -3600,7 +3605,7 @@
+@@ -3600,7 +3604,7 @@
    }
 
    ret = hwloc_encode_to_base64(buffer, length, encoded_buffer, encoded_length+1);
@@ -492,7 +490,7 @@ diff --git a/hwloc/topology-xml.c b/hwloc/topology-xml.c
 
    hwloc__export_obj_userdata(state, 1, name, length, encoded_buffer, encoded_length);
 
-@@ -3646,7 +3651,7 @@
+@@ -3646,7 +3650,7 @@
    const char *local_basename;
    int err;
 

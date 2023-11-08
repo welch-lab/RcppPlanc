@@ -4,8 +4,8 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 <+>UTF-8
 ===================================================================
 diff --git a/hwloc/topology-synthetic.c b/hwloc/topology-synthetic.c
---- a/hwloc/topology-synthetic.c	(revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
-+++ b/hwloc/topology-synthetic.c	(date 1699070814857)
+--- a/hwloc/topology-synthetic.c        (revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
++++ b/hwloc/topology-synthetic.c        (date 1699070814857)
 @@ -13,7 +13,7 @@
  #include "private/debug.h"
 
@@ -17,15 +17,15 @@ diff --git a/hwloc/topology-synthetic.c b/hwloc/topology-synthetic.c
  #endif
 @@ -256,14 +256,14 @@
 
- 	loops[cur_loop].step = step;
- 	loops[cur_loop].nb = nb;
--	assert(nb);
--	assert(step);
-+	//assert(nb);
-+	//assert(step);
- 	if (step < minstep)
- 	  minstep = step;
- 	nbs *= nb;
+        loops[cur_loop].step = step;
+        loops[cur_loop].nb = nb;
+-       assert(nb);
+-       assert(step);
++       //assert(nb);
++       //assert(step);
+        if (step < minstep)
+          minstep = step;
+        nbs *= nb;
        }
      }
 -    assert(nbs);
@@ -37,13 +37,11 @@ diff --git a/hwloc/topology-synthetic.c b/hwloc/topology-synthetic.c
      break;
    case HWLOC_OBJ_PU:
      break;
--  default:
-+  //default:
+   default:
      /* Should never happen */
 -    assert(0);
--    break;
 +  //  assert(0);
-+  //  break;
+     break;
    }
  }
 
@@ -83,10 +81,10 @@ diff --git a/hwloc/topology-synthetic.c b/hwloc/topology-synthetic.c
        hwloc_obj_t *level;
 
        if (obj->depth < 0) {
--	assert(obj->depth == HWLOC_TYPE_DEPTH_NUMANODE);
-+	//assert(obj->depth == HWLOC_TYPE_DEPTH_NUMANODE);
- 	total = topology->slevels[HWLOC_SLEVEL_NUMANODE].nbobjs;
- 	level = topology->slevels[HWLOC_SLEVEL_NUMANODE].objs;
+-       assert(obj->depth == HWLOC_TYPE_DEPTH_NUMANODE);
++       //assert(obj->depth == HWLOC_TYPE_DEPTH_NUMANODE);
+        total = topology->slevels[HWLOC_SLEVEL_NUMANODE].nbobjs;
+        level = topology->slevels[HWLOC_SLEVEL_NUMANODE].objs;
        } else {
 @@ -1401,7 +1401,7 @@
        }
@@ -129,5 +127,5 @@ diff --git a/hwloc/topology-synthetic.c b/hwloc/topology-synthetic.c
 -      assert(hwloc__obj_type_is_normal(node->parent->type)); /* only depth-1 memory children for now */
 +      //assert(hwloc__obj_type_is_normal(node->parent->type)); /* only depth-1 memory children for now */
        if (node->parent->depth != pdepth) {
- 	if (verbose)
- 	  fprintf(stderr, "Cannot export to synthetic v1 if memory is attached to parents at different depths.\n");
+        if (verbose)
+          fprintf(stderr, "Cannot export to synthetic v1 if memory is attached to parents at different depths.\n");
