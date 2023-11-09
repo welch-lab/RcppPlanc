@@ -136,7 +136,9 @@ void absmat(T *X) {
 template <class T>
 void makeSparse(const double sparsity, T(*X)) {
   // make a matrix sparse
+#ifndef USING_R
   srand(RAND_SEED_SPARSE);
+#endif
 #pragma omp parallel for default(none) shared(sparsity, X)
   for (arma::uword j = 0; j < X->n_cols; j++) {
     for (arma::uword i = 0; i < X->n_rows; i++) {
@@ -147,7 +149,9 @@ void makeSparse(const double sparsity, T(*X)) {
 
 void randNMF(const arma::uword m, const arma::uword n, const arma::uword k, const double sparsity,
              arma::mat *A) {
+#ifndef USING_R
   srand(RAND_SEED);
+#endif
   arma::mat W = 10 * arma::randu<arma::mat>(m, k);
   arma::mat H = 10 * arma::randu<arma::mat>(n, k);
   if (sparsity < 1) {
