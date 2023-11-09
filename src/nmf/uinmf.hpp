@@ -27,7 +27,7 @@ private:
     void sampleUandV() {
         // U and V must be sampled from the same random set of cells, thus put together
 #ifdef _VERBOSE
-            std::cout << "Initializing U and V matrices by sampling from input" << std::endl;
+            Rcpp::Rcout << "Initializing U and V matrices by sampling from input" << std::endl;
 #endif
         std::unique_ptr<arma::mat> U;
         std::unique_ptr<arma::mat> V;
@@ -50,7 +50,7 @@ private:
         // Initialization is different than regular iNMF, so "2"
         // NOTE that this is also different from the initW2 in onlineINMF
 #ifdef _VERBOSE
-        std::cout << "Randomly initializing W matrix" << std::endl;
+        Rcpp::Rcout << "Randomly initializing W matrix" << std::endl;
 #endif
         this->W = std::make_unique<arma::mat>();
         arma::mat* Wptr = this->W.get();
@@ -59,7 +59,7 @@ private:
 
     void initH() override {
 #ifdef _VERBOSE
-        std::cout << "Randomly initializing H matrices" << std::endl;
+        Rcpp::Rcout << "Randomly initializing H matrices" << std::endl;
 #endif
         std::unique_ptr<arma::mat> H;
         for (arma::uword i = 0; i < this->nDatasets; ++i) {
@@ -107,7 +107,7 @@ private:
 
     void solveH() {
 #ifdef _VERBOSE
-        std::cout << "--Solving UINMF H--  ";
+        Rcpp::Rcout << "--Solving UINMF H--  ";
         std::chrono::system_clock::time_point iter_start_time = std::chrono::system_clock::now();
 #endif
         arma::mat* Wptr = this->W.get();
@@ -148,14 +148,14 @@ private:
 #ifdef _VERBOSE
         std::chrono::system_clock::time_point iter_end_time = std::chrono::system_clock::now();
         std::chrono::duration<double> elapsed_seconds = iter_end_time - iter_start_time;
-        std::cout << "Solving H took " << elapsed_seconds.count() << " sec" << std::endl;
+        Rcpp::Rcout << "Solving H took " << elapsed_seconds.count() << " sec" << std::endl;
 #endif
     }
 
 
     void solveV() {
 #ifdef _VERBOSE
-        std::cout << "--Solving UINMF V--  ";
+        Rcpp::Rcout << "--Solving UINMF V--  ";
         std::chrono::system_clock::time_point iter_start_time = std::chrono::system_clock::now();
 #endif
         arma::mat* Wptr = this->W.get();
@@ -186,13 +186,13 @@ private:
 #ifdef _VERBOSE
         std::chrono::system_clock::time_point iter_end_time = std::chrono::system_clock::now();
         std::chrono::duration<double> elapsed_seconds = iter_end_time - iter_start_time;
-        std::cout << "Solving V took " << elapsed_seconds.count() << " sec" << std::endl;
+        Rcpp::Rcout << "Solving V took " << elapsed_seconds.count() << " sec" << std::endl;
 #endif
     }
 
     void solveU() {
 #ifdef _VERBOSE
-        std::cout << "--Solving UINMF U--  ";
+        Rcpp::Rcout << "--Solving UINMF U--  ";
         std::chrono::system_clock::time_point iter_start_time = std::chrono::system_clock::now();
 #endif
         arma::mat giventInput(this->k, this->INMF_CHUNK_SIZE);
@@ -224,13 +224,13 @@ private:
 #ifdef _VERBOSE
         std::chrono::system_clock::time_point iter_end_time = std::chrono::system_clock::now();
         std::chrono::duration<double> elapsed_seconds = iter_end_time - iter_start_time;
-        std::cout << "Solving U took " << elapsed_seconds.count() << " sec" << std::endl;
+        Rcpp::Rcout << "Solving U took " << elapsed_seconds.count() << " sec" << std::endl;
 #endif
     }
 
     void solveW() {
 #ifdef _VERBOSE
-        std::cout << "--Solving UINMF W--  ";
+        Rcpp::Rcout << "--Solving UINMF W--  ";
         std::chrono::system_clock::time_point iter_start_time = std::chrono::system_clock::now();
 #endif
         arma::mat* Wptr = this->W.get();
@@ -272,7 +272,7 @@ private:
 #ifdef _VERBOSE
         std::chrono::system_clock::time_point iter_end_time = std::chrono::system_clock::now();
         std::chrono::duration<double> elapsed_seconds = iter_end_time - iter_start_time;
-        std::cout << "Solving W took " << elapsed_seconds.count() << " sec" << std::endl;
+        Rcpp::Rcout << "Solving W took " << elapsed_seconds.count() << " sec" << std::endl;
 #endif
     }
 

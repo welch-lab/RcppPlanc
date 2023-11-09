@@ -179,7 +179,7 @@ private:
     void initH() override {
         // Generate place holder of H matrices for all datasets (S1)
 #ifdef _VERBOSE
-        std::cout << "Initializing empty H matrices" << std::endl;
+        Rcpp::Rcout << "Initializing empty H matrices" << std::endl;
 #endif
         std::unique_ptr<arma::mat> H;
         for (arma::uword i = 0; i < this->nDatasets; ++i) {
@@ -192,7 +192,7 @@ private:
     void initNewH() {
         // Generate place holder of H matrices only for new datasets (S2&3)
 #ifdef _VERBOSE
-        std::cout << "Initializing empty H matrices only for new datasets" << std::endl;
+        Rcpp::Rcout << "Initializing empty H matrices only for new datasets" << std::endl;
 #endif
         std::unique_ptr<arma::mat> H;
         unsigned int idx;
@@ -207,7 +207,7 @@ private:
 
     void sampleV() {
 #ifdef _VERBOSE
-            std::cout << "Initializing V matrices by sampling from input" << std::endl;
+            Rcpp::Rcout << "Initializing V matrices by sampling from input" << std::endl;
 #endif
         std::unique_ptr<arma::mat> V;
         std::unique_ptr<arma::mat> VT;
@@ -229,7 +229,7 @@ private:
     void initW2() {
         // Initialization is different than regular iNMF, so "2"
 #ifdef _VERBOSE
-        std::cout << "Randomly initializing W matrix" << std::endl;
+        Rcpp::Rcout << "Randomly initializing W matrix" << std::endl;
 #endif
         // For scenario 1.
         // When scenario 2, call .initW(givenW, false) in wrapper
@@ -274,7 +274,7 @@ private:
     void solveHmini() {
         tic();
 #ifdef _VERBOSE
-        std::cout << "--Solving H of minibatches--  ";
+        Rcpp::Rcout << "--Solving H of minibatches--  ";
 #endif
         arma::mat* Wptr = this->W.get();
         arma::mat given(this->m, this->k);
@@ -295,7 +295,7 @@ private:
         }
         giventGiven.clear();
 #ifdef _VERBOSE
-        std::cout << toc() << " sec" << std::endl;
+        Rcpp::Rcout << toc() << " sec" << std::endl;
 #endif
     }
 
@@ -312,7 +312,7 @@ private:
     void updateAandB() {
         tic();
 #ifdef _VERBOSE
-        std::cout << "--Updating A and B--  ";
+        Rcpp::Rcout << "--Updating A and B--  ";
 #endif
         arma::uword idx;
         for (arma::uword i = 0; i < this->dataIdxNew.size(); ++i) {
@@ -346,14 +346,14 @@ private:
             *Bptr += Emini * *Hminiptr / this->minibatchSizes[idx];
         }
 #ifdef _VERBOSE
-        std::cout << toc() << " sec" << std::endl;
+        Rcpp::Rcout << toc() << " sec" << std::endl;
 #endif
     }
 
     void updateW() {
         tic();
 #ifdef _VERBOSE
-        std::cout << "--Updating W--  ";
+        Rcpp::Rcout << "--Updating W--  ";
 #endif
         arma::mat* Wptr = this->W.get();
         for (arma::uword j = 0; j < this->k; j++) {
@@ -373,14 +373,14 @@ private:
             }
         }
 #ifdef _VERBOSE
-        std::cout << toc() << " sec" << std::endl;
+        Rcpp::Rcout << toc() << " sec" << std::endl;
 #endif
     }
 
     void updateV() {
         tic();
 #ifdef _VERBOSE
-        std::cout << "--Updating V--  ";
+        Rcpp::Rcout << "--Updating V--  ";
 #endif
         arma::uword idx;
         arma::mat* Wptr = this->W.get();
@@ -397,7 +397,7 @@ private:
             }
         }
 #ifdef _VERBOSE
-        std::cout << toc() << " sec" << std::endl;
+        Rcpp::Rcout << toc() << " sec" << std::endl;
 #endif
     }
 
@@ -405,7 +405,7 @@ private:
         // Solve H for all datasets (S1)
         tic();
 #ifdef _VERBOSE
-        std::cout << "--Solving H--  ";
+        Rcpp::Rcout << "--Solving H--  ";
 #endif
         arma::mat* Wptr = this->W.get();
         arma::mat given(this->m, this->k);
@@ -434,7 +434,7 @@ private:
         }
         giventGiven.clear();
 #ifdef _VERBOSE
-        std::cout << toc() << " sec" << std::endl;
+        Rcpp::Rcout << toc() << " sec" << std::endl;
 #endif
     }
 
@@ -505,7 +505,7 @@ private:
         // Main loop of online updating algorithm (S3)
         tic();
 #ifdef _VERBOSE
-        std::cout << "--Solving H with only W--  ";
+        Rcpp::Rcout << "--Solving H with only W--  ";
 #endif
         this->initNewH();
         arma::mat* Wptr = this->W.get();
@@ -538,7 +538,7 @@ private:
         }
         giventGiven.clear();
 #ifdef _VERBOSE
-        std::cout << toc() << " sec" << std::endl;
+        Rcpp::Rcout << toc() << " sec" << std::endl;
 #endif
     }
 
@@ -558,7 +558,7 @@ public:
     void initA(std::vector<arma::mat>& Ainit) {
         // Set A matrices for existing datasets (S2)
 #ifdef _VERBOSE
-        std::cout << "Taking initialized A matrices" << std::endl;
+        Rcpp::Rcout << "Taking initialized A matrices" << std::endl;
 #endif
         std::unique_ptr<arma::mat> A;
         std::unique_ptr<arma::mat> Aold;
@@ -610,7 +610,7 @@ public:
     void initB(std::vector<arma::mat>& Binit) {
         // Set B matrices for existing datasets (S2)
 #ifdef _VERBOSE
-    std::cout << "Taking initialized B matrices" << std::endl;
+    Rcpp::Rcout << "Taking initialized B matrices" << std::endl;
 #endif
         try {
             if (Binit.size() != this->nDatasets) {

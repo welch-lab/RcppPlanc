@@ -16,7 +16,7 @@ private:
     void solveH() {
         tic();
 #ifdef _VERBOSE
-        std::cout << "--Solving H--  ";
+        Rcpp::Rcout << "--Solving H--  ";
 #endif
         arma::mat* Wptr = this->W.get();
         arma::mat given(this->m, this->k);
@@ -45,14 +45,14 @@ private:
         }
         giventGiven.clear();
 #ifdef _VERBOSE
-        std::cout << toc() << " sec" << std::endl;
+        Rcpp::Rcout << toc() << " sec" << std::endl;
 #endif
     }
 
     void solveV() {
         tic();
 #ifdef _VERBOSE
-        std::cout << "--Solving V--  ";
+        Rcpp::Rcout << "--Solving V--  ";
 #endif
         arma::mat* WTptr = this->WT.get();
         arma::mat giventInput(this->k, this->INMF_CHUNK_SIZE);
@@ -82,14 +82,14 @@ private:
         giventGiven.clear();
         giventInput.clear();
 #ifdef _VERBOSE
-        std::cout << toc() << " sec" << std::endl;
+        Rcpp::Rcout << toc() << " sec" << std::endl;
 #endif
     }
 
     void solveW() {
         tic();
 #ifdef _VERBOSE
-        std::cout << "--Solving W--  ";
+        Rcpp::Rcout << "--Solving W--  ";
 #endif
         arma::mat* Wptr = this->W.get();
         arma::mat* WTptr = this->WT.get();
@@ -129,7 +129,7 @@ private:
         giventInput.clear(); ///
         *WTptr = (*Wptr).t();
 #ifdef _VERBOSE
-        std::cout << toc() << " sec" << std::endl;
+        Rcpp::Rcout << toc() << " sec" << std::endl;
 #endif
     }
 
@@ -141,7 +141,7 @@ public:
     void optimizeALS(unsigned int niter, bool verbose = true) {
         // execute private functions here
         if (verbose) {
-            std::cerr << "INMF started, niter=" << niter << std::endl;
+            Rcpp::Rcerr << "INMF started, niter=" << niter << std::endl;
         }
         this->objective_err = this->computeObjectiveError();
         auto start = std::chrono::high_resolution_clock::now();
@@ -160,8 +160,8 @@ public:
         auto end = std::chrono::high_resolution_clock::now();
         if (verbose) {
             auto duration = std::chrono::duration_cast<std::chrono::seconds>(end - start);
-            std::cerr << "Total time:      " << duration.count() << " sec" << std::endl;
-            std::cerr << "Objective error: " << this->objective_err << std::endl;
+            Rcpp::Rcerr << "Total time:      " << duration.count() << " sec" << std::endl;
+            Rcpp::Rcerr << "Objective error: " << this->objective_err << std::endl;
         }
     }
 };

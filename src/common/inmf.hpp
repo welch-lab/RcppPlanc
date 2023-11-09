@@ -83,7 +83,7 @@ namespace planc {
             this->nSum = 0;
             this->nDatasets = 0;
 #ifdef _VERBOSE
-            std::cout << "k=" << k << "; m=" << m << std::endl;
+            Rcpp::Rcout << "k=" << k << "; m=" << m << std::endl;
 #endif
             for (unsigned int i = 0; i < this->Ei.size(); ++i)
             {
@@ -101,8 +101,8 @@ namespace planc {
                 this->nDatasets++;
             }
 #ifdef _VERBOSE
-            std::cout << "nMax=" << this->nMax << "; nSum=" << this->nSum << std::endl;
-            std::cout << "nDatasets=" << this->nDatasets << std::endl;
+            Rcpp::Rcout << "nMax=" << this->nMax << "; nSum=" << this->nSum << std::endl;
+            Rcpp::Rcout << "nDatasets=" << this->nDatasets << std::endl;
 #endif
             // this->initHWV();
             this->lambda = inputlambda;
@@ -176,7 +176,7 @@ namespace planc {
         // }
         void initH(std::vector<arma::mat>& Hinit) {
 #ifdef _VERBOSE
-            std::cout << "Taking initialized H matrices" << std::endl;
+            Rcpp::Rcout << "Taking initialized H matrices" << std::endl;
 #endif
             if (Hinit.size() != this->nDatasets) {
                 std::string msg = "Must provide " +
@@ -209,7 +209,7 @@ namespace planc {
         }
         virtual void initH() {
 #ifdef _VERBOSE
-            std::cout << "Randomly initializing H matrices" << std::endl;
+            Rcpp::Rcout << "Randomly initializing H matrices" << std::endl;
 #endif
             std::unique_ptr<arma::mat> H;
             for (arma::uword i = 0; i < this->nDatasets; ++i) {
@@ -221,7 +221,7 @@ namespace planc {
         }
         void initV(std::vector<arma::mat>& Vinit, bool transpose = true) {
 #ifdef _VERBOSE
-            std::cout << "Taking initialized V matrices" << std::endl;
+            Rcpp::Rcout << "Taking initialized V matrices" << std::endl;
 #endif
             try {
                 if (Vinit.size() != this->nDatasets) {
@@ -260,7 +260,7 @@ namespace planc {
 
         void initV() {
 #ifdef _VERBOSE
-            std::cout << "Randomly initializing V matrices" << std::endl;
+            Rcpp::Rcout << "Randomly initializing V matrices" << std::endl;
 #endif
             std::unique_ptr<arma::mat> V;
             std::unique_ptr<arma::mat> VT;
@@ -277,7 +277,7 @@ namespace planc {
 
         void initW(const arma::mat& Winit, bool transpose = true) {
 #ifdef _VERBOSE
-            std::cout << "Taking initialized W matrix" << std::endl;
+            Rcpp::Rcout << "Taking initialized W matrix" << std::endl;
 #endif
             if (Winit.n_cols != this->k || Winit.n_rows != this->m) {
                 std::string msg = "Given W must be of size " +
@@ -297,7 +297,7 @@ namespace planc {
 
         void initW() {
 #ifdef _VERBOSE
-            std::cout << "Randomly initializing W matrix" << std::endl;
+            Rcpp::Rcout << "Randomly initializing W matrix" << std::endl;
 #endif
             this->W = std::make_unique<arma::mat>();
             this->WT = std::make_unique<arma::mat>();

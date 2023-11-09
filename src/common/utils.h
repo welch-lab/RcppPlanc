@@ -23,19 +23,19 @@ enum helptype { NMF, DISTNMF, NTF, DISTNTF, JOINTNMF, DISTJOINTNMF, HIERNMF };
 // using namespace std;
 
 #ifndef ERR
-#define ERR std::cerr
+#define ERR Rcpp::Rcerr
 #endif
 
 #ifndef WARN
-#define WARN std::cerr
+#define WARN Rcpp::Rcerr
 #endif
 
 #ifndef INFO
-#define INFO std::cout
+#define INFO Rcpp::Rcout
 #endif
 
 #ifndef OUTPUT
-#define OUTPUT std::cout
+#define OUTPUT Rcpp::Rcout
 #endif
 
 constexpr auto EPSILON_1EMINUS16 = 0.00000000000000001;
