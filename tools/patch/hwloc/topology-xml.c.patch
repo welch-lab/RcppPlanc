@@ -1109,7 +1109,7 @@ diff --git a/hwloc/topology-xml.c b/hwloc/topology-xml.c
     * and some distances might disappear in case of restrict, etc.
     */
 -  sprintf(scalestring, "%f", scale);
-+  snprintf(scalestring, 318, "%f", scale);
++  snprintf(scalestring, 20, "%f", scale);
    hwloc_obj_add_info(hwloc_get_root_obj(topology), "xmlv1DistancesScale", scalestring);
  }
  
@@ -1262,7 +1262,7 @@ diff --git a/hwloc/topology-xml.c b/hwloc/topology-xml.c
    case HWLOC_OBJ_NUMANODE:
      if (obj->attr->numanode.local_memory) {
 -      sprintf(tmp, "%llu", (unsigned long long) obj->attr->numanode.local_memory);
-+      snprintf(tmp, sizeof(obj->attr->numanode.local_memory), "%llu", (unsigned long long) obj->attr->numanode.local_memory);
++      snprintf(tmp, 21, "%llu", (unsigned long long) obj->attr->numanode.local_memory);
        state->new_prop(state, "local_memory", tmp);
      }
      for(i=0; i<obj->attr->numanode.page_types_len; i++) {
@@ -1348,7 +1348,7 @@ diff --git a/hwloc/topology-xml.c b/hwloc/topology-xml.c
  	    (unsigned) obj->attr->pcidev.revision);
      state->new_prop(state, "pci_type", tmp);
 -    sprintf(tmp, "%f", obj->attr->pcidev.linkspeed);
-+    snprintf(tmp, 318, "%f", obj->attr->pcidev.linkspeed);
++    snprintf(tmp, 255, "%f", obj->attr->pcidev.linkspeed);
      state->new_prop(state, "pci_link_speed", tmp);
      break;
    case HWLOC_OBJ_OS_DEVICE:
@@ -1388,7 +1388,7 @@ diff --git a/hwloc/topology-xml.c b/hwloc/topology-xml.c
  	  struct hwloc__xml_export_state_s greatchildstate;
  	  childstate.new_child(&childstate, &greatchildstate, "latency");
 -	  sprintf(tmp, "%f", (float) dist->values[k]);
-+         snprintf(tmp, 318, "%f", (float) dist->values[k]);
++         snprintf(tmp, 255, "%f", (float) dist->values[k]);
  	  greatchildstate.new_prop(&greatchildstate, "value", tmp);
  	  greatchildstate.end_object(&greatchildstate, "latency");
  	}
@@ -1459,7 +1459,7 @@ diff --git a/hwloc/topology-xml.c b/hwloc/topology-xml.c
        state.new_prop(&state, "name", #_cat "." #_name);         \
        if (topology->support._cat->_name != 1) {                 \
 -        sprintf(tmp, "%u", topology->support._cat->_name); \
-+        snprintf(tmp, 3, "%u", topology->support._cat->_name); \
++        snprintf(tmp, 4, "%u", topology->support._cat->_name); \
          state.new_prop(&state, "value", tmp);                   \
        }                                                         \
        state.end_object(&state, "support");                      \

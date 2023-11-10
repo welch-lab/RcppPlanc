@@ -21,7 +21,7 @@ FC="$RTOOLS"/bin/gfortran.exe
 
 cd src
 cmake ../tools \
-  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_BUILD_TYPE=RelWithDebInfo \
   -DCMAKE_POSITION_INDEPENDENT_CODE:bool=ON \
   -DR_HOME="$R_HOME"
 
