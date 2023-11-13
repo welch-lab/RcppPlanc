@@ -35,11 +35,11 @@ class MUNMF : public NMF<T> {
   }
 
  public:
-  MUNMF(const T &A, int lowrank, const int ncores = 0) : NMF<T>(A, lowrank) {
+  MUNMF(const T &A, int lowrank, const int& ncores = 0) : NMF<T>(A, lowrank) {
     allocateMatrices();
     this->At = this->A.t();
   }
-  MUNMF(const T &A, const arma::mat &llf, const arma::mat &rlf, const int ncores = 0) : NMF<T>(A, llf, rlf) {
+  MUNMF(const T &A, const arma::mat &llf, const arma::mat &rlf, const int& ncores = 0) : NMF<T>(A, llf, rlf) {
     allocateMatrices();
     this->At = this->A.t();
   }

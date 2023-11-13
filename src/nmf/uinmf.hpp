@@ -294,7 +294,7 @@ public:
         }
     }
 
-    void optimizeUANLS(arma::uword niter=30, bool verbose=true, const int ncores = 0) {
+    void optimizeUANLS(arma::uword niter=30, bool verbose=true, const int& ncores = 0) {
         if (verbose) {
             Rcpp::Rcerr << "UINMF started, niter=" << niter << std::endl;
         }

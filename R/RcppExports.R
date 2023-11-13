@@ -29,13 +29,13 @@
 #' Multiplicative Update (MU).
 #' @param x Input matrix for factorization. Can be either dense or sparse.
 #' @param k Integer. Factor matrix rank.
-#' @param nCores The number of parallel tasks that will be spawned. Only applies to anlsbpp
-#' Default \code{2}
 #' @param niter Integer. Maximum number of NMF interations.
 #' @param algo Algorithm to perform the factorization, choose from "anlsbpp",
 #' "admm", "hals" or "mu". See detailed sections.
 #' @param Winit Initial left-hand factor matrix, must be of size m x k.
 #' @param Hinit Initial right-hand factor matrix, must be of size n x k.
+#' @param nCores The number of parallel tasks that will be spawned. Only applies to anlsbpp
+#' Default \code{2}
 #' @returns A list with the following elements:
 #' \itemize{
 #'  \item{\code{W} - the result left-hand factor matrix}
@@ -45,8 +45,8 @@
 #' @references
 #' Ramakrishnan Kannan and et al., A High-Performance Parallel Algorithm for
 #' Nonnegative Matrix Factorization, PPoPP '16, 2016, 10.1145/2851141.2851152
-nmf <- function(x, k, nCores = 2L, niter = 30L, algo = "anlsbpp", Winit = NULL, Hinit = NULL) {
-    .Call(`_RcppPlanc_nmf`, x, k, nCores, niter, algo, Winit, Hinit)
+nmf <- function(x, k, niter = 30L, algo = "anlsbpp", Winit = NULL, Hinit = NULL, nCores = 2L) {
+    .Call(`_RcppPlanc_nmf`, x, k, niter, algo, Winit, Hinit, nCores)
 }
 
 #' Perform Symmetric Non-negative Matrix Factorization

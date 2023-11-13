@@ -13,7 +13,7 @@ class BPPINMF : public INMF<T> {
 private:
     arma::mat giventGiven;
 
-    void solveH(const int ncores) {
+    void solveH(const int& ncores) {
         tic();
 #ifdef _VERBOSE
         Rcpp::Rcout << "--Solving H--  ";
@@ -49,7 +49,7 @@ private:
 #endif
     }
 
-    void solveV(const int ncores) {
+    void solveV(const int& ncores) {
         tic();
 #ifdef _VERBOSE
         Rcpp::Rcout << "--Solving V--  ";
@@ -86,7 +86,7 @@ private:
 #endif
     }
 
-    void solveW(const int ncores) {
+    void solveW(const int& ncores) {
         tic();
 #ifdef _VERBOSE
         Rcpp::Rcout << "--Solving W--  ";
@@ -138,7 +138,7 @@ public:
 
     }
 
-    void optimizeALS(unsigned int niter, bool verbose = true, const int ncores = 0) {
+    void optimizeALS(unsigned int niter, bool verbose = true, const int& ncores = 0) {
         // execute private functions here
         if (verbose) {
             Rcpp::Rcerr << "INMF started, niter=" << niter << std::endl;

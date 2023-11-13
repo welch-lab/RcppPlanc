@@ -68,7 +68,7 @@ class GNSYMNMF : public NMF<T> {
   }
 
  public:
-  GNSYMNMF(const T &A, int lowrank, const int ncores = 0) : NMF<T>(A, lowrank) {
+  GNSYMNMF(const T &A, int lowrank, const int& ncores = 0) : NMF<T>(A, lowrank) {
     this->W.clear();  //  clear W variable
     allocateMatrices();
     sqnormA = this->normA * this->normA;
@@ -96,7 +96,7 @@ class GNSYMNMF : public NMF<T> {
     cg_tot_iters = 0;
   }
 
-  GNSYMNMF(const T &A, const arma::mat &llf, const arma::mat &rlf, const int ncores = 0) : NMF<T>(A, llf, rlf) {
+  GNSYMNMF(const T &A, const arma::mat &llf, const arma::mat &rlf, const int& ncores = 0) : NMF<T>(A, llf, rlf) {
     this->W.clear();  //  clear W variable
     allocateMatrices();
     sqnormA = this->normA * this->normA;
