@@ -47,14 +47,6 @@ See ‘/check/RcppPlanc.Rcheck/00install.out’ for details.
 This warning is exclusive to the intel compiler and is an issue with RcppArmadillo.
 
 ``` <!-- language: lang-none -->
-
-❯ Found the following directories with names of version control directories:
-    ./src/_deps/highfive-src/.git
-```
-
-  These are not included in the tarball, they are downloaded at configure time from version control tags.
-
-``` <!-- language: lang-none -->
 * checking R files for syntax errors ... WARNING
 Warning in Sys.setlocale("LC_CTYPE", "en_US.UTF-8") :
   OS reports request to set locale to "en_US.UTF-8" cannot be honored
@@ -62,82 +54,15 @@ Warning in Sys.setlocale("LC_CTYPE", "en_US.UTF-8") :
 
 The R-Hub ubuntu containers appear to not have locales installed. At least, some of them.
 
-``` <!-- language: lang-none -->
-* checking data for non-ASCII characters ... [1s/0s] WARNING
-  Error loading dataset 'ctrl.sparse':
-   Error in .requirePackage(package) :
-    unable to find required package 'Matrix'
-
-  Error loading dataset 'stim.sparse':
-   Error in .requirePackage(package) :
-    unable to find required package 'Matrix'
-
-  The dataset(s) may use package(s) not declared in Depends/Imports.
-  ```
-
-Matrix is declared in Suggests. This error does not appear to occur on R-devel.
-
-``` <!-- language: lang-none -->
-❯ checking line endings in Makefiles ... WARNING
-  Found the following Makefile(s) with CR or CRLF line endings:
-    src/Makefile
-    src/_deps/highfive-src/src/benchmarks/Makefile
-    src/_deps/highfive-subbuild/Makefile
-    src/_deps/hwloc-build/Makefile
-    src/_deps/hwloc-subbuild/Makefile
-  Some Unix 'make' programs require LF line endings.
-```
-
-  These are not included in the tarball. They are generated at configure time.
-
-``` <!-- language: lang-none -->
-❯ checking for GNU extensions in Makefiles ... WARNING
-  Found the following file(s) containing GNU extensions:
-    src/Makefile
-    src/_deps/highfive-src/src/benchmarks/Makefile
-    src/_deps/highfive-subbuild/Makefile
-    src/_deps/hwloc-build/Makefile
-    src/_deps/hwloc-subbuild/Makefile
-  Portable Makefiles do not use GNU extensions such as +=, :=, $(shell),
-  $(wildcard), ifeq ... endif, .NOTPARALLEL See section 'Writing portable
-  packages' in the 'Writing R Extensions' manual.
-```
-
-These are generated at configure time by CMake. I imagine that it does not use GNU extensions when run on a system that does not support them.
 
 ``` <!-- language: lang-none -->
 ❯ checking pragmas in C/C++ headers and code ... WARNING
-  Files which contain non-portable pragma(s)
-    'src/_deps/highfive-src/deps/catch2/extras/catch_amalgamated.hpp'
-    'src/_deps/highfive-src/deps/catch2/src/catch2/internal/catch_reusable_string_stream.hpp'
-    'src/_deps/hwloc-src/hwloc/topology-windows.c'
   Files which contain pragma(s) suppressing diagnostics:
-    'src/_deps/highfive-src/deps/catch2/examples/231-Cfg-OutputStreams.cpp'
-    'src/_deps/highfive-src/deps/catch2/extras/catch_amalgamated.cpp'
-    'src/_deps/highfive-src/deps/catch2/extras/catch_amalgamated.hpp'
-    'src/_deps/highfive-src/deps/catch2/src/catch2/catch_template_test_macros.hpp'
-    'src/_deps/highfive-src/deps/catch2/src/catch2/catch_test_case_info.hpp'
-    'src/_deps/highfive-src/deps/catch2/src/catch2/catch_test_spec.hpp'
-    'src/_deps/highfive-src/deps/catch2/src/catch2/internal/catch_reusable_string_stream.hpp'
-    'src/_deps/highfive-src/deps/catch2/src/catch2/internal/catch_template_test_registry.hpp'
-    'src/_deps/highfive-src/deps/catch2/src/catch2/internal/catch_test_macro_impl.hpp'
-    'src/_deps/highfive-src/deps/catch2/src/catch2/internal/catch_test_registry.hpp'
-    'src/_deps/highfive-src/deps/catch2/src/catch2/internal/catch_test_spec_parser.hpp'
-    'src/_deps/highfive-src/deps/catch2/src/catch2/matchers/catch_matchers_floating_point.cpp'
-    'src/_deps/highfive-src/deps/catch2/tests/ExtraTests/X02-DisabledMacros.cpp'
-    'src/_deps/highfive-src/deps/catch2/tests/SelfTest/UsageTests/Compilation.tests.cpp'
-    'src/_deps/highfive-src/deps/catch2/tests/SelfTest/UsageTests/Condition.tests.cpp'
-    'src/_deps/highfive-src/deps/catch2/tests/SelfTest/UsageTests/Exception.tests.cpp'
-    'src/_deps/highfive-src/deps/catch2/tests/SelfTest/UsageTests/Generators.tests.cpp'
-    'src/_deps/highfive-src/deps/catch2/tests/SelfTest/UsageTests/Message.tests.cpp'
-    'src/_deps/highfive-src/deps/catch2/tests/SelfTest/UsageTests/Tricky.tests.cpp'
-    'src/_deps/hwloc-src/hwloc/topology-windows.c'
     'src/_deps/hwloc-src/utils/lstopo/lstopo-draw.c'
     'src/_deps/hwloc-src/utils/lstopo/lstopo-windows.c'
 ```
 
-These are vendored source files. If need be, we can patch them.
-
+Despite its source being bundled alongside hwloc, lstopo (and therefore these source files) are not built.
 
   ``` <!-- language: lang-none -->
 
@@ -150,15 +75,6 @@ These are vendored source files. If need be, we can patch them.
 Static linkage of quite a few libraries will do this. Reported size is from my Windows machine. Unix-alike installs
 use dynamic linkage and embedded hwloc and will be smaller. Linux builds are typically ~5MB even with statically linked
 hwloc.
-
-``` <!-- language: lang-none -->
-
-❯ checking top-level files ... NOTE
-  Non-standard files/directories found at top level:
-    'CMakeLists.txt' 'cmake'
-```
-
-This is CMake standard practice. If need be, they can be moved to src or another directory.
 
 ``` <!-- language: lang-none -->
 ❯ checking line endings in C/C++/Fortran sources/headers ... NOTE
@@ -637,8 +553,7 @@ This is CMake standard practice. If need be, they can be moved to src or another
   Some Unix compilers require LF line endings.
 ```
 
-  These are not included in the tarball, they are downloaded at configure time by git. On UNIX-alikes this note is limited to
-  `src/_deps/hwloc-src/contrib/android/AndroidApp/lstopo/src/main/cpp/lib.c`
+  These are not included in the tarball, they are downloaded at configure time by git. On UNIX-alikes this note is absent.
 
 ``` <!-- language: lang-none -->
 ❯ checking compilation flags used ... NOTE
@@ -648,28 +563,6 @@ This is CMake standard practice. If need be, they can be moved to src or another
 
 These compilation flags are checked at configure time and will not be used if they are not available.
 
-``` <!-- language: lang-none -->
-❯ checking compiled code ... NOTE
-  Note: information on .o files for x64 is not available
-  File 'C:/Users/andrew/AppData/Local/Temp/RtmpMLm9gJ/filec79641d0cf49/RcppPlanc.Rcheck/RcppPlanc/libs/x64/RcppPlanc.dll':
-    Found '_assert', possibly from 'assert' (C)
-    Found 'abort', possibly from 'abort' (C), 'runtime' (Fortran)
-    Found 'exit', possibly from 'exit' (C), 'stop' (Fortran)
-    Found 'rand', possibly from 'rand' (C)
-    Found 'srand', possibly from 'srand' (C)
-
-  Compiled code should not call entry points which might terminate R nor
-  write to stdout/stderr instead of to the console, nor use Fortran I/O
-  nor system RNGs nor [v]sprintf. The detected symbols are linked into
-  the code but might come from libraries and not actually be called.
-
-  See 'Writing portable packages' in the 'Writing R Extensions' manual.
-
-  ```
-
-This is likely from the exception handling routines of included libraries.
-If need be, they can be patched out, but there are enough guards on our R
-wrappers that they will never be called.
 
   ``` <!-- language: lang-none -->
 ❯ checking for non-standard things in the check directory ... NOTE
@@ -707,26 +600,15 @@ This is an Rhub issue. It works locally.
 Per <https://github.com/r-hub/rhub/issues/440> this appears to be a bug.
 
 ``` <!-- language: lang-none -->
-❯ checking examples ... NOTE
-  Examples with CPU (user + system) or elapsed time > 5s
-         user system elapsed
-  inmf 15.049  0.115   1.532
-
-```
-
-Will vary by platform. This was recorded before the example arguments were lowered substantially.
-
-``` <!-- language: lang-none -->
 * checking tests ...
   Running 'testthat.R' [3344s/219s]
 Running R code in 'testthat.R' had CPU time 15.3 times elapsed time
 * checking re-building of vignette outputs ... [110s/12s] NOTE
-Re-building vignettes had CPU time 9.4 times elapsed time
+Re-building vignettes had CPU time 6.1 times elapsed time
  [3346s/220s] NOTE
 
 ```
-
-Only occurs in ubuntu-based docker containers. Likely the default openblas-pthread conflicting with openmp.
+Unsure why this is still occurring as I have pinned threads to two by default in our openmp pragmas. Perhaps openblas-related.
 
 ```c++
   Direct leak of 16 byte(s) in 1 object(s) allocated from:
@@ -755,7 +637,7 @@ Function Rcpp::Vector<19, Rcpp::PreserveStorage> onlineINMF_S1_mem<arma::Mat<dou
 These appear to be issues with rchk's handling of Armadillo's template metaprogramming.
 
 
-0 errors ✔ | 5 warnings ✖ | 7 notes ✖
+0 errors ✔ | 2 warnings ✖ | 6 notes ✖
 
 ## revdepcheck results
 
