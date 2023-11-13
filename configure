@@ -36,6 +36,4 @@ $CMAKE ../tools \
   -DCMAKE_CXX_COMPILER="$CXX" \
   -DR_HOME="$R_HOME"
 
-#rm -rf _deps/hwloc-src/utils/lstopo
-rm -f _deps/highfive-build/CMakeFiles/hdf5/cmake_hdf5_test.c
 echo "" >> _deps/highfive-src/include/highfive/bits/H5Friends.hpp
