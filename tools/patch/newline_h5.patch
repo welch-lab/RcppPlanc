@@ -1,0 +1,17 @@
+Subject: [PATCH] newline in h5friends
+---
+Index: include/highfive/bits/H5Friends.hpp
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/include/highfive/bits/H5Friends.hpp b/include/highfive/bits/H5Friends.hpp
+--- a/include/highfive/bits/H5Friends.hpp	(revision 88fcc898970f93a63be8e25760d6b9f33589690f)
++++ b/include/highfive/bits/H5Friends.hpp	(date 1699654830195)
+@@ -7,4 +7,4 @@
+ // See `CMakeLists.txt` for more information.
+ #define HIGHFIVE_HAS_FRIEND_DECLARATIONS 1
+ #endif
+-#endif
+\ No newline at end of file
++#endif
