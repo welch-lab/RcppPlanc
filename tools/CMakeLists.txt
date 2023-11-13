@@ -138,20 +138,18 @@ add_library(hw_detect OBJECT "${PROJECT_SOURCE_DIR}/../src/common/hw_detect.c")
 endif()
 if(WIN32)
     CPMAddPackage(NAME HighFive
-            GIT_TAG v2.8.0
-            GITHUB_REPOSITORY BlueBrain/HighFive
-            GIT_SUBMODULES "doc"
-            #this is a work around for failure to pass empty args per CMP0097. doc is obviously not a submodule, which is intentional.
+            URL https://github.com/BlueBrain/HighFive/archive/refs/tags/v2.8.0.tar.gz
+            URL_HASH SHA256=cd2502cae61bfb00e32dd18c9dc75289e09ad1db5c2a46d3b0eefd32e0df983b
+            VERSION 2.8.0
             OPTIONS "HIGHFIVE_EXAMPLES OFF" "HIGHFIVE_BUILD_DOCS OFF" "HIGHFIVE_USE_BOOST OFF" "HIGHFIVE_STATIC_HDF5 ON" "HIGHFIVE_UNIT_TESTS OFF"
             "HIGHFIVE_HAS_CONCEPTS OFF"
         )
     target_link_libraries(RcppPlanc PRIVATE "${R_HOME}/bin/x64/R.dll")
 else()
     CPMAddPackage(NAME HighFive
-            GIT_TAG v2.8.0
-            GITHUB_REPOSITORY BlueBrain/HighFive
-            GIT_SUBMODULES "doc"
-            #this is a work around for failure to pass empty args per CMP0097. doc is obviously not a submodule, which is intentional.
+            URL_HASH SHA256=cd2502cae61bfb00e32dd18c9dc75289e09ad1db5c2a46d3b0eefd32e0df983b
+            URL https://github.com/BlueBrain/HighFive/archive/refs/tags/v2.8.0.tar.gz
+            VERSION 2.8.0
             OPTIONS "HIGHFIVE_EXAMPLES OFF" "HIGHFIVE_BUILD_DOCS OFF" "HIGHFIVE_USE_BOOST OFF" "HIGHFIVE_UNIT_TESTS OFF"
             "HIGHFIVE_HAS_CONCEPTS OFF")
 endif()
