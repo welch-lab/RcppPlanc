@@ -112,8 +112,9 @@ add_library(hw_detect OBJECT "${PROJECT_SOURCE_DIR}/../src/common/hw_detect.c")
         if(WIN32)
     add_custom_command(OUTPUT "${hwloc_SOURCE_DIR}/Makefile"
             DEPENDS hwloc_patch
-    COMMAND ${hwloc_SOURCE_DIR}/configure --target=x86_64-pc-mingw64 --with-pic --prefix=${hwloc_SOURCE_DIR}/out/ --disable-picky --enable-shared=no --enable-static=yes
-    --disable-cairo --disable-libxml2 --disable-io --disable-plugin-dlopen --disable-plugin-ltdl --enable-embedded-mode
+    COMMAND ${CMAKE_COMMAND} -E env "CFLAGS=-Wno-comment -Wno-unused" sh ${hwloc_SOURCE_DIR}/configure --target=x86_64-pc-mingw64 --with-pic
+            --prefix=${hwloc_SOURCE_DIR}/out/ --disable-picky --enable-shared=no --enable-static=yes --disable-cairo --disable-libxml2 --disable-io --disable-plugin-dlopen
+            --disable-plugin-ltdl --enable-embedded-mode
     WORKING_DIRECTORY "${hwloc_SOURCE_DIR}"
     VERBATIM)
         else()
