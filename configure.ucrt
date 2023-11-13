@@ -28,4 +28,4 @@ cmake ../tools \
 mv Makefile Makefile.ucrt
 rm -rf _deps/highfive-src/.git
 rm -rf _deps/hwloc-src/utils/lstopo
-rm -f _deps/highfive-build/cmake_hdf5_test.c
+rm -f _deps/highfive-build/CMakeFiles/hdf5/cmake_hdf5_test.c
