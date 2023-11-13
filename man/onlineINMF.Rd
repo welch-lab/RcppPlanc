@@ -9,6 +9,7 @@ onlineINMF(
   newDatasets = NULL,
   project = FALSE,
   k = 20,
+  nCores = 2,
   lambda = 5,
   maxEpoch = 5,
   minibatchSize = 5000,
@@ -33,6 +34,9 @@ Default  \code{FALSE}.}
 
 \item{k}{Integer. Inner dimensionality to factorize the datasets into.
 Default \code{20}.}
+
+\item{nCores}{The number of parallel tasks that will be spawned.
+Default \code{2}}
 
 \item{lambda}{Regularization parameter. Larger values penalize
 dataset-specific effects more strongly (i.e. alignment should increase as

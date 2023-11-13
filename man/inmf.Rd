@@ -7,6 +7,7 @@
 inmf(
   objectList,
   k = 20,
+  nCores = 2,
   lambda = 5,
   niter = 30,
   Hinit = NULL,
@@ -22,6 +23,9 @@ same class. Viable classes include: matrix, \linkS4class{dgCMatrix},
 
 \item{k}{Integer. Inner dimensionality to factorize the datasets into.
 Default \code{20}.}
+
+\item{nCores}{The number of parallel tasks that will be spawned.
+Default \code{2}}
 
 \item{lambda}{Regularization parameter. Larger values penalize
 dataset-specific effects more strongly (i.e. alignment should increase as

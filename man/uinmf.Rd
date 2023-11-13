@@ -5,7 +5,15 @@
 \title{Perform Mosaic Integrative Non-negative Matrix Factorization with Unshared
 Features}
 \usage{
-uinmf(objectList, unsharedList, k = 20, lambda = 5, niter = 30, verbose = TRUE)
+uinmf(
+  objectList,
+  unsharedList,
+  k = 20,
+  nCores = 2,
+  lambda = 5,
+  niter = 30,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{objectList}{list of input datasets. List elements should all be of the
@@ -17,6 +25,9 @@ requirement as \code{objectList}.}
 
 \item{k}{Integer. Inner dimensionality to factorize the datasets into.
 Default \code{20}.}
+
+\item{nCores}{The number of parallel tasks that will be spawned.
+Default \code{2}.}
 
 \item{lambda}{Regularization parameter. Use one number for all datasets or a
 vector to specify for each dataset. Larger values penalize dataset-specific

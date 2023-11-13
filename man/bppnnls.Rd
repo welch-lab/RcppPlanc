@@ -5,14 +5,17 @@
 \alias{bppnnls_prod}
 \title{Block Principal Pivoted Non-Negative Least Squares}
 \usage{
-bppnnls(C, B)
+bppnnls(C, B, nCores = 2L)
 
-bppnnls_prod(CtC, CtB)
+bppnnls_prod(CtC, CtB, nCores = 2L)
 }
 \arguments{
 \item{C}{Input dense \eqn{C} matrix}
 
 \item{B}{Input \eqn{B} matrix of either dense or sparse form}
+
+\item{nCores}{The number of parallel tasks that will be spawned.
+Default \code{2}}
 
 \item{CtC}{The \eqn{C^\mathsf{T}C} matrix, see description.}
 

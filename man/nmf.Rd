@@ -4,12 +4,23 @@
 \alias{nmf}
 \title{Perform Non-negative Matrix Factorization}
 \usage{
-nmf(x, k, niter = 30L, algo = "anlsbpp", Winit = NULL, Hinit = NULL)
+nmf(
+  x,
+  k,
+  nCores = 2L,
+  niter = 30L,
+  algo = "anlsbpp",
+  Winit = NULL,
+  Hinit = NULL
+)
 }
 \arguments{
 \item{x}{Input matrix for factorization. Can be either dense or sparse.}
 
 \item{k}{Integer. Factor matrix rank.}
+
+\item{nCores}{The number of parallel tasks that will be spawned. Only applies to anlsbpp
+Default \code{2}}
 
 \item{niter}{Integer. Maximum number of NMF interations.}
 
