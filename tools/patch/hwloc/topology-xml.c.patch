@@ -363,7 +363,7 @@ diff --git a/hwloc/topology-xml.c b/hwloc/topology-xml.c
 -    if (hwloc__xml_verbose())
 -      fprintf(stderr, "%s: ignoring unknown object attribute %s\n",
 -	      state->global->msgprefix, name);
-+     // if (hwloc__xml_verbose())
++     ;
 +      // fprintf(stderr, "%s: ignoring unknown object attribute %s\n",
 +	   //   state->global->msgprefix, name);
    }
