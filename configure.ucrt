@@ -26,3 +26,6 @@ cmake ../tools \
   -DR_HOME="$R_HOME"
 
 mv Makefile Makefile.ucrt
+rm -rf _deps/highfive-src/.git
+rm -rf _deps/hwloc-src/utils/lstopo
+rm -f _deps/highfive-build/cmake_hdf5_test.c

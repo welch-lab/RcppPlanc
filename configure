@@ -35,3 +35,7 @@ $CMAKE ../tools \
   -DCMAKE_C_COMPILER="$CC" \
   -DCMAKE_CXX_COMPILER="$CXX" \
   -DR_HOME="$R_HOME"
+
+rm -rf _deps/highfive-src/.git
+rm -rf _deps/hwloc-src/utils/lstopo
+rm -f _deps/highfive-build/cmake_hdf5_test.c
