@@ -21,6 +21,8 @@
 #' \link{H5Mat}, \link{H5SpMat}.
 #' @param k Integer. Inner dimensionality to factorize the datasets into.
 #' Default \code{20}.
+#' @param nCores The number of parallel tasks that will be spawned.
+#' Default \code{2}
 #' @param lambda Regularization parameter. Larger values penalize
 #' dataset-specific effects more strongly (i.e. alignment should increase as
 #' \code{lambda} increases). Default \code{5}.
@@ -56,6 +58,7 @@
 inmf <- function(
     objectList,
     k = 20,
+    nCores = 2,
     lambda = 5,
     niter = 30,
     Hinit = NULL,
@@ -66,20 +69,20 @@ inmf <- function(
     mode <- .typeOfInput(objectList)
     res <- switch(
         mode,
-        matrix = .bppinmf(objectList, k, lambda, niter, verbose,
+        matrix = .bppinmf(objectList, k, nCores, lambda, niter, verbose,
                          Hinit, Vinit, Winit),
-        dgCMatrix = .bppinmf(objectList, k, lambda, niter, verbose,
+        dgCMatrix = .bppinmf(objectList, k, nCores, lambda, niter, verbose,
                             Hinit, Vinit, Winit),
         H5Mat = .bppinmf_h5dense(sapply(objectList, function(x) x$filename),
                                 sapply(objectList, function(x) x$dataPath),
-                                k, lambda, niter, verbose, Hinit, Vinit, Winit),
+                                k, nCores, lambda, niter, verbose, Hinit, Vinit, Winit),
         H5SpMat = .bppinmf_h5sparse(filenames = sapply(objectList, function(x) x$filename),
                                     valuePath = sapply(objectList, function(x) x$valuePath),
                                     rowindPath = sapply(objectList, function(x) x$rowindPath),
                                     colptrPath = sapply(objectList, function(x) x$colptrPath),
                                     nrow = sapply(objectList, function(x) x$nrow),
                                     ncol = sapply(objectList, function(x) x$ncol),
-                                    k = k, lambda = lambda, niter = niter,
+                                    k = k, nCores = nCores, lambda = lambda, niter = niter,
                                     verbose = verbose, Hinit = Hinit,
                                     Vinit = Vinit, Winit = Winit)
     )
@@ -123,6 +126,8 @@ inmf <- function(
 #' Default  \code{FALSE}.
 #' @param k Integer. Inner dimensionality to factorize the datasets into.
 #' Default \code{20}.
+#' @param nCores The number of parallel tasks that will be spawned.
+#' Default \code{2}
 #' @param lambda Regularization parameter. Larger values penalize
 #' dataset-specific effects more strongly (i.e. alignment should increase as
 #' \code{lambda} increases). Default \code{5}.
@@ -210,6 +215,7 @@ onlineINMF <- function(
     newDatasets = NULL,
     project = FALSE,
     k = 20,
+    nCores = 2,
     lambda = 5,
     maxEpoch = 5,
     minibatchSize = 5000,
@@ -225,15 +231,15 @@ onlineINMF <- function(
         # Scenario 1
         res <- switch(
             mode,
-            matrix = .onlineINMF_S1(objectList, k, lambda, maxEpoch,
+            matrix = .onlineINMF_S1(objectList, k, nCores, lambda, maxEpoch,
                                    minibatchSize, maxHALSIter, verbose),
-            dgCMatrix = .onlineINMF_S1(objectList, k, lambda, maxEpoch,
+            dgCMatrix = .onlineINMF_S1(objectList, k, nCores, lambda, maxEpoch,
                                       minibatchSize, maxHALSIter, verbose),
             H5Mat = .onlineINMF_S1_h5dense(sapply(objectList,
                                                  function(x) x$filename),
                                           sapply(objectList,
                                                  function(x) x$dataPath),
-                                          k, lambda, maxEpoch, minibatchSize,
+                                          k, nCores, lambda, maxEpoch, minibatchSize,
                                           maxHALSIter, verbose),
             H5SpMat = .onlineINMF_S1_h5sparse(sapply(objectList,
                                                     function(x) x$filename),
@@ -247,7 +253,7 @@ onlineINMF <- function(
                                                     function(x) x$nrow),
                                              sapply(objectList,
                                                     function(x) x$ncol),
-                                             k, lambda, maxEpoch, minibatchSize,
+                                             k, nCores, lambda, maxEpoch, minibatchSize,
                                              maxHALSIter, verbose)
         )
         names(res$H) <- names(res$V) <- names(res$A) <- names(res$B) <- names(objectList)
@@ -259,10 +265,10 @@ onlineINMF <- function(
         res <- switch(
             mode,
             matrix = .onlineINMF_S23(objectList, Vinit, Winit, Ainit, Binit,
-                                    newDatasets, k, lambda, project, maxEpoch,
+                                    newDatasets, k, nCores, lambda, project, maxEpoch,
                                     minibatchSize, maxHALSIter, verbose),
             dgCMatrix = .onlineINMF_S23(objectList, Vinit, Winit, Ainit, Binit,
-                                       newDatasets, k, lambda, project,
+                                       newDatasets, k, nCores, lambda, project,
                                        maxEpoch, minibatchSize, maxHALSIter,
                                        verbose),
             H5Mat = .onlineINMF_S23_h5dense(sapply(objectList,
@@ -274,7 +280,7 @@ onlineINMF <- function(
                                            sapply(newDatasets,
                                                   function(x) x$dataPath),
                                            Vinit, Winit, Ainit, Binit,
-                                           k, lambda, project, maxEpoch,
+                                           k, nCores, lambda, project, maxEpoch,
                                            minibatchSize, maxHALSIter, verbose),
             H5SpMat = .onlineINMF_S23_h5sparse(sapply(objectList,
                                                      function(x) x$filename),
@@ -301,7 +307,7 @@ onlineINMF <- function(
                                               sapply(newDatasets,
                                                      function(x) x$ncol),
                                               Vinit, Winit, Ainit, Binit,
-                                              k, lambda, project, maxEpoch,
+                                              k, nCores, lambda, project, maxEpoch,
                                               minibatchSize, maxHALSIter,
                                               verbose)
         )
@@ -343,6 +349,8 @@ onlineINMF <- function(
 #' requirement as \code{objectList}.
 #' @param k Integer. Inner dimensionality to factorize the datasets into.
 #' Default \code{20}.
+#' @param nCores The number of parallel tasks that will be spawned.
+#' Default \code{2}.
 #' @param lambda Regularization parameter. Use one number for all datasets or a
 #' vector to specify for each dataset. Larger values penalize dataset-specific
 #' effects more strongly (i.e. alignment should increase as \code{lambda}
@@ -373,6 +381,7 @@ uinmf <- function(
     objectList,
     unsharedList,
     k = 20,
+    nCores = 2,
     lambda = 5,
     niter = 30,
     verbose = TRUE
@@ -388,14 +397,14 @@ uinmf <- function(
     res <- switch(
         mode,
         matrix = .uinmf_rcpp(objectList, unsharedList, whichUnshared,
-                            k, lambda, niter, verbose),
+                            k, nCores, lambda, niter, verbose),
         dgCMatrix = .uinmf_rcpp(objectList, unsharedList, whichUnshared,
-                               k, lambda, niter, verbose),
+                               k, nCores, lambda, niter, verbose),
         H5Mat = .uinmf_h5dense(sapply(objectList, function(x) x$filename),
                               sapply(objectList, function(x) x$dataPath),
                               sapply(unsharedList, function(x) x$filename),
                               sapply(unsharedList, function(x) x$dataPath),
-                              whichUnshared, k, lambda, niter, verbose),
+                              whichUnshared, k, nCores, lambda, niter, verbose),
         H5SpMat = .uinmf_h5sparse(sapply(objectList, function(x) x$filename),
                                  sapply(objectList, function(x) x$rowindPath),
                                  sapply(objectList, function(x) x$colptrPath),
@@ -408,7 +417,7 @@ uinmf <- function(
                                  sapply(unsharedList, function(x) x$valuePath),
                                  sapply(unsharedList, function(x) x$nrow),
                                  sapply(unsharedList, function(x) x$ncol),
-                                 whichUnshared, k, lambda, niter, verbose)
+                                 whichUnshared, k, nCores, lambda, niter, verbose)
     )
     names(res$H) <- names(res$V) <- names(objectList)
     names(res$U) <- names(unsharedList)

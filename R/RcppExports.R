@@ -29,6 +29,8 @@
 #' Multiplicative Update (MU).
 #' @param x Input matrix for factorization. Can be either dense or sparse.
 #' @param k Integer. Factor matrix rank.
+#' @param nCores The number of parallel tasks that will be spawned. Only applies to anlsbpp
+#' Default \code{2}
 #' @param niter Integer. Maximum number of NMF interations.
 #' @param algo Algorithm to perform the factorization, choose from "anlsbpp",
 #' "admm", "hals" or "mu". See detailed sections.
@@ -43,8 +45,8 @@
 #' @references
 #' Ramakrishnan Kannan and et al., A High-Performance Parallel Algorithm for
 #' Nonnegative Matrix Factorization, PPoPP '16, 2016, 10.1145/2851141.2851152
-nmf <- function(x, k, niter = 30L, algo = "anlsbpp", Winit = NULL, Hinit = NULL) {
-    .Call(`_RcppPlanc_nmf`, x, k, niter, algo, Winit, Hinit)
+nmf <- function(x, k, nCores = 2L, niter = 30L, algo = "anlsbpp", Winit = NULL, Hinit = NULL) {
+    .Call(`_RcppPlanc_nmf`, x, k, nCores, niter, algo, Winit, Hinit)
 }
 
 #' Perform Symmetric Non-negative Matrix Factorization
@@ -64,6 +66,8 @@ nmf <- function(x, k, niter = 30L, algo = "anlsbpp", Winit = NULL, Hinit = NULL)
 #' dense or sparse.
 #' @param k Integer. Factor matrix rank.
 #' @param niter Integer. Maximum number of symNMF interations.
+#' @param nCores The number of parallel tasks that will be spawned. Only applies to anlsbpp.
+#' Default \code{2}
 #' @param lambda Symmetric regularization parameter. Must be
 #' non-negative. Default \code{0.0} uses the square of the maximum value in
 #' \code{x}.
@@ -81,8 +85,8 @@ nmf <- function(x, k, niter = 30L, algo = "anlsbpp", Winit = NULL, Hinit = NULL)
 #' @references
 #' Srinivas Eswar and et al., Distributed-Memory Parallel Symmetric Nonnegative
 #' Matrix Factorization, SC '20, 2020, 10.5555/3433701.3433799
-symNMF <- function(x, k, niter, lambda = 0.0, algo = "gnsym", Hinit = NULL) {
-    .Call(`_RcppPlanc_symNMF`, x, k, niter, lambda, algo, Hinit)
+symNMF <- function(x, k, niter, nCores = 2L, lambda = 0.0, algo = "gnsym", Hinit = NULL) {
+    .Call(`_RcppPlanc_symNMF`, x, k, niter, nCores, lambda, algo, Hinit)
 }
 
 #' Block Principal Pivoted Non-Negative Least Squares
@@ -98,6 +102,8 @@ symNMF <- function(x, k, niter, lambda = 0.0, algo = "gnsym", Hinit = NULL) {
 #'
 #' @param C Input dense \eqn{C} matrix
 #' @param B Input \eqn{B} matrix of either dense or sparse form
+#' @param nCores The number of parallel tasks that will be spawned.
+#' Default \code{2}
 #' @returns The calculated solution matrix in dense form.
 #' @rdname bppnnls
 #' @examples
@@ -108,63 +114,65 @@ symNMF <- function(x, k, niter, lambda = 0.0, algo = "gnsym", Hinit = NULL) {
 #' dim(res1)
 #' res2 <- bppnnls_prod(t(C) %*% C, t(C) %*% B)
 #' all.equal(res1, res2)
-bppnnls <- function(C, B) {
-    .Call(`_RcppPlanc_bppnnls`, C, B)
+bppnnls <- function(C, B, nCores = 2L) {
+    .Call(`_RcppPlanc_bppnnls`, C, B, nCores)
 }
 
 #' @param CtC The \eqn{C^\mathsf{T}C} matrix, see description.
 #' @param CtB The \eqn{C^\mathsf{T}B} matrix, see description.
+#' @param nCores The number of parallel tasks that will be spawned.
+#' Default \code{2}
 #' @rdname bppnnls
-bppnnls_prod <- function(CtC, CtB) {
-    .Call(`_RcppPlanc_bppnnls_prod`, CtC, CtB)
+bppnnls_prod <- function(CtC, CtB, nCores = 2L) {
+    .Call(`_RcppPlanc_bppnnls_prod`, CtC, CtB, nCores)
 }
 
-.bppinmf <- function(objectList, k, lambda = 5, niter = 30L, verbose = TRUE, Hinit = NULL, Vinit = NULL, Winit = NULL) {
-    .Call(`_RcppPlanc_bppinmf`, objectList, k, lambda, niter, verbose, Hinit, Vinit, Winit)
+.bppinmf <- function(objectList, k, nCores, lambda = 5, niter = 30L, verbose = TRUE, Hinit = NULL, Vinit = NULL, Winit = NULL) {
+    .Call(`_RcppPlanc_bppinmf`, objectList, k, nCores, lambda, niter, verbose, Hinit, Vinit, Winit)
 }
 
-.bppinmf_h5dense <- function(filenames, dataPath, k, lambda, niter, verbose = TRUE, Hinit = NULL, Vinit = NULL, Winit = NULL) {
-    .Call(`_RcppPlanc_bppinmf_h5dense`, filenames, dataPath, k, lambda, niter, verbose, Hinit, Vinit, Winit)
+.bppinmf_h5dense <- function(filenames, dataPath, k, nCores, lambda, niter, verbose = TRUE, Hinit = NULL, Vinit = NULL, Winit = NULL) {
+    .Call(`_RcppPlanc_bppinmf_h5dense`, filenames, dataPath, k, nCores, lambda, niter, verbose, Hinit, Vinit, Winit)
 }
 
-.bppinmf_h5sparse <- function(filenames, valuePath, rowindPath, colptrPath, nrow, ncol, k, lambda, niter, verbose = TRUE, Hinit = NULL, Vinit = NULL, Winit = NULL) {
-    .Call(`_RcppPlanc_bppinmf_h5sparse`, filenames, valuePath, rowindPath, colptrPath, nrow, ncol, k, lambda, niter, verbose, Hinit, Vinit, Winit)
+.bppinmf_h5sparse <- function(filenames, valuePath, rowindPath, colptrPath, nrow, ncol, k, nCores, lambda, niter, verbose = TRUE, Hinit = NULL, Vinit = NULL, Winit = NULL) {
+    .Call(`_RcppPlanc_bppinmf_h5sparse`, filenames, valuePath, rowindPath, colptrPath, nrow, ncol, k, nCores, lambda, niter, verbose, Hinit, Vinit, Winit)
 }
 
-.onlineINMF_S1 <- function(objectList, k, lambda, maxEpoch = 5L, minibatchSize = 5000L, maxHALSIter = 1L, verbose = TRUE) {
-    .Call(`_RcppPlanc_onlineINMF_S1`, objectList, k, lambda, maxEpoch, minibatchSize, maxHALSIter, verbose)
+.onlineINMF_S1 <- function(objectList, k, nCores, lambda, maxEpoch = 5L, minibatchSize = 5000L, maxHALSIter = 1L, verbose = TRUE) {
+    .Call(`_RcppPlanc_onlineINMF_S1`, objectList, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, verbose)
 }
 
-.onlineINMF_S1_h5dense <- function(filenames, dataPaths, k, lambda, maxEpoch = 5L, minibatchSize = 5000L, maxHALSIter = 1L, verbose = TRUE) {
-    .Call(`_RcppPlanc_onlineINMF_S1_h5dense`, filenames, dataPaths, k, lambda, maxEpoch, minibatchSize, maxHALSIter, verbose)
+.onlineINMF_S1_h5dense <- function(filenames, dataPaths, k, nCores, lambda, maxEpoch = 5L, minibatchSize = 5000L, maxHALSIter = 1L, verbose = TRUE) {
+    .Call(`_RcppPlanc_onlineINMF_S1_h5dense`, filenames, dataPaths, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, verbose)
 }
 
-.onlineINMF_S1_h5sparse <- function(filenames, valuePaths, rowindPaths, colptrPaths, nrows, ncols, k, lambda, maxEpoch = 5L, minibatchSize = 5000L, maxHALSIter = 1L, verbose = TRUE) {
-    .Call(`_RcppPlanc_onlineINMF_S1_h5sparse`, filenames, valuePaths, rowindPaths, colptrPaths, nrows, ncols, k, lambda, maxEpoch, minibatchSize, maxHALSIter, verbose)
+.onlineINMF_S1_h5sparse <- function(filenames, valuePaths, rowindPaths, colptrPaths, nrows, ncols, k, nCores, lambda, maxEpoch = 5L, minibatchSize = 5000L, maxHALSIter = 1L, verbose = TRUE) {
+    .Call(`_RcppPlanc_onlineINMF_S1_h5sparse`, filenames, valuePaths, rowindPaths, colptrPaths, nrows, ncols, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, verbose)
 }
 
-.onlineINMF_S23 <- function(objectList, Vinit, Winit, Ainit, Binit, objectListNew, k, lambda, project = FALSE, maxEpoch = 5L, minibatchSize = 5000L, maxHALSIter = 1L, verbose = TRUE) {
-    .Call(`_RcppPlanc_onlineINMF_S23`, objectList, Vinit, Winit, Ainit, Binit, objectListNew, k, lambda, project, maxEpoch, minibatchSize, maxHALSIter, verbose)
+.onlineINMF_S23 <- function(objectList, Vinit, Winit, Ainit, Binit, objectListNew, k, nCores, lambda, project = FALSE, maxEpoch = 5L, minibatchSize = 5000L, maxHALSIter = 1L, verbose = TRUE) {
+    .Call(`_RcppPlanc_onlineINMF_S23`, objectList, Vinit, Winit, Ainit, Binit, objectListNew, k, nCores, lambda, project, maxEpoch, minibatchSize, maxHALSIter, verbose)
 }
 
-.onlineINMF_S23_h5dense <- function(filenames, dataPaths, filenamesNew, dataPathsNew, Vinit, Winit, Ainit, Binit, k, lambda, project = FALSE, maxEpoch = 5L, minibatchSize = 5000L, maxHALSIter = 1L, verbose = TRUE) {
-    .Call(`_RcppPlanc_onlineINMF_S23_h5dense`, filenames, dataPaths, filenamesNew, dataPathsNew, Vinit, Winit, Ainit, Binit, k, lambda, project, maxEpoch, minibatchSize, maxHALSIter, verbose)
+.onlineINMF_S23_h5dense <- function(filenames, dataPaths, filenamesNew, dataPathsNew, Vinit, Winit, Ainit, Binit, k, nCores, lambda, project = FALSE, maxEpoch = 5L, minibatchSize = 5000L, maxHALSIter = 1L, verbose = TRUE) {
+    .Call(`_RcppPlanc_onlineINMF_S23_h5dense`, filenames, dataPaths, filenamesNew, dataPathsNew, Vinit, Winit, Ainit, Binit, k, nCores, lambda, project, maxEpoch, minibatchSize, maxHALSIter, verbose)
 }
 
-.onlineINMF_S23_h5sparse <- function(filenames, valuePaths, rowindPaths, colptrPaths, nrows, ncols, filenamesNew, valuePathsNew, rowindPathsNew, colptrPathsNew, nrowsNew, ncolsNew, Vinit, Winit, Ainit, Binit, k, lambda, project = FALSE, maxEpoch = 5L, minibatchSize = 5000L, maxHALSIter = 1L, verbose = TRUE) {
-    .Call(`_RcppPlanc_onlineINMF_S23_h5sparse`, filenames, valuePaths, rowindPaths, colptrPaths, nrows, ncols, filenamesNew, valuePathsNew, rowindPathsNew, colptrPathsNew, nrowsNew, ncolsNew, Vinit, Winit, Ainit, Binit, k, lambda, project, maxEpoch, minibatchSize, maxHALSIter, verbose)
+.onlineINMF_S23_h5sparse <- function(filenames, valuePaths, rowindPaths, colptrPaths, nrows, ncols, filenamesNew, valuePathsNew, rowindPathsNew, colptrPathsNew, nrowsNew, ncolsNew, Vinit, Winit, Ainit, Binit, k, nCores, lambda, project = FALSE, maxEpoch = 5L, minibatchSize = 5000L, maxHALSIter = 1L, verbose = TRUE) {
+    .Call(`_RcppPlanc_onlineINMF_S23_h5sparse`, filenames, valuePaths, rowindPaths, colptrPaths, nrows, ncols, filenamesNew, valuePathsNew, rowindPathsNew, colptrPathsNew, nrowsNew, ncolsNew, Vinit, Winit, Ainit, Binit, k, nCores, lambda, project, maxEpoch, minibatchSize, maxHALSIter, verbose)
 }
 
-.uinmf_rcpp <- function(objectList, unsharedList, whichUnshared, k, lambda, niter, verbose) {
-    .Call(`_RcppPlanc_uinmf_rcpp`, objectList, unsharedList, whichUnshared, k, lambda, niter, verbose)
+.uinmf_rcpp <- function(objectList, unsharedList, whichUnshared, k, nCores, lambda, niter, verbose) {
+    .Call(`_RcppPlanc_uinmf_rcpp`, objectList, unsharedList, whichUnshared, k, nCores, lambda, niter, verbose)
 }
 
-.uinmf_h5dense <- function(filenames, dataPaths, unsharedFilenames, unsharedDataPaths, whichUnshared, k, lambda, niter, verbose) {
-    .Call(`_RcppPlanc_uinmf_h5dense`, filenames, dataPaths, unsharedFilenames, unsharedDataPaths, whichUnshared, k, lambda, niter, verbose)
+.uinmf_h5dense <- function(filenames, dataPaths, unsharedFilenames, unsharedDataPaths, whichUnshared, k, nCores, lambda, niter, verbose) {
+    .Call(`_RcppPlanc_uinmf_h5dense`, filenames, dataPaths, unsharedFilenames, unsharedDataPaths, whichUnshared, k, nCores, lambda, niter, verbose)
 }
 
-.uinmf_h5sparse <- function(filenames, rowindPaths, colptrPaths, valuePaths, nrows, ncols, unsharedFilenames, unsharedRowindPaths, unsharedColptrPaths, unsharedValuePaths, unsharedNrows, unsharedNcols, whichUnshared, k, lambda, niter, verbose) {
-    .Call(`_RcppPlanc_uinmf_h5sparse`, filenames, rowindPaths, colptrPaths, valuePaths, nrows, ncols, unsharedFilenames, unsharedRowindPaths, unsharedColptrPaths, unsharedValuePaths, unsharedNrows, unsharedNcols, whichUnshared, k, lambda, niter, verbose)
+.uinmf_h5sparse <- function(filenames, rowindPaths, colptrPaths, valuePaths, nrows, ncols, unsharedFilenames, unsharedRowindPaths, unsharedColptrPaths, unsharedValuePaths, unsharedNrows, unsharedNcols, whichUnshared, k, nCores, lambda, niter, verbose) {
+    .Call(`_RcppPlanc_uinmf_h5sparse`, filenames, rowindPaths, colptrPaths, valuePaths, nrows, ncols, unsharedFilenames, unsharedRowindPaths, unsharedColptrPaths, unsharedValuePaths, unsharedNrows, unsharedNcols, whichUnshared, k, nCores, lambda, niter, verbose)
 }
 
 .testCacheCalc <- function(rank) {

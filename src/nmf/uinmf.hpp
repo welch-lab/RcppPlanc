@@ -105,7 +105,7 @@ private:
         return obj;
     }
 
-    void solveH() {
+    void solveH(unsigned int ncores) {
 #ifdef _VERBOSE
         Rcpp::Rcout << "--Solving UINMF H--  ";
         std::chrono::system_clock::time_point iter_start_time = std::chrono::system_clock::now();
@@ -127,7 +127,7 @@ private:
             unsigned int dataSize = this->ncol_E[i];
             unsigned int numChunks = dataSize / this->INMF_CHUNK_SIZE;
             if (numChunks * this->INMF_CHUNK_SIZE < dataSize) numChunks++;
-#pragma omp parallel for schedule(dynamic) default(none) shared(Eptr, i, uidx, WV, Hptr, numChunks, dataSize)
+#pragma omp parallel for schedule(dynamic) default(none) shared(Eptr, i, uidx, WV, Hptr, numChunks, dataSize) num_threads(ncores)
             for (unsigned int j = 0; j < numChunks; ++j) {
                 unsigned int spanStart = j * this->INMF_CHUNK_SIZE;
                 unsigned int spanEnd = (j + 1) * this->INMF_CHUNK_SIZE - 1;
@@ -153,7 +153,7 @@ private:
     }
 
 
-    void solveV() {
+    void solveV(unsigned int ncores) {
 #ifdef _VERBOSE
         Rcpp::Rcout << "--Solving UINMF V--  ";
         std::chrono::system_clock::time_point iter_start_time = std::chrono::system_clock::now();
@@ -168,7 +168,7 @@ private:
             T* ETptr = this->EiT[i].get();
             unsigned int numChunks = this->m / this->INMF_CHUNK_SIZE;
             if (numChunks * this->INMF_CHUNK_SIZE < this->m) numChunks++;
-#pragma omp parallel for schedule(dynamic) default(none) shared(i, Hptr, numChunks, Wptr, Vptr, ETptr)
+#pragma omp parallel for schedule(dynamic) default(none) shared(i, Hptr, numChunks, Wptr, Vptr, ETptr) num_threads(ncores)
             for (unsigned int j = 0; j < numChunks; ++j) {
                 unsigned int spanStart = j * this->INMF_CHUNK_SIZE;
                 unsigned int spanEnd = (j + 1) * this->INMF_CHUNK_SIZE - 1;
@@ -190,7 +190,7 @@ private:
 #endif
     }
 
-    void solveU() {
+    void solveU(unsigned int ncores) {
 #ifdef _VERBOSE
         Rcpp::Rcout << "--Solving UINMF U--  ";
         std::chrono::system_clock::time_point iter_start_time = std::chrono::system_clock::now();
@@ -207,7 +207,7 @@ private:
             T* PTptr = this->PiT[uidx].get();
             unsigned int numChunks = this->u[i] / this->INMF_CHUNK_SIZE;
             if (numChunks * this->INMF_CHUNK_SIZE < this->u[i]) numChunks++;
-#pragma omp parallel for schedule(dynamic) default(none) shared(i, Uptr, Hptr, numChunks, PTptr)
+#pragma omp parallel for schedule(dynamic) default(none) shared(i, Uptr, Hptr, numChunks, PTptr) num_threads(ncores)
             for (unsigned int j = 0; j < numChunks; ++j) {
                 unsigned int spanStart = j * this->INMF_CHUNK_SIZE;
                 unsigned int spanEnd = (j + 1) * this->INMF_CHUNK_SIZE - 1;
@@ -228,7 +228,7 @@ private:
 #endif
     }
 
-    void solveW() {
+    void solveW(unsigned int ncores) {
 #ifdef _VERBOSE
         Rcpp::Rcout << "--Solving UINMF W--  ";
         std::chrono::system_clock::time_point iter_start_time = std::chrono::system_clock::now();
@@ -248,7 +248,7 @@ private:
             unsigned int spanEnd = (i + 1) * this->INMF_CHUNK_SIZE - 1;
             if (spanEnd > this->m - 1) spanEnd = this->m - 1;
             giventInput = arma::zeros<arma::mat>(this->k, spanEnd - spanStart + 1); ///
-            #pragma omp parallel for ordered schedule(dynamic) default(none) shared(i, numChunks, spanStart, spanEnd, giventInput)
+            #pragma omp parallel for ordered schedule(dynamic) default(none) shared(i, numChunks, spanStart, spanEnd, giventInput) num_threads(ncores)
             for (unsigned int j = 0; j < this->nDatasets; ++j) {
                 T* ETptr = this->EiT[j].get();
                 arma::mat* Hptr = this->Hi[j].get();
@@ -294,7 +294,7 @@ public:
         }
     }
 
-    void optimizeUANLS(arma::uword niter=30, bool verbose=true) {
+    void optimizeUANLS(arma::uword niter=30, bool verbose=true, const unsigned int ncores = 0) {
         if (verbose) {
             Rcpp::Rcerr << "UINMF started, niter=" << niter << std::endl;
         }
@@ -305,10 +305,10 @@ public:
         Progress p(niter, verbose);
         for (unsigned int iter=0; iter<niter; iter++) {
             Rcpp::checkUserInterrupt();
-            this->solveH();
-            this->solveV();
-            this->solveU();
-            this->solveW();
+            this->solveH(ncores);
+            this->solveV(ncores);
+            this->solveU(ncores);
+            this->solveW(ncores);
             if ( ! p.is_aborted() ) p.increment();
             else break;
         }

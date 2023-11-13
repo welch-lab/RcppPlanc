@@ -26,6 +26,7 @@ class NMF {
   const T &A;       /// input matrix of size mxn
   arma::mat W, H;  /// left and low rank factors of size mxk and nxk respectively
   arma::mat Winit, Hinit;
+  unsigned int ncores;
   unsigned int m, n, k;  /// rows, columns and lowrank
 
   /*

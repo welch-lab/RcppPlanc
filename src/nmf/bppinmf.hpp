@@ -13,7 +13,7 @@ class BPPINMF : public INMF<T> {
 private:
     arma::mat giventGiven;
 
-    void solveH() {
+    void solveH(const unsigned int ncores) {
         tic();
 #ifdef _VERBOSE
         Rcpp::Rcout << "--Solving H--  ";
@@ -31,7 +31,7 @@ private:
             unsigned int dataSize = this->ncol_E[i];
             unsigned int numChunks = dataSize / this->INMF_CHUNK_SIZE;
             if (numChunks * this->INMF_CHUNK_SIZE < dataSize) numChunks++;
-#pragma omp parallel for schedule(dynamic) default(none) shared(dataSize, Hptr, Eptr, given, numChunks)
+#pragma omp parallel for schedule(dynamic) default(none) shared(dataSize, Hptr, Eptr, given, numChunks) num_threads(ncores)
             for (unsigned int j = 0; j < numChunks; ++j) {
                 unsigned int spanStart = j * this->INMF_CHUNK_SIZE;
                 unsigned int spanEnd = (j + 1) * this->INMF_CHUNK_SIZE - 1;
@@ -49,7 +49,7 @@ private:
 #endif
     }
 
-    void solveV() {
+    void solveV(const unsigned int ncores) {
         tic();
 #ifdef _VERBOSE
         Rcpp::Rcout << "--Solving V--  ";
@@ -65,7 +65,7 @@ private:
             T* ETptr = this->EiT[i].get();
             unsigned int numChunks = this->m / this->INMF_CHUNK_SIZE;
             if (numChunks * this->INMF_CHUNK_SIZE < this->m) numChunks++;
-#pragma omp parallel for schedule(dynamic) default(none) shared(numChunks, WTptr, Hptr, Vptr, ETptr, VTptr, giventInput)
+#pragma omp parallel for schedule(dynamic) default(none) shared(numChunks, WTptr, Hptr, Vptr, ETptr, VTptr, giventInput) num_threads(ncores)
             for (unsigned int j = 0; j < numChunks; ++j) {
                 unsigned int spanStart = j * this->INMF_CHUNK_SIZE;
                 unsigned int spanEnd = (j + 1) * this->INMF_CHUNK_SIZE - 1;
@@ -86,7 +86,7 @@ private:
 #endif
     }
 
-    void solveW() {
+    void solveW(const unsigned int ncores) {
         tic();
 #ifdef _VERBOSE
         Rcpp::Rcout << "--Solving W--  ";
@@ -107,7 +107,7 @@ private:
             unsigned int spanEnd = (i + 1) * this->INMF_CHUNK_SIZE - 1;
             if (spanEnd > this->m - 1) spanEnd = this->m - 1;
             giventInput = arma::zeros<arma::mat>(this->k, spanEnd - spanStart + 1); ///
-            #pragma omp parallel for ordered schedule(dynamic) default(none) shared(spanStart, spanEnd, giventInput)
+            #pragma omp parallel for ordered schedule(dynamic) default(none) shared(spanStart, spanEnd, giventInput) num_threads(ncores)
             for (unsigned int j = 0; j < this->nDatasets; ++j) {
                 T* ETptr = this->EiT[j].get();
                 arma::mat* Hptr = this->Hi[j].get();
@@ -138,7 +138,7 @@ public:
 
     }
 
-    void optimizeALS(unsigned int niter, bool verbose = true) {
+    void optimizeALS(unsigned int niter, bool verbose = true, const unsigned int ncores = 0) {
         // execute private functions here
         if (verbose) {
             Rcpp::Rcerr << "INMF started, niter=" << niter << std::endl;
@@ -149,9 +149,9 @@ public:
         Progress p(niter, verbose);
         while (iter < niter ) {
             Rcpp::checkUserInterrupt();
-            solveH();
-            solveV();
-            solveW();
+            solveH(ncores);
+            solveV(ncores);
+            solveW(ncores);
             iter++;
             if ( ! p.is_aborted() ) p.increment();
             else break;

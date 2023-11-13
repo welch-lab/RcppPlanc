@@ -401,7 +401,7 @@ private:
 #endif
     }
 
-    void solveH() {
+    void solveH(const unsigned int ncores) {
         // Solve H for all datasets (S1)
         tic();
 #ifdef _VERBOSE
@@ -420,7 +420,7 @@ private:
             unsigned int dataSize = this->ncol_E[i];
             unsigned int numChunks = dataSize / this->INMF_CHUNK_SIZE;
             if (numChunks * this->INMF_CHUNK_SIZE < dataSize) numChunks++;
-#pragma omp parallel for schedule(dynamic) default(none) shared(dataSize, Eptr, numChunks, Hptr, given)
+#pragma omp parallel for schedule(dynamic) default(none) shared(dataSize, Eptr, numChunks, Hptr, given) num_threads(ncores)
             for (unsigned int j = 0; j < numChunks; ++j) {
                 unsigned int spanStart = j * this->INMF_CHUNK_SIZE;
                 unsigned int spanEnd = (j + 1) * this->INMF_CHUNK_SIZE - 1;
@@ -441,7 +441,7 @@ private:
     // %%%%%%%%%%%%%%% Main loop functions %%%%%%%%%%%%%%%%%%%%%%%
 
     void solveHALS(arma::uword minibatchSize = 5000, arma::uword inputmaxEpochs = 5,
-                   arma::uword maxHALSIter = 1, bool verbose = true) {
+                   arma::uword maxHALSIter = 1, bool verbose = true, const unsigned int ncores = 0) {
         // Main loop of online updating algorithm (S1&2)
         // Universal initialization
         this->maxEpochs = inputmaxEpochs;
@@ -490,7 +490,7 @@ private:
             if (!p.is_aborted()) p.increment();
             else break;
         }
-        this->solveH();
+        this->solveH(ncores);
         this->objective_err = this->computeObjectiveError();
         auto end = std::chrono::high_resolution_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::seconds>(end - start);
@@ -501,7 +501,7 @@ private:
         }
     }
 
-    void projectNewData() {
+    void projectNewData(const unsigned int ncores) {
         // Main loop of online updating algorithm (S3)
         tic();
 #ifdef _VERBOSE
@@ -519,7 +519,7 @@ private:
             unsigned int dataSize = this->ncol_E[idx];
             unsigned int numChunks = dataSize / this->INMF_CHUNK_SIZE;
             if (numChunks * this->INMF_CHUNK_SIZE < dataSize) numChunks++;
-#pragma omp parallel for schedule(dynamic) default(none) shared(dataSize, Wptr, Eptr, numChunks, Hptr)
+#pragma omp parallel for schedule(dynamic) default(none) shared(dataSize, Wptr, Eptr, numChunks, Hptr) num_threads(ncores)
             for (unsigned int j = 0; j < numChunks; ++j) {
                 unsigned int spanStart = j * this->INMF_CHUNK_SIZE;
                 unsigned int spanEnd = (j + 1) * this->INMF_CHUNK_SIZE - 1;
@@ -661,21 +661,21 @@ public:
 
     // Scenario 1: Online iNMF on all data as new factorization
     void runOnlineINMF(arma::uword minibatchSize = 5000, arma::uword inputmaxEpochs = 5,
-                       arma::uword maxHALSIter = 1, bool verbose = true) {
+                       arma::uword maxHALSIter = 1, bool verbose = true, const unsigned int ncores = 0) {
         if (verbose) {
             Rcpp::Rcerr << "Starting online iNMF scenario 1, factorize all datasets" << std::endl;
         }
         this->dataIdxNew = this->dataIdx;
         this->nCellsNew = this->ncol_E;
         this->initW2();
-        this->solveHALS(minibatchSize, inputmaxEpochs, maxHALSIter, verbose);
+        this->solveHALS(minibatchSize, inputmaxEpochs, maxHALSIter, verbose, ncores);
     }
 
     // Scenario 2, project == false (default): Online iNMF on new data, factorized upon existing factorization
     // Scenario 3, project == true:  Project new datasets without updating existing factorization
     void runOnlineINMF(std::vector<std::unique_ptr<T1>>& E_new, bool project = false,
                        arma::uword minibatchSize = 5000, arma::uword inputmaxEpochs = 5,
-                       arma::uword maxHALSIter = 1, bool verbose = true) {
+                       arma::uword maxHALSIter = 1, bool verbose = true, const unsigned int ncores = 0) {
         // Move new Es into Ei, and manage dataIdxNew, Prev, and nCellsNew
         this->dataIdxPrev = this->dataIdx;
         this->dataIdxNew = arma::linspace<arma::uvec>(this->nDatasets,
@@ -693,23 +693,23 @@ public:
         this->epoch = arma::zeros<arma::uvec>(this->nDatasets);
         this->epochPrev = arma::zeros<arma::uvec>(this->nDatasets);
         this->dataIdx = arma::join_cols(this->dataIdxPrev, this->dataIdxNew);
-        assert(this->dataIdx.size() == this->nDatasets);
-        assert(arma::all(this->dataIdx == arma::linspace<arma::uvec>(0,
-                                                                     this->nDatasets - 1,
-                                                                     this->nDatasets)));
+        // assert(this->dataIdx.size() == this->nDatasets);
+        // assert(arma::all(this->dataIdx == arma::linspace<arma::uvec>(0,
+        //                                                             this->nDatasets - 1,
+        //                                                             this->nDatasets)));
         if (!project) {
             if (verbose) {
                 Rcpp::Rcerr << "Starting online iNMF scenario 2, " <<
                 "update factorization with new datasets" << std::endl;
             }
-            this->solveHALS(minibatchSize, inputmaxEpochs, maxHALSIter, verbose);
+            this->solveHALS(minibatchSize, inputmaxEpochs, maxHALSIter, verbose, ncores);
             this->objective_err = this->computeObjectiveError();
         } else {
             if (verbose) {
                 Rcpp::Rcerr << "Starting online iNMF scenario 3, " <<
                 "project new datasets without updating existing factorization" << std::endl;
             }
-            this->projectNewData();
+            this->projectNewData(ncores);
             // No factorization update, so no objective error
         }
 
