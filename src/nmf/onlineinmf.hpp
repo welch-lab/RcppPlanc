@@ -401,7 +401,7 @@ private:
 #endif
     }
 
-    void solveH(const unsigned int ncores) {
+    void solveH(const int ncores) {
         // Solve H for all datasets (S1)
         tic();
 #ifdef _VERBOSE
@@ -441,7 +441,7 @@ private:
     // %%%%%%%%%%%%%%% Main loop functions %%%%%%%%%%%%%%%%%%%%%%%
 
     void solveHALS(arma::uword minibatchSize = 5000, arma::uword inputmaxEpochs = 5,
-                   arma::uword maxHALSIter = 1, bool verbose = true, const unsigned int ncores = 0) {
+                   arma::uword maxHALSIter = 1, bool verbose = true, const int ncores = 0) {
         // Main loop of online updating algorithm (S1&2)
         // Universal initialization
         this->maxEpochs = inputmaxEpochs;
@@ -501,7 +501,7 @@ private:
         }
     }
 
-    void projectNewData(const unsigned int ncores) {
+    void projectNewData(const int ncores) {
         // Main loop of online updating algorithm (S3)
         tic();
 #ifdef _VERBOSE
@@ -661,7 +661,7 @@ public:
 
     // Scenario 1: Online iNMF on all data as new factorization
     void runOnlineINMF(arma::uword minibatchSize = 5000, arma::uword inputmaxEpochs = 5,
-                       arma::uword maxHALSIter = 1, bool verbose = true, const unsigned int ncores = 0) {
+                       arma::uword maxHALSIter = 1, bool verbose = true, const int ncores = 0) {
         if (verbose) {
             Rcpp::Rcerr << "Starting online iNMF scenario 1, factorize all datasets" << std::endl;
         }
@@ -675,7 +675,7 @@ public:
     // Scenario 3, project == true:  Project new datasets without updating existing factorization
     void runOnlineINMF(std::vector<std::unique_ptr<T1>>& E_new, bool project = false,
                        arma::uword minibatchSize = 5000, arma::uword inputmaxEpochs = 5,
-                       arma::uword maxHALSIter = 1, bool verbose = true, const unsigned int ncores = 0) {
+                       arma::uword maxHALSIter = 1, bool verbose = true, const int ncores = 0) {
         // Move new Es into Ei, and manage dataIdxNew, Prev, and nCellsNew
         this->dataIdxPrev = this->dataIdx;
         this->dataIdxNew = arma::linspace<arma::uvec>(this->nDatasets,

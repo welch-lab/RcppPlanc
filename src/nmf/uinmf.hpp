@@ -105,7 +105,7 @@ private:
         return obj;
     }
 
-    void solveH(unsigned int ncores) {
+    void solveH(int ncores) {
 #ifdef _VERBOSE
         Rcpp::Rcout << "--Solving UINMF H--  ";
         std::chrono::system_clock::time_point iter_start_time = std::chrono::system_clock::now();
@@ -153,7 +153,7 @@ private:
     }
 
 
-    void solveV(unsigned int ncores) {
+    void solveV(int ncores) {
 #ifdef _VERBOSE
         Rcpp::Rcout << "--Solving UINMF V--  ";
         std::chrono::system_clock::time_point iter_start_time = std::chrono::system_clock::now();
@@ -190,7 +190,7 @@ private:
 #endif
     }
 
-    void solveU(unsigned int ncores) {
+    void solveU(int ncores) {
 #ifdef _VERBOSE
         Rcpp::Rcout << "--Solving UINMF U--  ";
         std::chrono::system_clock::time_point iter_start_time = std::chrono::system_clock::now();
@@ -228,7 +228,7 @@ private:
 #endif
     }
 
-    void solveW(unsigned int ncores) {
+    void solveW(int ncores) {
 #ifdef _VERBOSE
         Rcpp::Rcout << "--Solving UINMF W--  ";
         std::chrono::system_clock::time_point iter_start_time = std::chrono::system_clock::now();
@@ -294,7 +294,7 @@ public:
         }
     }
 
-    void optimizeUANLS(arma::uword niter=30, bool verbose=true, const unsigned int ncores = 0) {
+    void optimizeUANLS(arma::uword niter=30, bool verbose=true, const int ncores = 0) {
         if (verbose) {
             Rcpp::Rcerr << "UINMF started, niter=" << niter << std::endl;
         }

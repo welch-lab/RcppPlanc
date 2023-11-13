@@ -35,12 +35,12 @@ class HALSNMF : public NMF<T> {
   }
 
  public:
-  HALSNMF(const T &A, int lowrank, const unsigned int ncores = 0) : NMF<T>(A, lowrank) {
+  HALSNMF(const T &A, int lowrank, const int ncores = 0) : NMF<T>(A, lowrank) {
     this->normalize_by_W();
     allocateMatrices();
     this->At = this->A.t();
   }
-  HALSNMF(const T &A, const arma::mat &llf, const arma::mat &rlf, const unsigned int ncores = 0) : NMF<T>(A, llf, rlf) {
+  HALSNMF(const T &A, const arma::mat &llf, const arma::mat &rlf, const int ncores = 0) : NMF<T>(A, llf, rlf) {
     this->normalize_by_W();
     allocateMatrices();
     this->At = this->A.t();

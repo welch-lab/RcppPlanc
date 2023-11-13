@@ -144,11 +144,11 @@ void commonSolve() {
 #endif
   };
  public:
-  BPPNMF(const T &A, int lowrank, const unsigned int ncores = 0) : NMF<T>(A, lowrank) {
+  BPPNMF(const T &A, int lowrank, const int ncores = 0) : NMF<T>(A, lowrank) {
     giventGiven = arma::zeros<arma::mat>(lowrank, lowrank);
     this->At = A.t();
   }
-  BPPNMF(const T &A, const arma::mat &llf, const arma::mat &rlf, const unsigned int ncores = 0) : NMF<T>(A, llf, rlf) {
+  BPPNMF(const T &A, const arma::mat &llf, const arma::mat &rlf, const int ncores = 0) : NMF<T>(A, llf, rlf) {
     this->At = A.t();
   }
   void computeNMFSingleRHS() {
