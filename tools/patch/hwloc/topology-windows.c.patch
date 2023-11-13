@@ -1,4 +1,4 @@
-Subject: [PATCH] topology-windows.c.patch
+Subject: [PATCH] comment pragmas
 ---
 Index: hwloc/topology-windows.c
 IDEA additional info:
@@ -7,7 +7,33 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 ===================================================================
 diff --git a/hwloc/topology-windows.c b/hwloc/topology-windows.c
 --- a/hwloc/topology-windows.c	(revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
-+++ b/hwloc/topology-windows.c	(date 1699468210124)
++++ b/hwloc/topology-windows.c	(date 1699851063183)
+@@ -216,9 +216,9 @@
+ {
+   HMODULE kernel32, ntdll;
+
+-#if HWLOC_HAVE_GCC_W_CAST_FUNCTION_TYPE
+-#pragma GCC diagnostic ignored "-Wcast-function-type"
+-#endif
++// #if HWLOC_HAVE_GCC_W_CAST_FUNCTION_TYPE
++// #pragma GCC diagnostic ignored "-Wcast-function-type"
++// #endif
+
+     kernel32 = LoadLibrary("kernel32.dll");
+     if (kernel32) {
+@@ -257,9 +257,9 @@
+     ntdll = GetModuleHandle("ntdll");
+     RtlGetVersionProc = (PFN_RTLGETVERSION) GetProcAddress(ntdll, "RtlGetVersion");
+
+-#if HWLOC_HAVE_GCC_W_CAST_FUNCTION_TYPE
+-#pragma GCC diagnostic warning "-Wcast-function-type"
+-#endif
++// #if HWLOC_HAVE_GCC_W_CAST_FUNCTION_TYPE
++// #pragma GCC diagnostic warning "-Wcast-function-type"
++// #endif
+ }
+
+ /*
 @@ -366,8 +366,8 @@
    hwloc_debug("found %lu windows processor groups\n", nr_processor_groups);
  
