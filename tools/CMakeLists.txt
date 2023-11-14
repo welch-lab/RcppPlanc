@@ -3,6 +3,9 @@ set(CMAKE_OSX_DEPLOYMENT_TARGET "11" CACHE STRING "Target MacOS Version")
 mark_as_advanced(CMAKE_OSX_DEPLOYMENT_TARGET)
 project(RcppPlanc VERSION 1.0.0 LANGUAGES C CXX)
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
+if(WIN32)
+    list(PREPEND CMAKE_PREFIX_PATH  "${PROJECT_SOURCE_DIR}/WindowsOverrides")
+endif()
 include(CheckIncludeFile)
 include(CheckCXXCompilerFlag)
 include(cmake/CPM.cmake)
@@ -18,6 +21,8 @@ if(APPLE)
     set(CMAKE_LIBRARY_PATH /opt/R/${CMAKE_HOST_SYSTEM_PROCESSOR}/lib)
     set(CMAKE_INCLUDE_PATH /opt/R/${CMAKE_HOST_SYSTEM_PROCESSOR}/include)
 endif()
+
+find_package(R REQUIRED)
 
 add_library(RcppPlanc SHARED "${PROJECT_SOURCE_DIR}/../src/rcppplanc_nmf.cpp" "${PROJECT_SOURCE_DIR}/../src/RcppExports.cpp" "${PROJECT_SOURCE_DIR}/../src/conversion.cpp")
 set_target_properties(RcppPlanc PROPERTIES PREFIX "")
@@ -49,8 +54,6 @@ endif()
 if(NOT(APPLE AND(CMAKE_HOST_SYSTEM_PROCESSOR MATCHES arm64)))
     find_package(OpenMP)
 endif()
-
-find_package(R REQUIRED)
 
 find_r_module(Rcpp)
 find_r_module(RcppArmadillo)
@@ -120,7 +123,7 @@ add_library(hw_detect OBJECT "${PROJECT_SOURCE_DIR}/../src/common/hw_detect.c")
         else()
             add_custom_command(OUTPUT "${hwloc_SOURCE_DIR}/Makefile"
                     DEPENDS hwloc_patch
-                    COMMAND ${hwloc_SOURCE_DIR}/configure --with-pic --prefix=${hwloc_SOURCE_DIR}/out/ --disable-picky --enable-shared=no --enable-static=yes
+                    COMMAND ${CMAKE_COMMAND} -E env "CFLAGS=-Wno-comment -Wno-unused" sh ${hwloc_SOURCE_DIR}/configure --with-pic --prefix=${hwloc_SOURCE_DIR}/out/ --disable-picky --enable-shared=no --enable-static=yes
                     --disable-cairo --disable-libxml2 --disable-io --disable-plugin-dlopen --disable-plugin-ltdl --enable-embedded-mode
                     WORKING_DIRECTORY "${hwloc_SOURCE_DIR}"
                     VERBATIM)
