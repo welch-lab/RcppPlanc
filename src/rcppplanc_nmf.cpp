@@ -480,7 +480,7 @@ arma::mat runbppnnls(const arma::mat &C, const T &B, int ncores) {
 #ifdef _OPENMP
     omp_set_num_threads(ncores);
 #ifdef PTHREADED_OPENBLAS
-    openblas_set_num_threads(1);
+    openblas_set_num_threads(1)
 #endif
 #endif
 #pragma omp parallel for schedule(dynamic) default(none) shared(numChunks, ONE_THREAD_MATRIX_SIZE, m_n, outmatptr, C, B, CtC)
@@ -497,7 +497,7 @@ arma::mat runbppnnls(const arma::mat &C, const T &B, int ncores) {
 #ifdef _OPENMP
     omp_set_num_threads(0);
 #ifdef PTHREADED_OPENBLAS
-    openblas_set_num_threads(0);
+    openblas_set_num_threads(0)
 #endif
 #endif
     return outmat;
@@ -556,7 +556,7 @@ arma::mat bppnnls_prod(const arma::mat &CtC, const arma::mat &CtB, const int& nC
 #ifdef _OPENMP
     omp_set_num_threads(nCores);
 #ifdef PTHREADED_OPENBLAS
-    openblas_set_num_threads(1);
+    openblas_set_num_threads(1)
 #endif
 #endif
 #pragma omp parallel for schedule(dynamic) default(none) shared(numChunks, CtB, ONE_THREAD_MATRIX_SIZE, outmatptr, CtC, n)
@@ -572,7 +572,7 @@ arma::mat bppnnls_prod(const arma::mat &CtC, const arma::mat &CtB, const int& nC
 #ifdef _OPENMP
     omp_set_num_threads(0);
 #ifdef PTHREADED_OPENBLAS
-    openblas_set_num_threads(0);
+    openblas_set_num_threads(0)
 #endif
 #endif
     return outmat;
