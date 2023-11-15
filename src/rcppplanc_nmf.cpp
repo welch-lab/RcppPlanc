@@ -188,7 +188,7 @@ Rcpp::List runSymNMF(T2 x, arma::uword k, const int& nCores, arma::uword niter, 
       symm_reg = symreg * symreg;
     }
   }
-  T1 MyNMF(x, W, H);
+  T1 MyNMF(x, W, H, nCores);
   MyNMF.num_iterations(niter);
   MyNMF.symm_reg(symm_reg);
   if (!m_regW.empty()) MyNMF.regW(m_regW);
