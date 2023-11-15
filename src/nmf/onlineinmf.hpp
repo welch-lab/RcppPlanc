@@ -423,7 +423,7 @@ private:
 #ifdef _OPENMP
             omp_set_num_threads(ncores);
 #ifdef PTHREADED_OPENBLAS
-            openblas_set_num_threads(1)
+            openblas_set_num_threads(1);
 #endif
 #endif
 #pragma omp parallel for schedule(dynamic) default(none) shared(dataSize, Eptr, numChunks, Hptr, given)
@@ -440,7 +440,7 @@ private:
 #ifdef _OPENMP
             omp_set_num_threads(0);
 #ifdef PTHREADED_OPENBLAS
-            openblas_set_num_threads(0)
+            openblas_set_num_threads(0);
 #endif
 #endif
         }
@@ -534,7 +534,7 @@ private:
 #ifdef _OPENMP
             omp_set_num_threads(ncores);
 #ifdef PTHREADED_OPENBLAS
-            openblas_set_num_threads(1)
+            openblas_set_num_threads(1);
 #endif
 #endif
 #pragma omp parallel for schedule(dynamic) default(none) shared(dataSize, Wptr, Eptr, numChunks, Hptr)
@@ -551,7 +551,7 @@ private:
 #ifdef _OPENMP
             omp_set_num_threads(0);
 #ifdef PTHREADED_OPENBLAS
-            openblas_set_num_threads(0)
+            openblas_set_num_threads(0);
 #endif
 #endif
             // iNMF is basically (W + V) * HT = E, now we solved W * HT = E, so V = 0

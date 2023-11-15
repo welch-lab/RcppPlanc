@@ -130,7 +130,7 @@ private:
 #ifdef _OPENMP
             omp_set_num_threads(ncores);
 #ifdef PTHREADED_OPENBLAS
-            openblas_set_num_threads(1)
+            openblas_set_num_threads(1);
 #endif
 #endif
 #pragma omp parallel for schedule(dynamic) default(none) shared(Eptr, i, uidx, WV, Hptr, numChunks, dataSize)
@@ -152,7 +152,7 @@ private:
 #ifdef _OPENMP
             omp_set_num_threads(0);
 #ifdef PTHREADED_OPENBLAS
-            openblas_set_num_threads(0)
+            openblas_set_num_threads(0);
 #endif
 #endif
         }
@@ -183,7 +183,7 @@ private:
 #ifdef _OPENMP
             omp_set_num_threads(ncores);
 #ifdef PTHREADED_OPENBLAS
-            openblas_set_num_threads(1)
+            openblas_set_num_threads(1);
 #endif
 #endif
 #pragma omp parallel for schedule(dynamic) default(none) shared(i, Hptr, numChunks, Wptr, Vptr, ETptr)
@@ -201,7 +201,7 @@ private:
 #ifdef _OPENMP
             omp_set_num_threads(0);
 #ifdef PTHREADED_OPENBLAS
-            openblas_set_num_threads(0)
+            openblas_set_num_threads(0);
 #endif
 #endif
         }
@@ -234,7 +234,7 @@ private:
 #ifdef _OPENMP
             omp_set_num_threads(ncores);
 #ifdef PTHREADED_OPENBLAS
-            openblas_set_num_threads(1)
+            openblas_set_num_threads(1);
 #endif
 #endif
 #pragma omp parallel for schedule(dynamic) default(none) shared(i, Uptr, Hptr, numChunks, PTptr)
@@ -251,7 +251,7 @@ private:
 #ifdef _OPENMP
             omp_set_num_threads(0);
 #ifdef PTHREADED_OPENBLAS
-            openblas_set_num_threads(0)
+            openblas_set_num_threads(0);
 #endif
 #endif
         }
@@ -287,7 +287,7 @@ private:
 #ifdef _OPENMP
             omp_set_num_threads(ncores);
 #ifdef PTHREADED_OPENBLAS
-            openblas_set_num_threads(1)
+            openblas_set_num_threads(1);
 #endif
 #endif
             #pragma omp parallel for ordered schedule(dynamic) default(none) shared(i, numChunks, spanStart, spanEnd, giventInput)
@@ -307,7 +307,7 @@ private:
 #ifdef _OPENMP
             omp_set_num_threads(0);
 #ifdef PTHREADED_OPENBLAS
-            openblas_set_num_threads(0)
+            openblas_set_num_threads(0);
 #endif
 #endif
             BPPNNLS<arma::mat, arma::vec> subProbW(giventGiven, giventInput, true); ///

@@ -57,7 +57,7 @@ class BPPNMF : public NMF<T> {
 #ifdef _OPENMP
       omp_set_num_threads(this->ncores);
 #ifdef PTHREADED_OPENBLAS
-      openblas_set_num_threads(1)
+      openblas_set_num_threads(1);
 #endif
 #endif
 #pragma omp parallel for schedule(dynamic) default(none) shared(numChunks, input, giventInput, othermat)
@@ -97,7 +97,7 @@ class BPPNMF : public NMF<T> {
 #ifdef _OPENMP
       omp_set_num_threads(0);
 #ifdef PTHREADED_OPENBLAS
-      openblas_set_num_threads(0)
+      openblas_set_num_threads(0);
 #endif
 #endif
 #if defined(_VERBOSE) || defined(COLLECTSTATS)
@@ -184,7 +184,7 @@ void commonSolve() {
 #ifdef _OPENMP
             omp_set_num_threads(this->ncores);
 #ifdef PTHREADED_OPENBLAS
-            openblas_set_num_threads(1)
+            openblas_set_num_threads(1);
 #endif
 #endif
 #pragma omp parallel for schedule(dynamic) default(none)
@@ -218,7 +218,7 @@ void commonSolve() {
 #ifdef _OPENMP
             omp_set_num_threads(0);
 #ifdef PTHREADED_OPENBLAS
-            openblas_set_num_threads(0)
+            openblas_set_num_threads(0);
 #endif
 #endif
       }
@@ -238,7 +238,7 @@ void commonSolve() {
 #ifdef _OPENMP
             omp_set_num_threads(this->ncores);
 #ifdef PTHREADED_OPENBLAS
-            openblas_set_num_threads(1)
+            openblas_set_num_threads(1);
 #endif
 #endif
 #pragma omp parallel for schedule(dynamic) default(none)
@@ -273,7 +273,7 @@ void commonSolve() {
 #ifdef _OPENMP
             omp_set_num_threads(0);
 #ifdef PTHREADED_OPENBLAS
-            openblas_set_num_threads(0)
+            openblas_set_num_threads(0);
 #endif
 #endif
         HtH.clear();
