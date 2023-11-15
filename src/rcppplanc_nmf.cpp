@@ -1277,3 +1277,12 @@ arma::uword testcacheCalc(int rank) {
 arma::uword getBoundThreadCount() {
     return get_num_bound_threads();
 }
+
+// [[Rcpp::export(.openblaspthreadoff)]]
+int wrap_openblas_set_num_threads() {
+#ifdef PTHREADED_OPENBLAS
+    openblas_set_num_threads(1);
+    return 1;
+#endif
+    return 0;
+}
