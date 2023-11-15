@@ -12,7 +12,9 @@
 #' minimal example. 
 #' @source https://www.nature.com/articles/nbt.4042
 #' @rdname data
+#' @importFrom Matrix Matrix
 "ctrl.sparse"
 
 #' @rdname data
+#' @importFrom Matrix Matrix
 "stim.sparse"
