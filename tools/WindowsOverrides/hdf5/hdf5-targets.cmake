@@ -59,7 +59,6 @@ set(R_TOOLS_LOCATION ${_R_TOOLS_location})
 
 
 get_filename_component(_IMPORT_PREFIX "${R_TOOLS_LOCATION}/../../x86_64-w64-mingw32.static.posix" ABSOLUTE)
-message(${_IMPORT_PREFIX})
 # Use original install prefix when loaded through a "/usr move"
 # cross-prefix symbolic link such as /lib -> /usr/lib.
 get_filename_component(_realCurr "${CMAKE_CURRENT_LIST_DIR}" REALPATH)
