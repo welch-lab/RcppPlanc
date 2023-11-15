@@ -130,8 +130,9 @@ add_library(hw_detect OBJECT "${PROJECT_SOURCE_DIR}/../src/common/hw_detect.c")
         endif()
     add_custom_command(OUTPUT "${hwloc_SOURCE_DIR}/hwloc/.libs/libhwloc_embedded.a"
     DEPENDS "${hwloc_SOURCE_DIR}/Makefile"
-    COMMAND "${CMAKE_MAKE_PROGRAM}"
-    WORKING_DIRECTORY "${hwloc_SOURCE_DIR}")
+    COMMAND ${CMAKE_MAKE_PROGRAM} all AUTOCONF=: AUTOHEADER=: AUTOMAKE=: ACLOCAL=:
+    WORKING_DIRECTORY "${hwloc_SOURCE_DIR}"
+        VERBATIM)
         add_custom_target(hwloc DEPENDS "${hwloc_SOURCE_DIR}/hwloc/.libs/libhwloc_embedded.a")
         target_include_directories(hw_detect PRIVATE "${hwloc_SOURCE_DIR}/include")
     add_dependencies(hw_detect hwloc)
