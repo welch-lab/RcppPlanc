@@ -1,6 +1,7 @@
 # FindR.cmake from MLPACK
 #[[ ----
-Copyright (c) 2007-2023, mlpack contributors (see COPYRIGHT.txt)
+Copyright (c) 2007-2023, mlpack contributors (see https://github.com/mlpack/mlpack/blob/master/COPYRIGHT.txt)
+Modifications (c) 2023 Andrew Robbins, Welch Lab, University of Michigan
 All rights reserved.
 
 Redistribution and use of mlpack in source and binary forms, with or without

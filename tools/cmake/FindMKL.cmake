@@ -1,3 +1,4 @@
+# Obtained from pytorch's github repository but appears derivative of scripts over a decade old. Unknown author/license.
 # - Find INTEL MKL library
 #
 # This module sets the following variables:
