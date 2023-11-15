@@ -58,7 +58,7 @@
 inmf <- function(
     objectList,
     k = 20,
-    nCores = 2L,
+    nCores = 2,
     lambda = 5,
     niter = 30,
     Hinit = NULL,
@@ -215,7 +215,7 @@ onlineINMF <- function(
     newDatasets = NULL,
     project = FALSE,
     k = 20,
-    nCores = 2L,
+    nCores = 2,
     lambda = 5,
     maxEpoch = 5,
     minibatchSize = 5000,
@@ -381,7 +381,7 @@ uinmf <- function(
     objectList,
     unsharedList,
     k = 20,
-    nCores = 2L,
+    nCores = 2,
     lambda = 5,
     niter = 30,
     verbose = TRUE

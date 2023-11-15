@@ -9,7 +9,7 @@ uinmf(
   objectList,
   unsharedList,
   k = 20,
-  nCores = 2L,
+  nCores = 2,
   lambda = 5,
   niter = 30,
   verbose = TRUE

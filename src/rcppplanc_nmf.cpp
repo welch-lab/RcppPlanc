@@ -477,13 +477,7 @@ arma::mat runbppnnls(const arma::mat &C, const T &B, int ncores) {
     arma::uword ONE_THREAD_MATRIX_SIZE = chunk_size_dense<double>(m_k);
     unsigned int numChunks = m_n / ONE_THREAD_MATRIX_SIZE;
     if (numChunks*ONE_THREAD_MATRIX_SIZE < m_n) numChunks++;
-#ifdef _OPENMP
-    omp_set_num_threads(ncores);
-#ifdef PTHREADED_OPENBLAS
-    openblas_set_num_threads(1)
-#endif
-#endif
-#pragma omp parallel for schedule(dynamic) default(none) shared(numChunks, ONE_THREAD_MATRIX_SIZE, m_n, outmatptr, C, B, CtC)
+#pragma omp parallel for schedule(dynamic) default(none) shared(numChunks, ONE_THREAD_MATRIX_SIZE, m_n, outmatptr, C, B, CtC) num_threads(ncores)
     for (unsigned int i = 0; i < numChunks; i++) {
         unsigned int spanStart = i * ONE_THREAD_MATRIX_SIZE;
         unsigned int spanEnd = (i + 1) * ONE_THREAD_MATRIX_SIZE - 1;
@@ -494,12 +488,6 @@ arma::mat runbppnnls(const arma::mat &C, const T &B, int ncores) {
         solveProblem.solveNNLS();
         (*outmatptr).cols(spanStart, spanEnd) = solveProblem.getSolutionMatrix();
     }
-#ifdef _OPENMP
-    omp_set_num_threads(0);
-#ifdef PTHREADED_OPENBLAS
-    openblas_set_num_threads(0)
-#endif
-#endif
     return outmat;
 }
 
@@ -553,13 +541,7 @@ arma::mat bppnnls_prod(const arma::mat &CtC, const arma::mat &CtB, const int& nC
     outmatptr = &outmat;
     unsigned int numChunks = n / ONE_THREAD_MATRIX_SIZE;
     if (numChunks*ONE_THREAD_MATRIX_SIZE < n) numChunks++;
-#ifdef _OPENMP
-    omp_set_num_threads(nCores);
-#ifdef PTHREADED_OPENBLAS
-    openblas_set_num_threads(1)
-#endif
-#endif
-#pragma omp parallel for schedule(dynamic) default(none) shared(numChunks, CtB, ONE_THREAD_MATRIX_SIZE, outmatptr, CtC, n)
+#pragma omp parallel for schedule(dynamic) default(none) shared(numChunks, CtB, ONE_THREAD_MATRIX_SIZE, outmatptr, CtC, n) num_threads(nCores)
     for (unsigned int i = 0; i < numChunks; i++) {
         unsigned int spanStart = i * ONE_THREAD_MATRIX_SIZE;
         unsigned int spanEnd = (i + 1) * ONE_THREAD_MATRIX_SIZE - 1;
@@ -569,12 +551,6 @@ arma::mat bppnnls_prod(const arma::mat &CtC, const arma::mat &CtB, const int& nC
         solveProblem.solveNNLS();
         (*outmatptr).cols(spanStart, spanEnd) = solveProblem.getSolutionMatrix();
     }
-#ifdef _OPENMP
-    omp_set_num_threads(0);
-#ifdef PTHREADED_OPENBLAS
-    openblas_set_num_threads(0)
-#endif
-#endif
     return outmat;
 }
 

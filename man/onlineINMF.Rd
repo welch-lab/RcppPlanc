@@ -9,7 +9,7 @@ onlineINMF(
   newDatasets = NULL,
   project = FALSE,
   k = 20,
-  nCores = 2L,
+  nCores = 2,
   lambda = 5,
   maxEpoch = 5,
   minibatchSize = 5000,

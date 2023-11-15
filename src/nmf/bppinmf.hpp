@@ -31,13 +31,7 @@ private:
             unsigned int dataSize = this->ncol_E[i];
             unsigned int numChunks = dataSize / this->INMF_CHUNK_SIZE;
             if (numChunks * this->INMF_CHUNK_SIZE < dataSize) numChunks++;
-#ifdef _OPENMP
-            omp_set_num_threads(ncores);
-#ifdef PTHREADED_OPENBLAS
-            openblas_set_num_threads(1)
-#endif
-#endif
-#pragma omp parallel for schedule(dynamic) default(none) shared(dataSize, Hptr, Eptr, given, numChunks)
+#pragma omp parallel for schedule(dynamic) default(none) shared(dataSize, Hptr, Eptr, given, numChunks) num_threads(ncores)
             for (unsigned int j = 0; j < numChunks; ++j) {
                 unsigned int spanStart = j * this->INMF_CHUNK_SIZE;
                 unsigned int spanEnd = (j + 1) * this->INMF_CHUNK_SIZE - 1;
@@ -48,12 +42,6 @@ private:
                 (*Hptr).rows(spanStart, spanEnd) = subProbH.getSolutionMatrix().t();
                 giventInput.clear();
             }
-#ifdef _OPENMP
-            omp_set_num_threads(0);
-#ifdef PTHREADED_OPENBLAS
-            openblas_set_num_threads(0)
-#endif
-#endif
         }
         giventGiven.clear();
 #ifdef _VERBOSE
@@ -77,13 +65,7 @@ private:
             T* ETptr = this->EiT[i].get();
             unsigned int numChunks = this->m / this->INMF_CHUNK_SIZE;
             if (numChunks * this->INMF_CHUNK_SIZE < this->m) numChunks++;
-#ifdef _OPENMP
-            omp_set_num_threads(ncores);
-#ifdef PTHREADED_OPENBLAS
-            openblas_set_num_threads(1)
-#endif
-#endif
-#pragma omp parallel for schedule(dynamic) default(none) shared(numChunks, WTptr, Hptr, Vptr, ETptr, VTptr, giventInput)
+#pragma omp parallel for schedule(dynamic) default(none) shared(numChunks, WTptr, Hptr, Vptr, ETptr, VTptr, giventInput) num_threads(ncores)
             for (unsigned int j = 0; j < numChunks; ++j) {
                 unsigned int spanStart = j * this->INMF_CHUNK_SIZE;
                 unsigned int spanEnd = (j + 1) * this->INMF_CHUNK_SIZE - 1;
@@ -96,12 +78,6 @@ private:
                 (*Vptr).rows(spanStart, spanEnd) = subProbV.getSolutionMatrix().t();
                 (*VTptr).cols(spanStart, spanEnd) = subProbV.getSolutionMatrix();
             }
-#ifdef _OPENMP
-            omp_set_num_threads(0);
-#ifdef PTHREADED_OPENBLAS
-            openblas_set_num_threads(0)
-#endif
-#endif
         }
         giventGiven.clear();
         giventInput.clear();
@@ -131,13 +107,7 @@ private:
             unsigned int spanEnd = (i + 1) * this->INMF_CHUNK_SIZE - 1;
             if (spanEnd > this->m - 1) spanEnd = this->m - 1;
             giventInput = arma::zeros<arma::mat>(this->k, spanEnd - spanStart + 1); ///
-#ifdef _OPENMP
-            omp_set_num_threads(ncores);
-#ifdef PTHREADED_OPENBLAS
-            openblas_set_num_threads(1)
-#endif
-#endif
-            #pragma omp parallel for ordered schedule(dynamic) default(none) shared(spanStart, spanEnd, giventInput)
+            #pragma omp parallel for ordered schedule(dynamic) default(none) shared(spanStart, spanEnd, giventInput) num_threads(ncores)
             for (unsigned int j = 0; j < this->nDatasets; ++j) {
                 T* ETptr = this->EiT[j].get();
                 arma::mat* Hptr = this->Hi[j].get();
@@ -150,12 +120,6 @@ private:
                 giventInput -= gtIneg;
                 }
             }
-#ifdef _OPENMP
-            omp_set_num_threads(0);
-#ifdef PTHREADED_OPENBLAS
-            openblas_set_num_threads(0)
-#endif
-#endif
             BPPNNLS<arma::mat, arma::vec> subProbW(giventGiven, giventInput, true); ///
             subProbW.solveNNLS();
             (*Wptr).rows(spanStart, spanEnd) = subProbW.getSolutionMatrix().t();

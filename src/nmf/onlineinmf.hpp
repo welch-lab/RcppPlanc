@@ -420,13 +420,7 @@ private:
             unsigned int dataSize = this->ncol_E[i];
             unsigned int numChunks = dataSize / this->INMF_CHUNK_SIZE;
             if (numChunks * this->INMF_CHUNK_SIZE < dataSize) numChunks++;
-#ifdef _OPENMP
-            omp_set_num_threads(ncores);
-#ifdef PTHREADED_OPENBLAS
-            openblas_set_num_threads(1)
-#endif
-#endif
-#pragma omp parallel for schedule(dynamic) default(none) shared(dataSize, Eptr, numChunks, Hptr, given)
+#pragma omp parallel for schedule(dynamic) default(none) shared(dataSize, Eptr, numChunks, Hptr, given) num_threads(ncores)
             for (unsigned int j = 0; j < numChunks; ++j) {
                 unsigned int spanStart = j * this->INMF_CHUNK_SIZE;
                 unsigned int spanEnd = (j + 1) * this->INMF_CHUNK_SIZE - 1;
@@ -437,12 +431,6 @@ private:
                 (*Hptr).rows(spanStart, spanEnd) = subProbH.getSolutionMatrix().t();
                 giventInput.clear();
             }
-#ifdef _OPENMP
-            omp_set_num_threads(0);
-#ifdef PTHREADED_OPENBLAS
-            openblas_set_num_threads(0)
-#endif
-#endif
         }
         giventGiven.clear();
 #ifdef _VERBOSE
@@ -531,13 +519,7 @@ private:
             unsigned int dataSize = this->ncol_E[idx];
             unsigned int numChunks = dataSize / this->INMF_CHUNK_SIZE;
             if (numChunks * this->INMF_CHUNK_SIZE < dataSize) numChunks++;
-#ifdef _OPENMP
-            omp_set_num_threads(ncores);
-#ifdef PTHREADED_OPENBLAS
-            openblas_set_num_threads(1)
-#endif
-#endif
-#pragma omp parallel for schedule(dynamic) default(none) shared(dataSize, Wptr, Eptr, numChunks, Hptr)
+#pragma omp parallel for schedule(dynamic) default(none) shared(dataSize, Wptr, Eptr, numChunks, Hptr) num_threads(ncores)
             for (unsigned int j = 0; j < numChunks; ++j) {
                 unsigned int spanStart = j * this->INMF_CHUNK_SIZE;
                 unsigned int spanEnd = (j + 1) * this->INMF_CHUNK_SIZE - 1;
@@ -548,12 +530,6 @@ private:
                 (*Hptr).rows(spanStart, spanEnd) = subProbH.getSolutionMatrix().t();
                 giventInput.clear();
             }
-#ifdef _OPENMP
-            omp_set_num_threads(0);
-#ifdef PTHREADED_OPENBLAS
-            openblas_set_num_threads(0)
-#endif
-#endif
             // iNMF is basically (W + V) * HT = E, now we solved W * HT = E, so V = 0
             // std::unique_ptr<arma::mat> V;
             // V = std::unique_ptr<arma::mat>(new arma::mat);
