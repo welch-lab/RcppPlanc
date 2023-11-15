@@ -1,7 +1,7 @@
 library(RcppPlanc)
 library(testthat)
 library(Matrix)
-ctrl.h5ds <- H5Mat(filename = system.file("extdata", "ctrl_dense.h5", 
+ctrl.h5ds <- H5Mat(filename = system.file("extdata", "ctrl_dense.h5",
                                           package = "RcppPlanc", mustWork = TRUE), 
                    dataPath = "scaleData")
 stim.h5ds <- H5Mat(filename = system.file("extdata", "stim_dense.h5", 
