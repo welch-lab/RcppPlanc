@@ -135,6 +135,9 @@ add_library(hw_detect OBJECT "${PROJECT_SOURCE_DIR}/../src/common/hw_detect.c")
         VERBATIM)
         add_custom_target(hwloc DEPENDS "${hwloc_SOURCE_DIR}/hwloc/.libs/libhwloc_embedded.a")
         target_include_directories(hw_detect PRIVATE "${hwloc_SOURCE_DIR}/include")
+        add_custom_command(TARGET hwloc POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E remove_directory ${hwloc_SOURCE_DIR}/utils/lstopo
+                VERBATIM)
     add_dependencies(hw_detect hwloc)
     target_link_libraries(hw_detect PRIVATE "${hwloc_SOURCE_DIR}/hwloc/.libs/libhwloc_embedded.a")
     if(APPLE)
@@ -232,10 +235,6 @@ endif()
 endif()
 endif()
 endif()
-
-add_custom_command(TARGET hwloc POST_BUILD
-                   COMMAND ${CMAKE_COMMAND} -E remove_directory ${hwloc_SOURCE_DIR}/utils/lstopo
-                   VERBATIM)
 
 add_custom_command(TARGET RcppPlanc POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E remove ${HighFive_BINARY_DIR}/CMakeFiles/hdf5/cmake_hdf5_test.c
