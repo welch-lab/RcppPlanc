@@ -26,9 +26,6 @@
 ``` <!-- language: lang-none -->
 
 Found the following significant warnings:
-  D:/temp/Rtmpk1MpYi/R.INSTALL2f5205985409f/RcppPlanc/src/_deps/hwloc-src/hwloc/topology-windows.c:1282:46: warning: format '%u' expects argument of type 'unsigned int', but argument 4 has type 'DWORD' {aka 'long unsigned int'} [-Wformat=]
-  D:/temp/Rtmpk1MpYi/R.INSTALL2f5205985409f/RcppPlanc/src/_deps/hwloc-src/hwloc/topology-windows.c:1282:49: warning: format '%u' expects argument of type 'unsigned int', but argument 5 has type 'DWORD' {aka 'long unsigned int'} [-Wformat=]
-  D:/temp/Rtmpk1MpYi/R.INSTALL2f5205985409f/RcppPlanc/src/_deps/hwloc-src/hwloc/topology-windows.c:1282:52: warning: format '%u' expects argument of type 'unsigned int', but argument 6 has type 'DWORD' {aka 'long unsigned int'} [-Wformat=]
   D:/temp/Rtmpk1MpYi/R.INSTALL2f5205985409f/RcppPlanc/src/_deps/hwloc-src/hwloc/topology-windows.c:1286:29: warning: passing argument 2 of 'GetComputerNameA' from incompatible pointer type [-Wincompatible-pointer-types]
 ```
 
@@ -54,15 +51,6 @@ Warning in Sys.setlocale("LC_CTYPE", "en_US.UTF-8") :
 
 The R-Hub ubuntu containers appear to not have locales installed. At least, some of them.
 
-
-``` <!-- language: lang-none -->
-❯ checking pragmas in C/C++ headers and code ... WARNING
-  Files which contain pragma(s) suppressing diagnostics:
-    'src/_deps/hwloc-src/utils/lstopo/lstopo-draw.c'
-    'src/_deps/hwloc-src/utils/lstopo/lstopo-windows.c'
-```
-
-Despite its source being bundled alongside hwloc, lstopo (and therefore these source files) are not built.
 
   ``` <!-- language: lang-none -->
 
@@ -229,16 +217,6 @@ This is an Rhub issue. It works locally.
 
 Per <https://github.com/r-hub/rhub/issues/440> this appears to be a bug.
 
-``` <!-- language: lang-none -->
-* checking tests ...
-  Running 'testthat.R' [3344s/219s]
-Running R code in 'testthat.R' had CPU time 15.3 times elapsed time
-* checking re-building of vignette outputs ... [110s/12s] NOTE
-Re-building vignettes had CPU time 6.1 times elapsed time
- [3346s/220s] NOTE
-
-```
-Unsure why this is still occurring as I have pinned threads to two by default in our openmp pragmas. Perhaps openblas-related.
 
 ```c++
   Direct leak of 16 byte(s) in 1 object(s) allocated from:
@@ -267,7 +245,7 @@ Function Rcpp::Vector<19, Rcpp::PreserveStorage> onlineINMF_S1_mem<arma::Mat<dou
 These appear to be issues with rchk's handling of Armadillo's template metaprogramming.
 
 
-0 errors ✔ | 2 warnings ✖ | 6 notes ✖
+0 errors ✔ | 0 warnings ✖ | 4 notes ✖
 
 ## revdepcheck results
 
