@@ -127,27 +127,36 @@ all.equal(res1, res2)
 
 
 # Scenario 2 with H5 dense matrices
-h5dense1 <- H5Mat("filepath1.h5", "dataPath")
-h5dense2 <- H5Mat("filepath2.h5", "dataPath")
-res2 <- onlineINMF(list(h5dense1, h5dense2))
-h5dense3 <- H5Mat("filepath3.h5", "dataPath")
-res3 <- onlineINMF(list(h5dense1, h5dense2),
-                   newDatasets = list(h5dense3),
+h5dense1 <- H5Mat(filename = system.file("extdata", "ctrl_dense.h5", package = "RcppPlanc", mustWork = TRUE),
+                                          dataPath = "scaleData")
+h5dense2 <- H5Mat(filename = system.file("extdata", "stim_dense.h5", package = "RcppPlanc", mustWork = TRUE),
+                                          dataPath = "scaleData")
+res2 <- onlineINMF(list(ctrl = h5dense1), minibatchSize = 50, k = 10)
+res3 <- onlineINMF(list(ctrl = h5dense1),
+                   newDatasets = list(stim = h5dense2),
                    Vinit = res2$V, Winit = res2$W,
-                   Ainit = res2$A, Binit = res2$B)
+                   Ainit = res2$A, Binit = res2$B, minibatchSize = 50, k = 10)
 
 # Scenario 3 with H5 sparse matrices
-h5sparse1 <- H5SpMat("filepath1.h5", "group/data", "group/indices",
-                     "group/indptr", nrow = 4215, ncol = 6548)
-h5sparse2 <- H5SpMat("filepath2.h5", "group/data", "group/indices",
-                     "group/indptr", nrow = 4215, ncol = 7451)
-res4 <- onlineINMF(list(h5sparse1, h5sparse2))
-h5sparse3 <- H5SpMat("filepath3.h5", "group/data", "group/indices",
-                     "group/indptr", nrow = 4215, ncol = 3456)
-res5 <- onlineINMF(list(h5sparse1, h5sparse2),
-                   newDatasets = list(h5sparse3), project = TRUE,
+h5sparse1 <- H5SpMat(filename = system.file("extdata", "ctrl_sparse.h5",
+                                package = "RcppPlanc", mustWork = TRUE),
+                                valuePath = "scaleDataSparse/data",
+                                rowindPath = "scaleDataSparse/indices",
+                                colptrPath = "scaleDataSparse/indptr",
+                                nrow = nrow(ctrl.sparse),
+                                ncol = ncol(ctrl.sparse))
+h5sparse2 <- H5SpMat(filename = system.file("extdata", "stim_sparse.h5",
+                                package = "RcppPlanc", mustWork = TRUE),
+                                valuePath = "scaleDataSparse/data",
+                                rowindPath = "scaleDataSparse/indices",
+                                colptrPath = "scaleDataSparse/indptr",
+                                nrow = nrow(stim.sparse),
+                                ncol = nrow(stim.sparse))
+res4 <- onlineINMF(list(ctrl = h5sparse1), minibatchSize = 50, k = 10)
+res5 <- onlineINMF(list(ctrl = h5sparse1),
+                   newDatasets = list(stim = h5sparse2), project = TRUE,
                    Vinit = res4$V, Winit = res4$W,
-                   Ainit = res4$A, Binit = res4$B)
+                   Ainit = res4$A, Binit = res4$B, minibatchSize = 50, k = 10)
 
 }
 \references{
