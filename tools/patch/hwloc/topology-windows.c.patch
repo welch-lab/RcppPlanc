@@ -1,4 +1,4 @@
-Subject: [PATCH] comment pragmas
+Subject: [PATCH] remove_assert_hwloc
 ---
 Index: hwloc/topology-windows.c
 IDEA additional info:
@@ -7,56 +7,30 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 ===================================================================
 diff --git a/hwloc/topology-windows.c b/hwloc/topology-windows.c
 --- a/hwloc/topology-windows.c	(revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
-+++ b/hwloc/topology-windows.c	(date 1699851063183)
-@@ -216,9 +216,9 @@
- {
-   HMODULE kernel32, ntdll;
-
--#if HWLOC_HAVE_GCC_W_CAST_FUNCTION_TYPE
--#pragma GCC diagnostic ignored "-Wcast-function-type"
--#endif
-+// #if HWLOC_HAVE_GCC_W_CAST_FUNCTION_TYPE
-+// #pragma GCC diagnostic ignored "-Wcast-function-type"
-+// #endif
-
-     kernel32 = LoadLibrary("kernel32.dll");
-     if (kernel32) {
-@@ -257,9 +257,9 @@
-     ntdll = GetModuleHandle("ntdll");
-     RtlGetVersionProc = (PFN_RTLGETVERSION) GetProcAddress(ntdll, "RtlGetVersion");
-
--#if HWLOC_HAVE_GCC_W_CAST_FUNCTION_TYPE
--#pragma GCC diagnostic warning "-Wcast-function-type"
--#endif
-+// #if HWLOC_HAVE_GCC_W_CAST_FUNCTION_TYPE
-+// #pragma GCC diagnostic warning "-Wcast-function-type"
-+// #endif
- }
-
- /*
++++ b/hwloc/topology-windows.c	(date 1700238880517)
 @@ -366,8 +366,8 @@
    hwloc_debug("found %lu windows processor groups\n", nr_processor_groups);
- 
+
    if (nr_processor_groups > 1 && SIZEOF_VOID_P == 4) {
 -    if (HWLOC_SHOW_ALL_ERRORS())
 -      fprintf(stderr, "hwloc/windows: multiple processor groups found on 32bits Windows, topology may be invalid/incomplete.\n");
 +    // if (HWLOC_SHOW_ALL_ERRORS())
 +    //  fprintf(stderr, "hwloc/windows: multiple processor groups found on 32bits Windows, topology may be invalid/incomplete.\n");
    }
- 
+
    length = 0;
 @@ -393,7 +393,7 @@
         procInfo = (void*) ((uintptr_t) procInfo + procInfo->Size)) {
      unsigned id;
- 
+
 -    assert(procInfo->Relationship == RelationGroup);
 +    //assert(procInfo->Relationship == RelationGroup);
- 
+
      hwloc_debug("Found %u active windows processor groups\n",
                  (unsigned) procInfo->Group.ActiveGroupCount);
 @@ -490,7 +490,7 @@
    }
- 
+
    if (!processor_group_cpusets) {
 -    assert(nr_processor_groups == 1);
 +    //assert(nr_processor_groups == 1);
@@ -69,46 +43,53 @@ diff --git a/hwloc/topology-windows.c b/hwloc/topology-windows.c
  {
 -  assert(GetCurrentProcessorNumberExProc || (GetCurrentProcessorNumberProc && nr_processor_groups == 1));
 +  //assert(GetCurrentProcessorNumberExProc || (GetCurrentProcessorNumberProc && nr_processor_groups == 1));
- 
+
    if (nr_processor_groups > 1 || !GetCurrentProcessorNumberProc) {
      PROCESSOR_NUMBER num;
 @@ -566,7 +566,7 @@
      return -1;
    }
- 
+
 -  assert(nr_processor_groups == 1 || SetThreadGroupAffinityProc);
 +  //assert(nr_processor_groups == 1 || SetThreadGroupAffinityProc);
- 
+
    if (nr_processor_groups > 1) {
      GROUP_AFFINITY aff;
 @@ -627,7 +627,7 @@
  {
    GROUP_AFFINITY aff;
- 
+
 -  assert(GetThreadGroupAffinityProc);
 +  //assert(GetThreadGroupAffinityProc);
- 
+
    if (!GetThreadGroupAffinityProc(thread, &aff))
      return -1;
 @@ -665,7 +665,7 @@
  {
    DWORD_PTR mask;
- 
+
 -  assert(nr_processor_groups == 1);
 +  //assert(nr_processor_groups == 1);
- 
+
    if (flags & HWLOC_CPUBIND_NOMEMBIND) {
      errno = ENOSYS;
 @@ -737,7 +737,7 @@
  {
    DWORD_PTR proc_mask, sys_mask;
- 
+
 -  assert(nr_processor_groups == 1);
 +  //assert(nr_processor_groups == 1);
- 
+
    if (flags & HWLOC_CPUBIND_NOMEMBIND) {
      errno = ENOSYS;
-@@ -993,7 +993,7 @@
+@@ -987,13 +987,13 @@
+   OSVERSIONINFOEX osvi;
+   char versionstr[20];
+   char hostname[122] = "";
+-  unsigned hostname_size = sizeof(hostname);
++  long unsigned hostname_size = sizeof(hostname);
+   int has_efficiencyclass = 0;
+   struct hwloc_win_efficiency_classes eclasses;
    char *env = getenv("HWLOC_WINDOWS_PROCESSOR_GROUP_OBJS");
    int keep_pgroup_objs = (env && atoi(env));
  
