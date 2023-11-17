@@ -1,4 +1,4 @@
-Resubmitting due to unnecessary artifacts in inst/extdata.
+Addressed all NOTES that I believe fixable.
 _______________________________________________________________________________________________________________
 # Version 1.0.0
 
@@ -24,15 +24,6 @@ ________________________________________________________________________________
 
 
 ## R CMD check results
-
-``` <!-- language: lang-none -->
-
-Found the following significant warnings:
-  D:/temp/Rtmpk1MpYi/R.INSTALL2f5205985409f/RcppPlanc/src/_deps/hwloc-src/hwloc/topology-windows.c:1286:29: warning: passing argument 2 of 'GetComputerNameA' from incompatible pointer type [-Wincompatible-pointer-types]
-```
-
-This is from one of our linked dependencies. If need be, they can be patched out, but these code paths are never called.
-This warning is not present on UNIX-alikes.
 
 ``` <!-- language: lang-none -->
 
@@ -68,112 +59,31 @@ hwloc.
 
 ``` <!-- language: lang-none -->
 ❯ checking line endings in C/C++/Fortran sources/headers ... NOTE
-  Found the following sources/headers with CR or CRLF line endings:
-    src/CMakeFiles/3.24.3/CompilerIdC/CMakeCCompilerId.c
-    src/CMakeFiles/3.24.3/CompilerIdCXX/CMakeCXXCompilerId.cpp
-    src/CMakeFiles/FindOpenMP/OpenMPCheckVersion.c
-    src/CMakeFiles/FindOpenMP/OpenMPCheckVersion.cpp
-    src/CMakeFiles/FindOpenMP/OpenMPTryFlag.c
-    src/CMakeFiles/FindOpenMP/OpenMPTryFlag.cpp
-    src/_deps/highfive-src/doc/poster/example1_hdf5.cpp
-    src/_deps/highfive-src/doc/poster/example1_highfive.cpp
-    src/_deps/highfive-src/doc/poster/example3.cpp
-    src/_deps/highfive-src/doc/poster/example6.cpp
-    src/_deps/highfive-src/doc/poster/example_boost.cpp
-    src/_deps/highfive-src/doc/poster/example_boost_ublas.cpp
-    src/_deps/highfive-src/doc/poster/example_easy_highfive.cpp
-    src/_deps/highfive-src/doc/poster/example_eigen.cpp
-    src/_deps/highfive-src/doc/poster/example_props.cpp
-    src/_deps/highfive-src/include/highfive/H5Attribute.hpp
-    src/_deps/highfive-src/include/highfive/H5DataSet.hpp
-    src/_deps/highfive-src/include/highfive/H5DataSpace.hpp
-    src/_deps/highfive-src/include/highfive/H5DataType.hpp
-    src/_deps/highfive-src/include/highfive/H5Easy.hpp
-    src/_deps/highfive-src/include/highfive/H5Exception.hpp
-    src/_deps/highfive-src/include/highfive/H5File.hpp
-    src/_deps/highfive-src/include/highfive/H5FileDriver.hpp
-    src/_deps/highfive-src/include/highfive/H5Group.hpp
-    src/_deps/highfive-src/include/highfive/H5Object.hpp
-    src/_deps/highfive-src/include/highfive/H5PropertyList.hpp
-    src/_deps/highfive-src/include/highfive/H5Reference.hpp
-    src/_deps/highfive-src/include/highfive/H5Selection.hpp
-    src/_deps/highfive-src/include/highfive/H5Utility.hpp
-    src/_deps/highfive-src/include/highfive/bits/H5Annotate_traits.hpp
-    src/_deps/highfive-src/include/highfive/bits/H5Annotate_traits_misc.hpp
-    src/_deps/highfive-src/include/highfive/bits/H5Attribute_misc.hpp
-    src/_deps/highfive-src/include/highfive/bits/H5Converter_misc.hpp
-    src/_deps/highfive-src/include/highfive/bits/H5DataSet_misc.hpp
-    src/_deps/highfive-src/include/highfive/bits/H5DataType_misc.hpp
-    src/_deps/highfive-src/include/highfive/bits/H5Dataspace_misc.hpp
-    src/_deps/highfive-src/include/highfive/bits/H5Exception_misc.hpp
-    src/_deps/highfive-src/include/highfive/bits/H5FileDriver_misc.hpp
-    src/_deps/highfive-src/include/highfive/bits/H5File_misc.hpp
-    src/_deps/highfive-src/include/highfive/bits/H5Friends.hpp
-    src/_deps/highfive-src/include/highfive/bits/H5Iterables_misc.hpp
-    src/_deps/highfive-src/include/highfive/bits/H5Node_traits.hpp
-    src/_deps/highfive-src/include/highfive/bits/H5Node_traits_misc.hpp
-    src/_deps/highfive-src/include/highfive/bits/H5Object_misc.hpp
-    src/_deps/highfive-src/include/highfive/bits/H5Path_traits.hpp
-    src/_deps/highfive-src/include/highfive/bits/H5Path_traits_misc.hpp
-    src/_deps/highfive-src/include/highfive/bits/H5PropertyList_misc.hpp
-    src/_deps/highfive-src/include/highfive/bits/H5ReadWrite_misc.hpp
-    src/_deps/highfive-src/include/highfive/bits/H5Reference_misc.hpp
-    src/_deps/highfive-src/include/highfive/bits/H5Selection_misc.hpp
-    src/_deps/highfive-src/include/highfive/bits/H5Slice_traits.hpp
-    src/_deps/highfive-src/include/highfive/bits/H5Slice_traits_misc.hpp
-    src/_deps/highfive-src/include/highfive/bits/H5Utils.hpp
-    src/_deps/highfive-src/include/highfive/bits/H5_definitions.hpp
-    src/_deps/highfive-src/include/highfive/h5easy_bits/H5Easy_Eigen.hpp
-    src/_deps/highfive-src/include/highfive/h5easy_bits/H5Easy_misc.hpp
-    src/_deps/highfive-src/include/highfive/h5easy_bits/H5Easy_opencv.hpp
-    src/_deps/highfive-src/include/highfive/h5easy_bits/H5Easy_public.hpp
-    src/_deps/highfive-src/include/highfive/h5easy_bits/H5Easy_scalar.hpp
-    src/_deps/highfive-src/include/highfive/h5easy_bits/H5Easy_vector.hpp
-    src/_deps/highfive-src/include/highfive/h5easy_bits/H5Easy_xtensor.hpp
-    src/_deps/highfive-src/src/benchmarks/hdf5_bench.cpp
-    src/_deps/highfive-src/src/benchmarks/hdf5_bench_improved.cpp
-    src/_deps/highfive-src/src/benchmarks/highfive_bench.cpp
-    src/_deps/highfive-src/src/examples/boost_multi_array_2D.cpp
-    src/_deps/highfive-src/src/examples/boost_multiarray_complex.cpp
-    src/_deps/highfive-src/src/examples/boost_ublas_double.cpp
-    src/_deps/highfive-src/src/examples/compound_types.cpp
-    src/_deps/highfive-src/src/examples/create_attribute_string_integer.cpp
-    src/_deps/highfive-src/src/examples/create_dataset_double.cpp
-    src/_deps/highfive-src/src/examples/create_dataset_half_float.cpp
-    src/_deps/highfive-src/src/examples/create_datatype.cpp
-    src/_deps/highfive-src/src/examples/create_extensible_dataset.cpp
-    src/_deps/highfive-src/src/examples/create_page_allocated_files.cpp
-    src/_deps/highfive-src/src/examples/easy_attribute.cpp
-    src/_deps/highfive-src/src/examples/easy_dumpoptions.cpp
-    src/_deps/highfive-src/src/examples/easy_load_dump.cpp
-    src/_deps/highfive-src/src/examples/eigen_matrix.cpp
-    src/_deps/highfive-src/src/examples/hl_hdf5_inmemory_files.cpp
-    src/_deps/highfive-src/src/examples/parallel_hdf5_collective_io.cpp
-    src/_deps/highfive-src/src/examples/parallel_hdf5_independent_io.cpp
-    src/_deps/highfive-src/src/examples/read_write_dataset_string.cpp
-    src/_deps/highfive-src/src/examples/read_write_fixedlen_string.cpp
-    src/_deps/highfive-src/src/examples/read_write_raw_ptr.cpp
-    src/_deps/highfive-src/src/examples/read_write_single_scalar.cpp
-    src/_deps/highfive-src/src/examples/read_write_vector_dataset.cpp
-    src/_deps/highfive-src/src/examples/read_write_vector_dataset_references.cpp
-    src/_deps/highfive-src/src/examples/readme_snippet.cpp
-    src/_deps/highfive-src/src/examples/renaming_objects.cpp
-    src/_deps/highfive-src/src/examples/select_by_id_dataset_cpp11.cpp
-    src/_deps/highfive-src/src/examples/select_partial_dataset_cpp11.cpp
-    src/_deps/highfive-src/tests/test_dependent_library/include/simpleton.hpp
-    src/_deps/highfive-src/tests/test_dependent_library/src/otherton.cpp
-    src/_deps/highfive-src/tests/test_dependent_library/src/simpleton.cpp
-    src/_deps/highfive-src/tests/unit/test_all_types.cpp
-    src/_deps/highfive-src/tests/unit/tests_high_five.hpp
-    src/_deps/highfive-src/tests/unit/tests_high_five_base.cpp
-    src/_deps/highfive-src/tests/unit/tests_high_five_easy.cpp
-    src/_deps/highfive-src/tests/unit/tests_high_five_multi_dims.cpp
-    src/_deps/highfive-src/tests/unit/tests_high_five_parallel.cpp
-    src/_deps/highfive-src/tests/unit/tests_import_public_headers.cpp
-  Some Unix compilers require LF line endings.
+ Found the following sources/headers with CR or CRLF line endings:
+  src/CMakeFiles/3.24.3/CompilerIdC/CMakeCCompilerId.c
+  src/CMakeFiles/3.24.3/CompilerIdCXX/CMakeCXXCompilerId.cpp
+  src/CMakeFiles/CheckTypeSize/SIZE_OF_VOIDP.c
+  src/CMakeFiles/FindOpenMP/OpenMPCheckVersion.c
+  src/CMakeFiles/FindOpenMP/OpenMPCheckVersion.cpp
+  src/CMakeFiles/FindOpenMP/OpenMPTryFlag.c
+  src/CMakeFiles/FindOpenMP/OpenMPTryFlag.cpp
+  src/_deps/highfive-src/include/highfive/H5Version.hpp
+Some Unix compilers require LF line endings.
 ```
 
   These are not included in the tarball, they are downloaded at configure time by git. On UNIX-alikes this note is absent.
+
+``` <!-- language: lang-none -->
+Found the following Makefile(s) with CR or CRLF line endings:
+  src/Makefile
+  src/_deps/highfive-build/Makefile
+  src/_deps/highfive-subbuild/Makefile
+  src/_deps/hwloc-subbuild/Makefile
+Some Unix 'make' programs require LF line endings.
+
+```
+These are not included in the tarball, they are generated at configure time. On UNIX-alikes this note is absent.
+
 
 ``` <!-- language: lang-none -->
 ❯ checking compilation flags used ... NOTE
