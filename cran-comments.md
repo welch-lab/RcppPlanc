@@ -1,3 +1,5 @@
+Resubmitting due to unnecessary artifacts in inst/extdata.
+_______________________________________________________________________________________________________________
 # Version 1.0.0
 
 ## Test Environments
