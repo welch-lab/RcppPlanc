@@ -11,7 +11,8 @@ Authors@R: c(
   person("UT-Batelle", role = c('cph'), comment = "The original PLANC code"))
 Maintainer: Andrew Robbins <robbiand@med.umich.edu>
 Description: 'Rcpp' bindings for 'PLANC', a highly parallel
-             and extensible NMF/NTF library. Wraps algorithms described in
+             and extensible NMF/NTF  (Non-negative Matrix/Tensor Factorization) library.
+             Wraps algorithms described in
              Kannan et. al (2018) <doi:10.1109/TKDE.2017.2767592> and
              Eswar et. al (2021) <doi:10.1145/3432185>.
              Implements algorithms described in

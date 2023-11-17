@@ -49,7 +49,7 @@ constructed argument list.
 h <- H5Mat(system.file("extdata/ctrl_dense.h5", package = "RcppPlanc"),
            "data")
 print(h)
-\dontrun{
+
 library(Matrix)
 ctrl.dense <- as.matrix(ctrl.sparse)
 h1 <- as.H5Mat(ctrl.dense, "ctrl_from_dense_to_dense.h5",
@@ -58,5 +58,5 @@ h1
 h2 <- as.H5Mat(ctrl.sparse, "ctrl_from_sparse_to_dense.h5",
                dataPath = "data")
 h2
-}
+
 }

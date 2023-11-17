@@ -93,7 +93,7 @@ constructed argument list.
 h <- H5SpMat(system.file("extdata/ctrl_sparse.h5", package = "RcppPlanc"),
              "data", "indices", "indptr", 173, 300)
 dim(h)
-\dontrun{
+
 library(Matrix)
 ctrl.dense <- as.matrix(ctrl.sparse)
 h1 <- as.H5SpMat(ctrl.sparse, "ctrl_from_sparse_to_sparse.h5",
@@ -106,5 +106,5 @@ h2 <- as.H5SpMat(ctrl.dense, "ctrl_from_dense_to_sparse.h5",
                  colptrPath = "indptr", nrow = nrow(ctrl.sparse),
                  ncol = ncol(ctrl.sparse))
 h2
-}
+
 }

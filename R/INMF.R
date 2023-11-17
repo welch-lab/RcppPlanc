@@ -186,7 +186,7 @@ inmf <- function(
 #' res2 <- onlineINMF(list(ctrl.h5sp, stim.h5sp), minibatchSize = 50)
 #' all.equal(res1, res2)
 #'
-#' \dontrun{
+#'
 #' # Scenario 2 with H5 dense matrices
 #' h5dense1 <- H5Mat("filepath1.h5", "dataPath")
 #' h5dense2 <- H5Mat("filepath2.h5", "dataPath")
@@ -209,7 +209,7 @@ inmf <- function(
 #'                    newDatasets = list(h5sparse3), project = TRUE,
 #'                    Vinit = res4$V, Winit = res4$W,
 #'                    Ainit = res4$A, Binit = res4$B)
-#' }
+#'
 onlineINMF <- function(
     objectList,
     newDatasets = NULL,
