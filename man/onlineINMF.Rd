@@ -127,10 +127,10 @@ all.equal(res1, res2)
 
 
 # Scenario 2 with H5 dense matrices
-h5dense1 <- H5Mat(filename = system.file("extdata", "ctrl_dense.h5"
+h5dense1 <- H5Mat(filename = system.file("extdata", "ctrl_dense.h5",
                              package = "RcppPlanc", mustWork = TRUE),
                                           dataPath = "scaleData")
-h5dense2 <- H5Mat(filename = system.file("extdata", "stim_dense.h5"
+h5dense2 <- H5Mat(filename = system.file("extdata", "stim_dense.h5",
                              package = "RcppPlanc", mustWork = TRUE),
                                           dataPath = "scaleData")
 res2 <- onlineINMF(list(ctrl = h5dense1), minibatchSize = 50, k = 10)
