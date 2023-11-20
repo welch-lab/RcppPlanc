@@ -415,13 +415,23 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// wrap_openblas_set_num_threads
-int wrap_openblas_set_num_threads();
-RcppExport SEXP _RcppPlanc_wrap_openblas_set_num_threads() {
+// openblas_pthread_off
+int openblas_pthread_off();
+RcppExport SEXP _RcppPlanc_openblas_pthread_off() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(wrap_openblas_set_num_threads());
+    rcpp_result_gen = Rcpp::wrap(openblas_pthread_off());
+    return rcpp_result_gen;
+END_RCPP
+}
+// openblas_pthread_on
+int openblas_pthread_on();
+RcppExport SEXP _RcppPlanc_openblas_pthread_on() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(openblas_pthread_on());
     return rcpp_result_gen;
 END_RCPP
 }
@@ -448,7 +458,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppPlanc_uinmf_h5sparse", (DL_FUNC) &_RcppPlanc_uinmf_h5sparse, 18},
     {"_RcppPlanc_testcacheCalc", (DL_FUNC) &_RcppPlanc_testcacheCalc, 1},
     {"_RcppPlanc_getBoundThreadCount", (DL_FUNC) &_RcppPlanc_getBoundThreadCount, 0},
-    {"_RcppPlanc_wrap_openblas_set_num_threads", (DL_FUNC) &_RcppPlanc_wrap_openblas_set_num_threads, 0},
+    {"_RcppPlanc_openblas_pthread_off", (DL_FUNC) &_RcppPlanc_openblas_pthread_off, 0},
+    {"_RcppPlanc_openblas_pthread_on", (DL_FUNC) &_RcppPlanc_openblas_pthread_on, 0},
     {NULL, NULL, 0}
 };
 

@@ -184,6 +184,10 @@ bppnnls_prod <- function(CtC, CtB, nCores = 2L) {
 }
 
 .openblaspthreadoff <- function() {
-    .Call(`_RcppPlanc_wrap_openblas_set_num_threads`)
+    .Call(`_RcppPlanc_openblas_pthread_off`)
+}
+
+.openblaspthreadon <- function() {
+    .Call(`_RcppPlanc_openblas_pthread_on`)
 }
 

@@ -1279,10 +1279,19 @@ arma::uword getBoundThreadCount() {
 }
 
 // [[Rcpp::export(.openblaspthreadoff)]]
-int wrap_openblas_set_num_threads() {
+int openblas_pthread_off() {
 #ifdef PTHREADED_OPENBLAS
     openblas_set_num_threads(1);
     return 1;
 #endif
     return 0;
+}
+
+// [[Rcpp::export(.openblaspthreadon)]]
+int openblas_pthread_on() {
+#ifdef PTHREADED_OPENBLAS
+  openblas_set_num_threads(0);
+  return 1;
+#endif
+  return 0;
 }
