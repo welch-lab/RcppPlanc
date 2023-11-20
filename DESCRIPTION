@@ -26,6 +26,7 @@ Imports:
     Matrix
 Suggests:
     knitr,
+    withr,
     rmarkdown,
     testthat (>= 3.0.0)
 LinkingTo: Rcpp, RcppArmadillo, RcppProgress

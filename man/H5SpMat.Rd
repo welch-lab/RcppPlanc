@@ -90,6 +90,8 @@ in-memory data into a new HDF5 file on disk and returning the
 constructed argument list.
 }
 \examples{
+if (require("withr")) {
+withr::local_dir(withr::local_tempdir())
 h <- H5SpMat(system.file("extdata/ctrl_sparse.h5", package = "RcppPlanc"),
              "data", "indices", "indptr", 173, 300)
 dim(h)
@@ -106,5 +108,5 @@ h2 <- as.H5SpMat(ctrl.dense, "ctrl_from_dense_to_sparse.h5",
                  colptrPath = "indptr", nrow = nrow(ctrl.sparse),
                  ncol = ncol(ctrl.sparse))
 h2
-
+}
 }

@@ -20,6 +20,8 @@
 #' @rdname H5Mat
 #' @return H5Mat object, indeed a list object.
 #' @examples
+#' if (require("withr")) {
+#' withr::local_dir(withr::local_tempdir())
 #' h <- H5Mat(system.file("extdata/ctrl_dense.h5", package = "RcppPlanc"),
 #'            "data")
 #' print(h)
@@ -31,8 +33,7 @@
 #' h1
 #' h2 <- as.H5Mat(ctrl.sparse, "ctrl_from_sparse_to_dense.h5",
 #'                dataPath = "data")
-#' h2
-#'
+#' }
 H5Mat <- function(
     filename,
     dataPath
@@ -152,6 +153,8 @@ print.H5Mat <- function(x, ...) {
 #' @rdname H5SpMat
 #' @return H5SpMat object, indeed a list object.
 #' @examples
+#' if (require("withr")) {
+#' withr::local_dir(withr::local_tempdir())
 #' h <- H5SpMat(system.file("extdata/ctrl_sparse.h5", package = "RcppPlanc"),
 #'              "data", "indices", "indptr", 173, 300)
 #' dim(h)
@@ -168,7 +171,7 @@ print.H5Mat <- function(x, ...) {
 #'                  colptrPath = "indptr", nrow = nrow(ctrl.sparse),
 #'                  ncol = ncol(ctrl.sparse))
 #' h2
-#'
+#'}
 H5SpMat <- function(
     filename,
     valuePath,
