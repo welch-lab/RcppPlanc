@@ -47,6 +47,7 @@ constructed argument list.
 }
 \examples{
 if (require("withr")) {
+H5MatEx <- function(){
 withr::local_dir(withr::local_tempdir())
 h <- H5Mat(system.file("extdata/ctrl_dense.h5", package = "RcppPlanc"),
            "data")
@@ -59,5 +60,7 @@ h1 <- as.H5Mat(ctrl.dense, "ctrl_from_dense_to_dense.h5",
 h1
 h2 <- as.H5Mat(ctrl.sparse, "ctrl_from_sparse_to_dense.h5",
                dataPath = "data")
+}
+H5MatEx()
 }
 }
