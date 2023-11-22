@@ -4,7 +4,7 @@
 ^LICENSE-UT\.md$
 ^.*\.vscode
 ^.*\.vs
-cmake-build-release
+cmake-build-relwithdebinfo
 cmake-build-debug
 ^.*\.idea
 ^.*\\obj

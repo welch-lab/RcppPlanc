@@ -24,7 +24,9 @@ endif()
 
 find_package(R REQUIRED)
 
-add_library(RcppPlanc SHARED "${PROJECT_SOURCE_DIR}/../src/rcppplanc_nmf.cpp" "${PROJECT_SOURCE_DIR}/../src/RcppExports.cpp" "${PROJECT_SOURCE_DIR}/../src/conversion.cpp")
+add_library(RcppPlanc SHARED "${PROJECT_SOURCE_DIR}/../src/rcppplanc_nmf.cpp" "${PROJECT_SOURCE_DIR}/../src/RcppExports.cpp" "${PROJECT_SOURCE_DIR}/../src/conversion.cpp"
+        ../src/common/detect_blas.c
+        ../src/common/detect_blas.h)
 set_target_properties(RcppPlanc PROPERTIES PREFIX "")
 if(APPLE)
 set_target_properties(RcppPlanc PROPERTIES SUFFIX ".so")
@@ -34,7 +36,7 @@ PRIVATE "${PROJECT_SOURCE_DIR}/../src/common;${PROJECT_SOURCE_DIR}/../src/nnls;$
 
 set(MKL_DIR "${PROJECT_SOURCE_DIR}/cmake")
 find_package(MKL QUIET)
-if(MKL_FOUND AND NOT DEFINED BLAS_VENDOR)
+if(MKL_FOUND AND NOT DEFINED BLA_VENDOR)
     message(STATUS "found MKL")
     set(USE_MKL)
     set(BLAS_LIBRARIES "${MKL_LIBRARIES}")
@@ -207,17 +209,12 @@ endif()
 list(JOIN BLAS_LIBRARIES " " BLAS_LIBRARY_STRING)
 string(TOUPPER ${BLAS_LIBRARY_STRING} BLAS_LIBRARY_STRING)
 if(BLAS_LIBRARY_STRING MATCHES ^.*OPENBLAS.*)
-    include(TestOpenBlasThreading)
     check_include_file("openblas/cblas.h" OPENBLAS_HEADER)
     if(OPENBLAS_HEADER)
         target_compile_definitions(RcppPlanc PRIVATE "HAVE_OPENBLAS_CBLAS_H")
         set(USING_OPENBLAS TRUE)
         set(OPENBLAS_DEFINED "HAVE_OPENBLAS_CBLAS_H")
-        endif()
-        OPENBLAS_USES_OPENMP(OPENBLAS_PARALLEL OPENBLAS_DEFINED)
-        if(OPENBLAS_PARALLEL MATCHES 1)
-            target_compile_definitions(RcppPlanc PRIVATE "PTHREADED_OPENBLAS")
-        endif()
+    endif()
 endif()
 if(NOT APPLE AND NOT USE_MKL AND NOT USING_OPENBLAS)
         set(CBLAS_H_DIR CACHE PATH "Directory containing cblas.h")
@@ -239,3 +236,4 @@ endif()
 add_custom_command(TARGET RcppPlanc POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E remove ${HighFive_BINARY_DIR}/CMakeFiles/hdf5/cmake_hdf5_test.c
         VERBATIM)
+set_property(TARGET RcppPlanc PROPERTY ENABLE_EXPORTS ON)

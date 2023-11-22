@@ -4,6 +4,7 @@
 #include "config.h"
 #include <RcppArmadillo.h>
 #include <progress.hpp>
+#include <functional>
 #include <utility>
 #include "bppnmf.hpp"
 #include "bppinmf.hpp"
@@ -15,6 +16,9 @@
 #include "data.hpp"
 #include "onlineinmf.hpp"
 #include "uinmf.hpp"
+extern "C" {
+#include "detect_blas.h"
+}
 
 // [[Rcpp::plugins(openmp)]]
 // via the depends attribute we tell Rcpp to create hooks for
@@ -1279,19 +1283,23 @@ arma::uword getBoundThreadCount() {
 }
 
 // [[Rcpp::export(.openblaspthreadoff)]]
-int openblas_pthread_off() {
-#ifdef PTHREADED_OPENBLAS
-    openblas_set_num_threads(1);
-    return 1;
-#endif
-    return 0;
+void openblas_pthread_off(Rcpp::XPtr<void*> libloc) {
+    if (const std::function<int()> openblas_parallel = get_openblas_parallel(libloc))
+    {
+        if (openblas_parallel() == 1) {
+            const std::function<void(int)> openblas_set = get_openblas_set(libloc);
+            openblas_set(1);
+        };
+    }
 }
 
 // [[Rcpp::export(.openblaspthreadon)]]
-int openblas_pthread_on() {
-#ifdef PTHREADED_OPENBLAS
-  openblas_set_num_threads(0);
-  return 1;
-#endif
-  return 0;
+void openblas_pthread_on(Rcpp::XPtr<void*> libloc) {
+    if (const std::function<int()> openblas_parallel = get_openblas_parallel(libloc))
+    {
+        if (openblas_parallel() == 1) {
+            const std::function<void(int)> openblas_set = get_openblas_set(libloc);
+            openblas_set(0);
+        };
+    }
 }

@@ -183,11 +183,11 @@ bppnnls_prod <- function(CtC, CtB, nCores = 2L) {
     .Call(`_RcppPlanc_getBoundThreadCount`)
 }
 
-.openblaspthreadoff <- function() {
-    .Call(`_RcppPlanc_openblas_pthread_off`)
+.openblaspthreadoff <- function(libloc) {
+    invisible(.Call(`_RcppPlanc_openblas_pthread_off`, libloc))
 }
 
-.openblaspthreadon <- function() {
-    .Call(`_RcppPlanc_openblas_pthread_on`)
+.openblaspthreadon <- function(libloc) {
+    invisible(.Call(`_RcppPlanc_openblas_pthread_on`, libloc))
 }
 

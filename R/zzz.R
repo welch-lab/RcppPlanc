@@ -1,7 +1,7 @@
 .onLoad <- function(libname, pkgname) {
-    .openblaspthreadoff()
+    .openblaspthreadoff(getLoadedDLLs()[["RcppPlanc"]][[4]])
 }
 
 .onUnload <- function(libname, pkgname) {
-  .openblaspthreadon()
+    .openblaspthreadon(getLoadedDLLs()[["RcppPlanc"]][[4]])
 }

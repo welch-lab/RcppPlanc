@@ -416,23 +416,23 @@ BEGIN_RCPP
 END_RCPP
 }
 // openblas_pthread_off
-int openblas_pthread_off();
-RcppExport SEXP _RcppPlanc_openblas_pthread_off() {
+void openblas_pthread_off(Rcpp::XPtr<void*> libloc);
+RcppExport SEXP _RcppPlanc_openblas_pthread_off(SEXP liblocSEXP) {
 BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(openblas_pthread_off());
-    return rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<void*> >::type libloc(liblocSEXP);
+    openblas_pthread_off(libloc);
+    return R_NilValue;
 END_RCPP
 }
 // openblas_pthread_on
-int openblas_pthread_on();
-RcppExport SEXP _RcppPlanc_openblas_pthread_on() {
+void openblas_pthread_on(Rcpp::XPtr<void*> libloc);
+RcppExport SEXP _RcppPlanc_openblas_pthread_on(SEXP liblocSEXP) {
 BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(openblas_pthread_on());
-    return rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::XPtr<void*> >::type libloc(liblocSEXP);
+    openblas_pthread_on(libloc);
+    return R_NilValue;
 END_RCPP
 }
 
@@ -458,8 +458,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppPlanc_uinmf_h5sparse", (DL_FUNC) &_RcppPlanc_uinmf_h5sparse, 18},
     {"_RcppPlanc_testcacheCalc", (DL_FUNC) &_RcppPlanc_testcacheCalc, 1},
     {"_RcppPlanc_getBoundThreadCount", (DL_FUNC) &_RcppPlanc_getBoundThreadCount, 0},
-    {"_RcppPlanc_openblas_pthread_off", (DL_FUNC) &_RcppPlanc_openblas_pthread_off, 0},
-    {"_RcppPlanc_openblas_pthread_on", (DL_FUNC) &_RcppPlanc_openblas_pthread_on, 0},
+    {"_RcppPlanc_openblas_pthread_off", (DL_FUNC) &_RcppPlanc_openblas_pthread_off, 1},
+    {"_RcppPlanc_openblas_pthread_on", (DL_FUNC) &_RcppPlanc_openblas_pthread_on, 1},
     {NULL, NULL, 0}
 };
 
