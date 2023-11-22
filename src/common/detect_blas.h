@@ -6,7 +6,7 @@
 #define DETECT_BLAS_H
 #include <stdbool.h>
 
-typedef int(*openblas_init_t)();
+typedef int(*openblas_init_t)(void);
 openblas_init_t get_openblas_parallel(void* libloc);
 
 typedef void(*openblas_set_t)(int);
