@@ -104,13 +104,14 @@ add_library(hw_detect OBJECT "${PROJECT_SOURCE_DIR}/../src/common/hw_detect.c")
         )
         file(STRINGS ${PROJECT_SOURCE_DIR}/cmakeData/patch_hwloc.txt hwloc_PATCH_LIST)
         foreach(targetfile IN LISTS hwloc_PATCH_LIST)
-            file(COPY_FILE "${hwloc_SOURCE_DIR}/${targetfile}" "${hwloc_SOURCE_DIR}/${targetfile}.old")
+            file(GENERATE OUTPUT "${hwloc_SOURCE_DIR}/${targetfile}.old" INPUT  "${hwloc_SOURCE_DIR}/${targetfile}")
             add_custom_command(OUTPUT ${targetfile}
                     COMMAND ${CMAKE_COMMAND} -Din_file:FILEPATH="${targetfile}.old"
                     -Dpatch_file:FILEPATH="${PROJECT_SOURCE_DIR}/patch/${targetfile}.patch"
                     -Dout_file:FILEPATH="${targetfile}"
                     -P${PROJECT_SOURCE_DIR}/cmake/PatchFile.cmake
                     WORKING_DIRECTORY "${hwloc_SOURCE_DIR}"
+                    DEPENDS "${hwloc_SOURCE_DIR}/${targetfile}.old"
             )
             set_property(TARGET hwloc_patch APPEND PROPERTY PATCH_GENERATED ${targetfile})
         endforeach()
