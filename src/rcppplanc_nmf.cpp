@@ -1284,22 +1284,26 @@ arma::uword getBoundThreadCount() {
 
 // [[Rcpp::export(.openblaspthreadoff)]]
 void openblas_pthread_off(Rcpp::XPtr<void*> libloc) {
-    if (const std::function<int()> openblas_parallel = get_openblas_parallel(libloc))
-    {
-        if (openblas_parallel() == 1) {
-            const std::function<void(int)> openblas_set = get_openblas_set(libloc);
-            openblas_set(1);
-        };
+    if (is_openmp()) {
+        if (const std::function<int()> openblas_parallel = get_openblas_parallel(libloc))
+        {
+            if (openblas_parallel() == 1) {
+                const std::function<void(int)> openblas_set = get_openblas_set(libloc);
+                openblas_set(1);
+            }
+        }
     }
 }
 
 // [[Rcpp::export(.openblaspthreadon)]]
 void openblas_pthread_on(Rcpp::XPtr<void*> libloc) {
-    if (const std::function<int()> openblas_parallel = get_openblas_parallel(libloc))
-    {
-        if (openblas_parallel() == 1) {
-            const std::function<void(int)> openblas_set = get_openblas_set(libloc);
-            openblas_set(0);
-        };
+    if (is_openmp()) {
+        if (const std::function<int()> openblas_parallel = get_openblas_parallel(libloc))
+        {
+            if (openblas_parallel() == 1) {
+                const std::function<void(int)> openblas_set = get_openblas_set(libloc);
+                openblas_set(0);
+            }
+        }
     }
 }
