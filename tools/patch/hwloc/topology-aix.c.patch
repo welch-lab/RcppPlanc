@@ -28,21 +28,3 @@ diff --git a/hwloc/topology-aix.c b/hwloc/topology-aix.c
        continue;
      }
      if (!rs_getinfo(rad, R_NUMPROCS, 0))
-@@ -643,7 +643,7 @@
-     if (type == HWLOC_OBJ_PU) {
-       os_index = hwloc_bitmap_first(cpuset);
-       hwloc_debug("Found PU #%u inside node %d for sdl %d\n", os_index, i, sdl);
--      assert(hwloc_bitmap_weight(cpuset) == 1);
-+      //assert(hwloc_bitmap_weight(cpuset) == 1);
-     } else if (type == HWLOC_OBJ_NUMANODE) {
-       /* NUMA node os_index isn't used for binding, just use the rad number to get unique values.
-        * Note that we'll use that fact in hwloc_aix_prepare_membind(). */
-@@ -748,7 +748,7 @@
-   struct hwloc_topology *topology = backend->topology;
-   int i;
- 
--  assert(dstatus->phase == HWLOC_DISC_PHASE_CPU);
-+  //assert(dstatus->phase == HWLOC_DISC_PHASE_CPU);
- 
-   if (topology->levels[0][0]->cpuset)
-     /* somebody discovered things */

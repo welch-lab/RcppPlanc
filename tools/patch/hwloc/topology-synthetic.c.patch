@@ -8,15 +8,6 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 diff --git a/hwloc/topology-synthetic.c b/hwloc/topology-synthetic.c
 --- a/hwloc/topology-synthetic.c        (revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
 +++ b/hwloc/topology-synthetic.c        (date 1699467304023)
-@@ -13,7 +13,7 @@
- #include "private/debug.h"
-
- #include <limits.h>
--#include <assert.h>
-+//#include <assert.h>
- #ifdef HAVE_STRINGS_H
- #include <strings.h>
- #endif
 @@ -83,8 +83,8 @@
 
    array = calloc(total, sizeof(*array));
@@ -129,24 +120,6 @@ diff --git a/hwloc/topology-synthetic.c b/hwloc/topology-synthetic.c
             free(loops);
             goto out_with_array;
           }
-@@ -256,14 +256,14 @@
-
-        loops[cur_loop].step = step;
-        loops[cur_loop].nb = nb;
--       assert(nb);
--       assert(step);
-+       // assert(nb);
-+       // assert(step);
-        if (step < minstep)
-          minstep = step;
-        nbs *= nb;
-       }
-     }
--    assert(nbs);
-+    // assert(nbs);
-
-     if (nbs != total) {
-       /* one loop of total/nbs steps is missing, add it if it's just the smallest one */
 @@ -272,8 +272,8 @@
         loops[nr_loops].nb = total/nbs;
         nr_loops++;
@@ -406,54 +379,6 @@ diff --git a/hwloc/topology-synthetic.c b/hwloc/topology-synthetic.c
      /* move existing levels by one */
      memmove(&data->level[2], &data->level[1], count*sizeof(struct hwloc_synthetic_level_data_s));
      data->level[1].attr.type = HWLOC_OBJ_NUMANODE;
-@@ -890,7 +890,7 @@
-     break;
-   default:
-     /* Should never happen */
--    assert(0);
-+  //  assert(0);
-     break;
-   }
- }
-@@ -921,7 +921,7 @@
-   if (!attached)
-     return;
-
--  assert(attached->attr.type == HWLOC_OBJ_NUMANODE);
-+  //assert(attached->attr.type == HWLOC_OBJ_NUMANODE);
-
-   attached_os_index = hwloc_synthetic_next_index(&data->numa_attached_indexes, HWLOC_OBJ_NUMANODE);
-
-@@ -959,8 +959,8 @@
-   hwloc_bitmap_t set;
-   unsigned os_index;
-
--  assert(hwloc__obj_type_is_normal(type) || type == HWLOC_OBJ_NUMANODE);
--  assert(type != HWLOC_OBJ_MACHINE);
-+  //assert(hwloc__obj_type_is_normal(type) || type == HWLOC_OBJ_NUMANODE);
-+  //assert(type != HWLOC_OBJ_MACHINE);
-
-   os_index = hwloc_synthetic_next_index(&curlevel->indexes, type);
-
-@@ -1005,8 +1005,8 @@
-   hwloc_bitmap_t cpuset = hwloc_bitmap_alloc();
-   unsigned i;
-
--  assert(dstatus->phase == HWLOC_DISC_PHASE_GLOBAL);
-+  //assert(dstatus->phase == HWLOC_DISC_PHASE_GLOBAL);
-
--  assert(!topology->levels[0][0]->cpuset);
-+  //assert(!topology->levels[0][0]->cpuset);
-
-   hwloc_alloc_root_sets(topology->levels[0][0]);
-@@ -1270,6 +1270,6 @@
-       hwloc_obj_t *level;
-       if (obj->depth < 0) {
--       assert(obj->depth == HWLOC_TYPE_DEPTH_NUMANODE);
-+       //assert(obj->depth == HWLOC_TYPE_DEPTH_NUMANODE);
-        total = topology->slevels[HWLOC_SLEVEL_NUMANODE].nbobjs;
-        level = topology->slevels[HWLOC_SLEVEL_NUMANODE].objs;
-       } else {
 @@ -1362,8 +1362,8 @@
      /* v1: export a single NUMA child */
      if (parent->memory_arity > 1 || mchild->type != HWLOC_OBJ_NUMANODE) {
@@ -465,7 +390,7 @@ diff --git a/hwloc/topology-synthetic.c b/hwloc/topology-synthetic.c
        errno = EINVAL;
        return -1;
      }
-@@ -1389,19 +1389,19 @@
+@@ -1389,15 +1389,15 @@
      while (numanode && numanode->type != HWLOC_OBJ_NUMANODE) {
        if (verbose) {
          static int warned = 0;
@@ -485,29 +410,6 @@ diff --git a/hwloc/topology-synthetic.c b/hwloc/topology-synthetic.c
        }
        numanode = numanode->memory_first_child;
      }
--    assert(numanode); /* there's always a numanode at the bottom of the memory tree */
-+    //assert(numanode); /* there's always a numanode at the bottom of the memory tree */
-
-     if (needprefix)
-       hwloc__export_synthetic_add_char(&ret, &tmp, &tmplen, ' ');
-@@ -1439,7 +1439,7 @@
-
-     idx = hwloc_bitmap_first(remaining_nodes);
-     node = hwloc_get_numanode_obj_by_os_index(topology, idx);
--    assert(node);
-+    //assert(node);
-
-     first_parent = node->parent;
-
-@@ -1448,7 +1448,7 @@
-       hwloc_obj_t parent, mchild;
-
-       parent = hwloc_get_obj_by_depth(topology, first_parent->depth, i);
--      assert(parent);
-+      //assert(parent);
-
-       /* must have same memory arity */
-       if (parent->memory_arity != first_parent->memory_arity)
 @@ -1515,16 +1515,16 @@
    /* TODO: flag to force all indexes, not only for PU and NUMA? */
 
@@ -529,19 +431,7 @@ diff --git a/hwloc/topology-synthetic.c b/hwloc/topology-synthetic.c
      errno = EINVAL;
      return -1;
    }
-@@ -1535,16 +1535,16 @@
-     signed pdepth;
-
-     node = hwloc_get_obj_by_type(topology, HWLOC_OBJ_NUMANODE, 0);
--    assert(node);
--    assert(hwloc__obj_type_is_normal(node->parent->type)); /* only depth-1 memory children for now */
-+    //assert(node);
-+    //assert(hwloc__obj_type_is_normal(node->parent->type)); /* only depth-1 memory children for now */
-     pdepth = node->parent->depth;
-
-     while ((node = node->next_cousin) != NULL) {
--      assert(hwloc__obj_type_is_normal(node->parent->type)); /* only depth-1 memory children for now */
-+      //assert(hwloc__obj_type_is_normal(node->parent->type)); /* only depth-1 memory children for now */
+@@ -1543,7 +1543,7 @@
        if (node->parent->depth != pdepth) {
 -       if (verbose)
 -         fprintf(stderr, "Cannot export to synthetic v1 if memory is attached to parents at different depths.\n");

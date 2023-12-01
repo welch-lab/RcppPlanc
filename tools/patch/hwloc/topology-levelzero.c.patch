@@ -45,15 +45,6 @@ diff --git a/hwloc/topology-levelzero.c b/hwloc/topology-levelzero.c
                osdev = NULL; /* we'll ignore it but we'll still agregate its subdevice memories into totalHBM/DDRkB */
              } else {
                osdev = sub_osdevs[mprop.subdeviceId];
-@@ -611,7 +611,7 @@
- 
-   hwloc__levelzero_ports_init(&hports);
- 
--  assert(dstatus->phase == HWLOC_DISC_PHASE_IO);
-+  //assert(dstatus->phase == HWLOC_DISC_PHASE_IO);
- 
-   hwloc_topology_get_type_filter(topology, HWLOC_OBJ_OS_DEVICE, &filter);
-   if (filter == HWLOC_TYPE_FILTER_KEEP_NONE)
 @@ -639,9 +639,9 @@
  
    res = zeInit(0);

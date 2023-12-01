@@ -184,12 +184,3 @@ diff --git a/hwloc/topology-darwin.c b/hwloc/topology-darwin.c
      }
  
      hwloc__darwin_build_perflevel_cache_level(topology, cpuset, cpus, HWLOC_OBJ_L3CACHE, 3, size, linesize);
-@@ -571,7 +571,7 @@
- 
-   memset(&gothybrid, 0, sizeof(gothybrid));
- 
--  assert(dstatus->phase == HWLOC_DISC_PHASE_CPU);
-+  //assert(dstatus->phase == HWLOC_DISC_PHASE_CPU);
- 
-   if (topology->levels[0][0]->cpuset)
-     /* somebody discovered things */

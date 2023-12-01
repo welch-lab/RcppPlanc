@@ -8,66 +8,6 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 diff --git a/hwloc/topology-solaris.c b/hwloc/topology-solaris.c
 --- a/hwloc/topology-solaris.c	(revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
 +++ b/hwloc/topology-solaris.c	(date 1699469849070)
-@@ -343,14 +343,14 @@
-     goto out_with_cookie;
-   }
-   hwloc_debug("root lgrp contains %d allowed PUs\n", npids);
--  assert(npids > 0);
-+  //assert(npids > 0);
- 
-   pids = malloc(npids * sizeof(*pids));
-   if (!pids)
-     goto out_with_cookie;
- 
-   n = lgrp_cpus(cookie, root, pids, npids, LGRP_CONTENT_HIERARCHY);
--  assert(n == npids);
-+  //assert(n == npids);
- 
-   hwloc_bitmap_zero(topology->allowed_cpuset);
- 
-@@ -367,14 +367,14 @@
-     goto out_with_cookie;
-   }
-   hwloc_debug("root lgrp contains %d allowed NUMA nodes\n", nnids);
--  assert(nnids > 0);
-+  //assert(nnids > 0);
- 
-   nids = malloc(nnids * sizeof(*nids));
-   if (!nids)
-     goto out_with_cookie;
- 
-   n = lgrp_resources(cookie, root, nids, nnids, LGRP_RSRC_MEM);
--  assert(n == nnids);
-+  //assert(n == nnids);
- 
-   hwloc_bitmap_zero(topology->allowed_nodeset);
- 
-@@ -408,7 +408,7 @@
-     goto out;
-   }
-   hwloc_debug("root lgrp contains %d PUs\n", npids);
--  assert(npids > 0);
-+  //assert(npids > 0);
- 
-   /* allocate a single array that will be large enough for lgroup cpus below */
-   pids = malloc(npids * sizeof(*pids));
-@@ -422,14 +422,14 @@
-     goto out_with_pids;
-   }
-   hwloc_debug("root lgrp contains %d NUMA nodes\n", nnids);
--  assert(nnids > 0);
-+  //assert(nnids > 0);
- 
-   nids = malloc(nnids * sizeof(*nids));
-   if (!nids)
-     goto out_with_pids;
- 
-   n = lgrp_resources(cookie, root, nids, nnids, LGRP_RSRC_MEM);
--  assert(n == nnids);
-+  //assert(n == nnids);
- 
-   for(i=0; i<nnids; i++) {
-     hwloc_obj_t obj;
 @@ -642,8 +642,8 @@
  
        if (kstat_read(kc, ksp, NULL) == -1)
@@ -136,12 +76,3 @@ diff --git a/hwloc/topology-solaris.c b/hwloc/topology-solaris.c
  	continue;
        }
        stat = (kstat_named_t *) kstat_data_lookup(ksp, (char *) "cpus");
-@@ -990,7 +992,7 @@
-   struct hwloc_topology *topology = backend->topology;
-   int alreadypus = 0;
- 
--  assert(dstatus->phase == HWLOC_DISC_PHASE_CPU);
-+  //assert(dstatus->phase == HWLOC_DISC_PHASE_CPU);
- 
-   if (topology->levels[0][0]->cpuset)
-     /* somebody discovered things */

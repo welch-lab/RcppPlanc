@@ -8,15 +8,7 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 diff --git a/hwloc/components.c b/hwloc/components.c
 --- a/hwloc/components.c        (revision f262ce42ff5a007a8f247b546a6fc322b2922d1e)
 +++ b/hwloc/components.c        (date 1699468120612)
-@@ -45,7 +45,6 @@
-     SwitchToThread();                                                          \
- } while (0)
- #define HWLOC_COMPONENTS_UNLOCK() do {                                         \
--  assert(hwloc_components_mutex == 1);                                         \
-   hwloc_components_mutex = 0;                                                  \
- } while (0)
-
-@@ -123,8 +122,8 @@
+@@ -123,8 +123,8 @@
      if (colon)
        *colon = '\0';
 
@@ -27,7 +19,7 @@ diff --git a/hwloc/components.c b/hwloc/components.c
 
      dir = opendir(path);
      if (!dir)
-@@ -197,8 +196,8 @@
+@@ -197,8 +197,8 @@
    struct hwloc__plugin_desc *desc, **prevdesc;
    char *componentsymbolname;
 
@@ -38,7 +30,7 @@ diff --git a/hwloc/components.c b/hwloc/components.c
 
    basename = strrchr(filename, '/');
    if (!basename)
-@@ -207,62 +206,62 @@
+@@ -207,62 +207,62 @@
      basename++;
 
    if (hwloc_plugins_blacklist && strstr(hwloc_plugins_blacklist, basename)) {
@@ -123,7 +115,7 @@ diff --git a/hwloc/components.c b/hwloc/components.c
               basename, (unsigned) component->type);
      goto out_with_handle;
    }
-@@ -276,16 +275,16 @@
+@@ -276,16 +276,16 @@
    desc->component = component;
    desc->handle = handle;
    desc->next = NULL;
@@ -144,7 +136,7 @@ diff --git a/hwloc/components.c b/hwloc/components.c
    return 0;
 
   out_with_handle:
-@@ -299,8 +298,8 @@
+@@ -299,8 +299,8 @@
  {
    struct hwloc__plugin_desc *desc, *next;
 
@@ -155,7 +147,7 @@ diff --git a/hwloc/components.c b/hwloc/components.c
 
    desc = hwloc_plugins;
    while (desc) {
-@@ -339,8 +338,8 @@
+@@ -339,8 +339,8 @@
 
    hwloc_plugins = NULL;
 
@@ -166,7 +158,7 @@ diff --git a/hwloc/components.c b/hwloc/components.c
    err = hwloc_dlforeachfile(path, hwloc__dlforeach_cb, NULL);
    if (err)
      goto out_with_init;
-@@ -363,16 +362,16 @@
+@@ -363,16 +363,16 @@
 
    /* check that the component name is valid */
    if (!strcmp(component->name, HWLOC_COMPONENT_STOP_NAME)) {
@@ -188,7 +180,7 @@ diff --git a/hwloc/components.c b/hwloc/components.c
      return -1;
    }
 
-@@ -386,9 +385,9 @@
+@@ -386,9 +386,9 @@
                                    |HWLOC_DISC_PHASE_MISC
                                    |HWLOC_DISC_PHASE_ANNOTATE
                                    |HWLOC_DISC_PHASE_TWEAK))) {
@@ -201,7 +193,7 @@ diff --git a/hwloc/components.c b/hwloc/components.c
      return -1;
    }
 
-@@ -398,24 +397,24 @@
+@@ -398,24 +398,24 @@
        /* if two components have the same name, only keep the highest priority one */
        if ((*prev)->priority < component->priority) {
         /* drop the existing component */
@@ -236,25 +228,7 @@ diff --git a/hwloc/components.c b/hwloc/components.c
 
    prev = &hwloc_disc_components;
    while (NULL != *prev) {
-@@ -443,7 +442,7 @@
-   unsigned i;
-
-   HWLOC_COMPONENTS_LOCK();
--  assert((unsigned) -1 != hwloc_components_users);
-+  //assert((unsigned) -1 != hwloc_components_users);
-   if (0 != hwloc_components_users++) {
-     HWLOC_COMPONENTS_UNLOCK();
-     return;
-@@ -468,7 +467,7 @@
-   if (hwloc_component_finalize_cb_count) {
-     hwloc_component_finalize_cbs = calloc(hwloc_component_finalize_cb_count,
-                                          sizeof(*hwloc_component_finalize_cbs));
--    assert(hwloc_component_finalize_cbs);
-+    //assert(hwloc_component_finalize_cbs);
-     /* forget that max number and recompute the real one below */
-     hwloc_component_finalize_cb_count = 0;
-   }
-@@ -476,16 +475,16 @@
+@@ -476,16 +476,16 @@
    /* hwloc_static_components is created by configure in static-components.h */
    for(i=0; NULL != hwloc_static_components[i]; i++) {
      if (hwloc_static_components[i]->flags) {
@@ -276,16 +250,7 @@ diff --git a/hwloc/components.c b/hwloc/components.c
        continue;
      }
      /* queue ->finalize() callback if any */
-@@ -497,24 +496,24 @@
-       hwloc_disc_component_register(hwloc_static_components[i]->data, NULL);
-     else if (HWLOC_COMPONENT_TYPE_XML == hwloc_static_components[i]->type)
-       hwloc_xml_callbacks_register(hwloc_static_components[i]->data);
--    else
--      assert(0);
-+    //else
-+      //assert(0);
-   }
-
+@@ -506,17 +506,17 @@
    /* dynamic plugins */
  #ifdef HWLOC_HAVE_PLUGINS
    for(desc = hwloc_plugins; NULL != desc; desc = desc->next) {
@@ -308,18 +273,7 @@ diff --git a/hwloc/components.c b/hwloc/components.c
        continue;
      }
      /* queue ->finalize() callback if any */
-@@ -526,8 +525,8 @@
-       hwloc_disc_component_register(desc->component->data, desc->filename);
-     else if (HWLOC_COMPONENT_TYPE_XML == desc->component->type)
-       hwloc_xml_callbacks_register(desc->component->data);
--    else
--      assert(0);
-+    //else
-+      //assert(0);
-   }
- #endif
-
-@@ -610,8 +609,8 @@
+@@ -610,8 +610,8 @@
    if (!strcmp(name, "linuxpci") || !strcmp(name, "linuxio")) {
      /* replace linuxpci and linuxio with linux (with IO phases)
       * for backward compatibility with pre-v2.0 and v2.0 respectively */
@@ -330,7 +284,7 @@ diff --git a/hwloc/components.c b/hwloc/components.c
      comp = hwloc_disc_component_find("linux", NULL);
      phases = HWLOC_DISC_PHASE_PCI | HWLOC_DISC_PHASE_IO | HWLOC_DISC_PHASE_MISC | HWLOC_DISC_PHASE_ANNOTATE;
 
-@@ -626,8 +625,8 @@
+@@ -626,8 +626,8 @@
      return -1;
    }
 
@@ -341,7 +295,7 @@ diff --git a/hwloc/components.c b/hwloc/components.c
 
    for(i=0; i<topology->nr_blacklisted_components; i++) {
      if (topology->blacklisted_components[i].component == comp) {
-@@ -727,19 +726,19 @@
+@@ -727,19 +727,19 @@
 
    if (!(comp->phases & ~(topology->backend_excluded_phases | blacklisted_phases))) {
      /* all this backend phases are already excluded, exclude the backend entirely */
@@ -366,7 +320,7 @@ diff --git a/hwloc/components.c b/hwloc/components.c
      return -1;
    }
 
-@@ -819,8 +818,8 @@
+@@ -819,8 +819,8 @@
 
         name = curenv;
         if (!strcmp(name, "linuxpci") || !strcmp(name, "linuxio")) {
@@ -377,7 +331,7 @@ diff --git a/hwloc/components.c b/hwloc/components.c
           name = "linux";
         }
 
-@@ -834,9 +833,9 @@
+@@ -834,9 +834,9 @@
             }
           if (comp->phases & ~blacklisted_phases)
             hwloc_disc_component_try_enable(topology, comp, 1 /* envvar forced */, blacklisted_phases);
@@ -390,7 +344,7 @@ diff --git a/hwloc/components.c b/hwloc/components.c
         }
 
         /* restore chars (the second loop below needs env to be unmodified) */
-@@ -867,9 +866,9 @@
+@@ -867,9 +867,9 @@
         }
 
        if (!(comp->phases & ~blacklisted_phases)) {
@@ -403,7 +357,7 @@ diff --git a/hwloc/components.c b/hwloc/components.c
         goto nextcomp;
        }
 
-@@ -883,13 +882,13 @@
+@@ -883,13 +883,13 @@
      /* print a summary */
      int first = 1;
      backend = topology->backends;
@@ -420,16 +374,7 @@ diff --git a/hwloc/components.c b/hwloc/components.c
    }
 
    free(env);
-@@ -901,7 +900,7 @@
-   unsigned i;
-
-   HWLOC_COMPONENTS_LOCK();
--  assert(0 != hwloc_components_users);
-+  //assert(0 != hwloc_components_users);
-   if (0 != --hwloc_components_users) {
-     HWLOC_COMPONENTS_UNLOCK();
-     return;
-@@ -938,9 +937,9 @@
+@@ -938,9 +938,9 @@
    backend->topology = topology;
    /* filter-out component phases that are excluded */
    backend->phases = component->phases & ~topology->backend_excluded_phases;
@@ -442,7 +387,7 @@ diff --git a/hwloc/components.c b/hwloc/components.c
    backend->flags = 0;
    backend->discover = NULL;
    backend->get_pci_busid_cpuset = NULL;
-@@ -967,9 +966,9 @@
+@@ -967,9 +967,9 @@
 
    /* check backend flags */
    if (backend->flags) {
@@ -455,7 +400,7 @@ diff --git a/hwloc/components.c b/hwloc/components.c
      return -1;
    }
 
-@@ -977,8 +976,8 @@
+@@ -977,8 +977,8 @@
    pprev = &topology->backends;
    while (NULL != *pprev) {
      if ((*pprev)->component == backend->component) {
@@ -467,7 +412,7 @@ diff --git a/hwloc/components.c b/hwloc/components.c
 +               // backend->component->name, backend->component->phases);
        hwloc_backend_disable(backend);
        errno = EBUSY;
-@@ -987,9 +986,9 @@
+@@ -987,9 +987,9 @@
      pprev = &((*pprev)->next);
    }
 
@@ -480,25 +425,7 @@ diff --git a/hwloc/components.c b/hwloc/components.c
 
    /* enqueue at the end */
    pprev = &topology->backends;
-@@ -1022,7 +1021,7 @@
-   backend = topology->backends;
-   while (backend != NULL) {
-     if (backend->envvar_forced == 0 && backend->is_thissystem != -1) {
--      assert(backend->is_thissystem == 0);
-+      //assert(backend->is_thissystem == 0);
-       topology->is_thissystem = 0;
-     }
-     backend = backend->next;
-@@ -1036,7 +1035,7 @@
-   backend = topology->backends;
-   while (backend != NULL) {
-     if (backend->envvar_forced == 1 && backend->is_thissystem != -1) {
--      assert(backend->is_thissystem == 0);
-+      //assert(backend->is_thissystem == 0);
-       topology->is_thissystem = 0;
-     }
-     backend = backend->next;
-@@ -1071,9 +1070,9 @@
+@@ -1071,9 +1071,9 @@
 
    while (NULL != (backend = topology->backends)) {
      struct hwloc_backend *next = backend->next;
@@ -511,12 +438,3 @@ diff --git a/hwloc/components.c b/hwloc/components.c
      hwloc_backend_disable(backend);
      topology->backends = next;
    }
-@@ -1085,7 +1084,7 @@
- hwloc_topology_components_fini(struct hwloc_topology *topology)
- {
-   /* hwloc_backends_disable_all() must have been called earlier */
--  assert(!topology->backends);
-+  //assert(!topology->backends);
-
-   free(topology->blacklisted_components);
- }

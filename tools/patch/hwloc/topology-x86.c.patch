@@ -46,26 +46,8 @@ diff --git a/hwloc/topology-x86.c b/hwloc/topology-x86.c
    *eax = 0;
    *ebx = 0;
    *ecx = 0;
-@@ -312,7 +312,7 @@
-   struct cacheinfo *cache;
- 
-   /* the code below doesn't want any other cache yet */
--  assert(!infos->numcaches);
-+  //assert(!infos->numcaches);
- 
-   for (cachenum = 0; ; cachenum++) {
-     eax = 0x8000001d;
-@@ -1634,7 +1634,7 @@
-   int alreadypus = 0;
-   int ret;
- 
--  assert(dstatus->phase == HWLOC_DISC_PHASE_CPU);
-+  //assert(dstatus->phase == HWLOC_DISC_PHASE_CPU);
- 
-   if (topology->flags & HWLOC_TOPOLOGY_FLAG_DONT_CHANGE_BINDING) {
-     /* TODO: Things would work if there's a single PU, no need to rebind */
-@@ -1647,15 +1647,15 @@
- 
+@@ -1647,8 +1647,8 @@
+
  #if HAVE_DECL_RUNNING_ON_VALGRIND
    if (RUNNING_ON_VALGRIND && !data->src_cpuiddump_path) {
 -    fprintf(stderr, "hwloc x86 backend cannot work under Valgrind, disabling.\n"
@@ -76,14 +58,6 @@ diff --git a/hwloc/topology-x86.c b/hwloc/topology-x86.c
 +	//    "and reloading them under Valgrind with HWLOC_CPUID_PATH.\n");
      return 0;
    }
- #endif
- 
-   if (data->src_cpuiddump_path) {
--    assert(data->nbprocs > 0); /* enforced by hwloc_x86_component_instantiate() */
-+    //assert(data->nbprocs > 0); /* enforced by hwloc_x86_component_instantiate() */
-     topology->support.discovery->pu = 1;
-   } else {
-     int nbprocs = hwloc_fallback_nbprocessors(HWLOC_FALLBACK_NBPROCESSORS_INCLUDE_OFFLINE);
 @@ -1728,20 +1728,20 @@
    path = malloc(strlen(src_cpuiddump_path) + strlen("/hwloc-cpuid-info") + 1);
    if (!path)
@@ -122,7 +96,7 @@ diff --git a/hwloc/topology-x86.c b/hwloc/topology-x86.c
      }
    }
    closedir(dir);
- 
+
    if (hwloc_bitmap_iszero(set)) {
 -    fprintf(stderr, "hwloc/x86: Did not find any valid pu%%u entry in dumped cpuid directory `%s'\n",
 -	    src_cpuiddump_path);
@@ -137,13 +111,8 @@ diff --git a/hwloc/topology-x86.c b/hwloc/topology-x86.c
 +	//    src_cpuiddump_path);
      return -1;
    }
- 
-@@ -1827,10 +1827,10 @@
-     if (!hwloc_x86_check_cpuiddump_input(src_cpuiddump_path, set)) {
-       backend->is_thissystem = 0;
-       data->src_cpuiddump_path = strdup(src_cpuiddump_path);
--      assert(!hwloc_bitmap_iszero(set)); /* enforced by hwloc_x86_check_cpuiddump_input() */
-+      //assert(!hwloc_bitmap_iszero(set)); /* enforced by hwloc_x86_check_cpuiddump_input() */
+
+@@ -1831,6 +1831,6 @@
        data->nbprocs = hwloc_bitmap_weight(set);
 -    } else {
 -      fprintf(stderr, "hwloc/x86: Ignoring dumped cpuid directory.\n");

@@ -36,15 +36,6 @@ diff --git a/hwloc/topology-nvml.c b/hwloc/topology-nvml.c
      warned = 1;
      return NULL;
    }
-@@ -169,7 +169,7 @@
-   int found_nvlinks = 0;
- #endif
- 
--  assert(dstatus->phase == HWLOC_DISC_PHASE_IO);
-+  //assert(dstatus->phase == HWLOC_DISC_PHASE_IO);
- 
-   hwloc_topology_get_type_filter(topology, HWLOC_OBJ_OS_DEVICE, &filter);
-   if (filter == HWLOC_TYPE_FILTER_KEEP_NONE)
 @@ -177,10 +177,10 @@
  
    ret = nvmlInit();
@@ -60,33 +51,6 @@ diff --git a/hwloc/topology-nvml.c b/hwloc/topology-nvml.c
      return -1;
    }
    ret = nvmlDeviceGetCount(&nb);
-@@ -215,7 +215,7 @@
-     char buffer[64];
- 
-     ret = nvmlDeviceGetHandleByIndex(i, &device);
--    assert(ret == NVML_SUCCESS);
-+    //assert(ret == NVML_SUCCESS);
- 
-     osdev = hwloc_alloc_setup_object(topology, HWLOC_OBJ_OS_DEVICE, HWLOC_UNKNOWN_INDEX);
-     snprintf(buffer, sizeof(buffer), "nvml%u", i);
-@@ -284,7 +284,7 @@
-     nvmlPciInfo_t pci;
- 
-     ret = nvmlDeviceGetHandleByIndex(i, &device);
--    assert(ret == NVML_SUCCESS);
-+    //assert(ret == NVML_SUCCESS);
- 
-     hwloc_debug("looking at NVLinks for NVML GPU #%u...\n", i);
-     for(j=0; j<NVML_NVLINK_MAX_LINKS; j++) {
-@@ -331,7 +331,7 @@
-     for(i=0; i<nb; i++) {
-       nvmlDevice_t device;
-       ret = nvmlDeviceGetHandleByIndex(i, &device);
--      assert(ret == NVML_SUCCESS);
-+      //assert(ret == NVML_SUCCESS);
- 
-       for(j=0; j<NVML_NVLINK_MAX_LINKS; j++) {
-         unsigned version;
 @@ -366,8 +366,8 @@
            bw = 25000; /* multiple links may connect same GPUs */
          } else {

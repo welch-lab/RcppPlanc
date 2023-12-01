@@ -19,70 +19,7 @@ diff --git a/hwloc/topology-windows.c b/hwloc/topology-windows.c
    }
 
    length = 0;
-@@ -393,7 +393,7 @@
-        procInfo = (void*) ((uintptr_t) procInfo + procInfo->Size)) {
-     unsigned id;
-
--    assert(procInfo->Relationship == RelationGroup);
-+    //assert(procInfo->Relationship == RelationGroup);
-
-     hwloc_debug("Found %u active windows processor groups\n",
-                 (unsigned) procInfo->Group.ActiveGroupCount);
-@@ -490,7 +490,7 @@
-   }
-
-   if (!processor_group_cpusets) {
--    assert(nr_processor_groups == 1);
-+    //assert(nr_processor_groups == 1);
-     /* we found no processor groups, return the entire topology as a single one */
-     hwloc_bitmap_copy(cpuset, topology->levels[0][0]->cpuset);
-     return 0;
-@@ -524,7 +524,7 @@
- static int
- hwloc_win_get_thisthread_last_cpu_location(hwloc_topology_t topology __hwloc_attribute_unused, hwloc_cpuset_t set, int flags __hwloc_attribute_unused)
- {
--  assert(GetCurrentProcessorNumberExProc || (GetCurrentProcessorNumberProc && nr_processor_groups == 1));
-+  //assert(GetCurrentProcessorNumberExProc || (GetCurrentProcessorNumberProc && nr_processor_groups == 1));
-
-   if (nr_processor_groups > 1 || !GetCurrentProcessorNumberProc) {
-     PROCESSOR_NUMBER num;
-@@ -566,7 +566,7 @@
-     return -1;
-   }
-
--  assert(nr_processor_groups == 1 || SetThreadGroupAffinityProc);
-+  //assert(nr_processor_groups == 1 || SetThreadGroupAffinityProc);
-
-   if (nr_processor_groups > 1) {
-     GROUP_AFFINITY aff;
-@@ -627,7 +627,7 @@
- {
-   GROUP_AFFINITY aff;
-
--  assert(GetThreadGroupAffinityProc);
-+  //assert(GetThreadGroupAffinityProc);
-
-   if (!GetThreadGroupAffinityProc(thread, &aff))
-     return -1;
-@@ -665,7 +665,7 @@
- {
-   DWORD_PTR mask;
-
--  assert(nr_processor_groups == 1);
-+  //assert(nr_processor_groups == 1);
-
-   if (flags & HWLOC_CPUBIND_NOMEMBIND) {
-     errno = ENOSYS;
-@@ -737,7 +737,7 @@
- {
-   DWORD_PTR proc_mask, sys_mask;
-
--  assert(nr_processor_groups == 1);
-+  //assert(nr_processor_groups == 1);
-
-   if (flags & HWLOC_CPUBIND_NOMEMBIND) {
-     errno = ENOSYS;
-@@ -987,13 +987,13 @@
+@@ -987,7 +987,7 @@
    OSVERSIONINFOEX osvi;
    char versionstr[20];
    char hostname[122] = "";
@@ -91,10 +28,3 @@ diff --git a/hwloc/topology-windows.c b/hwloc/topology-windows.c
    int has_efficiencyclass = 0;
    struct hwloc_win_efficiency_classes eclasses;
    char *env = getenv("HWLOC_WINDOWS_PROCESSOR_GROUP_OBJS");
-   int keep_pgroup_objs = (env && atoi(env));
- 
--  assert(dstatus->phase == HWLOC_DISC_PHASE_CPU);
-+  //assert(dstatus->phase == HWLOC_DISC_PHASE_CPU);
- 
-   if (topology->levels[0][0]->cpuset)
-     /* somebody discovered things */
