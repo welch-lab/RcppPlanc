@@ -11,6 +11,7 @@ include(CheckCXXCompilerFlag)
 include(cmake/CPM.cmake)
 include(cmake/FindRModule.cmake)
 
+set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_C_FLAGS_RELEASE "")
 set(CMAKE_CXX_FLAGS_RELEASE "")
@@ -25,8 +26,7 @@ endif()
 find_package(R REQUIRED)
 
 add_library(RcppPlanc SHARED "${PROJECT_SOURCE_DIR}/../src/rcppplanc_nmf.cpp" "${PROJECT_SOURCE_DIR}/../src/RcppExports.cpp" "${PROJECT_SOURCE_DIR}/../src/conversion.cpp"
-        ../src/common/detect_blas.c
-        ../src/common/detect_blas.h)
+        "${PROJECT_SOURCE_DIR}/../src/common/detect_blas.c")
 set_target_properties(RcppPlanc PROPERTIES PREFIX "")
 if(APPLE)
 set_target_properties(RcppPlanc PROPERTIES SUFFIX ".so")
@@ -118,7 +118,7 @@ add_library(hw_detect OBJECT "${PROJECT_SOURCE_DIR}/../src/common/hw_detect.c")
         if(WIN32)
     add_custom_command(OUTPUT "${hwloc_SOURCE_DIR}/Makefile"
             DEPENDS hwloc_patch
-    COMMAND ${CMAKE_COMMAND} -E env "CFLAGS=-Wno-comment" sh ${hwloc_SOURCE_DIR}/configure --build=x86_64-w64-mingw32 --with-pic
+    COMMAND ${CMAKE_COMMAND} -E env "CFLAGS=-Wno-comment -DNDEBUG" sh ${hwloc_SOURCE_DIR}/configure --build=x86_64-w64-mingw32 --with-pic
             --prefix=${hwloc_SOURCE_DIR}/out/ --disable-picky --enable-shared=no --enable-static=yes --disable-cairo --disable-libxml2 --disable-io --disable-plugin-dlopen
             --disable-plugin-ltdl --enable-embedded-mode
     WORKING_DIRECTORY "${hwloc_SOURCE_DIR}"
@@ -126,7 +126,7 @@ add_library(hw_detect OBJECT "${PROJECT_SOURCE_DIR}/../src/common/hw_detect.c")
         else()
             add_custom_command(OUTPUT "${hwloc_SOURCE_DIR}/Makefile"
                     DEPENDS hwloc_patch
-                    COMMAND ${CMAKE_COMMAND} -E env "CFLAGS=-Wno-comment" sh ${hwloc_SOURCE_DIR}/configure --with-pic --prefix=${hwloc_SOURCE_DIR}/out/ --disable-picky --enable-shared=no --enable-static=yes
+                    COMMAND ${CMAKE_COMMAND} -E env "CFLAGS=-Wno-comment -DNDEBUG" sh ${hwloc_SOURCE_DIR}/configure --with-pic --prefix=${hwloc_SOURCE_DIR}/out/ --disable-picky --enable-shared=no --enable-static=yes
                     --disable-cairo --disable-libxml2 --disable-io --disable-plugin-dlopen --disable-plugin-ltdl --enable-embedded-mode
                     WORKING_DIRECTORY "${hwloc_SOURCE_DIR}"
                     VERBATIM)
