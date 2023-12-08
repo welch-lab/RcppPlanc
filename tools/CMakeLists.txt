@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
 set(CMAKE_OSX_DEPLOYMENT_TARGET "11" CACHE STRING "Target MacOS Version")
 mark_as_advanced(CMAKE_OSX_DEPLOYMENT_TARGET)
 project(RcppPlanc VERSION 1.0.0 LANGUAGES C CXX)
+cmake_policy(SET CMP0063 NEW)
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+set(CMAKE_C_VISIBILITY_PRESET hidden)
+set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 if(WIN32)
     list(PREPEND CMAKE_PREFIX_PATH  "${PROJECT_SOURCE_DIR}/WindowsOverrides")
@@ -13,8 +17,6 @@ include(cmake/FindRModule.cmake)
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_C_FLAGS_RELEASE "")
-set(CMAKE_CXX_FLAGS_RELEASE "")
 set(CMAKE_VERBOSE_MAKEFILE TRUE)
 
 if(APPLE)
@@ -118,7 +120,7 @@ add_library(hw_detect OBJECT "${PROJECT_SOURCE_DIR}/../src/common/hw_detect.c")
         if(WIN32)
     add_custom_command(OUTPUT "${hwloc_SOURCE_DIR}/Makefile"
             DEPENDS hwloc_patch
-    COMMAND ${CMAKE_COMMAND} -E env "CFLAGS=-Wno-comment -DNDEBUG" sh ${hwloc_SOURCE_DIR}/configure --build=x86_64-w64-mingw32 --with-pic
+    COMMAND ${CMAKE_COMMAND} -E env "CFLAGS=-Wno-comment -DNDEBUG $ENV{CFLAGS}" sh ${hwloc_SOURCE_DIR}/configure --build=x86_64-w64-mingw32 --with-pic
             --prefix=${hwloc_SOURCE_DIR}/out/ --disable-picky --enable-shared=no --enable-static=yes --disable-cairo --disable-libxml2 --disable-io --disable-plugin-dlopen
             --disable-plugin-ltdl --enable-embedded-mode
     WORKING_DIRECTORY "${hwloc_SOURCE_DIR}"
