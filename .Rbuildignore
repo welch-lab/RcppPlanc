@@ -6,6 +6,8 @@
 ^.*\.vs
 cmake-build-relwithdebinfo
 cmake-build-debug
+cmake-build-relwithdebinfo-mingw-r
+cmake-build-debug-mingw-r
 ^.*\.idea
 ^.*\\obj
 ^.*out
