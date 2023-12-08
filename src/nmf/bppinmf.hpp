@@ -144,7 +144,7 @@ public:
             Rcpp::Rcerr << "INMF started, niter=" << niter << std::endl;
         }
         this->objective_err = this->computeObjectiveError();
-        auto start = std::chrono::high_resolution_clock::now();
+        auto start = std::chrono::system_clock::now();
         unsigned int iter = 0;
         Progress p(niter, verbose);
         while (iter < niter ) {
@@ -157,7 +157,7 @@ public:
             else break;
         }
         this->objective_err = this->computeObjectiveError();
-        auto end = std::chrono::high_resolution_clock::now();
+        auto end = std::chrono::system_clock::now();
         if (verbose) {
             auto duration = std::chrono::duration_cast<std::chrono::seconds>(end - start);
             Rcpp::Rcerr << "Total time:      " << duration.count() << " sec" << std::endl;
