@@ -4,7 +4,15 @@
 \alias{symNMF}
 \title{Perform Symmetric Non-negative Matrix Factorization}
 \usage{
-symNMF(x, k, niter, nCores = 2L, lambda = 0, algo = "gnsym", Hinit = NULL)
+symNMF(
+  x,
+  k,
+  niter = 30L,
+  lambda = 0,
+  algo = "gnsym",
+  nCores = 2L,
+  Hinit = NULL
+)
 }
 \arguments{
 \item{x}{Input matrix for factorization. Must be symmetric. Can be either
@@ -12,10 +20,8 @@ dense or sparse.}
 
 \item{k}{Integer. Factor matrix rank.}
 
-\item{niter}{Integer. Maximum number of symNMF interations.}
-
-\item{nCores}{The number of parallel tasks that will be spawned. Only applies to anlsbpp.
-Default \code{2}}
+\item{niter}{Integer. Maximum number of symNMF interations.
+Default \code{30}}
 
 \item{lambda}{Symmetric regularization parameter. Must be
 non-negative. Default \code{0.0} uses the square of the maximum value in
@@ -23,6 +29,9 @@ non-negative. Default \code{0.0} uses the square of the maximum value in
 
 \item{algo}{Algorithm to perform the factorization, choose from "gnsym" or
 "anlsbpp". Default \code{"gnsym"}}
+
+\item{nCores}{The number of parallel tasks that will be spawned. Only applies to anlsbpp.
+Default \code{2}}
 
 \item{Hinit}{Initial right-hand factor matrix, must be of size n x k.
 Default \code{NULL}.}

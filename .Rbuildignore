@@ -18,3 +18,4 @@ cmake-build-debug-mingw-r
 ^cran-comments\.md$
 ^CMakePresets\.json$
 ^CRAN-SUBMISSION$
+Makefile

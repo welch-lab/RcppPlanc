@@ -298,7 +298,7 @@ public:
         if (verbose) {
             Rcpp::Rcerr << "UINMF started, niter=" << niter << std::endl;
         }
-        auto start = std::chrono::high_resolution_clock::now();
+        auto start = std::chrono::system_clock::now();
         this->sampleUandV();
         this->initW2();
         this->initH();
@@ -313,7 +313,7 @@ public:
             else break;
         }
         this->objective_err = this->computeObjectiveError();
-        auto end = std::chrono::high_resolution_clock::now();
+        auto end = std::chrono::system_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::seconds>(end - start);
         if (verbose) {
             Rcpp::Rcerr << "Total time:      " << duration.count() << " sec" << std::endl;

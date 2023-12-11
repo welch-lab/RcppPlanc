@@ -9,9 +9,9 @@ nmf(
   k,
   niter = 30L,
   algo = "anlsbpp",
+  nCores = 2L,
   Winit = NULL,
-  Hinit = NULL,
-  nCores = 2L
+  Hinit = NULL
 )
 }
 \arguments{
@@ -24,12 +24,12 @@ nmf(
 \item{algo}{Algorithm to perform the factorization, choose from "anlsbpp",
 "admm", "hals" or "mu". See detailed sections.}
 
+\item{nCores}{The number of parallel tasks that will be spawned. Only applies to anlsbpp.
+Default \code{2}}
+
 \item{Winit}{Initial left-hand factor matrix, must be of size m x k.}
 
 \item{Hinit}{Initial right-hand factor matrix, must be of size n x k.}
-
-\item{nCores}{The number of parallel tasks that will be spawned. Only applies to anlsbpp
-Default \code{2}}
 }
 \value{
 A list with the following elements:

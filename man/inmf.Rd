@@ -7,9 +7,9 @@
 inmf(
   objectList,
   k = 20,
-  nCores = 2,
   lambda = 5,
   niter = 30,
+  nCores = 2,
   Hinit = NULL,
   Vinit = NULL,
   Winit = NULL,
@@ -24,15 +24,15 @@ same class. Viable classes include: matrix, \linkS4class{dgCMatrix},
 \item{k}{Integer. Inner dimensionality to factorize the datasets into.
 Default \code{20}.}
 
-\item{nCores}{The number of parallel tasks that will be spawned.
-Default \code{2}}
-
 \item{lambda}{Regularization parameter. Larger values penalize
 dataset-specific effects more strongly (i.e. alignment should increase as
 \code{lambda} increases). Default \code{5}.}
 
 \item{niter}{Integer. Total number of block coordinate descent iterations to
 perform. Default \code{30}.}
+
+\item{nCores}{The number of parallel tasks that will be spawned.
+Default \code{2}}
 
 \item{Hinit}{Initial values to use for \eqn{H} matrices. A list object where
 each element is the initial \eqn{H} matrix of each dataset. Each should be

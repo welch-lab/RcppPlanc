@@ -468,7 +468,7 @@ private:
             this->permuteChunkIdx(idx);
         }
         // Start the main loop
-        auto start = std::chrono::high_resolution_clock::now();
+        auto start = std::chrono::system_clock::now();
         while (this->next()) {
             if (this->iter % 5 == 0) Rcpp::checkUserInterrupt();
             // The `next()` function does:
@@ -492,7 +492,7 @@ private:
         }
         this->solveH(ncores);
         this->objective_err = this->computeObjectiveError();
-        auto end = std::chrono::high_resolution_clock::now();
+        auto end = std::chrono::system_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::seconds>(end - start);
         if (verbose) {
             Rcpp::Rcerr << "Total iterations:  " << totalIters << std::endl;

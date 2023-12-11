@@ -239,4 +239,42 @@ endif()
 add_custom_command(TARGET RcppPlanc POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E remove ${HighFive_BINARY_DIR}/CMakeFiles/hdf5/cmake_hdf5_test.c
         VERBATIM)
+if(WIN32)
+add_custom_command(TARGET RcppPlanc POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E remove ${HighFive_SOURCE_DIR}/Makefile
+        VERBATIM)
+add_custom_command(TARGET RcppPlanc POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E remove ${PROJECT_SOURCE_DIR}/../src/_deps/HighFive-subbuild/Makefile
+        VERBATIM)
+add_custom_command(TARGET RcppPlanc POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E remove ${PROJECT_SOURCE_DIR}/../src/_deps/hwloc-subbuild/Makefile
+        VERBATIM)
+add_custom_command(TARGET RcppPlanc POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E remove ${HighFive_BINARY_DIR}/CMakeFiles/hdf5/cmake_hdf5_test.c
+        VERBATIM)
+add_custom_command(TARGET RcppPlanc POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E remove ${HighFive_SOURCE_DIR}/include/highfive/H5Version.hpp
+        VERBATIM)
+add_custom_command(TARGET RcppPlanc POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E remove ${PROJECT_SOURCE_DIR}/../src/CMakeFiles/CheckTypeSize/SIZE_OF_VOIDP.c
+        VERBATIM)
+add_custom_command(TARGET RcppPlanc POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E remove ${PROJECT_SOURCE_DIR}/../src/CMakeFiles/FindOpenMP/OpenMPCheckVersion.c
+        VERBATIM)
+add_custom_command(TARGET RcppPlanc POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E remove ${PROJECT_SOURCE_DIR}/../src/FindOpenMP/OpenMPCheckVersion.cpp
+        VERBATIM)
+add_custom_command(TARGET RcppPlanc POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E remove ${PROJECT_SOURCE_DIR}/../src/FindOpenMP/OpenMPTryFlag.c
+        VERBATIM)
+add_custom_command(TARGET RcppPlanc POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E remove ${PROJECT_SOURCE_DIR}/../src/FindOpenMP/OpenMPTryFlag.cpp
+        VERBATIM)
+add_custom_command(TARGET RcppPlanc POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E remove ${PROJECT_SOURCE_DIR}/../src/${CMAKE_VERSION}/CompilerIdC/CMakeCCompilerId.c
+        VERBATIM)
+add_custom_command(TARGET RcppPlanc POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E remove ${PROJECT_SOURCE_DIR}/../src/${CMAKE_VERSION}/CompilerIdCXX/CMakeCXXCompilerId.cpp
+        VERBATIM)
+endif()
 set_property(TARGET RcppPlanc PROPERTY ENABLE_EXPORTS ON)

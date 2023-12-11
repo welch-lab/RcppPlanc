@@ -62,8 +62,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // nmf
-Rcpp::List nmf(const SEXP& x, const arma::uword& k, const arma::uword& niter, const std::string& algo, const Rcpp::Nullable<Rcpp::NumericMatrix>& Winit, const Rcpp::Nullable<Rcpp::NumericMatrix>& Hinit, const int& nCores);
-RcppExport SEXP _RcppPlanc_nmf(SEXP xSEXP, SEXP kSEXP, SEXP niterSEXP, SEXP algoSEXP, SEXP WinitSEXP, SEXP HinitSEXP, SEXP nCoresSEXP) {
+Rcpp::List nmf(const SEXP& x, const arma::uword& k, const arma::uword& niter, const std::string& algo, const int& nCores, const Rcpp::Nullable<Rcpp::NumericMatrix>& Winit, const Rcpp::Nullable<Rcpp::NumericMatrix>& Hinit);
+RcppExport SEXP _RcppPlanc_nmf(SEXP xSEXP, SEXP kSEXP, SEXP niterSEXP, SEXP algoSEXP, SEXP nCoresSEXP, SEXP WinitSEXP, SEXP HinitSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -71,27 +71,27 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::uword& >::type k(kSEXP);
     Rcpp::traits::input_parameter< const arma::uword& >::type niter(niterSEXP);
     Rcpp::traits::input_parameter< const std::string& >::type algo(algoSEXP);
+    Rcpp::traits::input_parameter< const int& >::type nCores(nCoresSEXP);
     Rcpp::traits::input_parameter< const Rcpp::Nullable<Rcpp::NumericMatrix>& >::type Winit(WinitSEXP);
     Rcpp::traits::input_parameter< const Rcpp::Nullable<Rcpp::NumericMatrix>& >::type Hinit(HinitSEXP);
-    Rcpp::traits::input_parameter< const int& >::type nCores(nCoresSEXP);
-    rcpp_result_gen = Rcpp::wrap(nmf(x, k, niter, algo, Winit, Hinit, nCores));
+    rcpp_result_gen = Rcpp::wrap(nmf(x, k, niter, algo, nCores, Winit, Hinit));
     return rcpp_result_gen;
 END_RCPP
 }
 // symNMF
-Rcpp::List symNMF(const SEXP& x, const arma::uword& k, const arma::uword& niter, const int& nCores, const double& lambda, const std::string& algo, const Rcpp::Nullable<Rcpp::NumericMatrix>& Hinit);
-RcppExport SEXP _RcppPlanc_symNMF(SEXP xSEXP, SEXP kSEXP, SEXP niterSEXP, SEXP nCoresSEXP, SEXP lambdaSEXP, SEXP algoSEXP, SEXP HinitSEXP) {
+Rcpp::List symNMF(const SEXP& x, const arma::uword& k, const arma::uword& niter, const double& lambda, const std::string& algo, const int& nCores, const Rcpp::Nullable<Rcpp::NumericMatrix>& Hinit);
+RcppExport SEXP _RcppPlanc_symNMF(SEXP xSEXP, SEXP kSEXP, SEXP niterSEXP, SEXP lambdaSEXP, SEXP algoSEXP, SEXP nCoresSEXP, SEXP HinitSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const SEXP& >::type x(xSEXP);
     Rcpp::traits::input_parameter< const arma::uword& >::type k(kSEXP);
     Rcpp::traits::input_parameter< const arma::uword& >::type niter(niterSEXP);
-    Rcpp::traits::input_parameter< const int& >::type nCores(nCoresSEXP);
     Rcpp::traits::input_parameter< const double& >::type lambda(lambdaSEXP);
     Rcpp::traits::input_parameter< const std::string& >::type algo(algoSEXP);
+    Rcpp::traits::input_parameter< const int& >::type nCores(nCoresSEXP);
     Rcpp::traits::input_parameter< const Rcpp::Nullable<Rcpp::NumericMatrix>& >::type Hinit(HinitSEXP);
-    rcpp_result_gen = Rcpp::wrap(symNMF(x, k, niter, nCores, lambda, algo, Hinit));
+    rcpp_result_gen = Rcpp::wrap(symNMF(x, k, niter, lambda, algo, nCores, Hinit));
     return rcpp_result_gen;
 END_RCPP
 }

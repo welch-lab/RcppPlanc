@@ -9,11 +9,11 @@ onlineINMF(
   newDatasets = NULL,
   project = FALSE,
   k = 20,
-  nCores = 2,
   lambda = 5,
   maxEpoch = 5,
   minibatchSize = 5000,
   maxHALSIter = 1,
+  nCores = 2,
   Vinit = NULL,
   Winit = NULL,
   Ainit = NULL,
@@ -35,9 +35,6 @@ Default  \code{FALSE}.}
 \item{k}{Integer. Inner dimensionality to factorize the datasets into.
 Default \code{20}.}
 
-\item{nCores}{The number of parallel tasks that will be spawned.
-Default \code{2}}
-
 \item{lambda}{Regularization parameter. Larger values penalize
 dataset-specific effects more strongly (i.e. alignment should increase as
 \code{lambda} increases). Default \code{5}.}
@@ -50,6 +47,9 @@ dataset-specific effects more strongly (i.e. alignment should increase as
 \item{maxHALSIter}{Maximum number of block coordinate descent (HALS
 algorithm) iterations to perform for each update of \eqn{W} and \eqn{V}.
 Default \code{1}. Changing this parameter is not recommended.}
+
+\item{nCores}{The number of parallel tasks that will be spawned.
+Default \code{2}}
 
 \item{Vinit, Winit, Ainit, Binit}{Pass the previous factorization result for
 datasets existing in \code{objectList}, in order to run scenario 2 or 3. All

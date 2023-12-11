@@ -21,13 +21,13 @@
 #' \link{H5Mat}, \link{H5SpMat}.
 #' @param k Integer. Inner dimensionality to factorize the datasets into.
 #' Default \code{20}.
-#' @param nCores The number of parallel tasks that will be spawned.
-#' Default \code{2}
 #' @param lambda Regularization parameter. Larger values penalize
 #' dataset-specific effects more strongly (i.e. alignment should increase as
 #' \code{lambda} increases). Default \code{5}.
 #' @param niter Integer. Total number of block coordinate descent iterations to
 #' perform. Default \code{30}.
+#' @param nCores The number of parallel tasks that will be spawned.
+#' Default \code{2}
 #' @param Hinit Initial values to use for \eqn{H} matrices. A list object where
 #' each element is the initial \eqn{H} matrix of each dataset. Each should be
 #' dense matrix of size \eqn{n_i \times k}. Default \code{NULL}.
@@ -58,9 +58,9 @@
 inmf <- function(
     objectList,
     k = 20,
-    nCores = 2,
     lambda = 5,
     niter = 30,
+    nCores = 2,
     Hinit = NULL,
     Vinit = NULL,
     Winit = NULL,
@@ -126,8 +126,6 @@ inmf <- function(
 #' Default  \code{FALSE}.
 #' @param k Integer. Inner dimensionality to factorize the datasets into.
 #' Default \code{20}.
-#' @param nCores The number of parallel tasks that will be spawned.
-#' Default \code{2}
 #' @param lambda Regularization parameter. Larger values penalize
 #' dataset-specific effects more strongly (i.e. alignment should increase as
 #' \code{lambda} increases). Default \code{5}.
@@ -137,6 +135,8 @@ inmf <- function(
 #' @param maxHALSIter Maximum number of block coordinate descent (HALS
 #' algorithm) iterations to perform for each update of \eqn{W} and \eqn{V}.
 #' Default \code{1}. Changing this parameter is not recommended.
+#' @param nCores The number of parallel tasks that will be spawned.
+#' Default \code{2}
 #' @param Vinit,Winit,Ainit,Binit Pass the previous factorization result for
 #' datasets existing in \code{objectList}, in order to run scenario 2 or 3. All
 #' should have \code{length(objectList)} matrices inside. See description for
@@ -226,11 +226,11 @@ onlineINMF <- function(
     newDatasets = NULL,
     project = FALSE,
     k = 20,
-    nCores = 2,
     lambda = 5,
     maxEpoch = 5,
     minibatchSize = 5000,
     maxHALSIter = 1,
+    nCores = 2,
     Vinit = NULL,
     Winit = NULL,
     Ainit = NULL,
@@ -360,14 +360,14 @@ onlineINMF <- function(
 #' requirement as \code{objectList}.
 #' @param k Integer. Inner dimensionality to factorize the datasets into.
 #' Default \code{20}.
-#' @param nCores The number of parallel tasks that will be spawned.
-#' Default \code{2}.
 #' @param lambda Regularization parameter. Use one number for all datasets or a
 #' vector to specify for each dataset. Larger values penalize dataset-specific
 #' effects more strongly (i.e. alignment should increase as \code{lambda}
 #' increases). Default \code{5}.
 #' @param niter Integer. Total number of block coordinate descent iterations to
 #' perform. Default \code{30}.
+#' @param nCores The number of parallel tasks that will be spawned.
+#' Default \code{2}.
 #' @param verbose Logical scalar. Whether to show information and progress.
 #' Default \code{TRUE}.
 #' @return A list of the following elements:
@@ -392,9 +392,9 @@ uinmf <- function(
     objectList,
     unsharedList,
     k = 20,
-    nCores = 2,
     lambda = 5,
     niter = 30,
+    nCores = 2,
     verbose = TRUE
 ) {
     if (length(lambda) == 1) lambda <- rep(lambda, length(objectList))

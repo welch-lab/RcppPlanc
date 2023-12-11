@@ -95,10 +95,10 @@ Rcpp::List runNMF(T2 x, arma::uword k, const int& nCores, arma::uword niter,
 //' @param niter Integer. Maximum number of NMF interations.
 //' @param algo Algorithm to perform the factorization, choose from "anlsbpp",
 //' "admm", "hals" or "mu". See detailed sections.
+//' @param nCores The number of parallel tasks that will be spawned. Only applies to anlsbpp.
+//' Default \code{2}
 //' @param Winit Initial left-hand factor matrix, must be of size m x k.
 //' @param Hinit Initial right-hand factor matrix, must be of size n x k.
-//' @param nCores The number of parallel tasks that will be spawned. Only applies to anlsbpp
-//' Default \code{2}
 //' @returns A list with the following elements:
 //' \itemize{
 //'  \item{\code{W} - the result left-hand factor matrix}
@@ -111,8 +111,9 @@ Rcpp::List runNMF(T2 x, arma::uword k, const int& nCores, arma::uword niter,
 // [[Rcpp::export]]
 Rcpp::List nmf(const SEXP& x, const arma::uword &k, const arma::uword &niter = 30,
                const std::string &algo = "anlsbpp",
+               const int& nCores = 2,
                const Rcpp::Nullable<Rcpp::NumericMatrix> &Winit = R_NilValue,
-               const Rcpp::Nullable<Rcpp::NumericMatrix> &Hinit = R_NilValue, const int& nCores = 2) {
+               const Rcpp::Nullable<Rcpp::NumericMatrix> &Hinit = R_NilValue) {
     Rcpp::List outlist;
     if (Rf_isS4(x)) {
         // Assume using dgCMatrix
@@ -222,13 +223,14 @@ Rcpp::List runSymNMF(T2 x, arma::uword k, const int& nCores, arma::uword niter, 
 //' dense or sparse.
 //' @param k Integer. Factor matrix rank.
 //' @param niter Integer. Maximum number of symNMF interations.
-//' @param nCores The number of parallel tasks that will be spawned. Only applies to anlsbpp.
-//' Default \code{2}
+//' Default \code{30}
 //' @param lambda Symmetric regularization parameter. Must be
 //' non-negative. Default \code{0.0} uses the square of the maximum value in
 //' \code{x}.
 //' @param algo Algorithm to perform the factorization, choose from "gnsym" or
 //' "anlsbpp". Default \code{"gnsym"}
+//' @param nCores The number of parallel tasks that will be spawned. Only applies to anlsbpp.
+//' Default \code{2}
 //' @param Hinit Initial right-hand factor matrix, must be of size n x k.
 //' Default \code{NULL}.
 //' @returns A list with the following elements:
@@ -242,8 +244,8 @@ Rcpp::List runSymNMF(T2 x, arma::uword k, const int& nCores, arma::uword niter, 
 //' Srinivas Eswar and et al., Distributed-Memory Parallel Symmetric Nonnegative
 //' Matrix Factorization, SC '20, 2020, 10.5555/3433701.3433799
 // [[Rcpp::export()]]
-Rcpp::List symNMF(const SEXP& x, const arma::uword& k, const arma::uword& niter, const int& nCores = 2,
-                 const double& lambda = 0.0, const std::string& algo = "gnsym",
+Rcpp::List symNMF(const SEXP& x, const arma::uword& k, const arma::uword& niter = 30,
+                 const double& lambda = 0.0, const std::string& algo = "gnsym", const int& nCores = 2,
                  const Rcpp::Nullable<Rcpp::NumericMatrix> &Hinit = R_NilValue) {
 //   arma::mat out;
   Rcpp::List out;
