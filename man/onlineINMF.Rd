@@ -101,30 +101,11 @@ This function allows online learning in 3 scenarios:
 }
 \examples{
 library(Matrix)
-ctrl.h5sp <- H5SpMat(filename = system.file("extdata", "ctrl_sparse.h5",
-                                            package = "RcppPlanc",
-                                            mustWork = TRUE),
-                     valuePath = "scaleDataSparse/data",
-                     rowindPath = "scaleDataSparse/indices",
-                     colptrPath = "scaleDataSparse/indptr",
-                     nrow = nrow(ctrl.sparse),
-                     ncol = ncol(ctrl.sparse))
-stim.h5sp <- H5SpMat(filename = system.file("extdata", "stim_sparse.h5",
-                                            package = "RcppPlanc",
-                                            mustWork = TRUE),
-                     valuePath = "scaleDataSparse/data",
-                     rowindPath = "scaleDataSparse/indices",
-                     colptrPath = "scaleDataSparse/indptr",
-                     nrow = nrow(stim.sparse),
-                     ncol = ncol(stim.sparse))
 
 # Scenario 1 with sparse matrices
 set.seed(1)
-res1 <- onlineINMF(list(ctrl.sparse, stim.sparse), minibatchSize = 50, k = 10)
-set.seed(1)
-res2 <- onlineINMF(list(ctrl.h5sp, stim.h5sp), minibatchSize = 50)
-all.equal(res1, res2)
-
+res1 <- onlineINMF(list(ctrl.sparse, stim.sparse), 
+                   minibatchSize = 50, k = 10)
 
 # Scenario 2 with H5 dense matrices
 h5dense1 <- H5Mat(filename = system.file("extdata", "ctrl_dense.h5",
@@ -137,7 +118,8 @@ res2 <- onlineINMF(list(ctrl = h5dense1), minibatchSize = 50, k = 10)
 res3 <- onlineINMF(list(ctrl = h5dense1),
                    newDatasets = list(stim = h5dense2),
                    Vinit = res2$V, Winit = res2$W,
-                   Ainit = res2$A, Binit = res2$B, minibatchSize = 50, k = 10)
+                   Ainit = res2$A, Binit = res2$B, 
+                   minibatchSize = 50, k = 10)
 
 # Scenario 3 with H5 sparse matrices
 h5sparse1 <- H5SpMat(filename = system.file("extdata", "ctrl_sparse.h5",

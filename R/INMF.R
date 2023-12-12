@@ -51,10 +51,7 @@
 #' @examples
 #' library(Matrix)
 #' set.seed(1)
-#' res1 <- inmf(list(ctrl.sparse, stim.sparse), k = 10, niter = 10)
-#' set.seed(1)
-#' res2 <- inmf(list(as.matrix(ctrl.sparse), as.matrix(stim.sparse)), k=10, niter=10)
-#' all.equal(res1, res2)
+#' result <- inmf(list(ctrl.sparse, stim.sparse), k = 10, niter = 10)
 inmf <- function(
     objectList,
     k = 20,
@@ -162,30 +159,11 @@ inmf <- function(
 #' online learning, Nat Biotechnol., 2021
 #' @examples
 #' library(Matrix)
-#' ctrl.h5sp <- H5SpMat(filename = system.file("extdata", "ctrl_sparse.h5",
-#'                                             package = "RcppPlanc",
-#'                                             mustWork = TRUE),
-#'                      valuePath = "scaleDataSparse/data",
-#'                      rowindPath = "scaleDataSparse/indices",
-#'                      colptrPath = "scaleDataSparse/indptr",
-#'                      nrow = nrow(ctrl.sparse),
-#'                      ncol = ncol(ctrl.sparse))
-#' stim.h5sp <- H5SpMat(filename = system.file("extdata", "stim_sparse.h5",
-#'                                             package = "RcppPlanc",
-#'                                             mustWork = TRUE),
-#'                      valuePath = "scaleDataSparse/data",
-#'                      rowindPath = "scaleDataSparse/indices",
-#'                      colptrPath = "scaleDataSparse/indptr",
-#'                      nrow = nrow(stim.sparse),
-#'                      ncol = ncol(stim.sparse))
-#'
+#' 
 #' # Scenario 1 with sparse matrices
 #' set.seed(1)
-#' res1 <- onlineINMF(list(ctrl.sparse, stim.sparse), minibatchSize = 50, k = 10)
-#' set.seed(1)
-#' res2 <- onlineINMF(list(ctrl.h5sp, stim.h5sp), minibatchSize = 50)
-#' all.equal(res1, res2)
-#'
+#' res1 <- onlineINMF(list(ctrl.sparse, stim.sparse), 
+#'                    minibatchSize = 50, k = 10)
 #'
 #' # Scenario 2 with H5 dense matrices
 #' h5dense1 <- H5Mat(filename = system.file("extdata", "ctrl_dense.h5",
@@ -198,7 +176,8 @@ inmf <- function(
 #' res3 <- onlineINMF(list(ctrl = h5dense1),
 #'                    newDatasets = list(stim = h5dense2),
 #'                    Vinit = res2$V, Winit = res2$W,
-#'                    Ainit = res2$A, Binit = res2$B, minibatchSize = 50, k = 10)
+#'                    Ainit = res2$A, Binit = res2$B, 
+#'                    minibatchSize = 50, k = 10)
 #'
 #' # Scenario 3 with H5 sparse matrices
 #' h5sparse1 <- H5SpMat(filename = system.file("extdata", "ctrl_sparse.h5",
@@ -384,10 +363,14 @@ onlineINMF <- function(
 #' integration of single-cell multi-omic datasets using nonnegative matrix
 #' factorization, Nat. Comm., 2022
 #' @examples
-#' if (FALSE) {
-#'     res1 <- uinmf(list(sparse1, sparse2),
-#'                   list(sparse.unshare1, sparse.unshare2), k = 10, niter = 10)
-#' }
+#' # Fake matrices representing unshared features of the given datasets
+#' # Real-life use should have features that are not presented in the 
+#' # intersection of features of all datasets involved.
+#' ctrl.unshared <- ctrl.sparse[1:10,]
+#' stim.unshared <- stim.sparse[11:30,]
+#' set.seed(1)
+#' result <- uinmf(list(ctrl.sparse, stim.sparse), 
+#'                 list(ctrl.unshared, stim.unshared))
 uinmf <- function(
     objectList,
     unsharedList,

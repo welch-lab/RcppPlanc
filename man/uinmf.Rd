@@ -75,10 +75,14 @@ Similar to \code{\link{inmf}}, \code{uinmf} also optimizes the objective with
 ANLS algorithm.
 }
 \examples{
-if (FALSE) {
-    res1 <- uinmf(list(sparse1, sparse2),
-                  list(sparse.unshare1, sparse.unshare2), k = 10, niter = 10)
-}
+# Fake matrices representing unshared features of the given datasets
+# Real-life use should have features that are not presented in the 
+# intersection of features of all datasets involved.
+ctrl.unshared <- ctrl.sparse[1:10,]
+stim.unshared <- stim.sparse[11:30,]
+set.seed(1)
+result <- uinmf(list(ctrl.sparse, stim.sparse), 
+                list(ctrl.unshared, stim.unshared))
 }
 \references{
 April R. Kriebel and Joshua D. Welch, UINMF performs mosaic
