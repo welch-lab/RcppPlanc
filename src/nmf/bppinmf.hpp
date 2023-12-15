@@ -135,7 +135,19 @@ private:
 
 public:
     BPPINMF(std::vector<std::unique_ptr<T>>& Ei, arma::uword k, double lambda) : INMF<T>(Ei, k, lambda) {
+        try {
+            if (this->k > this->m) {
+                throw std::invalid_argument("k must be <= m");
+            }
+        } catch(std::exception &ex) {
+#ifdef USING_R
+            std::string ex_str = ex.what();
+            Rcpp::stop(ex_str);
 
+#else
+            throw ex;
+#endif
+        }
     }
 
     void optimizeALS(unsigned int niter, bool verbose = true, const int& ncores = 0) {

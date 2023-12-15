@@ -39,7 +39,7 @@ private:
             this->Vi.push_back(std::move(V));
             int uidx = this->whichUnshared[i];
             if (uidx == -1) continue; // skip if no U
-            U = std::unique_ptr<arma::mat>(new arma::mat(this->u[i], this->k, arma::fill::zeros));
+            U = std::unique_ptr<arma::mat>(new arma::mat(this->u[uidx], this->k, arma::fill::zeros));
             arma::mat* Uptr = U.get();
             *Uptr = this->Pi[uidx].get()->cols(indices);
             this->Ui.push_back(std::move(U));
@@ -205,13 +205,13 @@ private:
             giventGiven *= 1 + this->lambda_i[i];
             // T* Pptr = this->Pi[uidx].get();
             T* PTptr = this->PiT[uidx].get();
-            unsigned int numChunks = this->u[i] / this->INMF_CHUNK_SIZE;
-            if (numChunks * this->INMF_CHUNK_SIZE < this->u[i]) numChunks++;
+            unsigned int numChunks = this->u[uidx] / this->INMF_CHUNK_SIZE;
+            if (numChunks * this->INMF_CHUNK_SIZE < this->u[uidx]) numChunks++;
 #pragma omp parallel for schedule(dynamic) default(none) shared(i, Uptr, Hptr, numChunks, PTptr) num_threads(ncores)
             for (unsigned int j = 0; j < numChunks; ++j) {
                 unsigned int spanStart = j * this->INMF_CHUNK_SIZE;
                 unsigned int spanEnd = (j + 1) * this->INMF_CHUNK_SIZE - 1;
-                if (spanEnd > this->u[i] - 1) spanEnd = this->u[i] - 1;
+                if (spanEnd > this->u[uidx] - 1) spanEnd = this->u[uidx] - 1;
                 arma::mat giventInputTLS;
                 giventInputTLS = (*Hptr).t() * PTptr->cols(spanStart, spanEnd);
                 BPPNNLS<arma::mat, arma::vec> subProbU(giventGiven, giventInputTLS, true);
@@ -284,7 +284,7 @@ public:
         this->Pi = std::move(Pi);
         this->lambda_i = lambda;
         this->whichUnshared = whichUnshared;
-        u = arma::zeros<arma::uvec>(this->nDatasets);
+        u = arma::zeros<arma::uvec>(this->Pi.size());
         for (arma::uword i=0; i<this->Pi.size(); ++i) {
             u[i] = this->Pi[i]->n_rows;
             T* Pptr = this->Pi[i].get();

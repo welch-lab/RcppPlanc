@@ -552,6 +552,19 @@ public:
         for (arma::uword i = 0; i < this->nDatasets; ++i) {
             this->samplingIdx.push_back(arma::zeros<arma::uvec>(this->ncol_E[i]));
         }
+        try {
+            if (this->k > this->m) {
+                throw std::invalid_argument("k must be <= m");
+            }
+        } catch(std::exception &ex) {
+#ifdef USING_R
+            std::string ex_str = ex.what();
+            Rcpp::stop(ex_str);
+
+#else
+            throw ex;
+#endif
+        }
     }
 
     // %%%%%%%%%%%%%%% Public initializers %%%%%%%%%%%%%%%%%%%%%%%
