@@ -207,7 +207,7 @@ private:
             T* PTptr = this->PiT[uidx].get();
             unsigned int numChunks = this->u[uidx] / this->INMF_CHUNK_SIZE;
             if (numChunks * this->INMF_CHUNK_SIZE < this->u[uidx]) numChunks++;
-#pragma omp parallel for schedule(dynamic) default(none) shared(i, Uptr, Hptr, numChunks, PTptr) num_threads(ncores)
+#pragma omp parallel for schedule(dynamic) default(none) shared(i, uidx, Uptr, Hptr, numChunks, PTptr) num_threads(ncores)
             for (unsigned int j = 0; j < numChunks; ++j) {
                 unsigned int spanStart = j * this->INMF_CHUNK_SIZE;
                 unsigned int spanEnd = (j + 1) * this->INMF_CHUNK_SIZE - 1;
