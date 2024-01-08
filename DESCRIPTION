@@ -2,14 +2,14 @@ Package: RcppPlanc
 Type: Package
 Title: Parallel Low-Rank Approximation with Nonnegativity Constraints
 Version: 1.0.0
-Date: 2023-12-11
+Date: 2024-01-08
 Authors@R: c(
   person(given = 'Andrew', family = 'Robbins', email = 'robbiand@med.umich.edu', role = c('aut', 'cre')),
   person(given = 'Yichen', family = 'Wang', email = 'wayichen@med.umich.edu', role = c('aut')),
   person(given = 'Joshua', family = 'Welch', role = c('cph')),
   person(given = 'Ramakrishnan', family = 'Kannan', role = c('cph'), comment = "The original PLANC code"),
   person("UT-Batelle", role = c('cph'), comment = "The original PLANC code"))
-Maintainer: Andrew Robbins <robbiand@med.umich.edu>
+Maintainer: Andrew Robbins <robbiand@umich.edu>
 Description: 'Rcpp' bindings for 'PLANC', a highly parallel
              and extensible NMF/NTF  (Non-negative Matrix/Tensor Factorization) library.
              Wraps algorithms described in
