@@ -18,7 +18,7 @@ onlineINMF(
   Winit = NULL,
   Ainit = NULL,
   Binit = NULL,
-  verbose = TRUE
+  verbose = FALSE
 )
 }
 \arguments{
@@ -58,7 +58,7 @@ dimensionality of \eqn{V_i} and \eqn{W_i}. \eqn{A_i} should be of size
 \eqn{k \times k} and \eqn{B_i} should be of size \eqn{m \times k}}
 
 \item{verbose}{Logical scalar. Whether to show information and progress.
-Default \code{TRUE}.}
+Default \code{FALSE}.}
 }
 \value{
 A list of the following elements:

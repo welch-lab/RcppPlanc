@@ -36,7 +36,7 @@
 #' @param Winit Initial values to use for \eqn{W} matrix. A matrix object of
 #' size \eqn{m \times k}. Default \code{NULL}.
 #' @param verbose Logical scalar. Whether to show information and progress.
-#' Default \code{TRUE}.
+#' Default \code{FALSE}.
 #' @return A list of the following elements:
 #' \itemize{
 #'  \item{\code{H} - a list of result \eqn{H_i} matrices of size
@@ -61,7 +61,7 @@ inmf <- function(
     Hinit = NULL,
     Vinit = NULL,
     Winit = NULL,
-    verbose = TRUE
+    verbose = FALSE
 ) {
     mode <- .typeOfInput(objectList)
     res <- switch(
@@ -140,7 +140,7 @@ inmf <- function(
 #' dimensionality of \eqn{V_i} and \eqn{W_i}. \eqn{A_i} should be of size
 #' \eqn{k \times k} and \eqn{B_i} should be of size \eqn{m \times k}
 #' @param verbose Logical scalar. Whether to show information and progress.
-#' Default \code{TRUE}.
+#' Default \code{FALSE}.
 #' @return A list of the following elements:
 #' \itemize{
 #'  \item{\code{H} - a list of result \eqn{H_i} matrices of size
@@ -214,7 +214,7 @@ onlineINMF <- function(
     Winit = NULL,
     Ainit = NULL,
     Binit = NULL,
-    verbose = TRUE
+    verbose = FALSE
 ) {
     mode <- .typeOfInput(objectList)
     if (is.null(newDatasets)) {
@@ -348,7 +348,7 @@ onlineINMF <- function(
 #' @param nCores The number of parallel tasks that will be spawned.
 #' Default \code{2}.
 #' @param verbose Logical scalar. Whether to show information and progress.
-#' Default \code{TRUE}.
+#' Default \code{FALSE}.
 #' @return A list of the following elements:
 #' \itemize{
 #'  \item{\code{H} - a list of result \eqn{H_i} matrices of size
@@ -378,7 +378,7 @@ uinmf <- function(
     lambda = 5,
     niter = 30,
     nCores = 2,
-    verbose = TRUE
+    verbose = FALSE
 ) {
     if (length(lambda) == 1) lambda <- rep(lambda, length(objectList))
     if (length(lambda) != length(objectList)) {

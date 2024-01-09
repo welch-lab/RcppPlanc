@@ -4,8 +4,8 @@ Title: Parallel Low-Rank Approximation with Nonnegativity Constraints
 Version: 1.0.0
 Date: 2024-01-08
 Authors@R: c(
-  person(given = 'Andrew', family = 'Robbins', email = 'robbiand@med.umich.edu', role = c('aut', 'cre')),
-  person(given = 'Yichen', family = 'Wang', email = 'wayichen@med.umich.edu', role = c('aut')),
+  person(given = 'Andrew', family = 'Robbins', email = 'robbiand@umich.edu', role = c('aut', 'cre')),
+  person(given = 'Yichen', family = 'Wang', email = 'wayichen@umich.edu', role = c('aut')),
   person(given = 'Joshua', family = 'Welch', role = c('cph')),
   person(given = 'Ramakrishnan', family = 'Kannan', role = c('cph'), comment = "The original PLANC code"),
   person("UT-Batelle", role = c('cph'), comment = "The original PLANC code"))

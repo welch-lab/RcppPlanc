@@ -12,7 +12,7 @@ uinmf(
   lambda = 5,
   niter = 30,
   nCores = 2,
-  verbose = TRUE
+  verbose = FALSE
 )
 }
 \arguments{
@@ -38,7 +38,7 @@ perform. Default \code{30}.}
 Default \code{2}.}
 
 \item{verbose}{Logical scalar. Whether to show information and progress.
-Default \code{TRUE}.}
+Default \code{FALSE}.}
 }
 \value{
 A list of the following elements:

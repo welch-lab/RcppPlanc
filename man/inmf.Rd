@@ -13,7 +13,7 @@ inmf(
   Hinit = NULL,
   Vinit = NULL,
   Winit = NULL,
-  verbose = TRUE
+  verbose = FALSE
 )
 }
 \arguments{
@@ -45,7 +45,7 @@ dense matrix of size \eqn{n_i \times k}. Default \code{NULL}.}
 size \eqn{m \times k}. Default \code{NULL}.}
 
 \item{verbose}{Logical scalar. Whether to show information and progress.
-Default \code{TRUE}.}
+Default \code{FALSE}.}
 }
 \value{
 A list of the following elements:
