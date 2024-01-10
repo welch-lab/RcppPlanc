@@ -1,0 +1,3 @@
+LIBRARY RcppPlanc.dll
+EXPORTS
+ R_init_RcppPlanc
