@@ -301,8 +301,13 @@ onlineINMF <- function(
                                               minibatchSize, maxHALSIter,
                                               verbose)
         )
-        for (i in seq_along(res)) {
-            if (names(res)[i] != "W") names(res[[i]]) <- names(objectList)
+        if (!isTRUE(project)) {
+            # Scenario 2 result
+            names(res$H) <- names(res$V) <- names(res$A) <- names(res$B) <- 
+                c(names(objectList), names(newDatasets))
+        } else {
+            # Scenario 3 result
+            names(res$H) <- names(newDatasets)
         }
     }
     return(res)
