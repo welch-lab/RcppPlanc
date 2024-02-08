@@ -1,5 +1,9 @@
 # RcppPlanc
 
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/welch-lab/RcppPlanc/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/welch-lab/RcppPlanc/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
+
 ## About
 
 RcppPlanc is, as the name implies, an Rcpp wrapper for [planc](https://github.com/ramkikannan/planc). Currently, it
