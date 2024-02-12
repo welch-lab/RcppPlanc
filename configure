@@ -1,10 +1,9 @@
-#!/bin/sh
+#!/bin/sh -x
 
 if test -z "$CMAKE"; then CMAKE="`which cmake`"; fi
 if test -z "$CMAKE"; then CMAKE=/Applications/CMake.app/Contents/bin/cmake; fi
 if ! test -f "$CMAKE"; then echo "no ‘cmake’ command found"; exit 1; fi
 
-export DYLD_FALLBACK_LIBRARY_PATH="/usr/local/lib"
 : ${R_HOME=`R RHOME`}
 if test -z "${R_HOME}"; then
   echo "could not determine R_HOME"
