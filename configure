@@ -20,7 +20,7 @@ EXTRACXXFLAGS=$(echo "$RCXX"| sed -e  "s/-std=[^ ]\{0,\}//")
 CFLAGS=`"${R_HOME}/bin/R" CMD config CFLAGS`
 CPPFLAGS=`"${R_HOME}/bin/R" CMD config --cppflags`
 CXXFLAGS=`"${R_HOME}/bin/R" CMD config CXXFLAGS`
-LDFLAGS=`"${R_HOME}/bin/R" CMD config --ldflags`
+R_LDFLAGS=`"${R_HOME}/bin/R" CMD config --ldflags`
 FC=`"${R_HOME}/bin/R" CMD config FC`
 FLIBS=`"${R_HOME}/bin/R" CMD config FLIBS`
 
@@ -36,5 +36,6 @@ $CMAKE ../tools \
   -DCMAKE_C_COMPILER="$CC" \
   -DCMAKE_CXX_COMPILER="$CXX" \
   -DR_HOME="$R_HOME"
+  -DR_LDFLAGS=$R_LDFLAGS
 
 echo "" >> _deps/highfive-src/include/highfive/bits/H5Friends.hpp
