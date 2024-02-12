@@ -19,4 +19,3 @@ cmake-build-debug-mingw-r
 ^CMakePresets\.json$
 ^CRAN-SUBMISSION$
 Makefile
-^\.github$
