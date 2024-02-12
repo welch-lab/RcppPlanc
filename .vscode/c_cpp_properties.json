@@ -24,6 +24,24 @@
             "cStandard": "c17",
             "cppStandard": "c++17",
             "intelliSenseMode": "macos-clang-arm64"
+        },
+        {
+            "name": "rtools",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "windowsSdkVersion": "",
+            "compilerPath": "C:\\rtools43\\x86_64-w64-mingw32.static.posix\\bin\\gcc",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "${default}",
+            "mergeConfigurations": true,
+            "configurationProvider": "ms-vscode.cmake-tools"
         }
     ],
     "version": 4

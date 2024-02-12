@@ -114,13 +114,13 @@
     "cmake.useProjectStatusView": true,
     "cmake.ignoreCMakeListsMissing": false,
     "cmake.platform": "",
-    "cmake.cmakePath": "C:\\Rtools43\\MINGW64\\bin\\cmake.exe",
-    "cmake.generator": "Ninja",
+    "cmake.cmakePath": "C:\\Rtools43\\x86_64-w64-mingw32.static.posix\\bin\\cmake.exe",
+    "cmake.generator": "Unix Makefiles",
     "cmake.configureArgs": [
-        "-DCMAKE_MAKE_PROGRAM=C:\\Rtools43\\mingw64\\bin\\ninja.exe",
-        "-DR_EXECUTABLE=C:\\Program Files\\R\\R-4.3.1\\bin\\x64\\R.exe",
+        "-DCMAKE_MAKE_PROGRAM=C:\\Rtools43\\usr\\bin\\make.exe",
+        "-DR_EXECUTABLE=C:\\Program Files\\R\\R-4.3.2\\bin\\x64\\R.exe",
     ],
     "terminal.integrated.env.windows": {},
     "memory-view.showMemoryPanel": true,
-    "cmake.sourceDirectory": "E:/RcppPlanc/tools"
+    "cmake.sourceDirectory": "${workspaceFolder}\\tools"
 }
