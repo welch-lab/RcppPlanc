@@ -1,4 +1,4 @@
-#!/bin/sh -x
+#!/bin/sh
 
 if test -z "$CMAKE"; then CMAKE="`which cmake`"; fi
 if test -z "$CMAKE"; then CMAKE=/Applications/CMake.app/Contents/bin/cmake; fi
@@ -35,7 +35,7 @@ $CMAKE ../tools \
   -DCMAKE_POSITION_INDEPENDENT_CODE:bool=ON \
   -DCMAKE_C_COMPILER="$CC" \
   -DCMAKE_CXX_COMPILER="$CXX" \
-  -DR_HOME="$R_HOME"
-  -DR_LDFLAGS=$R_LDFLAGS
+  -DR_HOME="$R_HOME" \
+  -DR_LDFLAGS="$R_LDFLAGS"
 
 echo "" >> _deps/highfive-src/include/highfive/bits/H5Friends.hpp
