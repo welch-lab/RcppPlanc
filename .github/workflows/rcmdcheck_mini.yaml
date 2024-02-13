@@ -1,0 +1,30 @@
+# R-hub's generic GitHub Actions workflow file. It's canonical location is at
+# https://github.com/r-hub/rhub2/blob/v1/inst/workflow/rhub.yaml
+# You can update this file to a newer version using the rhub2 package:
+#
+# rhub2::rhub_setup()
+#
+# It is unlikely that you need to modify this file manually.
+
+name: R-hub
+run-name: selfhosted ${{ github.event.inputs.name || format('Manually run by {0}', github.triggering_actor) }}
+
+on:
+  workflow_dispatch:
+
+jobs:
+  other-platforms:
+    runs-on: [self-hosted, x64, macos]
+    name: ${{ matrix.config.label }}
+    strategy:
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: "Install OSX deps"
+        if: ${{ runner.os == 'macOS' }}
+        run: $(which brew) install hdf5
+        shell: bash
+      - uses: r-hub/rhub2/actions/rhub-check@v1
+        with:
+          job-config: ${{ matrix.config.job-config }}
