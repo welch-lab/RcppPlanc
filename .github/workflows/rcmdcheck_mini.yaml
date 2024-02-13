@@ -21,7 +21,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: r-hub/rhub2/actions/rhub-setup-r@v1
       - name: "Install OSX deps"
         if: ${{ runner.os == 'macOS' }}
         run: $(which brew) install hdf5
