@@ -1,0 +1,3380 @@
+--- hwloc/hwloc/components.c
++++ hwloc.orig/hwloc/components.c
+@@ -123,8 +123,8 @@
+     if (colon)
+       *colon = '\0';
+ 
++    // if (hwloc_plugins_verbose)
++    //  fprintf(stderr, "hwloc:  Looking under %s\n", path);
+-    if (hwloc_plugins_verbose)
+-      fprintf(stderr, "hwloc:  Looking under %s\n", path);
+ 
+     dir = opendir(path);
+     if (!dir)
+@@ -197,8 +197,8 @@
+   struct hwloc__plugin_desc *desc, **prevdesc;
+   char *componentsymbolname;
+ 
++  // if (hwloc_plugins_verbose)
++  //  fprintf(stderr, "hwloc: Plugin dlforeach found `%s'\n", filename);
+-  if (hwloc_plugins_verbose)
+-    fprintf(stderr, "hwloc: Plugin dlforeach found `%s'\n", filename);
+ 
+   basename = strrchr(filename, '/');
+   if (!basename)
+@@ -207,62 +207,62 @@
+     basename++;
+ 
+   if (hwloc_plugins_blacklist && strstr(hwloc_plugins_blacklist, basename)) {
++    // if (hwloc_plugins_verbose)
++    //  fprintf(stderr, "hwloc: Plugin `%s' is blacklisted in the environment\n", basename);
+-    if (hwloc_plugins_verbose)
+-      fprintf(stderr, "hwloc: Plugin `%s' is blacklisted in the environment\n", basename);
+     goto out;
+   }
+ 
+   /* dlopen and get the component structure */
+   handle = hwloc_dlopenext(filename);
+   if (!handle) {
++    // if (hwloc_plugins_verbose)
++    //  fprintf(stderr, "hwloc: Failed to load plugin: %s\n", hwloc_dlerror());
+-    if (hwloc_plugins_verbose)
+-      fprintf(stderr, "hwloc: Failed to load plugin: %s\n", hwloc_dlerror());
+     goto out;
+   }
+ 
+   componentsymbolname = malloc(strlen(basename)+10+1);
+   if (!componentsymbolname) {
++    // if (hwloc_plugins_verbose)
++    //  fprintf(stderr, "hwloc: Failed to allocation component `%s' symbol\n",
++       //      basename);
+-    if (hwloc_plugins_verbose)
+-      fprintf(stderr, "hwloc: Failed to allocation component `%s' symbol\n",
+-	      basename);
+     goto out_with_handle;
+   }
+   sprintf(componentsymbolname, "%s_component", basename);
+   component = hwloc_dlsym(handle, componentsymbolname);
+   if (!component) {
++    // if (hwloc_plugins_verbose)
++    //  fprintf(stderr, "hwloc: Failed to find component symbol `%s'\n",
++       //      componentsymbolname);
+-    if (hwloc_plugins_verbose)
+-      fprintf(stderr, "hwloc: Failed to find component symbol `%s'\n",
+-	      componentsymbolname);
+     free(componentsymbolname);
+     goto out_with_handle;
+   }
+   if (component->abi != HWLOC_COMPONENT_ABI) {
++    // if (hwloc_plugins_verbose)
++    //  fprintf(stderr, "hwloc: Plugin symbol ABI %u instead of %d\n",
++       //      component->abi, HWLOC_COMPONENT_ABI);
+-    if (hwloc_plugins_verbose)
+-      fprintf(stderr, "hwloc: Plugin symbol ABI %u instead of %d\n",
+-	      component->abi, HWLOC_COMPONENT_ABI);
+     free(componentsymbolname);
+     goto out_with_handle;
+   }
++  // if (hwloc_plugins_verbose)
++  //  fprintf(stderr, "hwloc: Plugin contains expected symbol `%s'\n",
++  //  componentsymbolname);
+-  if (hwloc_plugins_verbose)
+-    fprintf(stderr, "hwloc: Plugin contains expected symbol `%s'\n",
+-	    componentsymbolname);
+   free(componentsymbolname);
+ 
+   if (HWLOC_COMPONENT_TYPE_DISC == component->type) {
+     if (strncmp(basename, "hwloc_", 6)) {
++      // if (hwloc_plugins_verbose)
++       // fprintf(stderr, "hwloc: Plugin name `%s' doesn't match its type DISCOVERY\n", basename);
+-      if (hwloc_plugins_verbose)
+-	fprintf(stderr, "hwloc: Plugin name `%s' doesn't match its type DISCOVERY\n", basename);
+       goto out_with_handle;
+     }
+   } else if (HWLOC_COMPONENT_TYPE_XML == component->type) {
+     if (strncmp(basename, "hwloc_xml_", 10)) {
++      // if (hwloc_plugins_verbose)
++       // fprintf(stderr, "hwloc: Plugin name `%s' doesn't match its type XML\n", basename);
+-      if (hwloc_plugins_verbose)
+-	fprintf(stderr, "hwloc: Plugin name `%s' doesn't match its type XML\n", basename);
+       goto out_with_handle;
+     }
+   } else {
++    // if (hwloc_plugins_verbose)
++      // fprintf(stderr, "hwloc: Plugin name `%s' has invalid type %u\n",
+-    if (hwloc_plugins_verbose)
+-      fprintf(stderr, "hwloc: Plugin name `%s' has invalid type %u\n",
+ 	      basename, (unsigned) component->type);
+     goto out_with_handle;
+   }
+@@ -276,16 +276,16 @@
+   desc->component = component;
+   desc->handle = handle;
+   desc->next = NULL;
++  // if (hwloc_plugins_verbose)
++    // fprintf(stderr, "hwloc: Plugin descriptor `%s' ready\n", basename);
+-  if (hwloc_plugins_verbose)
+-    fprintf(stderr, "hwloc: Plugin descriptor `%s' ready\n", basename);
+ 
+   /* append to the list */
+   prevdesc = &hwloc_plugins;
+   while (*prevdesc)
+     prevdesc = &((*prevdesc)->next);
+   *prevdesc = desc;
++  // if (hwloc_plugins_verbose)
++    // fprintf(stderr, "hwloc: Plugin descriptor `%s' queued\n", basename);
+-  if (hwloc_plugins_verbose)
+-    fprintf(stderr, "hwloc: Plugin descriptor `%s' queued\n", basename);
+   return 0;
+ 
+  out_with_handle:
+@@ -299,8 +299,8 @@
+ {
+   struct hwloc__plugin_desc *desc, *next;
+ 
++  // if (hwloc_plugins_verbose)
++    // fprintf(stderr, "hwloc: Closing all plugins\n");
+-  if (hwloc_plugins_verbose)
+-    fprintf(stderr, "hwloc: Closing all plugins\n");
+ 
+   desc = hwloc_plugins;
+   while (desc) {
+@@ -339,8 +339,8 @@
+ 
+   hwloc_plugins = NULL;
+ 
++  // if (hwloc_plugins_verbose)
++    // fprintf(stderr, "hwloc: Starting plugin dlforeach in %s\n", path);
+-  if (hwloc_plugins_verbose)
+-    fprintf(stderr, "hwloc: Starting plugin dlforeach in %s\n", path);
+   err = hwloc_dlforeachfile(path, hwloc__dlforeach_cb, NULL);
+   if (err)
+     goto out_with_init;
+@@ -363,16 +363,16 @@
+ 
+   /* check that the component name is valid */
+   if (!strcmp(component->name, HWLOC_COMPONENT_STOP_NAME)) {
++    // if (hwloc_components_verbose)
++      // fprintf(stderr, "hwloc: Cannot register discovery component with reserved name `" HWLOC_COMPONENT_STOP_NAME "'\n");
+-    if (hwloc_components_verbose)
+-      fprintf(stderr, "hwloc: Cannot register discovery component with reserved name `" HWLOC_COMPONENT_STOP_NAME "'\n");
+     return -1;
+   }
+   if (strchr(component->name, HWLOC_COMPONENT_EXCLUDE_CHAR)
+       || strchr(component->name, HWLOC_COMPONENT_PHASESEP_CHAR)
+       || strcspn(component->name, HWLOC_COMPONENT_SEPS) != strlen(component->name)) {
++    //if (hwloc_components_verbose)
++      // fprintf(stderr, "hwloc: Cannot register discovery component with name `%s' containing reserved characters `%c" HWLOC_COMPONENT_SEPS "'\n",
++         //    component->name, HWLOC_COMPONENT_EXCLUDE_CHAR);
+-    if (hwloc_components_verbose)
+-      fprintf(stderr, "hwloc: Cannot register discovery component with name `%s' containing reserved characters `%c" HWLOC_COMPONENT_SEPS "'\n",
+-	      component->name, HWLOC_COMPONENT_EXCLUDE_CHAR);
+     return -1;
+   }
+ 
+@@ -386,9 +386,9 @@
+ 				   |HWLOC_DISC_PHASE_MISC
+ 				   |HWLOC_DISC_PHASE_ANNOTATE
+ 				   |HWLOC_DISC_PHASE_TWEAK))) {
++    // if (HWLOC_SHOW_CRITICAL_ERRORS())
++      // fprintf(stderr, "hwloc: Cannot register discovery component `%s' with invalid phases 0x%x\n",
++      //        component->name, component->phases);
+-    if (HWLOC_SHOW_CRITICAL_ERRORS())
+-      fprintf(stderr, "hwloc: Cannot register discovery component `%s' with invalid phases 0x%x\n",
+-              component->name, component->phases);
+     return -1;
+   }
+ 
+@@ -398,24 +398,24 @@
+       /* if two components have the same name, only keep the highest priority one */
+       if ((*prev)->priority < component->priority) {
+ 	/* drop the existing component */
++       // if (hwloc_components_verbose)
++         //fprintf(stderr, "hwloc: Dropping previously registered discovery component `%s', priority %u lower than new one %u\n",
++               //  (*prev)->name, (*prev)->priority, component->priority);
+-	if (hwloc_components_verbose)
+-	  fprintf(stderr, "hwloc: Dropping previously registered discovery component `%s', priority %u lower than new one %u\n",
+-		  (*prev)->name, (*prev)->priority, component->priority);
+ 	*prev = (*prev)->next;
+       } else {
+ 	/* drop the new one */
++       // if (hwloc_components_verbose)
++         // fprintf(stderr, "hwloc: Ignoring new discovery component `%s', priority %u lower than previously registered one %u\n",
++                 // component->name, component->priority, (*prev)->priority);
+-	if (hwloc_components_verbose)
+-	  fprintf(stderr, "hwloc: Ignoring new discovery component `%s', priority %u lower than previously registered one %u\n",
+-		  component->name, component->priority, (*prev)->priority);
+ 	return -1;
+       }
+     }
+     prev = &((*prev)->next);
+   }
++  //if (hwloc_components_verbose)
++  //  fprintf(stderr, "hwloc: Registered discovery component `%s' phases 0x%x with priority %u (%s%s)\n",
++       //    component->name, component->phases, component->priority,
++       //    filename ? "from plugin " : "statically build", filename ? filename : "");
+-  if (hwloc_components_verbose)
+-    fprintf(stderr, "hwloc: Registered discovery component `%s' phases 0x%x with priority %u (%s%s)\n",
+-	    component->name, component->phases, component->priority,
+-	    filename ? "from plugin " : "statically build", filename ? filename : "");
+ 
+   prev = &hwloc_disc_components;
+   while (NULL != *prev) {
+@@ -476,16 +476,16 @@
+   /* hwloc_static_components is created by configure in static-components.h */
+   for(i=0; NULL != hwloc_static_components[i]; i++) {
+     if (hwloc_static_components[i]->flags) {
++      // if (HWLOC_SHOW_CRITICAL_ERRORS())
++      //  fprintf(stderr, "hwloc: Ignoring static component with invalid flags %lx\n",
++      //          hwloc_static_components[i]->flags);
+-      if (HWLOC_SHOW_CRITICAL_ERRORS())
+-        fprintf(stderr, "hwloc: Ignoring static component with invalid flags %lx\n",
+-                hwloc_static_components[i]->flags);
+       continue;
+     }
+ 
+     /* initialize the component */
+     if (hwloc_static_components[i]->init && hwloc_static_components[i]->init(0) < 0) {
++    //  if (hwloc_components_verbose)
++       //  fprintf(stderr, "hwloc: Ignoring static component, failed to initialize\n");
+-      if (hwloc_components_verbose)
+-	fprintf(stderr, "hwloc: Ignoring static component, failed to initialize\n");
+       continue;
+     }
+     /* queue ->finalize() callback if any */
+@@ -505,16 +505,16 @@
+ #ifdef HWLOC_HAVE_PLUGINS
+   for(desc = hwloc_plugins; NULL != desc; desc = desc->next) {
+     if (desc->component->flags) {
++      // if (HWLOC_SHOW_CRITICAL_ERRORS())
++      //  fprintf(stderr, "hwloc: Ignoring plugin `%s' component with invalid flags %lx\n",
++      //          desc->name, desc->component->flags);
+-      if (HWLOC_SHOW_CRITICAL_ERRORS())
+-        fprintf(stderr, "hwloc: Ignoring plugin `%s' component with invalid flags %lx\n",
+-                desc->name, desc->component->flags);
+       continue;
+     }
+ 
+     /* initialize the component */
+     if (desc->component->init && desc->component->init(0) < 0) {
++    //  if (hwloc_components_verbose)
++       // fprintf(stderr, "hwloc: Ignoring plugin `%s', failed to initialize\n", desc->name);
+-      if (hwloc_components_verbose)
+-	fprintf(stderr, "hwloc: Ignoring plugin `%s', failed to initialize\n", desc->name);
+       continue;
+     }
+     /* queue ->finalize() callback if any */
+@@ -610,8 +610,8 @@
+   if (!strcmp(name, "linuxpci") || !strcmp(name, "linuxio")) {
+     /* replace linuxpci and linuxio with linux (with IO phases)
+      * for backward compatibility with pre-v2.0 and v2.0 respectively */
++    // if (hwloc_components_verbose)
++    //  fprintf(stderr, "hwloc: Replacing deprecated component `%s' with `linux' IO phases in blacklisting\n", name);
+-    if (hwloc_components_verbose)
+-      fprintf(stderr, "hwloc: Replacing deprecated component `%s' with `linux' IO phases in blacklisting\n", name);
+     comp = hwloc_disc_component_find("linux", NULL);
+     phases = HWLOC_DISC_PHASE_PCI | HWLOC_DISC_PHASE_IO | HWLOC_DISC_PHASE_MISC | HWLOC_DISC_PHASE_ANNOTATE;
+ 
+@@ -626,8 +626,8 @@
+     return -1;
+   }
+ 
++  // if (hwloc_components_verbose)
++  //  fprintf(stderr, "hwloc: Blacklisting component `%s` phases 0x%x\n", comp->name, phases);
+-  if (hwloc_components_verbose)
+-    fprintf(stderr, "hwloc: Blacklisting component `%s` phases 0x%x\n", comp->name, phases);
+ 
+   for(i=0; i<topology->nr_blacklisted_components; i++) {
+     if (topology->blacklisted_components[i].component == comp) {
+@@ -727,19 +727,19 @@
+ 
+   if (!(comp->phases & ~(topology->backend_excluded_phases | blacklisted_phases))) {
+     /* all this backend phases are already excluded, exclude the backend entirely */
++    // if (hwloc_components_verbose)
+-    if (hwloc_components_verbose)
+       /* do not warn if envvar_forced since system-wide HWLOC_COMPONENTS must be silently ignored after set_xml() etc.
+        */
++      // fprintf(stderr, "hwloc: Excluding discovery component `%s' phases 0x%x, conflicts with excludes 0x%x\n",
++         //    comp->name, comp->phases, topology->backend_excluded_phases);
+-      fprintf(stderr, "hwloc: Excluding discovery component `%s' phases 0x%x, conflicts with excludes 0x%x\n",
+-	      comp->name, comp->phases, topology->backend_excluded_phases);
+     return -1;
+   }
+ 
+   backend = comp->instantiate(topology, comp, topology->backend_excluded_phases | blacklisted_phases,
+ 			      NULL, NULL, NULL);
+   if (!backend) {
++    // if (hwloc_components_verbose || (envvar_forced && HWLOC_SHOW_CRITICAL_ERRORS()))
++    //  fprintf(stderr, "hwloc: Failed to instantiate discovery component `%s'\n", comp->name);
+-    if (hwloc_components_verbose || (envvar_forced && HWLOC_SHOW_CRITICAL_ERRORS()))
+-      fprintf(stderr, "hwloc: Failed to instantiate discovery component `%s'\n", comp->name);
+     return -1;
+   }
+ 
+@@ -819,8 +819,8 @@
+ 
+ 	name = curenv;
+ 	if (!strcmp(name, "linuxpci") || !strcmp(name, "linuxio")) {
++         // if (hwloc_components_verbose)
++         //  fprintf(stderr, "hwloc: Replacing deprecated component `%s' with `linux' in envvar forcing\n", name);
+-	  if (hwloc_components_verbose)
+-	    fprintf(stderr, "hwloc: Replacing deprecated component `%s' with `linux' in envvar forcing\n", name);
+ 	  name = "linux";
+ 	}
+ 
+@@ -834,9 +834,9 @@
+ 	    }
+ 	  if (comp->phases & ~blacklisted_phases)
+ 	    hwloc_disc_component_try_enable(topology, comp, 1 /* envvar forced */, blacklisted_phases);
++       // } else {
++          // if (HWLOC_SHOW_CRITICAL_ERRORS())
++          //  fprintf(stderr, "hwloc: Cannot find discovery component `%s'\n", name);
+-	} else {
+-          if (HWLOC_SHOW_CRITICAL_ERRORS())
+-            fprintf(stderr, "hwloc: Cannot find discovery component `%s'\n", name);
+ 	}
+ 
+ 	/* restore chars (the second loop below needs env to be unmodified) */
+@@ -867,9 +867,9 @@
+ 	}
+ 
+       if (!(comp->phases & ~blacklisted_phases)) {
++       // if (hwloc_components_verbose)
++         // fprintf(stderr, "hwloc: Excluding blacklisted discovery component `%s' phases 0x%x\n",
++               //  comp->name, comp->phases);
+-	if (hwloc_components_verbose)
+-	  fprintf(stderr, "hwloc: Excluding blacklisted discovery component `%s' phases 0x%x\n",
+-		  comp->name, comp->phases);
+ 	goto nextcomp;
+       }
+ 
+@@ -883,13 +883,13 @@
+     /* print a summary */
+     int first = 1;
+     backend = topology->backends;
++    // fprintf(stderr, "hwloc: Final list of enabled discovery components: ");
+-    fprintf(stderr, "hwloc: Final list of enabled discovery components: ");
+     while (backend != NULL) {
++      // fprintf(stderr, "%s%s(0x%x)", first ? "" : ",", backend->component->name, backend->phases);
+-      fprintf(stderr, "%s%s(0x%x)", first ? "" : ",", backend->component->name, backend->phases);
+       backend = backend->next;
+       first = 0;
+     }
++    // fprintf(stderr, "\n");
+-    fprintf(stderr, "\n");
+   }
+ 
+   free(env);
+@@ -938,9 +938,9 @@
+   backend->topology = topology;
+   /* filter-out component phases that are excluded */
+   backend->phases = component->phases & ~topology->backend_excluded_phases;
++  // if (backend->phases != component->phases && hwloc_components_verbose)
++  //  fprintf(stderr, "hwloc: Trying discovery component `%s' with phases 0x%x instead of 0x%x\n",
++       //    component->name, backend->phases, component->phases);
+-  if (backend->phases != component->phases && hwloc_components_verbose)
+-    fprintf(stderr, "hwloc: Trying discovery component `%s' with phases 0x%x instead of 0x%x\n",
+-	    component->name, backend->phases, component->phases);
+   backend->flags = 0;
+   backend->discover = NULL;
+   backend->get_pci_busid_cpuset = NULL;
+@@ -967,9 +967,9 @@
+ 
+   /* check backend flags */
+   if (backend->flags) {
++    // if (HWLOC_SHOW_CRITICAL_ERRORS())
++    //  fprintf(stderr, "hwloc: Cannot enable discovery component `%s' phases 0x%x with unknown flags %lx\n",
++    //          backend->component->name, backend->component->phases, backend->flags);
+-    if (HWLOC_SHOW_CRITICAL_ERRORS())
+-      fprintf(stderr, "hwloc: Cannot enable discovery component `%s' phases 0x%x with unknown flags %lx\n",
+-              backend->component->name, backend->component->phases, backend->flags);
+     return -1;
+   }
+ 
+@@ -977,9 +977,9 @@
+   pprev = &topology->backends;
+   while (NULL != *pprev) {
+     if ((*pprev)->component == backend->component) {
++    // if (hwloc_components_verbose)
++       // fprintf(stderr, "hwloc: Cannot enable  discovery component `%s' phases 0x%x twice\n",
++               // backend->component->name, backend->component->phases);
+-      if (hwloc_components_verbose)
+-	fprintf(stderr, "hwloc: Cannot enable  discovery component `%s' phases 0x%x twice\n",
+-		backend->component->name, backend->component->phases);
+       hwloc_backend_disable(backend);
+       errno = EBUSY;
+       return -1;
+@@ -987,9 +987,9 @@
+     pprev = &((*pprev)->next);
+   }
+ 
++  // if (hwloc_components_verbose)
++  //  fprintf(stderr, "hwloc: Enabling discovery component `%s' with phases 0x%x (among 0x%x)\n",
++       //    backend->component->name, backend->phases, backend->component->phases);
+-  if (hwloc_components_verbose)
+-    fprintf(stderr, "hwloc: Enabling discovery component `%s' with phases 0x%x (among 0x%x)\n",
+-	    backend->component->name, backend->phases, backend->component->phases);
+ 
+   /* enqueue at the end */
+   pprev = &topology->backends;
+@@ -1071,9 +1071,9 @@
+ 
+   while (NULL != (backend = topology->backends)) {
+     struct hwloc_backend *next = backend->next;
++    // if (hwloc_components_verbose)
++    //  fprintf(stderr, "hwloc: Disabling discovery component `%s'\n",
++       //      backend->component->name);
+-    if (hwloc_components_verbose)
+-      fprintf(stderr, "hwloc: Disabling discovery component `%s'\n",
+-	      backend->component->name);
+     hwloc_backend_disable(backend);
+     topology->backends = next;
+   }
+--- hwloc/hwloc/distances.c
++++ hwloc.orig/hwloc/distances.c
+@@ -36,16 +36,16 @@
+   int gp = !HWLOC_DIST_TYPE_USE_OS_INDEX(dist->unique_type);
+   unsigned i, j;
+ 
++  // fprintf(stderr, "%s", gp ? "gp_index" : "os_index");
++  //for(j=0; j<nbobjs; j++)
++  //  fprintf(stderr, " % 5d", (int)(gp ? objs[j]->gp_index : objs[j]->os_index));
++  //fprintf(stderr, "\n");
++  //for(i=0; i<nbobjs; i++) {
++  //  fprintf(stderr, "  % 5d", (int)(gp ? objs[i]->gp_index : objs[i]->os_index));
++  //  for(j=0; j<nbobjs; j++)
++  //    fprintf(stderr, " % 5lld", (long long) values[i*nbobjs + j]);
++   // fprintf(stderr, "\n");
++//  }
+-  fprintf(stderr, "%s", gp ? "gp_index" : "os_index");
+-  for(j=0; j<nbobjs; j++)
+-    fprintf(stderr, " % 5d", (int)(gp ? objs[j]->gp_index : objs[j]->os_index));
+-  fprintf(stderr, "\n");
+-  for(i=0; i<nbobjs; i++) {
+-    fprintf(stderr, "  % 5d", (int)(gp ? objs[i]->gp_index : objs[i]->os_index));
+-    for(j=0; j<nbobjs; j++)
+-      fprintf(stderr, " % 5lld", (long long) values[i*nbobjs + j]);
+-    fprintf(stderr, "\n");
+-  }
+ }
+ 
+ /******************************************************
+@@ -507,7 +507,7 @@
+     }
+ 
+     if (topology->grouping_verbose) {
++      //fprintf(stderr, "Trying to group objects using distance matrix:\n");
+-      fprintf(stderr, "Trying to group objects using distance matrix:\n");
+       hwloc_internal_distances_print_matrix(dist);
+     }
+ 
+@@ -1139,9 +1139,9 @@
+ 
+     /* valid this group */
+     groupid++;
++    //if (verbose)
++      //fprintf(stderr, " Found transitive graph with %u objects with minimal distance %llu accuracy %f\n",
++	   //   size, (unsigned long long) min_distance, accuracy);
+-    if (verbose)
+-      fprintf(stderr, " Found transitive graph with %u objects with minimal distance %llu accuracy %f\n",
+-	      size, (unsigned long long) min_distance, accuracy);
+   }
+ 
+   if (groupid == 2 && !skipped)
+@@ -1161,16 +1161,16 @@
+     for(j=i+1; j<nbobjs; j++) {
+       /* should be symmetric */
+       if (hwloc_compare_values(VALUE(i, j), VALUE(j, i), accuracy)) {
++	//if (verbose)
++	  //fprintf(stderr, " Distance matrix asymmetric ([%u,%u]=%llu != [%u,%u]=%llu), aborting\n",
++	//	  i, j, (unsigned long long) VALUE(i, j), j, i, (unsigned long long) VALUE(j, i));
+-	if (verbose)
+-	  fprintf(stderr, " Distance matrix asymmetric ([%u,%u]=%llu != [%u,%u]=%llu), aborting\n",
+-		  i, j, (unsigned long long) VALUE(i, j), j, i, (unsigned long long) VALUE(j, i));
+ 	return -1;
+       }
+       /* diagonal is smaller than everything else */
+       if (hwloc_compare_values(VALUE(i, j), VALUE(i, i), accuracy) <= 0) {
++	//if (verbose)
++	 // fprintf(stderr, " Distance to self not strictly minimal ([%u,%u]=%llu <= [%u,%u]=%llu), aborting\n",
++	//	  i, j, (unsigned long long) VALUE(i, j), i, i, (unsigned long long) VALUE(i, i));
+-	if (verbose)
+-	  fprintf(stderr, " Distance to self not strictly minimal ([%u,%u]=%llu <= [%u,%u]=%llu), aborting\n",
+-		  i, j, (unsigned long long) VALUE(i, j), i, i, (unsigned long long) VALUE(i, i));
+ 	return -1;
+       }
+     }
+@@ -1213,9 +1213,9 @@
+     return;
+ 
+   for(i=0; i<nbaccuracies; i++) {
++    //if (verbose)
++    //  fprintf(stderr, "Trying to group %u %s objects according to physical distances with accuracy %f\n",
++	//      nbobjs, hwloc_obj_type_string(objs[0]->type), accuracies[i]);
+-    if (verbose)
+-      fprintf(stderr, "Trying to group %u %s objects according to physical distances with accuracy %f\n",
+-	      nbobjs, hwloc_obj_type_string(objs[0]->type), accuracies[i]);
+     if (needcheck && hwloc__check_grouping_matrix(nbobjs, _values, accuracies[i], verbose) < 0)
+       continue;
+     nbgroups = hwloc__find_groups_by_min_distance(nbobjs, _values, accuracies[i], groupids, verbose);
+--- hwloc/hwloc/memattrs.c
++++ hwloc.orig/hwloc/memattrs.c
+@@ -1268,8 +1268,8 @@
+     } else if (!strcmp(env, "spm_is_hbm")) {
+       hwloc_debug("Assuming SPM-tier is HBM, ignore bandwidth\n");
+       spm_is_hbm = 1;
++    //} else if (HWLOC_SHOW_CRITICAL_ERRORS()) {
++    //  fprintf(stderr, "hwloc: Failed to recognize HWLOC_MEMTIERS_GUESS value %s\n", env);
+-    } else if (HWLOC_SHOW_CRITICAL_ERRORS()) {
+-      fprintf(stderr, "hwloc: Failed to recognize HWLOC_MEMTIERS_GUESS value %s\n", env);
+     }
+   }
+ 
+--- hwloc/hwloc/pci-common.c
++++ hwloc.orig/hwloc/pci-common.c
+@@ -152,10 +152,10 @@
+ 	    hwloc_pci_forced_locality_parse(topology, buffer);
+ 	  }
+ 	  free(buffer);
++	//} else {
++    //      if (HWLOC_SHOW_CRITICAL_ERRORS())
++    //        fprintf(stderr, "hwloc/pci: Ignoring HWLOC_PCI_LOCALITY file `%s' too large (%lu bytes)\n",
++    //                env, (unsigned long) st.st_size);
+-	} else {
+-          if (HWLOC_SHOW_CRITICAL_ERRORS())
+-            fprintf(stderr, "hwloc/pci: Ignoring HWLOC_PCI_LOCALITY file `%s' too large (%lu bytes)\n",
+-                    env, (unsigned long) st.st_size);
+ 	}
+       }
+       close(fd);
+@@ -341,15 +341,15 @@
+     case HWLOC_PCI_BUSID_EQUAL: {
+       static int reported = 0;
+       if (!reported && HWLOC_SHOW_CRITICAL_ERRORS()) {
++        //fprintf(stderr, "*********************************************************\n");
++        //fprintf(stderr, "* hwloc %s received invalid PCI information.\n", HWLOC_VERSION);
++        //fprintf(stderr, "*\n");
++        //fprintf(stderr, "* Trying to insert PCI object %04x:%02x:%02x.%01x at %04x:%02x:%02x.%01x\n",
++        //        new->attr->pcidev.domain, new->attr->pcidev.bus, new->attr->pcidev.dev, new->attr->pcidev.func,
++        //        (*curp)->attr->pcidev.domain, (*curp)->attr->pcidev.bus, (*curp)->attr->pcidev.dev, (*curp)->attr->pcidev.func);
++        //fprintf(stderr, "*\n");
++        //fprintf(stderr, "* hwloc will now ignore this object and continue.\n");
++        //fprintf(stderr, "*********************************************************\n");
+-        fprintf(stderr, "*********************************************************\n");
+-        fprintf(stderr, "* hwloc %s received invalid PCI information.\n", HWLOC_VERSION);
+-        fprintf(stderr, "*\n");
+-        fprintf(stderr, "* Trying to insert PCI object %04x:%02x:%02x.%01x at %04x:%02x:%02x.%01x\n",
+-                new->attr->pcidev.domain, new->attr->pcidev.bus, new->attr->pcidev.dev, new->attr->pcidev.func,
+-                (*curp)->attr->pcidev.domain, (*curp)->attr->pcidev.bus, (*curp)->attr->pcidev.dev, (*curp)->attr->pcidev.func);
+-        fprintf(stderr, "*\n");
+-        fprintf(stderr, "* hwloc will now ignore this object and continue.\n");
+-        fprintf(stderr, "*********************************************************\n");
+         reported = 1;
+       }
+       hwloc_free_unlinked_object(new);
+@@ -574,8 +574,8 @@
+     if (env) {
+       static int reported = 0;
+       if (!topology->pci_has_forced_locality && !reported) {
++        //if (HWLOC_SHOW_ALL_ERRORS())
++        //  fprintf(stderr, "hwloc/pci: Environment variable %s is deprecated, please use HWLOC_PCI_LOCALITY instead.\n", env);
+-        if (HWLOC_SHOW_ALL_ERRORS())
+-          fprintf(stderr, "hwloc/pci: Environment variable %s is deprecated, please use HWLOC_PCI_LOCALITY instead.\n", env);
+ 	reported = 1;
+       }
+       if (*env) {
+--- hwloc/hwloc/topology-aix.c
++++ hwloc.orig/hwloc/topology-aix.c
+@@ -535,7 +535,7 @@
+   rsid_t rsid = { .at_subrange = &subrange };
+   uint_t aix_policy;
+   int ret;
++  // fprintf(stderr,"yop\n");
+-  fprintf(stderr,"yop\n");
+ 
+   if ((flags & (HWLOC_MEMBIND_MIGRATE|HWLOC_MEMBIND_STRICT))
+             == (HWLOC_MEMBIND_MIGRATE|HWLOC_MEMBIND_STRICT)) {
+@@ -626,8 +626,8 @@
+     unsigned os_index = HWLOC_UNKNOWN_INDEX; /* no os_index except for PU and NUMANODE below */
+ 
+     if (rs_getrad(rset, rad, sdl, i, 0)) {
++      // if (HWLOC_SHOW_CRITICAL_ERRORS())
++      // fprintf(stderr, "hwloc/aix: rs_getrad(%d) failed: %s\n", i, strerror(errno));
+-      if (HWLOC_SHOW_CRITICAL_ERRORS())
+-        fprintf(stderr, "hwloc/aix: rs_getrad(%d) failed: %s\n", i, strerror(errno));
+       continue;
+     }
+     if (!rs_getinfo(rad, R_NUMPROCS, 0))
+--- hwloc/hwloc/topology-bgq.c
++++ hwloc.orig/hwloc/topology-bgq.c
+@@ -277,13 +277,13 @@
+   if (err || strcmp(utsname.sysname, "CNK") || strcmp(utsname.machine, "BGQ")) {
+     const char *env = getenv("HWLOC_FORCE_BGQ");
+     if (!env || !atoi(env)) {
++      // fprintf(stderr, "*** Found unexpected uname sysname `%s' machine `%s'.\n", utsname.sysname, utsname.machine);
++      // fprintf(stderr, "*** The BlueGene/Q backend (bgq) is only enabled by default on compute nodes\n"
++		//      "*** (where uname returns sysname=CNK and machine=BGQ).\n"
++		//      "*** If you know you *really* want to run the bgq backend on this non-compute node,\n"
++		//      "*** set HWLOC_FORCE_BGQ=1 in the environment.\n"
++		//      "*** If you just want to discover the native topology of this non-compute node,\n"
++		//      "*** do not pass any BlueGene/Q-specific options on the configure command-line.\n");
+-      fprintf(stderr, "*** Found unexpected uname sysname `%s' machine `%s'.\n", utsname.sysname, utsname.machine);
+-      fprintf(stderr, "*** The BlueGene/Q backend (bgq) is only enabled by default on compute nodes\n"
+-		      "*** (where uname returns sysname=CNK and machine=BGQ).\n"
+-		      "*** If you know you *really* want to run the bgq backend on this non-compute node,\n"
+-		      "*** set HWLOC_FORCE_BGQ=1 in the environment.\n"
+-		      "*** If you just want to discover the native topology of this non-compute node,\n"
+-		      "*** do not pass any BlueGene/Q-specific options on the configure command-line.\n");
+       return NULL;
+     } else {
+       forced_nonbgq = 1;
+--- hwloc/hwloc/topology-cuda.c
++++ hwloc.orig/hwloc/topology-cuda.c
+@@ -85,7 +85,7 @@
+   if (cures) {
+     if (cures != cudaErrorNoDevice && HWLOC_SHOW_ALL_ERRORS()) {
+       const char *error = cudaGetErrorString(cures);
++      // fprintf(stderr, "hwloc/cuda: Failed to get number of devices with cudaGetDeviceCount(): %s\n", error);
+-      fprintf(stderr, "hwloc/cuda: Failed to get number of devices with cudaGetDeviceCount(): %s\n", error);
+     }
+     return -1;
+   }
+--- hwloc/hwloc/topology-darwin.c
++++ hwloc.orig/hwloc/topology-darwin.c
+@@ -50,8 +50,8 @@
+                            char cluster_type, const char *compatible)
+ {
+   if (kinds->nr == MAX_KINDS) {
++    //if (HWLOC_SHOW_ALL_ERRORS())
++    //  fprintf(stderr, "hwloc/darwin: failed to add new cpukinds, already %u used\n", kinds->nr);
+-    if (HWLOC_SHOW_ALL_ERRORS())
+-      fprintf(stderr, "hwloc/darwin: failed to add new cpukinds, already %u used\n", kinds->nr);
+     return NULL;
+   }
+ 
+@@ -84,8 +84,8 @@
+       if (compatible) {
+         if (!kinds->kinds[i].compatible)
+           kinds->kinds[i].compatible = strdup(compatible);
++        //else if (strcmp(kinds->kinds[i].compatible, compatible))
++        //  fprintf(stderr, "hwloc/darwin/cpukinds: got a different compatible string inside same cluster type %c\n", cluster_type);
+-        else if (strcmp(kinds->kinds[i].compatible, compatible))
+-          fprintf(stderr, "hwloc/darwin/cpukinds: got a different compatible string inside same cluster type %c\n", cluster_type);
+       }
+       kind = &kinds->kinds[i];
+       goto found;
+@@ -123,14 +123,14 @@
+ 
+   cpus_root = IORegistryEntryFromPath(kIOMainPortDefault, DT_PLANE ":/cpus");
+   if (!cpus_root) {
++    //fprintf(stderr, "hwloc/darwin/cpukinds: failed to find " DT_PLANE ":/cpus\n");
+-    fprintf(stderr, "hwloc/darwin/cpukinds: failed to find " DT_PLANE ":/cpus\n");
+     return -1;
+   }
+ 
+   kret = IORegistryEntryGetChildIterator(cpus_root, DT_PLANE, &cpus_iter);
+   if (kret != KERN_SUCCESS) {
++    //if (HWLOC_SHOW_ALL_ERRORS())
++    //  fprintf(stderr, "hwloc/darwin/cpukinds: failed to create iterator\n");
+-    if (HWLOC_SHOW_ALL_ERRORS())
+-      fprintf(stderr, "hwloc/darwin/cpukinds: failed to create iterator\n");
+     IOObjectRelease(cpus_root);
+     return -1;
+   }
+@@ -162,17 +162,17 @@
+       continue;
+     }
+     if (CFGetTypeID(ref) != CFNumberGetTypeID()) {
++      // if (HWLOC_SHOW_ALL_ERRORS())
++        // fprintf(stderr, "hwloc/darwin/cpukinds: unexpected `logical-cpu-id' CF type %s\n",
++        //        CFStringGetCStringPtr(CFCopyTypeIDDescription(CFGetTypeID(ref)), kCFStringEncodingUTF8));
+-      if (HWLOC_SHOW_ALL_ERRORS())
+-        fprintf(stderr, "hwloc/darwin/cpukinds: unexpected `logical-cpu-id' CF type %s\n",
+-                CFStringGetCStringPtr(CFCopyTypeIDDescription(CFGetTypeID(ref)), kCFStringEncodingUTF8));
+       CFRelease(ref);
+       continue;
+     }
+     {
+       long long lld_value;
+       if (!CFNumberGetValue(ref, kCFNumberLongLongType, &lld_value)) {
++        // if (HWLOC_SHOW_ALL_ERRORS())
++        //  fprintf(stderr, "hwloc/darwin/cpukinds: failed to get logical-cpu-id\n");
+-        if (HWLOC_SHOW_ALL_ERRORS())
+-          fprintf(stderr, "hwloc/darwin/cpukinds: failed to get logical-cpu-id\n");
+         CFRelease(ref);
+         continue;
+       }
+@@ -209,21 +209,21 @@
+     /* get cluster-type */
+     ref = IORegistryEntrySearchCFProperty(cpus_child, DT_PLANE, CFSTR("cluster-type"), kCFAllocatorDefault, kNilOptions);
+     if (!ref) {
++      // if (HWLOC_SHOW_ALL_ERRORS())
++      //  fprintf(stderr, "hwloc/darwin/cpukinds: failed to find cluster-type\n");
+-      if (HWLOC_SHOW_ALL_ERRORS())
+-        fprintf(stderr, "hwloc/darwin/cpukinds: failed to find cluster-type\n");
+       continue;
+     }
+     if (CFGetTypeID(ref) != CFDataGetTypeID()) {
++      // if (HWLOC_SHOW_ALL_ERRORS())
++      //  fprintf(stderr, "hwloc/darwin/cpukinds: unexpected `cluster-type' CF type %s\n",
++      //          CFStringGetCStringPtr(CFCopyTypeIDDescription(CFGetTypeID(ref)), kCFStringEncodingUTF8));
+-      if (HWLOC_SHOW_ALL_ERRORS())
+-        fprintf(stderr, "hwloc/darwin/cpukinds: unexpected `cluster-type' CF type %s\n",
+-                CFStringGetCStringPtr(CFCopyTypeIDDescription(CFGetTypeID(ref)), kCFStringEncodingUTF8));
+       CFRelease(ref);
+       continue;
+     }
+     if (CFDataGetLength(ref) < 2) {
++      // if (HWLOC_SHOW_ALL_ERRORS())
++        // fprintf(stderr, "hwloc/darwin/cpukinds: only got %ld bytes from cluster-type data\n",
++        //        CFDataGetLength(ref));
+-      if (HWLOC_SHOW_ALL_ERRORS())
+-        fprintf(stderr, "hwloc/darwin/cpukinds: only got %ld bytes from cluster-type data\n",
+-                CFDataGetLength(ref));
+       CFRelease(ref);
+       continue;
+     }
+@@ -234,9 +234,9 @@
+         hwloc_debug("got cluster-type %c\n", u8_values[0]);
+         cluster_type = u8_values[0];
+       } else {
++        //if (HWLOC_SHOW_ALL_ERRORS())
++        //  fprintf(stderr, "hwloc/darwin/cpukinds: got more than one character in cluster-type data %c%c...\n",
++        //          u8_values[0], u8_values[1]);
+-        if (HWLOC_SHOW_ALL_ERRORS())
+-          fprintf(stderr, "hwloc/darwin/cpukinds: got more than one character in cluster-type data %c%c...\n",
+-                  u8_values[0], u8_values[1]);
+         CFRelease(ref);
+         continue;
+       }
+@@ -246,14 +246,14 @@
+     /* get compatible */
+     ref = IORegistryEntrySearchCFProperty(cpus_child, DT_PLANE, CFSTR("compatible"), kCFAllocatorDefault, kNilOptions);
+     if (!ref) {
++      //if (HWLOC_SHOW_ALL_ERRORS())
++      //  fprintf(stderr, "hwloc/darwin/cpukinds: failed to find compatible\n");
+-      if (HWLOC_SHOW_ALL_ERRORS())
+-        fprintf(stderr, "hwloc/darwin/cpukinds: failed to find compatible\n");
+       continue;
+     }
+     if (CFGetTypeID(ref) != CFDataGetTypeID()) {
++      // if (HWLOC_SHOW_ALL_ERRORS())
++      //  fprintf(stderr, "hwloc/darwin/cpukinds: unexpected `compatible' CF type %s\n",
++      //          CFStringGetCStringPtr(CFCopyTypeIDDescription(CFGetTypeID(ref)), kCFStringEncodingUTF8));
+-      if (HWLOC_SHOW_ALL_ERRORS())
+-        fprintf(stderr, "hwloc/darwin/cpukinds: unexpected `compatible' CF type %s\n",
+-                CFStringGetCStringPtr(CFCopyTypeIDDescription(CFGetTypeID(ref)), kCFStringEncodingUTF8));
+       CFRelease(ref);
+       continue;
+     }
+@@ -269,8 +269,8 @@
+         if (!compatible[i] && compatible[i+1])
+           compatible[i] = ';';
+       if (!compatible[0]) {
++        // if (HWLOC_SHOW_ALL_ERRORS())
++        //  fprintf(stderr, "hwloc/darwin/cpukinds: compatible is empty\n");
+-        if (HWLOC_SHOW_ALL_ERRORS())
+-          fprintf(stderr, "hwloc/darwin/cpukinds: compatible is empty\n");
+         CFRelease(ref);
+         continue;
+       }
+@@ -301,9 +301,9 @@
+       kinds->kinds[i].perflevel = 0;
+     } else {
+       *matched_perflevels = 0;
++      // if (HWLOC_SHOW_ALL_ERRORS())
++      //  fprintf(stderr, "hwloc/darwin/cpukinds: unrecognized cluster type %c compatible %s, cannot match perflevels\n",
++      //          kinds->kinds[i].cluster_type, kinds->kinds[i].compatible);
+-      if (HWLOC_SHOW_ALL_ERRORS())
+-        fprintf(stderr, "hwloc/darwin/cpukinds: unrecognized cluster type %c compatible %s, cannot match perflevels\n",
+-                kinds->kinds[i].cluster_type, kinds->kinds[i].compatible);
+     }
+   }
+ 
+@@ -494,9 +494,9 @@
+        */
+       size_t s;
+       snprintf(name, sizeof(name), "hw.perflevel%u.l2perflevels", level);
++      // if (!sysctlbyname(name, NULL, &s, NULL, 0))
++      //  if (HWLOC_SHOW_ALL_ERRORS())
++      //    fprintf(stderr, "hwloc/darwin: key %s succeeded size %lu, please report to hwloc developers.\n", name, (unsigned long) s);
+-      if (!sysctlbyname(name, NULL, &s, NULL, 0))
+-        if (HWLOC_SHOW_ALL_ERRORS())
+-          fprintf(stderr, "hwloc/darwin: key %s succeeded size %lu, please report to hwloc developers.\n", name, (unsigned long) s);
+     }
+ 
+     /* assume PUs are contigous for now. */
+@@ -525,9 +525,9 @@
+        */
+       size_t s;
+       snprintf(name, sizeof(name), "hw.perflevel%u.l3perflevels", level);
++      // if (!sysctlbyname(name, NULL, &s, NULL, 0))
++      //  if (HWLOC_SHOW_ALL_ERRORS())
++      //    fprintf(stderr, "hwloc/darwin: key %s succeeded size %lu, please report to hwloc developers.\n", name, (unsigned long) s);
+-      if (!sysctlbyname(name, NULL, &s, NULL, 0))
+-        if (HWLOC_SHOW_ALL_ERRORS())
+-          fprintf(stderr, "hwloc/darwin: key %s succeeded size %lu, please report to hwloc developers.\n", name, (unsigned long) s);
+     }
+ 
+     hwloc__darwin_build_perflevel_cache_level(topology, cpuset, cpus, HWLOC_OBJ_L3CACHE, 3, size, linesize);
+--- hwloc/hwloc/topology-levelzero.c
++++ hwloc.orig/hwloc/topology-levelzero.c
+@@ -90,8 +90,8 @@
+     case ZE_DEVICE_TYPE_MCA: type = "MCA"; break;
+     case ZE_DEVICE_TYPE_VPU: type = "VPU"; break;
+     default:
++      // if (HWLOC_SHOW_ALL_ERRORS())
++      //  fprintf(stderr, "hwloc/levelzero: unexpected device type %u\n", (unsigned) prop.type);
+-      if (HWLOC_SHOW_ALL_ERRORS())
+-        fprintf(stderr, "hwloc/levelzero: unexpected device type %u\n", (unsigned) prop.type);
+       type = "Unknown";
+     }
+     hwloc_obj_add_info(osdev, "LevelZeroDeviceType", type);
+@@ -140,10 +140,10 @@
+   } else {
+     static int warned = 0;
+     if (!warned) {
++      // if (sysman_maybe_missing == 1 && HWLOC_SHOW_ALL_ERRORS())
++      //  fprintf(stderr, "hwloc/levelzero: zesDeviceGetProperties() failed (ZES_ENABLE_SYSMAN=1 set too late?).\n");
++      // else if (sysman_maybe_missing == 2 && HWLOC_SHOW_ALL_ERRORS())
++      //  fprintf(stderr, "hwloc/levelzero: zesDeviceGetProperties() failed (ZES_ENABLE_SYSMAN=0).\n");
+-      if (sysman_maybe_missing == 1 && HWLOC_SHOW_ALL_ERRORS())
+-        fprintf(stderr, "hwloc/levelzero: zesDeviceGetProperties() failed (ZES_ENABLE_SYSMAN=1 set too late?).\n");
+-      else if (sysman_maybe_missing == 2 && HWLOC_SHOW_ALL_ERRORS())
+-        fprintf(stderr, "hwloc/levelzero: zesDeviceGetProperties() failed (ZES_ENABLE_SYSMAN=0).\n");
+       warned = 1;
+     }
+     /* continue in degraded mode, we'll miss locality and some attributes */
+@@ -227,8 +227,8 @@
+ 
+           if (mprop.onSubdevice) {
+             if (mprop.subdeviceId >= nr_osdevs || !nr_osdevs || !sub_osdevs) {
++              // if (HWLOC_SHOW_ALL_ERRORS())
++              //  fprintf(stderr, "hwloc/levelzero: memory module #%u on unexpected subdeviceId #%u\n", m, mprop.subdeviceId);
+-              if (HWLOC_SHOW_ALL_ERRORS())
+-                fprintf(stderr, "hwloc/levelzero: memory module #%u on unexpected subdeviceId #%u\n", m, mprop.subdeviceId);
+               osdev = NULL; /* we'll ignore it but we'll still agregate its subdevice memories into totalHBM/DDRkB */
+             } else {
+               osdev = sub_osdevs[mprop.subdeviceId];
+@@ -639,9 +639,9 @@
+ 
+   res = zeInit(0);
+   if (res != ZE_RESULT_SUCCESS) {
++    //if (HWLOC_SHOW_ALL_ERRORS()) {
++    //  fprintf(stderr, "hwloc/levelzero: Failed to initialize in zeInit(): 0x%x\n", (unsigned)res);
++    //}
+-    if (HWLOC_SHOW_ALL_ERRORS()) {
+-      fprintf(stderr, "hwloc/levelzero: Failed to initialize in zeInit(): 0x%x\n", (unsigned)res);
+-    }
+     return 0;
+   }
+ 
+--- hwloc/hwloc/topology-linux.c
++++ hwloc.orig/hwloc/topology-linux.c
+@@ -2784,36 +2784,36 @@
+     return 0;
+ 
+   if (nbnodes != 2 && nbnodes != 4 && nbnodes != 8) {
++    // if (HWLOC_SHOW_CRITICAL_ERRORS())
++    //  fprintf(stderr, "hwloc/linux: Ignoring KNL NUMA quirk, nbnodes (%u) isn't 2, 4 or 8.\n", nbnodes);
+-    if (HWLOC_SHOW_CRITICAL_ERRORS())
+-      fprintf(stderr, "hwloc/linux: Ignoring KNL NUMA quirk, nbnodes (%u) isn't 2, 4 or 8.\n", nbnodes);
+     return -1;
+   }
+ 
+   if (!distances) {
++    // if (HWLOC_SHOW_CRITICAL_ERRORS())
++    //  fprintf(stderr, "hwloc/linux: Ignoring KNL NUMA quirk, distance matrix missing.\n");
+-    if (HWLOC_SHOW_CRITICAL_ERRORS())
+-      fprintf(stderr, "hwloc/linux: Ignoring KNL NUMA quirk, distance matrix missing.\n");
+     return -1;
+   }
+ 
+   for(i=0; i<nbnodes; i++) {
+     /* check we have 10 on the diagonal */
+     if (distances[i*nbnodes+i] != 10) {
++      // if (HWLOC_SHOW_CRITICAL_ERRORS())
++      //  fprintf(stderr, "hwloc/linux: hwloc/linux: Ignoring KNL NUMA quirk, distance matrix does not contain 10 on the diagonal.\n");
+-      if (HWLOC_SHOW_CRITICAL_ERRORS())
+-        fprintf(stderr, "hwloc/linux: hwloc/linux: Ignoring KNL NUMA quirk, distance matrix does not contain 10 on the diagonal.\n");
+       return -1;
+     }
+     for(j=i+1; j<nbnodes; j++) {
+       uint64_t distance = distances[i*nbnodes+j];
+       /* check things are symmetric */
+       if (distance != distances[i+j*nbnodes]) {
++        // if (HWLOC_SHOW_CRITICAL_ERRORS())
++        //  fprintf(stderr, "hwloc/linux: Ignoring KNL NUMA quirk, distance matrix isn't symmetric.\n");
+-        if (HWLOC_SHOW_CRITICAL_ERRORS())
+-          fprintf(stderr, "hwloc/linux: Ignoring KNL NUMA quirk, distance matrix isn't symmetric.\n");
+ 	return -1;
+       }
+       /* check everything outside the diagonal is > 10 */
+       if (distance <= 10) {
++        // if (HWLOC_SHOW_CRITICAL_ERRORS())
++        //  fprintf(stderr, "hwloc/linux: Ignoring KNL NUMA quirk, distance matrix contains values <= 10.\n");
+-        if (HWLOC_SHOW_CRITICAL_ERRORS())
+-          fprintf(stderr, "hwloc/linux: Ignoring KNL NUMA quirk, distance matrix contains values <= 10.\n");
+ 	return -1;
+       }
+       /* did we already see this value? */
+@@ -2825,8 +2825,8 @@
+       if (k == summary->nb_values) {
+ 	/* add a new value */
+ 	if (k == 4) {
++          // if (HWLOC_SHOW_CRITICAL_ERRORS())
++          //  fprintf(stderr, "hwloc/linux: Ignoring KNL NUMA quirk, distance matrix contains more than 4 different values.\n");
+-          if (HWLOC_SHOW_CRITICAL_ERRORS())
+-            fprintf(stderr, "hwloc/linux: Ignoring KNL NUMA quirk, distance matrix contains more than 4 different values.\n");
+ 	  return -1;
+ 	}
+ 	summary->values[k].value = distance;
+@@ -2840,25 +2840,25 @@
+ 
+   if (nbnodes == 2) {
+     if (summary->nb_values != 2) {
++      // if (HWLOC_SHOW_CRITICAL_ERRORS())
++        // fprintf(stderr, "hwloc/linux: Ignoring KNL NUMA quirk, distance matrix for 2 nodes cannot contain %u different values instead of 2.\n",
++        //        summary->nb_values);
+-      if (HWLOC_SHOW_CRITICAL_ERRORS())
+-        fprintf(stderr, "hwloc/linux: Ignoring KNL NUMA quirk, distance matrix for 2 nodes cannot contain %u different values instead of 2.\n",
+-                summary->nb_values);
+       return -1;
+     }
+ 
+   } else if (nbnodes == 4) {
+     if (summary->nb_values != 2 && summary->nb_values != 4) {
++      //if (HWLOC_SHOW_CRITICAL_ERRORS())
++        // fprintf(stderr, "hwloc/linux: Ignoring KNL NUMA quirk, distance matrix for 8 nodes cannot contain %u different values instead of 2 or 4.\n",
++        //        summary->nb_values);
+-      if (HWLOC_SHOW_CRITICAL_ERRORS())
+-        fprintf(stderr, "hwloc/linux: Ignoring KNL NUMA quirk, distance matrix for 8 nodes cannot contain %u different values instead of 2 or 4.\n",
+-                summary->nb_values);
+       return -1;
+     }
+ 
+   } else if (nbnodes == 8) {
+     if (summary->nb_values != 4) {
++      // if (HWLOC_SHOW_CRITICAL_ERRORS())
++      //  fprintf(stderr, "hwloc/linux: Ignoring KNL NUMA quirk, distance matrix for 8 nodes cannot contain %u different values instead of 4.\n",
++      //          summary->nb_values);
+-      if (HWLOC_SHOW_CRITICAL_ERRORS())
+-        fprintf(stderr, "hwloc/linux: Ignoring KNL NUMA quirk, distance matrix for 8 nodes cannot contain %u different values instead of 4.\n",
+-                summary->nb_values);
+       return -1;
+     }
+ 
+@@ -3032,7 +3032,7 @@
+ 
+   /* file must start with version information */
+   if (sscanf(data_beg, "version: %d", &version) != 1) {
++  //  fprintf(stderr, "hwloc/linux/hwdata: Invalid knl_memoryside_cache header, expected \"version: <int>\".\n");
+-    fprintf(stderr, "hwloc/linux/hwdata: Invalid knl_memoryside_cache header, expected \"version: <int>\".\n");
+     return -1;
+   }
+ 
+@@ -3388,16 +3388,16 @@
+       && strcmp(hwdata.cluster_mode, "Quadrant")
+       && strcmp(hwdata.cluster_mode, "SNC2")
+       && strcmp(hwdata.cluster_mode, "SNC4")) {
++    //if (HWLOC_SHOW_CRITICAL_ERRORS())
++    //  fprintf(stderr, "hwloc/linux: Failed to find a usable KNL cluster mode (%s)\n", hwdata.cluster_mode);
+-    if (HWLOC_SHOW_CRITICAL_ERRORS())
+-      fprintf(stderr, "hwloc/linux: Failed to find a usable KNL cluster mode (%s)\n", hwdata.cluster_mode);
+     goto error;
+   }
+   if (strcmp(hwdata.memory_mode, "Cache")
+       && strcmp(hwdata.memory_mode, "Flat")
+       && strcmp(hwdata.memory_mode, "Hybrid25")
+       && strcmp(hwdata.memory_mode, "Hybrid50")) {
++    // if (HWLOC_SHOW_CRITICAL_ERRORS())
++    //  fprintf(stderr, "hwloc/linux: Failed to find a usable KNL memory mode (%s)\n", hwdata.memory_mode);
+-    if (HWLOC_SHOW_CRITICAL_ERRORS())
+-      fprintf(stderr, "hwloc/linux: Failed to find a usable KNL memory mode (%s)\n", hwdata.memory_mode);
+     goto error;
+   }
+ 
+@@ -3418,8 +3418,8 @@
+     if (!strcmp(hwdata.memory_mode, "Cache")) {
+       /* Quadrant-Cache */
+       if (nbnodes != 1) {
++        // if (HWLOC_SHOW_CRITICAL_ERRORS())
++        //  fprintf(stderr, "hwloc/linux: Found %u NUMA nodes instead of 1 in mode %s-%s\n", nbnodes, hwdata.cluster_mode, hwdata.memory_mode);
+-        if (HWLOC_SHOW_CRITICAL_ERRORS())
+-          fprintf(stderr, "hwloc/linux: Found %u NUMA nodes instead of 1 in mode %s-%s\n", nbnodes, hwdata.cluster_mode, hwdata.memory_mode);
+ 	goto error;
+       }
+       hwloc_linux_knl_add_cluster(topology, nodes[0], NULL, &hwdata, mscache_as_l3, 1, failednodes);
+@@ -3427,8 +3427,8 @@
+     } else {
+       /* Quadrant-Flat/Hybrid */
+       if (nbnodes != 2) {
++        // if (HWLOC_SHOW_CRITICAL_ERRORS())
++        //  fprintf(stderr, "hwloc/linux: Found %u NUMA nodes instead of 2 in mode %s-%s\n", nbnodes, hwdata.cluster_mode, hwdata.memory_mode);
+-        if (HWLOC_SHOW_CRITICAL_ERRORS())
+-          fprintf(stderr, "hwloc/linux: Found %u NUMA nodes instead of 2 in mode %s-%s\n", nbnodes, hwdata.cluster_mode, hwdata.memory_mode);
+ 	goto error;
+       }
+       if (!strcmp(hwdata.memory_mode, "Flat"))
+@@ -3440,8 +3440,8 @@
+     if (!strcmp(hwdata.memory_mode, "Cache")) {
+       /* SNC2-Cache */
+       if (nbnodes != 2) {
++        // if (HWLOC_SHOW_CRITICAL_ERRORS())
++        //  fprintf(stderr, "hwloc/linux: Found %u NUMA nodes instead of 2 in mode %s-%s\n", nbnodes, hwdata.cluster_mode, hwdata.memory_mode);
+-        if (HWLOC_SHOW_CRITICAL_ERRORS())
+-          fprintf(stderr, "hwloc/linux: Found %u NUMA nodes instead of 2 in mode %s-%s\n", nbnodes, hwdata.cluster_mode, hwdata.memory_mode);
+ 	goto error;
+       }
+       hwloc_linux_knl_add_cluster(topology, nodes[0], NULL, &hwdata, mscache_as_l3, 2, failednodes);
+@@ -3451,13 +3451,13 @@
+       /* SNC2-Flat/Hybrid */
+       unsigned ddr[2], mcdram[2];
+       if (nbnodes != 4) {
++        // if (HWLOC_SHOW_CRITICAL_ERRORS())
++        //  fprintf(stderr, "hwloc/linux: Found %u NUMA nodes instead of 2 in mode %s-%s\n", nbnodes, hwdata.cluster_mode, hwdata.memory_mode);
+-        if (HWLOC_SHOW_CRITICAL_ERRORS())
+-          fprintf(stderr, "hwloc/linux: Found %u NUMA nodes instead of 2 in mode %s-%s\n", nbnodes, hwdata.cluster_mode, hwdata.memory_mode);
+ 	goto error;
+       }
+       if (hwloc_linux_knl_identify_4nodes(distances, &dist, ddr, mcdram) < 0) {
++        //if (HWLOC_SHOW_CRITICAL_ERRORS())
++        //  fprintf(stderr, "Uhwloc/linux: nexpected distance layout for mode %s-%s\n", hwdata.cluster_mode, hwdata.memory_mode);
+-        if (HWLOC_SHOW_CRITICAL_ERRORS())
+-          fprintf(stderr, "Uhwloc/linux: nexpected distance layout for mode %s-%s\n", hwdata.cluster_mode, hwdata.memory_mode);
+ 	goto error;
+       }
+       if (!strcmp(hwdata.memory_mode, "Flat"))
+@@ -3470,8 +3470,8 @@
+     if (!strcmp(hwdata.memory_mode, "Cache")) {
+       /* SNC4-Cache */
+       if (nbnodes != 4) {
++        //if (HWLOC_SHOW_CRITICAL_ERRORS())
++        //  fprintf(stderr, "hwloc/linux: Found %u NUMA nodes instead of 4 in mode %s-%s\n", nbnodes, hwdata.cluster_mode, hwdata.memory_mode);
+-        if (HWLOC_SHOW_CRITICAL_ERRORS())
+-          fprintf(stderr, "hwloc/linux: Found %u NUMA nodes instead of 4 in mode %s-%s\n", nbnodes, hwdata.cluster_mode, hwdata.memory_mode);
+ 	goto error;
+       }
+       hwloc_linux_knl_add_cluster(topology, nodes[0], NULL, &hwdata, mscache_as_l3, 4, failednodes);
+@@ -3483,13 +3483,13 @@
+       /* SNC4-Flat/Hybrid */
+       unsigned ddr[4], mcdram[4];
+       if (nbnodes != 8) {
++        // if (HWLOC_SHOW_CRITICAL_ERRORS())
++        //  fprintf(stderr, "hwloc/linux: Found %u NUMA nodes instead of 2 in mode %s-%s\n", nbnodes, hwdata.cluster_mode, hwdata.memory_mode);
+-        if (HWLOC_SHOW_CRITICAL_ERRORS())
+-          fprintf(stderr, "hwloc/linux: Found %u NUMA nodes instead of 2 in mode %s-%s\n", nbnodes, hwdata.cluster_mode, hwdata.memory_mode);
+ 	goto error;
+       }
+       if (hwloc_linux_knl_identify_8nodes(distances, &dist, ddr, mcdram) < 0) {
++        // if (HWLOC_SHOW_CRITICAL_ERRORS())
++        //  fprintf(stderr, "hwloc/linux: Unexpected distance layout for mode %s-%s\n", hwdata.cluster_mode, hwdata.memory_mode);
+-        if (HWLOC_SHOW_CRITICAL_ERRORS())
+-          fprintf(stderr, "hwloc/linux: Unexpected distance layout for mode %s-%s\n", hwdata.cluster_mode, hwdata.memory_mode);
+ 	goto error;
+       }
+       if (!strcmp(hwdata.memory_mode, "Flat"))
+@@ -3875,8 +3875,8 @@
+     char *sn, *tn;
+     hwloc_bitmap_asprintf(&sn, nodeset);
+     hwloc_bitmap_asprintf(&tn, topology->levels[0][0]->nodeset);
++    // if (HWLOC_SHOW_CRITICAL_ERRORS())
++    //  fprintf(stderr, "hwloc/linux: ignoring nodes because nodeset %s doesn't match existing nodeset %s.\n", tn, sn);
+-    if (HWLOC_SHOW_CRITICAL_ERRORS())
+-      fprintf(stderr, "hwloc/linux: ignoring nodes because nodeset %s doesn't match existing nodeset %s.\n", tn, sn);
+     free(sn);
+     free(tn);
+     hwloc_bitmap_free(nodeset);
+@@ -4045,8 +4045,8 @@
+ 	failednodes++;
+ 	continue;
+       }
++      // if (HWLOC_SHOW_CRITICAL_ERRORS())
++      //  fprintf(stderr, "hwloc/linux: node P#%u cpuset intersects with previous nodes, forcing its acceptance\n", osnode);
+-      if (HWLOC_SHOW_CRITICAL_ERRORS())
+-        fprintf(stderr, "hwloc/linux: node P#%u cpuset intersects with previous nodes, forcing its acceptance\n", osnode);
+     }
+     hwloc_bitmap_or(nodes_cpuset, nodes_cpuset, cpuset);
+ 
+@@ -5577,8 +5577,8 @@
+   hwloc_debug("Found sysfs cpu files under /sys/devices/system/cpu with %s topology filenames\n",
+ 	      old_siblings_filenames ? "old" : "new");
+   if (err < 0) {
++    // if (HWLOC_SHOW_CRITICAL_ERRORS())
++    //  fprintf(stderr, "hwloc/linux: failed to find sysfs cpu topology directory, aborting linux discovery.\n");
+-    if (HWLOC_SHOW_CRITICAL_ERRORS())
+-      fprintf(stderr, "hwloc/linux: failed to find sysfs cpu topology directory, aborting linux discovery.\n");
+     return -1;
+   }
+ 
+@@ -6796,9 +6796,9 @@
+     }
+     /* couldn't read a single full string from that buffer, we're screwed */
+     if (!boff) {
++      // if (HWLOC_SHOW_CRITICAL_ERRORS())
++        // fprintf(stderr, "hwloc/linux: hwloc could read a DMI firmware entry #%u in %s\n",
++        //        i, path);
+-      if (HWLOC_SHOW_CRITICAL_ERRORS())
+-        fprintf(stderr, "hwloc/linux: hwloc could read a DMI firmware entry #%u in %s\n",
+-                i, path);
+       break;
+     }
+     /* reread buffer after previous string */
+@@ -6914,8 +6914,8 @@
+ #ifndef HWLOC_HAVE_32BITS_PCI_DOMAIN
+     if (domain > 0xffff) {
+       static int warned = 0;
++    //  if (!warned && HWLOC_SHOW_ALL_ERRORS())
++	// fprintf(stderr, "hwloc/linux: Ignoring PCI device with non-16bit domain.\nPass --enable-32bits-pci-domain to configure to support such devices\n(warning: it would break the library ABI, don't enable unless really needed).\n");
+-      if (!warned && HWLOC_SHOW_ALL_ERRORS())
+-	fprintf(stderr, "hwloc/linux: Ignoring PCI device with non-16bit domain.\nPass --enable-32bits-pci-domain to configure to support such devices\n(warning: it would break the library ABI, don't enable unless really needed).\n");
+       warned = 1;
+       continue;
+     }
+@@ -7254,8 +7254,8 @@
+       goto out_with_data;
+     }
+ #else
++    // if (HWLOC_SHOW_CRITICAL_ERRORS())
++    //  fprintf(stderr, "hwloc/linux: Cannot change fsroot without openat() support.\n");
+-    if (HWLOC_SHOW_CRITICAL_ERRORS())
+-      fprintf(stderr, "hwloc/linux: Cannot change fsroot without openat() support.\n");
+     errno = ENOSYS;
+     goto out_with_data;
+ #endif
+--- hwloc/hwloc/topology-nvml.c
++++ hwloc.orig/hwloc/topology-nvml.c
+@@ -41,9 +41,9 @@
+     /* we need PCI devices to be filtered-in */
+     if (pfilter != HWLOC_TYPE_FILTER_KEEP_NONE) {
+       static int warned = 0;
++      // if (!warned && HWLOC_SHOW_ALL_ERRORS())
++        // fprintf(stderr, "hwloc/nvml: failed to find NVLink peer %04x:%02x:%02x\n",
++        //        peer_bdf.domain, peer_bdf.bus, peer_bdf.device);
+-      if (!warned && HWLOC_SHOW_ALL_ERRORS())
+-        fprintf(stderr, "hwloc/nvml: failed to find NVLink peer %04x:%02x:%02x\n",
+-                peer_bdf.domain, peer_bdf.bus, peer_bdf.device);
+       warned = 1;
+     } else {
+       static int warned = 0;
+@@ -89,10 +89,10 @@
+   }
+   default: {
+     static int warned = 0;
++    // if (!warned && HWLOC_SHOW_ALL_ERRORS())
++    //  fprintf(stderr, "hwloc/nvml: failed to recognize NVLink peer %04x:%02x:%02x class %04x vendor %04x device %04x\n",
++    //          peer_bdf.domain, peer_bdf.bus, peer_bdf.device,
++    //          obj->attr->pcidev.class_id, obj->attr->pcidev.vendor_id, obj->attr->pcidev.device_id);
+-    if (!warned && HWLOC_SHOW_ALL_ERRORS())
+-      fprintf(stderr, "hwloc/nvml: failed to recognize NVLink peer %04x:%02x:%02x class %04x vendor %04x device %04x\n",
+-              peer_bdf.domain, peer_bdf.bus, peer_bdf.device,
+-              obj->attr->pcidev.class_id, obj->attr->pcidev.vendor_id, obj->attr->pcidev.device_id);
+     warned = 1;
+     return NULL;
+   }
+@@ -177,10 +177,10 @@
+ 
+   ret = nvmlInit();
+   if (NVML_SUCCESS != ret) {
++    //if (HWLOC_SHOW_ALL_ERRORS()) {
++    //  const char *error = nvmlErrorString(ret);
++    //  fprintf(stderr, "hwloc/nvml: Failed to initialize with nvmlInit(): %s\n", error);
++    //}
+-    if (HWLOC_SHOW_ALL_ERRORS()) {
+-      const char *error = nvmlErrorString(ret);
+-      fprintf(stderr, "hwloc/nvml: Failed to initialize with nvmlInit(): %s\n", error);
+-    }
+     return -1;
+   }
+   ret = nvmlDeviceGetCount(&nb);
+@@ -366,8 +366,8 @@
+           bw = 25000; /* multiple links may connect same GPUs */
+         } else {
+           static int warned = 0;
++          // if (!warned && HWLOC_SHOW_ALL_ERRORS())
++          //  fprintf(stderr, "hwloc/nvml: Failed to recognize NVLink version %u\n", version);
+-          if (!warned && HWLOC_SHOW_ALL_ERRORS())
+-            fprintf(stderr, "hwloc/nvml: Failed to recognize NVLink version %u\n", version);
+           warned = 1;
+           continue;
+         }
+--- hwloc/hwloc/topology-opencl.c
++++ hwloc.orig/hwloc/topology-opencl.c
+@@ -61,9 +61,9 @@
+ 
+   clret = clGetPlatformIDs(0, NULL, &nr_platforms);
+   if (CL_SUCCESS != clret || !nr_platforms) {
++    // if (CL_SUCCESS != clret && HWLOC_CL_PLATFORM_NOT_FOUND_KHR != clret && HWLOC_SHOW_ALL_ERRORS()) {
++    //  fprintf(stderr, "hwloc/opencl: Failed to get number of platforms with clGetPlatformIDs(): %d\n", clret);
++    // }
+-    if (CL_SUCCESS != clret && HWLOC_CL_PLATFORM_NOT_FOUND_KHR != clret && HWLOC_SHOW_ALL_ERRORS()) {
+-      fprintf(stderr, "hwloc/opencl: Failed to get number of platforms with clGetPlatformIDs(): %d\n", clret);
+-    }
+     return -1;
+   }
+   hwloc_debug("%u OpenCL platforms\n", nr_platforms);
+--- hwloc/hwloc/topology-pci.c
++++ hwloc.orig/hwloc/topology-pci.c
+@@ -175,9 +175,9 @@
+   ret = pci_system_init();
+   if (ret) {
+     HWLOC_PCIACCESS_UNLOCK();
++    // if (HWLOC_SHOW_ALL_ERRORS())
++      // fprintf(stderr, "hwloc/pci: Failed to initialize libpciaccess with pci_system_init(): %d (%s)\n",
++      //        ret, strerror(errno));
+-    if (HWLOC_SHOW_ALL_ERRORS())
+-      fprintf(stderr, "hwloc/pci: Failed to initialize libpciaccess with pci_system_init(): %d (%s)\n",
+-              ret, strerror(errno));
+     return -1;
+   }
+ 
+@@ -205,8 +205,8 @@
+ #ifndef HWLOC_HAVE_32BITS_PCI_DOMAIN
+     if (domain > 0xffff) {
+       static int warned = 0;
++    //  if (!warned && HWLOC_SHOW_ALL_ERRORS())
++	// fprintf(stderr, "hwloc/pci: Ignoring PCI device with non-16bit domain.\nPass --enable-32bits-pci-domain to configure to support such devices\n(warning: it would break the library ABI, don't enable unless really needed).\n");
+-      if (!warned && HWLOC_SHOW_ALL_ERRORS())
+-	fprintf(stderr, "hwloc/pci: Ignoring PCI device with non-16bit domain.\nPass --enable-32bits-pci-domain to configure to support such devices\n(warning: it would break the library ABI, don't enable unless really needed).\n");
+       warned = 1;
+       continue;
+     }
+--- hwloc/hwloc/topology-rsmi.c
++++ hwloc.orig/hwloc/topology-rsmi.c
+@@ -91,11 +91,11 @@
+   rsmi_status_t rsmi_rc = rsmi_dev_name_get(dv_ind, device_name, size);
+ 
+   if (rsmi_rc != RSMI_STATUS_SUCCESS) {
++    // if (HWLOC_SHOW_ALL_ERRORS()) {
++    //  const char *status_string;
++    //  rsmi_rc = rsmi_status_string(rsmi_rc, &status_string);
++      // fprintf(stderr, "hwloc/rsmi: GPU(%u): Failed to get name: %s\n", (unsigned)dv_ind, status_string);
++    //}
+-    if (HWLOC_SHOW_ALL_ERRORS()) {
+-      const char *status_string;
+-      rsmi_rc = rsmi_status_string(rsmi_rc, &status_string);
+-      fprintf(stderr, "hwloc/rsmi: GPU(%u): Failed to get name: %s\n", (unsigned)dv_ind, status_string);
+-    }
+     return -1;
+   }
+   return 0;
+@@ -112,11 +112,11 @@
+   rsmi_status_t rsmi_rc = rsmi_dev_pci_id_get(dv_ind, bdfid);
+ 
+   if (rsmi_rc != RSMI_STATUS_SUCCESS) {
++    // if (HWLOC_SHOW_ALL_ERRORS()) {
++    //  const char *status_string;
++    //  rsmi_rc = rsmi_status_string(rsmi_rc, &status_string);
++    //  fprintf(stderr, "hwloc/rsmi: GPU(%u): Failed to get PCI Info: %s\n", (unsigned)dv_ind, status_string);
++    //}
+-    if (HWLOC_SHOW_ALL_ERRORS()) {
+-      const char *status_string;
+-      rsmi_rc = rsmi_status_string(rsmi_rc, &status_string);
+-      fprintf(stderr, "hwloc/rsmi: GPU(%u): Failed to get PCI Info: %s\n", (unsigned)dv_ind, status_string);
+-    }
+     return -1;
+   }
+   return 0;
+@@ -160,7 +160,7 @@
+   if (rsmi_rc != RSMI_STATUS_SUCCESS) {
+     return -1;
+   }
++  snprintf(buffer, sizeof(id), "%llx", (unsigned long long) id);
+-  sprintf(buffer, "%llx", (unsigned long long) id);
+   return 0;
+ }
+ 
+@@ -193,14 +193,14 @@
+   rsmi_status_t rsmi_rc = rsmi_dev_xgmi_hive_id_get(dv_ind, &hive_id);
+ 
+   if (rsmi_rc != RSMI_STATUS_SUCCESS) {
++    // if (HWLOC_SHOW_ALL_ERRORS()) {
++    //  const char *status_string;
++    //  rsmi_rc = rsmi_status_string(rsmi_rc, &status_string);
++    //  fprintf(stderr, "hwloc/rsmi: GPU(%u): Failed to get hive id: %s\n", (unsigned)dv_ind, status_string);
++    // }
+-    if (HWLOC_SHOW_ALL_ERRORS()) {
+-      const char *status_string;
+-      rsmi_rc = rsmi_status_string(rsmi_rc, &status_string);
+-      fprintf(stderr, "hwloc/rsmi: GPU(%u): Failed to get hive id: %s\n", (unsigned)dv_ind, status_string);
+-    }
+     return -1;
+   }
++  snprintf(buffer, sizeof(hive_id), "%llx", (unsigned long long) hive_id);
+-  sprintf(buffer, "%llx", (unsigned long long) hive_id);
+   return 0;
+ }
+ 
+@@ -218,11 +218,11 @@
+                                                   hops, type);
+ 
+   if (rsmi_rc != RSMI_STATUS_SUCCESS) {
++    // if (HWLOC_SHOW_ALL_ERRORS()) {
++    //  const char *status_string;
++    //  rsmi_rc = rsmi_status_string(rsmi_rc, &status_string);
++    //  fprintf(stderr, "hwloc/rsmi: GPU(%u): Failed to get link type: %s\n", (unsigned)dv_ind_src, status_string);
++    //}
+-    if (HWLOC_SHOW_ALL_ERRORS()) {
+-      const char *status_string;
+-      rsmi_rc = rsmi_status_string(rsmi_rc, &status_string);
+-      fprintf(stderr, "hwloc/rsmi: GPU(%u): Failed to get link type: %s\n", (unsigned)dv_ind_src, status_string);
+-    }
+     return -1;
+   }
+   return 0;
+@@ -256,11 +256,11 @@
+ 
+   ret = rsmi_init(0);
+   if (RSMI_STATUS_SUCCESS != ret) {
++    // if (HWLOC_SHOW_ALL_ERRORS()) {
++    //  const char *status_string;
++    //  rsmi_status_string(ret, &status_string);
++    //  fprintf(stderr, "hwloc/rsmi: Failed to initialize with rsmi_init(): %s\n", status_string);
++    //}
+-    if (HWLOC_SHOW_ALL_ERRORS()) {
+-      const char *status_string;
+-      rsmi_status_string(ret, &status_string);
+-      fprintf(stderr, "hwloc/rsmi: Failed to initialize with rsmi_init(): %s\n", status_string);
+-    }
+     return 0;
+   }
+ 
+@@ -268,11 +268,11 @@
+ 
+   ret = rsmi_num_monitor_devices(&nb);
+   if (RSMI_STATUS_SUCCESS != ret || !nb) {
++    // if (RSMI_STATUS_SUCCESS != ret && HWLOC_SHOW_ALL_ERRORS()) {
++    //  const char *status_string;
++    //  rsmi_status_string(ret, &status_string);
++    //  fprintf(stderr, "hwloc/rsmi: Failed to get number of devices with rsmi_num_monitor_devices(): %s\n", status_string);
++    //}
+-    if (RSMI_STATUS_SUCCESS != ret && HWLOC_SHOW_ALL_ERRORS()) {
+-      const char *status_string;
+-      rsmi_status_string(ret, &status_string);
+-      fprintf(stderr, "hwloc/rsmi: Failed to get number of devices with rsmi_num_monitor_devices(): %s\n", status_string);
+-    }
+     goto out;
+   }
+ 
+--- hwloc/hwloc/topology-solaris.c
++++ hwloc.orig/hwloc/topology-solaris.c
+@@ -642,8 +642,8 @@
+ 
+       if (kstat_read(kc, ksp, NULL) == -1)
+ 	{
++          // if (HWLOC_SHOW_CRITICAL_ERRORS())
++          //  fprintf(stderr, "hwloc/solaris: kstat_read failed for CPU%u: %s\n", cpuid, strerror(errno));
+-          if (HWLOC_SHOW_CRITICAL_ERRORS())
+-            fprintf(stderr, "hwloc/solaris: kstat_read failed for CPU%u: %s\n", cpuid, strerror(errno));
+ 	  continue;
+ 	}
+ 
+@@ -701,8 +701,9 @@
+ 	if (!stat)
+ 	  {
+ 	    if (Lpkg_num) {
++            continue;
++              // if (HWLOC_SHOW_CRITICAL_ERRORS())
++              //  fprintf(stderr, "hwloc/solaris: could not read package id for CPU%u: %s\n", cpuid, strerror(errno));
+-              if (HWLOC_SHOW_CRITICAL_ERRORS())
+-                fprintf(stderr, "hwloc/solaris: could not read package id for CPU%u: %s\n", cpuid, strerror(errno));
+             } else {
+ 	      hwloc_debug("could not read package id for CPU%u: %s\n", cpuid, strerror(errno));
+             }
+@@ -725,8 +726,8 @@
+ 	    break;
+ #endif
+ 	  default:
++            // if (HWLOC_SHOW_CRITICAL_ERRORS())
++            //  fprintf(stderr, "hwloc/solaris: chip_id type %u unknown\n", (unsigned) stat->data_type);
+-            if (HWLOC_SHOW_CRITICAL_ERRORS())
+-              fprintf(stderr, "hwloc/solaris: chip_id type %u unknown\n", (unsigned) stat->data_type);
+ 	    look_chips = 0;
+ 	    continue;
+ 	}
+@@ -754,8 +755,9 @@
+ 	if (!stat)
+ 	  {
+ 	    if (Lcore_num) {
++            continue;
++              // if (HWLOC_SHOW_CRITICAL_ERRORS())
++              //  fprintf(stderr, "hwloc/solaris: could not read core id for CPU%u: %s\n", cpuid, strerror(errno));
+-              if (HWLOC_SHOW_CRITICAL_ERRORS())
+-                fprintf(stderr, "hwloc/solaris: could not read core id for CPU%u: %s\n", cpuid, strerror(errno));
+             } else {
+ 	      hwloc_debug("could not read core id for CPU%u: %s\n", cpuid, strerror(errno));
+             }
+@@ -778,8 +780,8 @@
+ 	    break;
+ #endif
+ 	  default:
++            // if (HWLOC_SHOW_CRITICAL_ERRORS())
++            //  fprintf(stderr, "hwloc/solaris: core_id type %u unknown\n", (unsigned) stat->data_type);
+-            if (HWLOC_SHOW_CRITICAL_ERRORS())
+-              fprintf(stderr, "hwloc/solaris: core_id type %u unknown\n", (unsigned) stat->data_type);
+ 	    look_cores = 0;
+ 	    continue;
+ 	}
+@@ -807,8 +809,8 @@
+ 
+     } else if (!strcmp("pg_hw_perf", ksp->ks_module)) {
+       if (kstat_read(kc, ksp, NULL) == -1) {
++        // if (HWLOC_SHOW_CRITICAL_ERRORS())
++         // fprintf(stderr, "hwloc/solaris: kstat_read failed for module %s name %s instance %d: %s\n", ksp->ks_module, ksp->ks_name, ksp->ks_instance, strerror(errno));
+-        if (HWLOC_SHOW_CRITICAL_ERRORS())
+-          fprintf(stderr, "hwloc/solaris: kstat_read failed for module %s name %s instance %d: %s\n", ksp->ks_module, ksp->ks_name, ksp->ks_instance, strerror(errno));
+ 	continue;
+       }
+       stat = (kstat_named_t *) kstat_data_lookup(ksp, (char *) "cpus");
+--- hwloc/hwloc/topology-synthetic.c
++++ hwloc.orig/hwloc/topology-synthetic.c
+@@ -83,8 +83,8 @@
+ 
+   array = calloc(total, sizeof(*array));
+   if (!array) {
++    // if (verbose)
++    //  fprintf(stderr, "Failed to allocate synthetic index array of size %lu\n", total);
+-    if (verbose)
+-      fprintf(stderr, "Failed to allocate synthetic index array of size %lu\n", total);
+     goto out;
+   }
+ 
+@@ -96,16 +96,16 @@
+       const char *next;
+       unsigned idx = strtoul(attr, (char **) &next, 10);
+       if (next == attr) {
++       // if (verbose)
++       //  fprintf(stderr, "Failed to read synthetic index #%lu at '%s'\n", (unsigned long) i, attr);
+-	if (verbose)
+-	  fprintf(stderr, "Failed to read synthetic index #%lu at '%s'\n", (unsigned long) i, attr);
+ 	goto out_with_array;
+       }
+ 
+       array[i] = idx;
+       if (i != total-1) {
+ 	if (*next != ',') {
++         // if (verbose)
++         //  fprintf(stderr, "Missing comma after synthetic index #%lu at '%s'\n", (unsigned long) i, attr);
+-	  if (verbose)
+-	    fprintf(stderr, "Missing comma after synthetic index #%lu at '%s'\n", (unsigned long) i, attr);
+ 	  goto out_with_array;
+ 	}
+ 	attr = next+1;
+@@ -148,28 +148,28 @@
+ 	char *tmp2, *tmp3;
+ 	step = (unsigned) strtol(tmp, &tmp2, 0);
+ 	if (tmp2 == tmp || *tmp2 != '*') {
++         // if (verbose)
++         //  fprintf(stderr, "Failed to read synthetic index interleaving loop '%s' without number before '*'\n", tmp);
+-	  if (verbose)
+-	    fprintf(stderr, "Failed to read synthetic index interleaving loop '%s' without number before '*'\n", tmp);
+ 	  free(loops);
+ 	  goto out_with_array;
+ 	}
+ 	if (!step) {
++         // if (verbose)
++         //  fprintf(stderr, "Invalid interleaving loop with step 0 at '%s'\n", tmp);
+-	  if (verbose)
+-	    fprintf(stderr, "Invalid interleaving loop with step 0 at '%s'\n", tmp);
+ 	  free(loops);
+ 	  goto out_with_array;
+ 	}
+ 	tmp2++;
+ 	nb = (unsigned) strtol(tmp2, &tmp3, 0);
+ 	if (tmp3 == tmp2 || (*tmp3 && *tmp3 != ':' && *tmp3 != ')' && *tmp3 != ' ')) {
++         // if (verbose)
++         //  fprintf(stderr, "Failed to read synthetic index interleaving loop '%s' without number between '*' and ':'\n", tmp);
+-	  if (verbose)
+-	    fprintf(stderr, "Failed to read synthetic index interleaving loop '%s' without number between '*' and ':'\n", tmp);
+ 	  free(loops);
+ 	  goto out_with_array;
+ 	}
+ 	if (!nb) {
++         // if (verbose)
++         //  fprintf(stderr, "Invalid interleaving loop with number 0 at '%s'\n", tmp2);
+-	  if (verbose)
+-	    fprintf(stderr, "Invalid interleaving loop with number 0 at '%s'\n", tmp2);
+ 	  free(loops);
+ 	  goto out_with_array;
+ 	}
+@@ -196,14 +196,14 @@
+       while (tmp) {
+ 	err = hwloc_type_sscanf(tmp, &type, &attrs, sizeof(attrs));
+ 	if (err < 0) {
++         // if (verbose)
++         //  fprintf(stderr, "Failed to read synthetic index interleaving loop type '%s'\n", tmp);
+-	  if (verbose)
+-	    fprintf(stderr, "Failed to read synthetic index interleaving loop type '%s'\n", tmp);
+ 	  free(loops);
+ 	  goto out_with_array;
+ 	}
+ 	if (type == HWLOC_OBJ_MISC || type == HWLOC_OBJ_BRIDGE || type == HWLOC_OBJ_PCI_DEVICE || type == HWLOC_OBJ_OS_DEVICE) {
++         // if (verbose)
++         //  fprintf(stderr, "Misc object type disallowed in synthetic index interleaving loop type '%s'\n", tmp);
+-	  if (verbose)
+-	    fprintf(stderr, "Misc object type disallowed in synthetic index interleaving loop type '%s'\n", tmp);
+ 	  free(loops);
+ 	  goto out_with_array;
+ 	}
+@@ -222,9 +222,9 @@
+ 	  break;
+ 	}
+ 	if (loops[cur_loop].level_depth == (unsigned)-1) {
++         // if (verbose)
++         //  fprintf(stderr, "Failed to find level for synthetic index interleaving loop type '%s'\n",
++               //    tmp);
+-	  if (verbose)
+-	    fprintf(stderr, "Failed to find level for synthetic index interleaving loop type '%s'\n",
+-		    tmp);
+ 	  free(loops);
+ 	  goto out_with_array;
+ 	}
+@@ -242,8 +242,8 @@
+ 	unsigned step, nb;
+ 	for(i=0; i<nr_loops; i++) {
+ 	  if (loops[i].level_depth == mydepth && i != cur_loop) {
++           // if (verbose)
++           //  fprintf(stderr, "Invalid duplicate interleaving loop type in synthetic index '%s'\n", attr);
+-	    if (verbose)
+-	      fprintf(stderr, "Invalid duplicate interleaving loop type in synthetic index '%s'\n", attr);
+ 	    free(loops);
+ 	    goto out_with_array;
+ 	  }
+@@ -272,8 +272,8 @@
+ 	loops[nr_loops].nb = total/nbs;
+ 	nr_loops++;
+       } else {
++       // if (verbose)
++       //  fprintf(stderr, "Invalid index interleaving total width %lu instead of %lu\n", nbs, total);
+-	if (verbose)
+-	  fprintf(stderr, "Invalid index interleaving total width %lu instead of %lu\n", nbs, total);
+ 	free(loops);
+ 	goto out_with_array;
+       }
+@@ -294,13 +294,13 @@
+     /* check that we have the right values (cannot pass total, cannot give duplicate 0) */
+     for(j=0; j<total; j++) {
+       if (array[j] >= total) {
++       // if (verbose)
++       //  fprintf(stderr, "Invalid index interleaving generates out-of-range index %u\n", array[j]);
+-	if (verbose)
+-	  fprintf(stderr, "Invalid index interleaving generates out-of-range index %u\n", array[j]);
+ 	goto out_with_array;
+       }
+       if (!array[j] && j) {
++       // if (verbose)
++       // fprintf(stderr, "Invalid index interleaving generates duplicate index values\n");
+-	if (verbose)
+-	  fprintf(stderr, "Invalid index interleaving generates duplicate index values\n");
+ 	goto out_with_array;
+       }
+     }
+@@ -365,8 +365,8 @@
+ 
+   next_pos = (const char *) strchr(attrs, ')');
+   if (!next_pos) {
++    // if (verbose)
++    // fprintf(stderr, "Missing attribute closing bracket in synthetic string doesn't have a number of objects at '%s'\n", attrs);
+-    if (verbose)
+-      fprintf(stderr, "Missing attribute closing bracket in synthetic string doesn't have a number of objects at '%s'\n", attrs);
+     errno = EINVAL;
+     return -1;
+   }
+@@ -388,15 +388,15 @@
+ 
+     } else {
+       size_t length = strcspn(attrs, " )");
++      // fprintf(stderr, "hwloc/synthetic: Ignoring unknown attribute at '%s'\n", attrs);
+-      fprintf(stderr, "hwloc/synthetic: Ignoring unknown attribute at '%s'\n", attrs);
+       attrs += length;
+     }
+ 
+     if (' ' == *attrs)
+       attrs++;
+     else if (')' != *attrs) {
++    //  if (verbose)
++       // fprintf(stderr, "Missing parameter separator at '%s'\n", attrs);
+-      if (verbose)
+-	fprintf(stderr, "Missing parameter separator at '%s'\n", attrs);
+       errno = EINVAL;
+       return -1;
+     }
+@@ -405,8 +405,8 @@
+   sattr->memorysize = memorysize;
+ 
+   if (index_string) {
++    // if (sind->string && verbose)
++    //  fprintf(stderr, "Overwriting duplicate indexes attribute with last occurence\n");
+-    if (sind->string && verbose)
+-      fprintf(stderr, "Overwriting duplicate indexes attribute with last occurence\n");
+     sind->string = index_string;
+     sind->string_length = (unsigned long)index_string_length;
+   }
+@@ -522,14 +522,14 @@
+       pos++;
+ 
+       if (hwloc_type_sscanf(pos, &type, &attrs, sizeof(attrs)) < 0) {
++       // if (verbose)
++       // fprintf(stderr, "Synthetic string with unknown attached object type at '%s'\n", pos);
+-	if (verbose)
+-	  fprintf(stderr, "Synthetic string with unknown attached object type at '%s'\n", pos);
+ 	errno = EINVAL;
+ 	goto error;
+       }
+       if (type != HWLOC_OBJ_NUMANODE) {
++       // if (verbose)
++       // fprintf(stderr, "Synthetic string with disallowed attached object type at '%s'\n", pos);
+-	if (verbose)
+-	  fprintf(stderr, "Synthetic string with disallowed attached object type at '%s'\n", pos);
+ 	errno = EINVAL;
+ 	goto error;
+       }
+@@ -549,8 +549,8 @@
+ 
+       next_pos = strchr(pos, ']');
+       if (!next_pos) {
++       // if (verbose)
++       // fprintf(stderr,"Synthetic string doesn't have a closing `]' after attached object type at '%s'\n", pos);
+-	if (verbose)
+-	  fprintf(stderr,"Synthetic string doesn't have a closing `]' after attached object type at '%s'\n", pos);
+ 	errno = EINVAL;
+ 	goto error;
+       }
+@@ -581,23 +581,23 @@
+ 	  type = HWLOC_OBJ_GROUP;
+ 	} else {
+ 	  /* FIXME: allow generic "Cache" string? would require to deal with possibly duplicate cache levels */
++         // if (verbose)
++         // fprintf(stderr, "Synthetic string with unknown object type at '%s'\n", pos);
+-	  if (verbose)
+-	    fprintf(stderr, "Synthetic string with unknown object type at '%s'\n", pos);
+ 	  errno = EINVAL;
+ 	  goto error;
+ 	}
+       }
+       if (type == HWLOC_OBJ_MACHINE || type == HWLOC_OBJ_MISC || type == HWLOC_OBJ_BRIDGE || type == HWLOC_OBJ_PCI_DEVICE || type == HWLOC_OBJ_OS_DEVICE) {
++       // if (verbose)
++       // fprintf(stderr, "Synthetic string with disallowed object type at '%s'\n", pos);
+-	if (verbose)
+-	  fprintf(stderr, "Synthetic string with disallowed object type at '%s'\n", pos);
+ 	errno = EINVAL;
+ 	goto error;
+       }
+ 
+       next_pos = strchr(pos, ':');
+       if (!next_pos) {
++       // if (verbose)
++       // fprintf(stderr,"Synthetic string doesn't have a `:' after object type at '%s'\n", pos);
+-	if (verbose)
+-	  fprintf(stderr,"Synthetic string doesn't have a `:' after object type at '%s'\n", pos);
+ 	errno = EINVAL;
+ 	goto error;
+       }
+@@ -619,14 +619,14 @@
+     /* number of normal children */
+     item = strtoul(pos, (char **)&next_pos, 0);
+     if (next_pos == pos) {
++    // if (verbose)
++       // fprintf(stderr,"Synthetic string doesn't have a number of objects at '%s'\n", pos);
+-      if (verbose)
+-	fprintf(stderr,"Synthetic string doesn't have a number of objects at '%s'\n", pos);
+       errno = EINVAL;
+       goto error;
+     }
+     if (!item) {
++    //  if (verbose)
++       //  fprintf(stderr,"Synthetic string with disallowed 0 number of objects at '%s'\n", pos);
+-      if (verbose)
+-	fprintf(stderr,"Synthetic string with disallowed 0 number of objects at '%s'\n", pos);
+       errno = EINVAL;
+       goto error;
+     }
+@@ -643,14 +643,14 @@
+     }
+ 
+     if (count + 1 >= HWLOC_SYNTHETIC_MAX_DEPTH) {
++    //  if (verbose)
++       //  fprintf(stderr,"Too many synthetic levels, max %d\n", HWLOC_SYNTHETIC_MAX_DEPTH);
+-      if (verbose)
+-	fprintf(stderr,"Too many synthetic levels, max %d\n", HWLOC_SYNTHETIC_MAX_DEPTH);
+       errno = EINVAL;
+       goto error;
+     }
+     if (item > UINT_MAX) {
++    //  if (verbose)
++       //  fprintf(stderr,"Too big arity, max %u\n", UINT_MAX);
+-      if (verbose)
+-	fprintf(stderr,"Too big arity, max %u\n", UINT_MAX);
+       errno = EINVAL;
+       goto error;
+     }
+@@ -660,8 +660,8 @@
+   }
+ 
+   if (data->level[count-1].attr.type != HWLOC_OBJ_TYPE_NONE && data->level[count-1].attr.type != HWLOC_OBJ_PU) {
++    // if (verbose)
++    // fprintf(stderr, "Synthetic string cannot use non-PU type for last level\n");
+-    if (verbose)
+-      fprintf(stderr, "Synthetic string cannot use non-PU type for last level\n");
+     errno = EINVAL;
+     return -1;
+   }
+@@ -679,43 +679,43 @@
+ 
+   /* sanity checks */
+   if (!type_count[HWLOC_OBJ_PU]) {
++    // if (verbose)
++    // fprintf(stderr, "Synthetic string missing ending number of PUs\n");
+-    if (verbose)
+-      fprintf(stderr, "Synthetic string missing ending number of PUs\n");
+     errno = EINVAL;
+     return -1;
+   } else if (type_count[HWLOC_OBJ_PU] > 1) {
++    // if (verbose)
++    // fprintf(stderr, "Synthetic string cannot have several PU levels\n");
+-    if (verbose)
+-      fprintf(stderr, "Synthetic string cannot have several PU levels\n");
+     errno = EINVAL;
+     return -1;
+   }
+   if (type_count[HWLOC_OBJ_PACKAGE] > 1) {
++    // if (verbose)
++    // fprintf(stderr, "Synthetic string cannot have several package levels\n");
+-    if (verbose)
+-      fprintf(stderr, "Synthetic string cannot have several package levels\n");
+     errno = EINVAL;
+     return -1;
+   }
+   if (type_count[HWLOC_OBJ_DIE] > 1) {
++    // if (verbose)
++    // fprintf(stderr, "Synthetic string cannot have several die levels\n");
+-    if (verbose)
+-      fprintf(stderr, "Synthetic string cannot have several die levels\n");
+     errno = EINVAL;
+     return -1;
+   }
+   if (type_count[HWLOC_OBJ_NUMANODE] > 1) {
++    // if (verbose)
++    // fprintf(stderr, "Synthetic string cannot have several NUMA node levels\n");
+-    if (verbose)
+-      fprintf(stderr, "Synthetic string cannot have several NUMA node levels\n");
+     errno = EINVAL;
+     return -1;
+   }
+   if (type_count[HWLOC_OBJ_NUMANODE] && data->numa_attached_nr) {
++    // if (verbose)
++    // fprintf(stderr,"Synthetic string cannot have NUMA nodes both as a level and attached\n");
+-    if (verbose)
+-      fprintf(stderr,"Synthetic string cannot have NUMA nodes both as a level and attached\n");
+     errno = EINVAL;
+     return -1;
+   }
+   if (type_count[HWLOC_OBJ_CORE] > 1) {
++    // if (verbose)
++    // fprintf(stderr, "Synthetic string cannot have several core levels\n");
+-    if (verbose)
+-      fprintf(stderr, "Synthetic string cannot have several core levels\n");
+     errno = EINVAL;
+     return -1;
+   }
+@@ -727,8 +727,8 @@
+       unset++;
+   }
+   if (unset && unset != count-2) {
++    // if (verbose)
++    // fprintf(stderr, "Synthetic string cannot mix unspecified and specified types for levels\n");
+-    if (verbose)
+-      fprintf(stderr, "Synthetic string cannot mix unspecified and specified types for levels\n");
+     errno = EINVAL;
+     return -1;
+   }
+@@ -813,8 +813,8 @@
+   /* enforce a NUMA level */
+   if (!type_count[HWLOC_OBJ_NUMANODE] && !data->numa_attached_nr) {
+     /* insert a NUMA level below the automatic machine root */
++    // if (verbose)
++    // fprintf(stderr, "Inserting a NUMA level with a single object at depth 1\n");
+-    if (verbose)
+-      fprintf(stderr, "Inserting a NUMA level with a single object at depth 1\n");
+     /* move existing levels by one */
+     memmove(&data->level[2], &data->level[1], count*sizeof(struct hwloc_synthetic_level_data_s));
+     data->level[1].attr.type = HWLOC_OBJ_NUMANODE;
+@@ -1362,8 +1362,8 @@
+     /* v1: export a single NUMA child */
+     if (parent->memory_arity > 1 || mchild->type != HWLOC_OBJ_NUMANODE) {
+       /* not supported */
++    // if (verbose)
++       // fprintf(stderr, "Cannot export to synthetic v1 if multiple memory children are attached to the same location.\n");
+-      if (verbose)
+-	fprintf(stderr, "Cannot export to synthetic v1 if multiple memory children are attached to the same location.\n");
+       errno = EINVAL;
+       return -1;
+     }
+@@ -1389,14 +1389,14 @@
+     while (numanode && numanode->type != HWLOC_OBJ_NUMANODE) {
+       if (verbose) {
+         static int warned = 0;
++        // if (!warned)
++        // fprintf(stderr, "Ignoring memory objects that are not NUMA nodes.\n");
+-        if (!warned)
+-          fprintf(stderr, "Ignoring memory objects that are not NUMA nodes.\n");
+         warned = 1;
+       }
+       if (verbose && numanode->memory_arity > 1) {
+         static int warned = 0;
++        // if (!warned)
++        // fprintf(stderr, "Ignoring non-first memory children at non-first level of memory hierarchy.\n");
+-        if (!warned)
+-          fprintf(stderr, "Ignoring non-first memory children at non-first level of memory hierarchy.\n");
+         warned = 1;
+       }
+       numanode = numanode->memory_first_child;
+@@ -1515,16 +1515,16 @@
+   /* TODO: flag to force all indexes, not only for PU and NUMA? */
+ 
+   if (!obj->symmetric_subtree) {
++    // if (verbose)
++    // fprintf(stderr, "Cannot export to synthetic unless topology is symmetric (root->symmetric_subtree must be set).\n");
+-    if (verbose)
+-      fprintf(stderr, "Cannot export to synthetic unless topology is symmetric (root->symmetric_subtree must be set).\n");
+     errno = EINVAL;
+     return -1;
+   }
+ 
+   if (!(flags & HWLOC_TOPOLOGY_EXPORT_SYNTHETIC_FLAG_IGNORE_MEMORY)
+       && hwloc_check_memory_symmetric(topology) < 0) {
++    // if (verbose)
++    // fprintf(stderr, "Cannot export to synthetic unless memory is attached symmetrically.\n");
+-    if (verbose)
+-      fprintf(stderr, "Cannot export to synthetic unless memory is attached symmetrically.\n");
+     errno = EINVAL;
+     return -1;
+   }
+@@ -1542,8 +1542,8 @@
+     while ((node = node->next_cousin) != NULL) {
+       assert(hwloc__obj_type_is_normal(node->parent->type)); /* only depth-1 memory children for now */
+       if (node->parent->depth != pdepth) {
++       // if (verbose)
++       // fprintf(stderr, "Cannot export to synthetic v1 if memory is attached to parents at different depths.\n");
+-	if (verbose)
+-	  fprintf(stderr, "Cannot export to synthetic v1 if memory is attached to parents at different depths.\n");
+ 	errno = EINVAL;
+ 	return -1;
+       }
+--- hwloc/hwloc/topology-windows.c
++++ hwloc.orig/hwloc/topology-windows.c
+@@ -366,8 +366,8 @@
+   hwloc_debug("found %lu windows processor groups\n", nr_processor_groups);
+ 
+   if (nr_processor_groups > 1 && SIZEOF_VOID_P == 4) {
++    // if (HWLOC_SHOW_ALL_ERRORS())
++    //  fprintf(stderr, "hwloc/windows: multiple processor groups found on 32bits Windows, topology may be invalid/incomplete.\n");
+-    if (HWLOC_SHOW_ALL_ERRORS())
+-      fprintf(stderr, "hwloc/windows: multiple processor groups found on 32bits Windows, topology may be invalid/incomplete.\n");
+   }
+ 
+   length = 0;
+--- hwloc/hwloc/topology-x86.c
++++ hwloc.orig/hwloc/topology-x86.c
+@@ -80,7 +80,7 @@
+ 
+   cpuiddump = malloc(sizeof(*cpuiddump));
+   if (!cpuiddump) {
++  //  fprintf(stderr, "hwloc/x86: Failed to allocate cpuiddump for PU #%u, ignoring cpuiddump.\n", idx);
+-    fprintf(stderr, "hwloc/x86: Failed to allocate cpuiddump for PU #%u, ignoring cpuiddump.\n", idx);
+     goto out;
+   }
+ 
+@@ -91,7 +91,7 @@
+   snprintf(filename, filenamelen, "%s/pu%u", dirpath, idx);
+   file = fopen(filename, "r");
+   if (!file) {
++  //  fprintf(stderr, "hwloc/x86: Could not read dumped cpuid file %s, ignoring cpuiddump.\n", filename);
+-    fprintf(stderr, "hwloc/x86: Could not read dumped cpuid file %s, ignoring cpuiddump.\n", filename);
+     goto out_with_filename;
+   }
+ 
+@@ -100,7 +100,7 @@
+     nr++;
+   cpuiddump->entries = malloc(nr * sizeof(struct cpuiddump_entry));
+   if (!cpuiddump->entries) {
++    // fprintf(stderr, "hwloc/x86: Failed to allocate %u cpuiddump entries for PU #%u, ignoring cpuiddump.\n", nr, idx);
+-    fprintf(stderr, "hwloc/x86: Failed to allocate %u cpuiddump entries for PU #%u, ignoring cpuiddump.\n", nr, idx);
+     goto out_with_file;
+   }
+ 
+@@ -156,8 +156,8 @@
+     return;
+   }
+ 
++  // fprintf(stderr, "hwloc/x86: Couldn't find %x,%x,%x,%x in dumped cpuid, returning 0s.\n",
++  //	  *eax, *ebx, *ecx, *edx);
+-  fprintf(stderr, "hwloc/x86: Couldn't find %x,%x,%x,%x in dumped cpuid, returning 0s.\n",
+-	  *eax, *ebx, *ecx, *edx);
+   *eax = 0;
+   *ebx = 0;
+   *ecx = 0;
+@@ -1647,9 +1647,9 @@
+ 
+ #if HAVE_DECL_RUNNING_ON_VALGRIND
+   if (RUNNING_ON_VALGRIND && !data->src_cpuiddump_path) {
++  //  fprintf(stderr, "hwloc x86 backend cannot work under Valgrind, disabling.\n"
++	//    "May be reenabled by dumping CPUIDs with hwloc-gather-cpuid\n"
++	//    "and reloading them under Valgrind with HWLOC_CPUID_PATH.\n");
+-    fprintf(stderr, "hwloc x86 backend cannot work under Valgrind, disabling.\n"
+-	    "May be reenabled by dumping CPUIDs with hwloc-gather-cpuid\n"
+-	    "and reloading them under Valgrind with HWLOC_CPUID_PATH.\n");
+     return 0;
+   }
+ #endif
+@@ -1728,20 +1728,20 @@
+   path = malloc(strlen(src_cpuiddump_path) + strlen("/hwloc-cpuid-info") + 1);
+   if (!path)
+     goto out_with_dir;
++  snprintf(path, 20, "%s/hwloc-cpuid-info", src_cpuiddump_path);
+-  sprintf(path, "%s/hwloc-cpuid-info", src_cpuiddump_path);
+   file = fopen(path, "r");
+   if (!file) {
++    // fprintf(stderr, "hwloc/x86: Couldn't open dumped cpuid summary %s\n", path);
+-    fprintf(stderr, "hwloc/x86: Couldn't open dumped cpuid summary %s\n", path);
+     goto out_with_path;
+   }
+   if (!fgets(line, sizeof(line), file)) {
++    // fprintf(stderr, "hwloc/x86: Found read dumped cpuid summary in %s\n", path);
+-    fprintf(stderr, "hwloc/x86: Found read dumped cpuid summary in %s\n", path);
+     fclose(file);
+     goto out_with_path;
+   }
+   fclose(file);
+   if (strcmp(line, "Architecture: x86\n")) {
++    // fprintf(stderr, "hwloc/x86: Found non-x86 dumped cpuid summary in %s: %s\n", path, line);
+-    fprintf(stderr, "hwloc/x86: Found non-x86 dumped cpuid summary in %s: %s\n", path, line);
+     goto out_with_path;
+   }
+   free(path);
+@@ -1752,21 +1752,21 @@
+       unsigned long idx = strtoul(dirent->d_name+2, &end, 10);
+       if (!*end)
+ 	hwloc_bitmap_set(set, idx);
++    //  else
++	// fprintf(stderr, "hwloc/x86: Ignoring invalid dirent `%s' in dumped cpuid directory `%s'\n",
++	//	dirent->d_name, src_cpuiddump_path);
+-      else
+-	fprintf(stderr, "hwloc/x86: Ignoring invalid dirent `%s' in dumped cpuid directory `%s'\n",
+-		dirent->d_name, src_cpuiddump_path);
+     }
+   }
+   closedir(dir);
+ 
+   if (hwloc_bitmap_iszero(set)) {
++    // fprintf(stderr, "hwloc/x86: Did not find any valid pu%%u entry in dumped cpuid directory `%s'\n",
++	//    src_cpuiddump_path);
+-    fprintf(stderr, "hwloc/x86: Did not find any valid pu%%u entry in dumped cpuid directory `%s'\n",
+-	    src_cpuiddump_path);
+     return -1;
+   } else if (hwloc_bitmap_last(set) != hwloc_bitmap_weight(set) - 1) {
+     /* The x86 backends enforces contigous set of PUs starting at 0 so far */
++    // fprintf(stderr, "hwloc/x86: Found non-contigous pu%%u range in dumped cpuid directory `%s'\n",
++	//    src_cpuiddump_path);
+-    fprintf(stderr, "hwloc/x86: Found non-contigous pu%%u range in dumped cpuid directory `%s'\n",
+-	    src_cpuiddump_path);
+     return -1;
+   }
+ 
+@@ -1829,8 +1829,8 @@
+       data->src_cpuiddump_path = strdup(src_cpuiddump_path);
+       assert(!hwloc_bitmap_iszero(set)); /* enforced by hwloc_x86_check_cpuiddump_input() */
+       data->nbprocs = hwloc_bitmap_weight(set);
++    // } else {
++    //  fprintf(stderr, "hwloc/x86: Ignoring dumped cpuid directory.\n");
+-    } else {
+-      fprintf(stderr, "hwloc/x86: Ignoring dumped cpuid directory.\n");
+     }
+     hwloc_bitmap_free(set);
+   }
+--- hwloc/hwloc/topology-xml-libxml.c
++++ hwloc.orig/hwloc/topology-xml-libxml.c
+@@ -81,16 +81,16 @@
+             lstate->attr = attr;
+             return 0;
+           }
++        // } else {
++          // if (hwloc__xml_verbose())
++            // fprintf(stderr, "%s: ignoring unexpected xml attr node type %u\n",
++            //        state->global->msgprefix, subnode->type);
+-        } else {
+-          if (hwloc__xml_verbose())
+-            fprintf(stderr, "%s: ignoring unexpected xml attr node type %u\n",
+-                    state->global->msgprefix, subnode->type);
+         }
+       }
++    // } else {
++      // if (hwloc__xml_verbose())
++        // fprintf(stderr, "%s: ignoring unexpected xml attr type %u\n",
++        //        state->global->msgprefix, attr->type);
+-    } else {
+-      if (hwloc__xml_verbose())
+-        fprintf(stderr, "%s: ignoring unexpected xml attr type %u\n",
+-                state->global->msgprefix, attr->type);
+     }
+   return -1;
+ }
+@@ -117,15 +117,15 @@
+     lchildstate->attr = NULL;
+     *tagp = (char*) child->name;
+     return 1;
++  // } else if (child->type == XML_TEXT_NODE) {
++    // if (child->content && child->content[0] != '\0' && child->content[0] != '\n')
++      // if (hwloc__xml_verbose())
++      //  fprintf(stderr, "%s: ignoring object text content %s\n",
++       //         state->global->msgprefix, (const char*) child->content);
++  // } else if (child->type != XML_COMMENT_NODE) {
++      // if (hwloc__xml_verbose())
++      //  fprintf(stderr, "%s: ignoring unexpected xml node type %u\n",
++      //          state->global->msgprefix, child->type);
+-  } else if (child->type == XML_TEXT_NODE) {
+-    if (child->content && child->content[0] != '\0' && child->content[0] != '\n')
+-      if (hwloc__xml_verbose())
+-        fprintf(stderr, "%s: ignoring object text content %s\n",
+-                state->global->msgprefix, (const char*) child->content);
+-  } else if (child->type != XML_COMMENT_NODE) {
+-      if (hwloc__xml_verbose())
+-        fprintf(stderr, "%s: ignoring unexpected xml node type %u\n",
+-                state->global->msgprefix, child->type);
+   }
+ 
+   return 0;
+@@ -184,14 +184,14 @@
+ 
+   dtd = xmlGetIntSubset((xmlDocPtr) bdata->data);
+   if (!dtd) {
++    // if (hwloc__xml_verbose())
++      // fprintf(stderr, "%s: Loading XML topology without DTD\n",
++	   //   state->global->msgprefix);
++  //} else if (strcmp((char *) dtd->SystemID, "hwloc.dtd")
++    //    && strcmp((char *) dtd->SystemID, "hwloc2.dtd")) {
++    // if (hwloc__xml_verbose())
++    //  fprintf(stderr, "%s: Loading XML topology with wrong DTD SystemID (%s instead of %s)\n",
++	//      state->global->msgprefix, (char *) dtd->SystemID, "hwloc.dtd or hwloc2.dtd");
+-    if (hwloc__xml_verbose())
+-      fprintf(stderr, "%s: Loading XML topology without DTD\n",
+-	      state->global->msgprefix);
+-  } else if (strcmp((char *) dtd->SystemID, "hwloc.dtd")
+-	     && strcmp((char *) dtd->SystemID, "hwloc2.dtd")) {
+-    if (hwloc__xml_verbose())
+-      fprintf(stderr, "%s: Loading XML topology with wrong DTD SystemID (%s instead of %s)\n",
+-	      state->global->msgprefix, (char *) dtd->SystemID, "hwloc.dtd or hwloc2.dtd");
+   }
+ 
+   root_node = xmlDocGetRootElement((xmlDocPtr) bdata->data);
+@@ -212,9 +212,9 @@
+     xmlFree(version);
+   } else {
+     /* root node should be in "topology" class (or "root" if importing from < 1.0) */
++    // if (hwloc__xml_verbose())
++    //  fprintf(stderr, "%s: ignoring object of class `%s' not at the top the xml hierarchy\n",
++	//      state->global->msgprefix, (const char *) root_node->name);
+-    if (hwloc__xml_verbose())
+-      fprintf(stderr, "%s: ignoring object of class `%s' not at the top the xml hierarchy\n",
+-	      state->global->msgprefix, (const char *) root_node->name);
+     goto failed;
+   }
+ 
+@@ -284,22 +284,22 @@
+ 
+   dtd = xmlGetIntSubset(doc);
+   if (!dtd) {
++    //if (hwloc__xml_verbose())
++    //  fprintf(stderr, "%s: Loading XML topologydiff without DTD\n",
++	//      state->global->msgprefix);
++  //} else if (strcmp((char *) dtd->SystemID, "hwloc2-diff.dtd")) {
++  //  if (hwloc__xml_verbose())
++  //    fprintf(stderr, "%s: Loading XML topologydiff with wrong DTD SystemID (%s instead of %s)\n",
++  //      state->global->msgprefix, (char *) dtd->SystemID, "hwloc2-diff.dtd");
+-    if (hwloc__xml_verbose())
+-      fprintf(stderr, "%s: Loading XML topologydiff without DTD\n",
+-	      state->global->msgprefix);
+-  } else if (strcmp((char *) dtd->SystemID, "hwloc2-diff.dtd")) {
+-    if (hwloc__xml_verbose())
+-      fprintf(stderr, "%s: Loading XML topologydiff with wrong DTD SystemID (%s instead of %s)\n",
+-	      state->global->msgprefix, (char *) dtd->SystemID, "hwloc2-diff.dtd");
+   }
+ 
+   root_node = xmlDocGetRootElement(doc);
+ 
+   if (strcmp((const char *) root_node->name, "topologydiff")) {
+     /* root node should be in "topologydiff" class */
++    // if (hwloc__xml_verbose())
++      // fprintf(stderr, "%s: ignoring object of class `%s' not at the top the xml hierarchy\n",
++	  //    state->global->msgprefix, (const char *) root_node->name);
+-    if (hwloc__xml_verbose())
+-      fprintf(stderr, "%s: ignoring object of class `%s' not at the top the xml hierarchy\n",
+-	      state->global->msgprefix, (const char *) root_node->name);
+     goto out_with_doc;
+   }
+ 
+--- hwloc/hwloc/topology-xml-nolibxml.c
++++ hwloc.orig/hwloc/topology-xml-nolibxml.c
+@@ -326,9 +326,9 @@
+ {
+   hwloc_nolibxml_free_buffers(bdata);
+ 
++  // if (result < 0 && hwloc__xml_verbose())
++    // fprintf(stderr, "Failed to parse XML input with the minimalistic parser. If it was not\n"
++	//    "generated by hwloc, try enabling full XML support with libxml2.\n");
+-  if (result < 0 && hwloc__xml_verbose())
+-    fprintf(stderr, "Failed to parse XML input with the minimalistic parser. If it was not\n"
+-	    "generated by hwloc, try enabling full XML support with libxml2.\n");
+ }
+ 
+ /********************
+@@ -749,7 +749,8 @@
+     return -1;
+ 
+   if (!strcmp(filename, "-")) {
++      free(buffer);
++      return -1;
+-    file = stdout;
+   } else {
+     file = fopen(filename, "w");
+     if (!file) {
+@@ -768,8 +769,8 @@
+ 
+   free(buffer);
+ 
++
++  fclose(file);
+-  if (file != stdout)
+-    fclose(file);
+   return ret;
+ }
+ 
+@@ -849,7 +850,8 @@
+     return -1;
+ 
+   if (!strcmp(filename, "-")) {
++      free(buffer);
++      return -1;
+-    file = stdout;
+   } else {
+     file = fopen(filename, "w");
+     if (!file) {
+@@ -868,8 +870,8 @@
+ 
+   free(buffer);
+ 
++
++  fclose(file);
+-  if (file != stdout)
+-    fclose(file);
+   return ret;
+ }
+ 
+--- hwloc/hwloc/topology-xml.c
++++ hwloc.orig/hwloc/topology-xml.c
+@@ -119,20 +119,20 @@
+     obj->os_index = strtoul(value, NULL, 10);
+   else if (!strcmp(name, "gp_index")) {
+     obj->gp_index = strtoull(value, NULL, 10);
++    // if (!obj->gp_index && hwloc__xml_verbose())
++    // fprintf(stderr, "%s: unexpected zero gp_index, topology may be invalid\n", state->global->msgprefix);
+-    if (!obj->gp_index && hwloc__xml_verbose())
+-      fprintf(stderr, "%s: unexpected zero gp_index, topology may be invalid\n", state->global->msgprefix);
+     if (obj->gp_index >= topology->next_gp_index)
+       topology->next_gp_index = obj->gp_index + 1;
+   } else if (!strcmp(name, "id")) { /* forward compat */
+     if (!strncmp(value, "obj", 3)) {
+       obj->gp_index = strtoull(value+3, NULL, 10);
++      // if (!obj->gp_index && hwloc__xml_verbose())
++      //  fprintf(stderr, "%s: unexpected zero id, topology may be invalid\n", state->global->msgprefix);
+-      if (!obj->gp_index && hwloc__xml_verbose())
+-        fprintf(stderr, "%s: unexpected zero id, topology may be invalid\n", state->global->msgprefix);
+       if (obj->gp_index >= topology->next_gp_index)
+         topology->next_gp_index = obj->gp_index + 1;
++    // } else {
++      // if (hwloc__xml_verbose())
++      // fprintf(stderr, "%s: unexpected id `%s' not-starting with `obj', ignoring\n", state->global->msgprefix, value);
+-    } else {
+-      if (hwloc__xml_verbose())
+-        fprintf(stderr, "%s: unexpected id `%s' not-starting with `obj', ignoring\n", state->global->msgprefix, value);
+     }
+   } else if (!strcmp(name, "cpuset")) {
+     if (!obj->cpuset)
+@@ -172,27 +172,27 @@
+     unsigned long long lvalue = strtoull(value, NULL, 10);
+     if (hwloc__obj_type_is_cache(obj->type) || obj->type == _HWLOC_OBJ_CACHE_OLD || obj->type == HWLOC_OBJ_MEMCACHE)
+       obj->attr->cache.size = lvalue;
++    // else if (hwloc__xml_verbose())
++    //  fprintf(stderr, "%s: ignoring cache_size attribute for non-cache object type\n",
++	//      state->global->msgprefix);
+-    else if (hwloc__xml_verbose())
+-      fprintf(stderr, "%s: ignoring cache_size attribute for non-cache object type\n",
+-	      state->global->msgprefix);
+   }
+ 
+   else if (!strcmp(name, "cache_linesize")) {
+     unsigned long lvalue = strtoul(value, NULL, 10);
+     if (hwloc__obj_type_is_cache(obj->type) || obj->type == _HWLOC_OBJ_CACHE_OLD || obj->type == HWLOC_OBJ_MEMCACHE)
+       obj->attr->cache.linesize = lvalue;
++    //else if (hwloc__xml_verbose())
++    //  fprintf(stderr, "%s: ignoring cache_linesize attribute for non-cache object type\n",
++	//      state->global->msgprefix);
+-    else if (hwloc__xml_verbose())
+-      fprintf(stderr, "%s: ignoring cache_linesize attribute for non-cache object type\n",
+-	      state->global->msgprefix);
+   }
+ 
+   else if (!strcmp(name, "cache_associativity")) {
+     int lvalue = atoi(value);
+     if (hwloc__obj_type_is_cache(obj->type) || obj->type == _HWLOC_OBJ_CACHE_OLD || obj->type == HWLOC_OBJ_MEMCACHE)
+       obj->attr->cache.associativity = lvalue;
++    // else if (hwloc__xml_verbose())
++    //  fprintf(stderr, "%s: ignoring cache_associativity attribute for non-cache object type\n",
++	//      state->global->msgprefix);
+-    else if (hwloc__xml_verbose())
+-      fprintf(stderr, "%s: ignoring cache_associativity attribute for non-cache object type\n",
+-	      state->global->msgprefix);
+   }
+ 
+   else if (!strcmp(name, "cache_type")) {
+@@ -202,13 +202,13 @@
+ 	  || lvalue == HWLOC_OBJ_CACHE_DATA
+ 	  || lvalue == HWLOC_OBJ_CACHE_INSTRUCTION)
+ 	obj->attr->cache.type = (hwloc_obj_cache_type_t) lvalue;
++      //else
++        // if (hwloc__xml_verbose())
++         // fprintf(stderr, "%s: ignoring invalid cache_type attribute %lu\n",
++         //         state->global->msgprefix, lvalue);
++    } // else if (hwloc__xml_verbose())
++    //  fprintf(stderr, "%s: ignoring cache_type attribute for non-cache object type\n",
++	//      state->global->msgprefix);
+-      else
+-        if (hwloc__xml_verbose())
+-          fprintf(stderr, "%s: ignoring invalid cache_type attribute %lu\n",
+-                  state->global->msgprefix, lvalue);
+-    } else if (hwloc__xml_verbose())
+-      fprintf(stderr, "%s: ignoring cache_type attribute for non-cache object type\n",
+-	      state->global->msgprefix);
+   }
+ 
+   else if (!strcmp(name, "local_memory")) {
+@@ -217,9 +217,9 @@
+       obj->attr->numanode.local_memory = lvalue;
+     else if (!obj->parent)
+       topology->machine_memory.local_memory = lvalue;
++    // else if (hwloc__xml_verbose())
++    //  fprintf(stderr, "%s: ignoring local_memory attribute for non-NUMAnode non-root object\n",
++	//      state->global->msgprefix);
+-    else if (hwloc__xml_verbose())
+-      fprintf(stderr, "%s: ignoring local_memory attribute for non-NUMAnode non-root object\n",
+-	      state->global->msgprefix);
+   }
+ 
+   else if (!strcmp(name, "depth")) {
+@@ -228,36 +228,36 @@
+ 	obj->attr->cache.depth = lvalue;
+      } else if (obj->type == HWLOC_OBJ_GROUP || obj->type == HWLOC_OBJ_BRIDGE) {
+        /* will be overwritten by the core */
++      } // else if (hwloc__xml_verbose())
++     //  fprintf(stderr, "%s: ignoring depth attribute for object type without depth\n",
++	 //      state->global->msgprefix);
+-     } else if (hwloc__xml_verbose())
+-       fprintf(stderr, "%s: ignoring depth attribute for object type without depth\n",
+-	       state->global->msgprefix);
+   }
+ 
+   else if (!strcmp(name, "kind")) {
+     unsigned long lvalue = strtoul(value, NULL, 10);
+     if (obj->type == HWLOC_OBJ_GROUP)
+       obj->attr->group.kind = lvalue;
++    // else if (hwloc__xml_verbose())
++    //  fprintf(stderr, "%s: ignoring kind attribute for non-group object type\n",
++	//      state->global->msgprefix);
+-    else if (hwloc__xml_verbose())
+-      fprintf(stderr, "%s: ignoring kind attribute for non-group object type\n",
+-	      state->global->msgprefix);
+   }
+ 
+   else if (!strcmp(name, "subkind")) {
+     unsigned long lvalue = strtoul(value, NULL, 10);
+     if (obj->type == HWLOC_OBJ_GROUP)
+       obj->attr->group.subkind = lvalue;
++    //else if (hwloc__xml_verbose())
++    //  fprintf(stderr, "%s: ignoring subkind attribute for non-group object type\n",
++	//      state->global->msgprefix);
+-    else if (hwloc__xml_verbose())
+-      fprintf(stderr, "%s: ignoring subkind attribute for non-group object type\n",
+-	      state->global->msgprefix);
+   }
+ 
+   else if (!strcmp(name, "dont_merge")) {
+     unsigned long lvalue = strtoul(value, NULL, 10);
+     if (obj->type == HWLOC_OBJ_GROUP)
+       obj->attr->group.dont_merge = (unsigned char) lvalue;
++    // else if (hwloc__xml_verbose())
++    //  fprintf(stderr, "%s: ignoring dont_merge attribute for non-group object type\n",
++	//      state->global->msgprefix);
+-    else if (hwloc__xml_verbose())
+-      fprintf(stderr, "%s: ignoring dont_merge attribute for non-group object type\n",
+-	      state->global->msgprefix);
+   }
+ 
+   else if (!strcmp(name, "pci_busid")) {
+@@ -267,15 +267,15 @@
+       unsigned domain, bus, dev, func;
+       if (sscanf(value, "%x:%02x:%02x.%01x",
+ 		 &domain, &bus, &dev, &func) != 4) {
++	// if (hwloc__xml_verbose())
++	//  fprintf(stderr, "%s: ignoring invalid pci_busid format string %s\n",
++	//	  state->global->msgprefix, value);
+-	if (hwloc__xml_verbose())
+-	  fprintf(stderr, "%s: ignoring invalid pci_busid format string %s\n",
+-		  state->global->msgprefix, value);
+ 	*ignore = 1;
+ #ifndef HWLOC_HAVE_32BITS_PCI_DOMAIN
+       } else if (domain > 0xffff) {
+ 	static int warned = 0;
++	// if (!warned && HWLOC_SHOW_ALL_ERRORS())
++	//  fprintf(stderr, "hwloc/xml: Ignoring PCI device with non-16bit domain.\nPass --enable-32bits-pci-domain to configure to support such devices\n(warning: it would break the library ABI, don't enable unless really needed).\n");
+-	if (!warned && HWLOC_SHOW_ALL_ERRORS())
+-	  fprintf(stderr, "hwloc/xml: Ignoring PCI device with non-16bit domain.\nPass --enable-32bits-pci-domain to configure to support such devices\n(warning: it would break the library ABI, don't enable unless really needed).\n");
+ 	warned = 1;
+ 	*ignore = 1;
+ #endif
+@@ -288,9 +288,9 @@
+       break;
+     }
+     default:
++    //  if (hwloc__xml_verbose())
++	// fprintf(stderr, "%s: ignoring pci_busid attribute for non-PCI object\n",
++	//	state->global->msgprefix);
+-      if (hwloc__xml_verbose())
+-	fprintf(stderr, "%s: ignoring pci_busid attribute for non-PCI object\n",
+-		state->global->msgprefix);
+       break;
+     }
+   }
+@@ -302,9 +302,9 @@
+       unsigned classid, vendor, device, subvendor, subdevice, revision;
+       if (sscanf(value, "%x [%04x:%04x] [%04x:%04x] %02x",
+ 		 &classid, &vendor, &device, &subvendor, &subdevice, &revision) != 6) {
++	// if (hwloc__xml_verbose())
++	//  fprintf(stderr, "%s: ignoring invalid pci_type format string %s\n",
++	//	  state->global->msgprefix, value);
+-	if (hwloc__xml_verbose())
+-	  fprintf(stderr, "%s: ignoring invalid pci_type format string %s\n",
+-		  state->global->msgprefix, value);
+       } else {
+ 	obj->attr->pcidev.class_id = classid;
+ 	obj->attr->pcidev.vendor_id = vendor;
+@@ -316,9 +316,9 @@
+       break;
+     }
+     default:
++      // if (hwloc__xml_verbose())
++	// fprintf(stderr, "%s: ignoring pci_type attribute for non-PCI object\n",
++	//	state->global->msgprefix);
+-      if (hwloc__xml_verbose())
+-	fprintf(stderr, "%s: ignoring pci_type attribute for non-PCI object\n",
+-		state->global->msgprefix);
+       break;
+     }
+   }
+@@ -332,8 +332,8 @@
+     }
+     default:
+       if (hwloc__xml_verbose())
++	// fprintf(stderr, "%s: ignoring pci_link_speed attribute for non-PCI object\n",
++	//	state->global->msgprefix);
+-	fprintf(stderr, "%s: ignoring pci_link_speed attribute for non-PCI object\n",
+-		state->global->msgprefix);
+       break;
+     }
+   }
+@@ -343,9 +343,9 @@
+     case HWLOC_OBJ_BRIDGE: {
+       unsigned upstream_type, downstream_type;
+       if (sscanf(value, "%u-%u", &upstream_type, &downstream_type) != 2) {
++	//if (hwloc__xml_verbose())
++	  // fprintf(stderr, "%s: ignoring invalid bridge_type format string %s\n",
++		//  state->global->msgprefix, value);
+-	if (hwloc__xml_verbose())
+-	  fprintf(stderr, "%s: ignoring invalid bridge_type format string %s\n",
+-		  state->global->msgprefix, value);
+       } else {
+ 	obj->attr->bridge.upstream_type = (hwloc_obj_bridge_type_t) upstream_type;
+ 	obj->attr->bridge.downstream_type = (hwloc_obj_bridge_type_t) downstream_type;
+@@ -354,9 +354,9 @@
+       break;
+     }
+     default:
++    //  if (hwloc__xml_verbose())
++	//fprintf(stderr, "%s: ignoring bridge_type attribute for non-bridge object\n",
++	//	state->global->msgprefix);
+-      if (hwloc__xml_verbose())
+-	fprintf(stderr, "%s: ignoring bridge_type attribute for non-bridge object\n",
+-		state->global->msgprefix);
+       break;
+     }
+   }
+@@ -367,15 +367,15 @@
+       unsigned domain, secbus, subbus;
+       if (sscanf(value, "%x:[%02x-%02x]",
+ 		 &domain, &secbus, &subbus) != 3) {
++	//if (hwloc__xml_verbose())
++	//  fprintf(stderr, "%s: ignoring invalid bridge_pci format string %s\n",
++	//	  state->global->msgprefix, value);
+-	if (hwloc__xml_verbose())
+-	  fprintf(stderr, "%s: ignoring invalid bridge_pci format string %s\n",
+-		  state->global->msgprefix, value);
+ 	*ignore = 1;
+ #ifndef HWLOC_HAVE_32BITS_PCI_DOMAIN
+       } else if (domain > 0xffff) {
+ 	static int warned = 0;
++	// if (!warned && HWLOC_SHOW_ALL_ERRORS())
++	//  fprintf(stderr, "hwloc/xml: Ignoring bridge to PCI with non-16bit domain.\nPass --enable-32bits-pci-domain to configure to support such devices\n(warning: it would break the library ABI, don't enable unless really needed).\n");
+-	if (!warned && HWLOC_SHOW_ALL_ERRORS())
+-	  fprintf(stderr, "hwloc/xml: Ignoring bridge to PCI with non-16bit domain.\nPass --enable-32bits-pci-domain to configure to support such devices\n(warning: it would break the library ABI, don't enable unless really needed).\n");
+ 	warned = 1;
+ 	*ignore = 1;
+ #endif
+@@ -388,9 +388,9 @@
+       break;
+     }
+     default:
++    //  if (hwloc__xml_verbose())
++	// fprintf(stderr, "%s: ignoring bridge_pci attribute for non-bridge object\n",
++	//	state->global->msgprefix);
+-      if (hwloc__xml_verbose())
+-	fprintf(stderr, "%s: ignoring bridge_pci attribute for non-bridge object\n",
+-		state->global->msgprefix);
+       break;
+     }
+   }
+@@ -400,17 +400,17 @@
+     case HWLOC_OBJ_OS_DEVICE: {
+       unsigned osdev_type;
+       if (sscanf(value, "%u", &osdev_type) != 1) {
++	// if (hwloc__xml_verbose())
++	//  fprintf(stderr, "%s: ignoring invalid osdev_type format string %s\n",
++	//	  state->global->msgprefix, value);
+-	if (hwloc__xml_verbose())
+-	  fprintf(stderr, "%s: ignoring invalid osdev_type format string %s\n",
+-		  state->global->msgprefix, value);
+       } else
+ 	obj->attr->osdev.type = (hwloc_obj_osdev_type_t) osdev_type;
+       break;
+     }
+     default:
++    //  if (hwloc__xml_verbose())
++	// fprintf(stderr, "%s: ignoring osdev_type attribute for non-osdev object\n",
++	//	state->global->msgprefix);
+-      if (hwloc__xml_verbose())
+-	fprintf(stderr, "%s: ignoring osdev_type attribute for non-osdev object\n",
+-		state->global->msgprefix);
+       break;
+     }
+   }
+@@ -447,9 +447,9 @@
+ 	  obj->attr->numanode.local_memory = lvalue << 10;
+ 	else if (!obj->parent)
+ 	  topology->machine_memory.local_memory = lvalue << 10;
++	// else if (hwloc__xml_verbose())
++	//  fprintf(stderr, "%s: ignoring memory_kB attribute for non-NUMAnode non-root object\n",
++	//	  state->global->msgprefix);
+-	else if (hwloc__xml_verbose())
+-	  fprintf(stderr, "%s: ignoring memory_kB attribute for non-NUMAnode non-root object\n",
+-		  state->global->msgprefix);
+       }
+       else if (!strcmp(name, "huge_page_size_kB")) {
+ 	unsigned long lvalue = strtoul(value, NULL, 10);
+@@ -461,9 +461,9 @@
+ 	  }
+ 	  assert(memory->page_types);
+ 	  memory->page_types[0].size = lvalue << 10;
++	// } else if (hwloc__xml_verbose()) {
++	//  fprintf(stderr, "%s: ignoring huge_page_size_kB attribute for non-NUMAnode non-root object\n",
++	//	  state->global->msgprefix);
+-	} else if (hwloc__xml_verbose()) {
+-	  fprintf(stderr, "%s: ignoring huge_page_size_kB attribute for non-NUMAnode non-root object\n",
+-		  state->global->msgprefix);
+ 	}
+       }
+       else if (!strcmp(name, "huge_page_free")) {
+@@ -476,9 +476,9 @@
+ 	  }
+ 	  assert(memory->page_types);
+ 	  memory->page_types[0].count = lvalue;
++	// } else if (hwloc__xml_verbose()) {
++	//  fprintf(stderr, "%s: ignoring huge_page_free attribute for non-NUMAnode non-root object\n",
++	//	  state->global->msgprefix);
+-	} else if (hwloc__xml_verbose()) {
+-	  fprintf(stderr, "%s: ignoring huge_page_free attribute for non-NUMAnode non-root object\n",
+-		  state->global->msgprefix);
+ 	}
+       }
+       /* end of deprecated from 0.9 */
+@@ -489,9 +489,9 @@
+   }
+   else {
+   unknown:
++     ;
++      // fprintf(stderr, "%s: ignoring unknown object attribute %s\n",
++	   //   state->global->msgprefix, name);
+-    if (hwloc__xml_verbose())
+-      fprintf(stderr, "%s: ignoring unknown object attribute %s\n",
+-	      state->global->msgprefix, name);
+   }
+ }
+ 
+@@ -617,9 +617,9 @@
+     matrix = malloc(nbobjs*nbobjs*sizeof(float));
+     v1dist = malloc(sizeof(*v1dist));
+     if (!matrix || !v1dist) {
++    //   if (hwloc__xml_verbose())
++	//fprintf(stderr, "%s: failed to allocate v1distance matrix for %lu objects\n",
++	//	state->global->msgprefix, nbobjs);
+-      if (hwloc__xml_verbose())
+-	fprintf(stderr, "%s: failed to allocate v1distance matrix for %lu objects\n",
+-		state->global->msgprefix, nbobjs);
+       free(v1dist);
+       free(matrix);
+       return -1;
+@@ -672,8 +672,8 @@
+       /* distances with a single object are useless, even if the XML isn't invalid */
+       assert(nbobjs == 1);
+       if (hwloc__xml_verbose())
++	// fprintf(stderr, "%s: ignoring invalid distance matrix with only 1 object\n",
++	//	state->global->msgprefix);
+-	fprintf(stderr, "%s: ignoring invalid distance matrix with only 1 object\n",
+-		state->global->msgprefix);
+       free(matrix);
+       free(v1dist);
+ 
+@@ -797,7 +797,7 @@
+     hwloc_bitmap_asprintf(&cc2, old->complete_cpuset);
+   hwloc_obj_type_snprintf(t2, sizeof(t2), old, 0);
+ 
++  /*fprintf(stderr, "****************************************************************************\n");
+-  fprintf(stderr, "****************************************************************************\n");
+   fprintf(stderr, "* hwloc has encountered an out-of-order XML topology load.\n");
+   fprintf(stderr, "* Object %s cpuset %s complete %s\n",
+ 	  t1, c1, cc1);
+@@ -814,7 +814,7 @@
+     fprintf(stderr, "* the input XML was generated by an unspecified ancient hwloc release.\n");
+   fprintf(stderr, "* Please check that your input topology XML file is valid.\n");
+   fprintf(stderr, "* Set HWLOC_DEBUG_CHECK=1 in the environment to detect further issues.\n");
++  fprintf(stderr, "****************************************************************************\n");*/
+-  fprintf(stderr, "****************************************************************************\n");
+ 
+   free(c1);
+   free(cc1);
+@@ -853,9 +853,9 @@
+ 	  if (!parent)
+ 	    obj->type = HWLOC_OBJ_MACHINE;
+ 	  else {
++	    // if (hwloc__xml_verbose())
++	    //  fprintf(stderr, "%s: obsolete System object only allowed at root\n",
++		//      state->global->msgprefix);
+-	    if (hwloc__xml_verbose())
+-	      fprintf(stderr, "%s: obsolete System object only allowed at root\n",
+-		      state->global->msgprefix);
+ 	    goto error_with_object;
+ 	  }
+ 	} else if (!strcasecmp(attrvalue, "Tile")) {
+@@ -870,22 +870,22 @@
+ 	  /* ignore possible future type */
+ 	  obj->type = _HWLOC_OBJ_FUTURE;
+ 	  ignored = 1;
++	  // if (hwloc__xml_verbose())
++	   // fprintf(stderr, "%s: %s object not-supported, will be ignored\n",
++		//    state->global->msgprefix, attrvalue);
+-	  if (hwloc__xml_verbose())
+-	    fprintf(stderr, "%s: %s object not-supported, will be ignored\n",
+-		    state->global->msgprefix, attrvalue);
+ 	} else {
++	  //if (hwloc__xml_verbose())
++	  //  fprintf(stderr, "%s: unrecognized object type string %s\n",
++		//    state->global->msgprefix, attrvalue);
+-	  if (hwloc__xml_verbose())
+-	    fprintf(stderr, "%s: unrecognized object type string %s\n",
+-		    state->global->msgprefix, attrvalue);
+ 	  goto error_with_object;
+ 	}
+       }
+     } else {
+       /* type needed first */
+       if (obj->type == HWLOC_OBJ_TYPE_NONE) {
++	//if (hwloc__xml_verbose())
++	  // fprintf(stderr, "%s: object attribute %s found before type\n",
++	//	  state->global->msgprefix,  attrname);
+-	if (hwloc__xml_verbose())
+-	  fprintf(stderr, "%s: object attribute %s found before type\n",
+-		  state->global->msgprefix,  attrname);
+ 	goto error_with_object;
+       }
+       hwloc__xml_import_object_attr(topology, data, obj, attrname, attrvalue, state, &ignored);
+@@ -913,9 +913,9 @@
+       } else if (!parent) {
+ 	ret = hwloc__xml_import_pagetype(topology, &topology->machine_memory, &childstate);
+       } else {
++	// if (hwloc__xml_verbose())
++	//  fprintf(stderr, "%s: invalid non-NUMAnode object child %s\n",
++	//	  state->global->msgprefix, tag);
+-	if (hwloc__xml_verbose())
+-	  fprintf(stderr, "%s: invalid non-NUMAnode object child %s\n",
+-		  state->global->msgprefix, tag);
+ 	ret = -1;
+       }
+ 
+@@ -926,9 +926,9 @@
+     } else if (!strcmp(tag, "userdata")) {
+       ret = hwloc__xml_import_userdata(topology, obj, &childstate);
+     } else {
++    //  if (hwloc__xml_verbose())
++	// fprintf(stderr, "%s: invalid special object child %s\n",
++	//	state->global->msgprefix, tag);
+-      if (hwloc__xml_verbose())
+-	fprintf(stderr, "%s: invalid special object child %s\n",
+-		state->global->msgprefix, tag);
+       ret = -1;
+     }
+ 
+@@ -947,23 +947,23 @@
+     /* check parent/child types for 2.x */
+     if (hwloc__obj_type_is_normal(obj->type)) {
+       if (!hwloc__obj_type_is_normal(parent->type)) {
++	// if (hwloc__xml_verbose())
++	//  fprintf(stderr, "normal object %s cannot be child of non-normal parent %s\n",
++	//	  hwloc_obj_type_string(obj->type), hwloc_obj_type_string(parent->type));
+-	if (hwloc__xml_verbose())
+-	  fprintf(stderr, "normal object %s cannot be child of non-normal parent %s\n",
+-		  hwloc_obj_type_string(obj->type), hwloc_obj_type_string(parent->type));
+ 	goto error_with_object;
+       }
+     } else if (hwloc__obj_type_is_memory(obj->type)) {
+       if (hwloc__obj_type_is_io(parent->type) || HWLOC_OBJ_MISC == parent->type) {
++	// if (hwloc__xml_verbose())
++	//  fprintf(stderr, "Memory object %s cannot be child of non-normal-or-memory parent %s\n",
++	//	  hwloc_obj_type_string(obj->type), hwloc_obj_type_string(parent->type));
+-	if (hwloc__xml_verbose())
+-	  fprintf(stderr, "Memory object %s cannot be child of non-normal-or-memory parent %s\n",
+-		  hwloc_obj_type_string(obj->type), hwloc_obj_type_string(parent->type));
+ 	goto error_with_object;
+       }
+     } else if (hwloc__obj_type_is_io(obj->type)) {
+       if (hwloc__obj_type_is_memory(parent->type) || HWLOC_OBJ_MISC == parent->type) {
++	//if (hwloc__xml_verbose())
++	//  fprintf(stderr, "I/O object %s cannot be child of non-normal-or-I/O parent %s\n",
++	//	  hwloc_obj_type_string(obj->type), hwloc_obj_type_string(parent->type));
+-	if (hwloc__xml_verbose())
+-	  fprintf(stderr, "I/O object %s cannot be child of non-normal-or-I/O parent %s\n",
+-		  hwloc_obj_type_string(obj->type), hwloc_obj_type_string(parent->type));
+ 	goto error_with_object;
+       }
+     }
+@@ -972,16 +972,16 @@
+     /* check parent/child types for pre-v2.0 */
+     if (hwloc__obj_type_is_normal(obj->type) || HWLOC_OBJ_NUMANODE == obj->type) {
+       if (hwloc__obj_type_is_special(parent->type)) {
++	//if (hwloc__xml_verbose())
++	//  fprintf(stderr, "v1.x normal v1.x object %s cannot be child of special parent %s\n",
++	//	  hwloc_obj_type_string(obj->type), hwloc_obj_type_string(parent->type));
+-	if (hwloc__xml_verbose())
+-	  fprintf(stderr, "v1.x normal v1.x object %s cannot be child of special parent %s\n",
+-		  hwloc_obj_type_string(obj->type), hwloc_obj_type_string(parent->type));
+ 	goto error_with_object;
+       }
+     } else if (hwloc__obj_type_is_io(obj->type)) {
+       if (HWLOC_OBJ_MISC == parent->type) {
++	// if (hwloc__xml_verbose())
++	//  fprintf(stderr, "I/O object %s cannot be child of Misc parent\n",
++	//	  hwloc_obj_type_string(obj->type));
+-	if (hwloc__xml_verbose())
+-	  fprintf(stderr, "I/O object %s cannot be child of Misc parent\n",
+-		  hwloc_obj_type_string(obj->type));
+ 	goto error_with_object;
+       }
+     }
+@@ -1069,9 +1069,9 @@
+       if (obj->type == HWLOC_OBJ_GROUP) {
+ 	ignored = 1;
+       } else {
++	// if (hwloc__xml_verbose())
++	  // fprintf(stderr, "%s: invalid object %s P#%u with some missing cpusets\n",
++		//  state->global->msgprefix, hwloc_obj_type_string(obj->type), obj->os_index);
+-	if (hwloc__xml_verbose())
+-	  fprintf(stderr, "%s: invalid object %s P#%u with some missing cpusets\n",
+-		  state->global->msgprefix, hwloc_obj_type_string(obj->type), obj->os_index);
+ 	goto error_with_object;
+       }
+     } else if (!obj->nodeset != !obj->complete_nodeset) {
+@@ -1079,9 +1079,9 @@
+       if (obj->type == HWLOC_OBJ_GROUP) {
+ 	ignored = 1;
+       } else {
++	// if (hwloc__xml_verbose())
++	  // fprintf(stderr, "%s: invalid object %s P#%u with some missing nodesets\n",
++	//	  state->global->msgprefix, hwloc_obj_type_string(obj->type), obj->os_index);
+-	if (hwloc__xml_verbose())
+-	  fprintf(stderr, "%s: invalid object %s P#%u with some missing nodesets\n",
+-		  state->global->msgprefix, hwloc_obj_type_string(obj->type), obj->os_index);
+ 	goto error_with_object;
+       }
+     } else if (obj->nodeset && !obj->cpuset) {
+@@ -1089,9 +1089,9 @@
+       if (obj->type == HWLOC_OBJ_GROUP) {
+ 	ignored = 1;
+       } else {
++	// if (hwloc__xml_verbose())
++	//  fprintf(stderr, "%s: invalid object %s P#%u with either cpuset or nodeset missing\n",
++	//	  state->global->msgprefix, hwloc_obj_type_string(obj->type), obj->os_index);
+-	if (hwloc__xml_verbose())
+-	  fprintf(stderr, "%s: invalid object %s P#%u with either cpuset or nodeset missing\n",
+-		  state->global->msgprefix, hwloc_obj_type_string(obj->type), obj->os_index);
+ 	goto error_with_object;
+       }
+     }
+@@ -1108,46 +1108,46 @@
+   /* check that cache attributes are coherent with the actual type */
+   if (hwloc__obj_type_is_cache(obj->type)
+       && obj->type != hwloc_cache_type_by_depth_type(obj->attr->cache.depth, obj->attr->cache.type)) {
++    // if (hwloc__xml_verbose())
++    //  fprintf(stderr, "%s: invalid cache type %s with attribute depth %u and type %d\n",
++	//      state->global->msgprefix, hwloc_obj_type_string(obj->type), obj->attr->cache.depth, (int) obj->attr->cache.type);
+-    if (hwloc__xml_verbose())
+-      fprintf(stderr, "%s: invalid cache type %s with attribute depth %u and type %d\n",
+-	      state->global->msgprefix, hwloc_obj_type_string(obj->type), obj->attr->cache.depth, (int) obj->attr->cache.type);
+     goto error_with_object;
+   }
+ 
+   /* check special types vs cpuset */
+   if (!obj->cpuset && !hwloc__obj_type_is_special(obj->type)) {
++    // if (hwloc__xml_verbose())
++    //  fprintf(stderr, "%s: invalid normal object %s P#%u without cpuset\n",
++	//      state->global->msgprefix, hwloc_obj_type_string(obj->type), obj->os_index);
+-    if (hwloc__xml_verbose())
+-      fprintf(stderr, "%s: invalid normal object %s P#%u without cpuset\n",
+-	      state->global->msgprefix, hwloc_obj_type_string(obj->type), obj->os_index);
+     goto error_with_object;
+   }
+   if (obj->cpuset && hwloc__obj_type_is_special(obj->type)) {
++    // if (hwloc__xml_verbose())
++    //  fprintf(stderr, "%s: invalid special object %s with cpuset\n",
++	//      state->global->msgprefix, hwloc_obj_type_string(obj->type));
+-    if (hwloc__xml_verbose())
+-      fprintf(stderr, "%s: invalid special object %s with cpuset\n",
+-	      state->global->msgprefix, hwloc_obj_type_string(obj->type));
+     goto error_with_object;
+   }
+ 
+   /* check parent vs child sets */
+   if (obj->cpuset && parent && !parent->cpuset) {
++    // if (hwloc__xml_verbose())
++    //  fprintf(stderr, "%s: invalid object %s P#%u with cpuset while parent has none\n",
++	//      state->global->msgprefix, hwloc_obj_type_string(obj->type), obj->os_index);
+-    if (hwloc__xml_verbose())
+-      fprintf(stderr, "%s: invalid object %s P#%u with cpuset while parent has none\n",
+-	      state->global->msgprefix, hwloc_obj_type_string(obj->type), obj->os_index);
+     goto error_with_object;
+   }
+   if (obj->nodeset && parent && !parent->nodeset) {
++    // if (hwloc__xml_verbose())
++    //  fprintf(stderr, "%s: invalid object %s P#%u with nodeset while parent has none\n",
++	//      state->global->msgprefix, hwloc_obj_type_string(obj->type), obj->os_index);
+-    if (hwloc__xml_verbose())
+-      fprintf(stderr, "%s: invalid object %s P#%u with nodeset while parent has none\n",
+-	      state->global->msgprefix, hwloc_obj_type_string(obj->type), obj->os_index);
+     goto error_with_object;
+   }
+ 
+   /* check NUMA nodes */
+   if (obj->type == HWLOC_OBJ_NUMANODE) {
+     if (!obj->nodeset) {
++    //  if (hwloc__xml_verbose())
++	// fprintf(stderr, "%s: invalid NUMA node object P#%u without nodeset\n",
++	//	state->global->msgprefix, obj->os_index);
+-      if (hwloc__xml_verbose())
+-	fprintf(stderr, "%s: invalid NUMA node object P#%u without nodeset\n",
+-		state->global->msgprefix, obj->os_index);
+       goto error_with_object;
+     }
+     data->nbnumanodes++;
+@@ -1187,9 +1187,9 @@
+ 				     &childrengotignored,
+ 				     &childstate);
+     } else {
++    //  if (hwloc__xml_verbose())
++	// fprintf(stderr, "%s: invalid special object child %s while looking for objects\n",
++	//	state->global->msgprefix, tag);
+-      if (hwloc__xml_verbose())
+-	fprintf(stderr, "%s: invalid special object child %s while looking for objects\n",
+-		state->global->msgprefix, tag);
+       ret = -1;
+     }
+ 
+@@ -1285,9 +1285,9 @@
+     else if (!strcmp(attrname, "value"))
+       value = atoi(attrvalue);
+     else {
++    //  if (hwloc__xml_verbose())
++	//fprintf(stderr, "%s: ignoring unknown support attribute %s\n",
++	//	state->global->msgprefix, attrname);
+-      if (hwloc__xml_verbose())
+-	fprintf(stderr, "%s: ignoring unknown support attribute %s\n",
+-		state->global->msgprefix, attrname);
+     }
+   }
+ 
+@@ -1373,9 +1373,9 @@
+       nbobjs = strtoul(attrvalue, NULL, 10);
+     else if (!strcmp(attrname, "type")) {
+       if (hwloc_type_sscanf(attrvalue, &unique_type, NULL, 0) < 0) {
++	// if (hwloc__xml_verbose())
++	//  fprintf(stderr, "%s: unrecognized %s type %s\n",
++	//	  state->global->msgprefix, _TAG_NAME, attrvalue);
+-	if (hwloc__xml_verbose())
+-	  fprintf(stderr, "%s: unrecognized %s type %s\n",
+-		  state->global->msgprefix, _TAG_NAME, attrvalue);
+ 	goto out;
+       }
+     }
+@@ -1393,17 +1393,17 @@
+       name = attrvalue;
+     }
+     else {
++    //  if (hwloc__xml_verbose())
++	// fprintf(stderr, "%s: ignoring unknown %s attribute %s\n",
++	//	state->global->msgprefix, _TAG_NAME, attrname);
+-      if (hwloc__xml_verbose())
+-	fprintf(stderr, "%s: ignoring unknown %s attribute %s\n",
+-		state->global->msgprefix, _TAG_NAME, attrname);
+     }
+   }
+ 
+   /* abort if missing attribute */
+   if (!nbobjs || (!heterotypes && unique_type == HWLOC_OBJ_TYPE_NONE) || !indexing || !kind) {
++    // if (hwloc__xml_verbose())
++    //  fprintf(stderr, "%s: %s missing some attributes\n",
++	//      state->global->msgprefix, _TAG_NAME);
+-    if (hwloc__xml_verbose())
+-      fprintf(stderr, "%s: %s missing some attributes\n",
+-	      state->global->msgprefix, _TAG_NAME);
+     goto out;
+   }
+ 
+@@ -1412,9 +1412,9 @@
+   if (heterotypes)
+     different_types = malloc(nbobjs*sizeof(*different_types));
+   if (!indexes || !u64values || (heterotypes && !different_types)) {
++    // if (hwloc__xml_verbose())
++    //  fprintf(stderr, "%s: failed to allocate %s arrays for %u objects\n",
++	//      state->global->msgprefix, _TAG_NAME, nbobjs);
+-    if (hwloc__xml_verbose())
+-      fprintf(stderr, "%s: failed to allocate %s arrays for %u objects\n",
+-	      state->global->msgprefix, _TAG_NAME, nbobjs);
+     goto out_with_arrays;
+   }
+ 
+@@ -1438,26 +1438,26 @@
+     else if (!strcmp(tag, "u64values"))
+       is_u64values = 1;
+     if (!is_index && !is_u64values) {
++    //  if (hwloc__xml_verbose())
++	// fprintf(stderr, "%s: %s with unrecognized child %s\n",
++	//	state->global->msgprefix, _TAG_NAME, tag);
+-      if (hwloc__xml_verbose())
+-	fprintf(stderr, "%s: %s with unrecognized child %s\n",
+-		state->global->msgprefix, _TAG_NAME, tag);
+       goto out_with_arrays;
+     }
+ 
+     if (state->global->next_attr(&childstate, &attrname, &attrvalue) < 0
+ 	|| strcmp(attrname, "length")) {
++    //  if (hwloc__xml_verbose())
++	// fprintf(stderr, "%s: %s child must have length attribute\n",
++	//	state->global->msgprefix, _TAG_NAME);
+-      if (hwloc__xml_verbose())
+-	fprintf(stderr, "%s: %s child must have length attribute\n",
+-		state->global->msgprefix, _TAG_NAME);
+       goto out_with_arrays;
+     }
+     length = atoi(attrvalue);
+ 
+     ret = state->global->get_content(&childstate, &buffer, length);
+     if (ret < 0) {
++    //  if (hwloc__xml_verbose())
++	//fprintf(stderr, "%s: %s child needs content of length %d\n",
++	//	state->global->msgprefix, _TAG_NAME, length);
+-      if (hwloc__xml_verbose())
+-	fprintf(stderr, "%s: %s child needs content of length %d\n",
+-		state->global->msgprefix, _TAG_NAME, length);
+       goto out_with_arrays;
+     }
+ 
+@@ -1465,9 +1465,9 @@
+       /* get indexes */
+       const char *tmp, *tmp2;
+       if (nr_indexes >= nbobjs) {
++	// if (hwloc__xml_verbose())
++	  // fprintf(stderr, "%s: %s with more than %u indexes\n",
++	//	  state->global->msgprefix, _TAG_NAME, nbobjs);
+-	if (hwloc__xml_verbose())
+-	  fprintf(stderr, "%s: %s with more than %u indexes\n",
+-		  state->global->msgprefix, _TAG_NAME, nbobjs);
+ 	goto out_with_arrays;
+       }
+       tmp = buffer;
+@@ -1480,16 +1480,16 @@
+             /* reached the end of this indexes attribute */
+             break;
+ 	  if (hwloc_type_sscanf(tmp, &t, NULL, 0) < 0) {
++	    // if (hwloc__xml_verbose())
++	  //    fprintf(stderr, "%s: %s with unrecognized heterogeneous type %s\n",
++		//      state->global->msgprefix, _TAG_NAME, tmp);
+-	    if (hwloc__xml_verbose())
+-	      fprintf(stderr, "%s: %s with unrecognized heterogeneous type %s\n",
+-		      state->global->msgprefix, _TAG_NAME, tmp);
+ 	    goto out_with_arrays;
+ 	  }
+ 	  tmp2 = strchr(tmp, ':');
+ 	  if (!tmp2) {
++	    // if (hwloc__xml_verbose())
++	    //  fprintf(stderr, "%s: %s with missing colon after heterogeneous type %s\n",
++		//      state->global->msgprefix, _TAG_NAME, tmp);
+-	    if (hwloc__xml_verbose())
+-	      fprintf(stderr, "%s: %s with missing colon after heterogeneous type %s\n",
+-		      state->global->msgprefix, _TAG_NAME, tmp);
+ 	    goto out_with_arrays;
+ 	  }
+ 	  tmp = tmp2+1;
+@@ -1510,9 +1510,9 @@
+       /* get uint64_t values */
+       const char *tmp;
+       if (nr_u64values >= nbobjs*nbobjs) {
++	//if (hwloc__xml_verbose())
++	  // fprintf(stderr, "%s: %s with more than %u u64values\n",
++	//	  state->global->msgprefix, _TAG_NAME, nbobjs*nbobjs);
+-	if (hwloc__xml_verbose())
+-	  fprintf(stderr, "%s: %s with more than %u u64values\n",
+-		  state->global->msgprefix, _TAG_NAME, nbobjs*nbobjs);
+ 	goto out_with_arrays;
+       }
+       tmp = buffer;
+@@ -1534,9 +1534,9 @@
+ 
+     ret = state->global->close_tag(&childstate);
+     if (ret < 0) {
++    //  if (hwloc__xml_verbose())
++	// fprintf(stderr, "%s: %s with more than %u indexes\n",
++	//	state->global->msgprefix, _TAG_NAME, nbobjs);
+-      if (hwloc__xml_verbose())
+-	fprintf(stderr, "%s: %s with more than %u indexes\n",
+-		state->global->msgprefix, _TAG_NAME, nbobjs);
+       goto out_with_arrays;
+     }
+ 
+@@ -1544,37 +1544,37 @@
+   }
+ 
+   if (nr_indexes != nbobjs) {
++  //  if (hwloc__xml_verbose())
++  //    fprintf(stderr, "%s: %s with less than %u indexes\n",
++	//      state->global->msgprefix, _TAG_NAME, nbobjs);
+-    if (hwloc__xml_verbose())
+-      fprintf(stderr, "%s: %s with less than %u indexes\n",
+-	      state->global->msgprefix, _TAG_NAME, nbobjs);
+     goto out_with_arrays;
+   }
+   if (nr_u64values != nbobjs*nbobjs) {
++    // if (hwloc__xml_verbose())
++      // fprintf(stderr, "%s: %s with less than %u u64values\n",
++	 //     state->global->msgprefix, _TAG_NAME, nbobjs*nbobjs);
+-    if (hwloc__xml_verbose())
+-      fprintf(stderr, "%s: %s with less than %u u64values\n",
+-	      state->global->msgprefix, _TAG_NAME, nbobjs*nbobjs);
+     goto out_with_arrays;
+   }
+ 
+   if (nbobjs < 2) {
+     /* distances with a single object are useless, even if the XML isn't invalid */
++    // if (hwloc__xml_verbose())
++    //  fprintf(stderr, "%s: ignoring %s with only %u objects\n",
++	//      state->global->msgprefix, _TAG_NAME, nbobjs);
+-    if (hwloc__xml_verbose())
+-      fprintf(stderr, "%s: ignoring %s with only %u objects\n",
+-	      state->global->msgprefix, _TAG_NAME, nbobjs);
+     goto out_ignore;
+   }
+   if (unique_type == HWLOC_OBJ_PU || unique_type == HWLOC_OBJ_NUMANODE) {
+     if (!os_indexing) {
++    //  if (hwloc__xml_verbose())
++	//fprintf(stderr, "%s: ignoring PU or NUMA %s without os_indexing\n",
++	//	state->global->msgprefix, _TAG_NAME);
+-      if (hwloc__xml_verbose())
+-	fprintf(stderr, "%s: ignoring PU or NUMA %s without os_indexing\n",
+-		state->global->msgprefix, _TAG_NAME);
+       goto out_ignore;
+     }
+   } else {
+     if (!gp_indexing) {
++    //  if (hwloc__xml_verbose())
++	//fprintf(stderr, "%s: ignoring !PU or !NUMA %s without gp_indexing\n",
++	//	state->global->msgprefix, _TAG_NAME);
+-      if (hwloc__xml_verbose())
+-	fprintf(stderr, "%s: ignoring !PU or !NUMA %s without gp_indexing\n",
+-		state->global->msgprefix, _TAG_NAME);
+       goto out_ignore;
+     }
+   }
+@@ -1637,30 +1637,30 @@
+     else if (!strcmp(attrname, "initiator_obj_type"))
+       initiator_obj_type_s = attrvalue;
+     else {
++      //if (hwloc__xml_verbose())
++      //  fprintf(stderr, "%s: ignoring unknown memattr_value attribute %s\n",
++      //          state->global->msgprefix, attrname);
+-      if (hwloc__xml_verbose())
+-        fprintf(stderr, "%s: ignoring unknown memattr_value attribute %s\n",
+-                state->global->msgprefix, attrname);
+       return -1;
+     }
+   }
+ 
+   if (!target_obj_type_s) {
++    //if (hwloc__xml_verbose())
++      // fprintf(stderr, "%s: ignoring memattr_value without target_obj_type.\n",
++      //        state->global->msgprefix);
+-    if (hwloc__xml_verbose())
+-      fprintf(stderr, "%s: ignoring memattr_value without target_obj_type.\n",
+-              state->global->msgprefix);
+     return -1;
+   }
+   if (hwloc_type_sscanf(target_obj_type_s, &target_obj_type, NULL, 0) < 0) {
++    //if (hwloc__xml_verbose())
++      // fprintf(stderr, "%s: failed to identify memattr_value target object type %s\n",
++      //        state->global->msgprefix, target_obj_type_s);
+-    if (hwloc__xml_verbose())
+-      fprintf(stderr, "%s: failed to identify memattr_value target object type %s\n",
+-              state->global->msgprefix, target_obj_type_s);
+     return -1;
+   }
+ 
+   if (!value_s || !target_obj_gp_index_s) {
++    // if (hwloc__xml_verbose())
++      // fprintf(stderr, "%s: ignoring memattr_value without value and target_obj_gp_index\n",
++      //        state->global->msgprefix);
+-    if (hwloc__xml_verbose())
+-      fprintf(stderr, "%s: ignoring memattr_value without value and target_obj_gp_index\n",
+-              state->global->msgprefix);
+     return -1;
+   }
+   target_obj_gp_index = strtoull(target_obj_gp_index_s, NULL, 10);
+@@ -1670,9 +1670,9 @@
+     /* add a value with initiator */
+     struct hwloc_internal_location_s loc;
+     if (!initiator_cpuset_s && (!initiator_obj_gp_index_s || !initiator_obj_type_s)) {
++      // if (hwloc__xml_verbose())
++      //  fprintf(stderr, "%s: ignoring memattr_value without initiator attributes\n",
++      //          state->global->msgprefix);
+-      if (hwloc__xml_verbose())
+-        fprintf(stderr, "%s: ignoring memattr_value without initiator attributes\n",
+-                state->global->msgprefix);
+       return -1;
+     }
+ 
+@@ -1681,9 +1681,9 @@
+       loc.type = HWLOC_LOCATION_TYPE_CPUSET;
+       loc.location.cpuset = hwloc_bitmap_alloc();
+       if (!loc.location.cpuset) {
++        // if (hwloc__xml_verbose())
++        //  fprintf(stderr, "%s: failed to allocated memattr_value initiator cpuset\n",
++        //          state->global->msgprefix);
+-        if (hwloc__xml_verbose())
+-          fprintf(stderr, "%s: failed to allocated memattr_value initiator cpuset\n",
+-                  state->global->msgprefix);
+         return -1;
+       }
+       hwloc_bitmap_sscanf(loc.location.cpuset, initiator_cpuset_s);
+@@ -1691,9 +1691,9 @@
+       loc.type = HWLOC_LOCATION_TYPE_OBJECT;
+       loc.location.object.gp_index = strtoull(initiator_obj_gp_index_s, NULL, 10);
+       if (hwloc_type_sscanf(initiator_obj_type_s, &loc.location.object.type, NULL, 0) < 0) {
++        // if (hwloc__xml_verbose())
++        //  fprintf(stderr, "%s: failed to identify memattr_value initiator object type %s\n",
++        //          state->global->msgprefix, initiator_obj_type_s);
+-        if (hwloc__xml_verbose())
+-          fprintf(stderr, "%s: failed to identify memattr_value initiator object type %s\n",
+-                  state->global->msgprefix, initiator_obj_type_s);
+         return -1;
+       }
+     }
+@@ -1729,9 +1729,9 @@
+     else if (!strcmp(attrname, "flags"))
+       flags = strtoul(attrvalue, NULL, 10);
+     else {
++      // if (hwloc__xml_verbose())
++        // fprintf(stderr, "%s: ignoring unknown memattr attribute %s\n",
++        //        state->global->msgprefix, attrname);
+-      if (hwloc__xml_verbose())
+-        fprintf(stderr, "%s: ignoring unknown memattr attribute %s\n",
+-                state->global->msgprefix, attrname);
+       return -1;
+     }
+   }
+@@ -1767,9 +1767,9 @@
+     if (!strcmp(tag, "memattr_value")) {
+       ret = hwloc__xml_import_memattr_value(topology, id, flags, &childstate);
+     } else {
++      // if (hwloc__xml_verbose())
++        // fprintf(stderr, "%s: memattr with unrecognized child %s\n",
++        //        state->global->msgprefix, tag);
+-      if (hwloc__xml_verbose())
+-        fprintf(stderr, "%s: memattr with unrecognized child %s\n",
+-                state->global->msgprefix, tag);
+       ret = -1;
+     }
+ 
+@@ -1806,9 +1806,9 @@
+     } else if (!strcmp(attrname, "forced_efficiency")) {
+       forced_efficiency = atoi(attrvalue);
+     } else {
++      //if (hwloc__xml_verbose())
++      //  fprintf(stderr, "%s: ignoring unknown cpukind attribute %s\n",
++      //          state->global->msgprefix, attrname);
+-      if (hwloc__xml_verbose())
+-        fprintf(stderr, "%s: ignoring unknown cpukind attribute %s\n",
+-                state->global->msgprefix, attrname);
+       hwloc_bitmap_free(cpuset);
+       return -1;
+     }
+@@ -1829,9 +1829,9 @@
+       if (!ret && infoname && infovalue)
+         hwloc__add_info(&infos, &nr_infos, infoname, infovalue);
+     } else {
++      //if (hwloc__xml_verbose())
++        //fprintf(stderr, "%s: cpukind with unrecognized child %s\n",
++        //        state->global->msgprefix, tag);
+-      if (hwloc__xml_verbose())
+-        fprintf(stderr, "%s: cpukind with unrecognized child %s\n",
+-                state->global->msgprefix, tag);
+       ret = -1;
+     }
+ 
+@@ -1842,9 +1842,9 @@
+   }
+ 
+   if (!cpuset) {
++    //if (hwloc__xml_verbose())
++      //fprintf(stderr, "%s: ignoring cpukind without cpuset\n",
++      //        state->global->msgprefix);
+-    if (hwloc__xml_verbose())
+-      fprintf(stderr, "%s: ignoring cpukind without cpuset\n",
+-              state->global->msgprefix);
+     goto error;
+   }
+ 
+@@ -1899,9 +1899,9 @@
+     else if (!strcmp(attrname, "obj_attr_newvalue"))
+       obj_attr_newvalue_s = attrvalue;
+     else {
++    //  if (hwloc__xml_verbose())
++	//fprintf(stderr, "%s: ignoring unknown diff attribute %s\n",
++	//	state->global->msgprefix, attrname);
+-      if (hwloc__xml_verbose())
+-	fprintf(stderr, "%s: ignoring unknown diff attribute %s\n",
+-		state->global->msgprefix, attrname);
+       return -1;
+     }
+   }
+@@ -1917,17 +1917,17 @@
+ 
+       /* obj_attr mandatory generic attributes */
+       if (!obj_depth_s || !obj_index_s || !obj_attr_type_s) {
++	//if (hwloc__xml_verbose())
++	//  fprintf(stderr, "%s: missing mandatory obj attr generic attributes\n",
++	//	  state->global->msgprefix);
+-	if (hwloc__xml_verbose())
+-	  fprintf(stderr, "%s: missing mandatory obj attr generic attributes\n",
+-		  state->global->msgprefix);
+ 	break;
+       }
+ 
+       /* obj_attr mandatory attributes common to all subtypes */
+       if (!obj_attr_oldvalue_s || !obj_attr_newvalue_s) {
++	//if (hwloc__xml_verbose())
++	//  fprintf(stderr, "%s: missing mandatory obj attr value attributes\n",
++	//	  state->global->msgprefix);
+-	if (hwloc__xml_verbose())
+-	  fprintf(stderr, "%s: missing mandatory obj attr value attributes\n",
+-		  state->global->msgprefix);
+ 	break;
+       }
+ 
+@@ -1935,8 +1935,8 @@
+       obj_attr_type = atoi(obj_attr_type_s);
+       if (obj_attr_type == HWLOC_TOPOLOGY_DIFF_OBJ_ATTR_INFO && !obj_attr_name_s) {
+ 	if (hwloc__xml_verbose())
++	//  fprintf(stderr, "%s: missing mandatory obj attr info name attribute\n",
++	//	  state->global->msgprefix);
+-	  fprintf(stderr, "%s: missing mandatory obj attr info name attribute\n",
+-		  state->global->msgprefix);
+ 	break;
+       }
+ 
+@@ -2095,9 +2095,9 @@
+     goto failed;
+ 
+   if (data->version_major > 2) {
++    //if (hwloc__xml_verbose())
++    //  fprintf(stderr, "%s: cannot import XML version %u.%u > 2\n",
++	//      data->msgprefix, data->version_major, data->version_minor);
+-    if (hwloc__xml_verbose())
+-      fprintf(stderr, "%s: cannot import XML version %u.%u > 2\n",
+-	      data->msgprefix, data->version_major, data->version_minor);
+     goto err;
+   }
+ 
+@@ -2145,9 +2145,9 @@
+         if (ret < 0)
+           goto failed;
+       } else {
++	//if (hwloc__xml_verbose())
++	  //fprintf(stderr, "%s: ignoring unknown tag `%s' after root object.\n",
++	//	  data->msgprefix, tag);
+-	if (hwloc__xml_verbose())
+-	  fprintf(stderr, "%s: ignoring unknown tag `%s' after root object.\n",
+-		  data->msgprefix, tag);
+ 	goto done;
+       }
+       state.global->close_child(&childstate);
+@@ -2159,9 +2159,9 @@
+ 
+ done:
+   if (!root->cpuset) {
++    //if (hwloc__xml_verbose())
++    //  fprintf(stderr, "%s: invalid root object without cpuset\n",
++	//      data->msgprefix);
+-    if (hwloc__xml_verbose())
+-      fprintf(stderr, "%s: invalid root object without cpuset\n",
+-	      data->msgprefix);
+     goto err;
+   }
+ 
+@@ -2229,15 +2229,15 @@
+   if (data->version_major >= 2) {
+     /* v2 must have non-empty nodesets since at least one NUMA node is required */
+     if (!root->nodeset) {
++  //    if (hwloc__xml_verbose())
++	// fprintf(stderr, "%s: invalid root object without nodeset\n",
++	//	data->msgprefix);
+-      if (hwloc__xml_verbose())
+-	fprintf(stderr, "%s: invalid root object without nodeset\n",
+-		data->msgprefix);
+       goto err;
+     }
+     if (hwloc_bitmap_iszero(root->nodeset)) {
++    //  if (hwloc__xml_verbose())
++	//fprintf(stderr, "%s: invalid root object with empty nodeset\n",
++	//	data->msgprefix);
+-      if (hwloc__xml_verbose())
+-	fprintf(stderr, "%s: invalid root object with empty nodeset\n",
+-		data->msgprefix);
+       goto err;
+     }
+   } else {
+@@ -2269,9 +2269,9 @@
+  failed:
+   if (data->look_done)
+     data->look_done(data, -1);
++  // if (hwloc__xml_verbose())
++  //  fprintf(stderr, "%s: XML component discovery failed.\n",
++	//    data->msgprefix);
+-  if (hwloc__xml_verbose())
+-    fprintf(stderr, "%s: XML component discovery failed.\n",
+-	    data->msgprefix);
+  err:
+   hwloc_free_object_siblings_and_children(root->first_child);
+   root->first_child = NULL;
+@@ -2672,8 +2672,8 @@
+ 
+       logical_to_v2array = malloc(nbobjs * sizeof(*logical_to_v2array));
+       if (!logical_to_v2array) {
++        // if (HWLOC_SHOW_ALL_ERRORS())
++        //  fprintf(stderr, "hwloc/xml/export/v1: failed to allocated logical_to_v2array\n");
+-        if (HWLOC_SHOW_ALL_ERRORS())
+-          fprintf(stderr, "hwloc/xml/export/v1: failed to allocated logical_to_v2array\n");
+ 	continue;
+       }
+ 
+--- hwloc/hwloc/topology.c
++++ hwloc.orig/hwloc/topology.c
+@@ -175,7 +175,7 @@
+     report_insert_error_format_obj(newstr, sizeof(newstr), new);
+     report_insert_error_format_obj(oldstr, sizeof(oldstr), old);
+ 
++    /*fprintf(stderr, "****************************************************************************\n");
+-    fprintf(stderr, "****************************************************************************\n");
+     fprintf(stderr, "* hwloc %s received invalid information from the operating system.\n", HWLOC_VERSION);
+     fprintf(stderr, "*\n");
+     fprintf(stderr, "* Failed with: %s\n", msg);
+@@ -184,15 +184,15 @@
+     fprintf(stderr, "*\n");
+     fprintf(stderr, "* The following FAQ entry in the hwloc documentation may help:\n");
+     fprintf(stderr, "*   What should I do when hwloc reports \"operating system\" warnings?\n");
++    fprintf(stderr, "* Otherwise please report this error message to the hwloc user's mailing list,\n");*/
++//#ifdef HWLOC_LINUX_SYS
++//    fprintf(stderr, "* along with the files generated by the hwloc-gather-topology script.\n");
++//#else
++//    fprintf(stderr, "* along with any relevant topology information from your platform.\n");
++//#endif
++/*    fprintf(stderr, "* \n");
+-    fprintf(stderr, "* Otherwise please report this error message to the hwloc user's mailing list,\n");
+-#ifdef HWLOC_LINUX_SYS
+-    fprintf(stderr, "* along with the files generated by the hwloc-gather-topology script.\n");
+-#else
+-    fprintf(stderr, "* along with any relevant topology information from your platform.\n");
+-#endif
+-    fprintf(stderr, "* \n");
+     fprintf(stderr, "* hwloc will now ignore this invalid topology information and continue.\n");
++    fprintf(stderr, "****************************************************************************\n");*/
+-    fprintf(stderr, "****************************************************************************\n");
+     reported = 1;
+   }
+ }
+@@ -3199,8 +3199,8 @@
+       tmpnbobjs = realloc(topology->level_nbobjects,
+ 			  2 * topology->nb_levels_allocated * sizeof(*topology->level_nbobjects));
+       if (!tmplevels || !tmpnbobjs) {
++        //if (HWLOC_SHOW_CRITICAL_ERRORS())
++        //  fprintf(stderr, "hwloc: failed to realloc level arrays to %u\n", topology->nb_levels_allocated * 2);
+-        if (HWLOC_SHOW_CRITICAL_ERRORS())
+-          fprintf(stderr, "hwloc: failed to realloc level arrays to %u\n", topology->nb_levels_allocated * 2);
+ 
+ 	/* if one realloc succeeded, make sure the caller will free the new buffer */
+ 	if (tmplevels)
+@@ -3590,18 +3590,18 @@
+   hwloc_debug("%s", "\nRemoving empty objects\n");
+   remove_empty(topology, &topology->levels[0][0]);
+   if (!topology->levels[0][0]) {
++    //if (HWLOC_SHOW_CRITICAL_ERRORS())
++    //  fprintf(stderr, "hwloc: Topology became empty, aborting!\n");
+-    if (HWLOC_SHOW_CRITICAL_ERRORS())
+-      fprintf(stderr, "hwloc: Topology became empty, aborting!\n");
+     return -1;
+   }
+   if (hwloc_bitmap_iszero(topology->levels[0][0]->cpuset)) {
++    // if (HWLOC_SHOW_CRITICAL_ERRORS())
++    //  fprintf(stderr, "hwloc: Topology does not contain any PU, aborting!\n");
+-    if (HWLOC_SHOW_CRITICAL_ERRORS())
+-      fprintf(stderr, "hwloc: Topology does not contain any PU, aborting!\n");
+     return -1;
+   }
+   if (hwloc_bitmap_iszero(topology->levels[0][0]->nodeset)) {
++    // if (HWLOC_SHOW_CRITICAL_ERRORS())
++    //  fprintf(stderr, "hwloc: Topology does not contain any NUMA node, aborting!\n");
+-    if (HWLOC_SHOW_CRITICAL_ERRORS())
+-      fprintf(stderr, "hwloc: Topology does not contain any NUMA node, aborting!\n");
+     return -1;
+   }
+   hwloc_debug_print_objects(0, topology->levels[0][0]);
