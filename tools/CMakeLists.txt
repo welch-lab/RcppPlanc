@@ -146,11 +146,11 @@ ExternalProject_Add(
     CMAKE_CACHE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_CURRENT_BINARY_DIR} -DHIGHFIVE_EXAMPLES:BOOL=OFF -DHIGHFIVE_BUILD_DOCS:BOOL=OFF -DHIGHFIVE_USE_BOOST:BOOL=OFF -DHIGHFIVE_UNIT_TESTS:BOOL=OFF -DHIGHFIVE_HAS_CONCEPTS:BOOL=OFF $<$<BOOL:${WIN32}>:-DHIGHFIVE_STATIC_HDF5:BOOL=ON>
 )
 ExternalProject_Get_Property(HighFive_Configure SOURCE_DIR BINARY_DIR)
-find_package(HighFive PATHS ${BINARY_DIR})
+find_package(HighFive REQUIRED PATHS ${BINARY_DIR})
 if(WIN32)
     target_link_libraries(RcppPlanc PRIVATE "${R_HOME}/bin/x64/R.dll")
 endif()
-target_link_libraries(RcppPlanc PRIVATE ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} HighFive hw_detect)
+target_link_libraries(RcppPlanc PRIVATE ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} HighFive::HighFive hw_detect)
 #target_include_directories(RcppPlanc BEFORE PRIVATE ${HighFive_BINARY_DIR}/include)
 if(OpenMP_CXX_FOUND)
 target_compile_options(RcppPlanc PRIVATE ${OpenMP_CXX_FLAGS})
