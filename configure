@@ -38,4 +38,4 @@ $CMAKE ../tools \
   -DR_HOME="$R_HOME" \
   -DR_LDFLAGS="$R_LDFLAGS"
 
-echo "" >> _deps/highfive-src/include/highfive/bits/H5Friends.hpp
+#echo "" >> _deps/highfive-src/include/highfive/bits/H5Friends.hpp

@@ -29,4 +29,4 @@ cmake ../tools \
 
 mv Makefile Makefile.ucrt
 
-echo "" >> _deps/highfive-src/include/highfive/bits/H5Friends.hpp
+#echo "" >> _deps/highfive-src/include/highfive/bits/H5Friends.hpp
