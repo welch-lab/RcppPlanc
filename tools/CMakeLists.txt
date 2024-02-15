@@ -14,6 +14,7 @@ project(RcppPlanc VERSION 1.0.0 LANGUAGES C CXX)
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 include(CheckIncludeFile)
 include(CheckCXXCompilerFlag)
+include(FetchContent)
 include(ExternalProject)
 include(cmake/FindRModule.cmake)
 
@@ -137,20 +138,24 @@ add_library(hw_detect OBJECT "${PROJECT_SOURCE_DIR}/../src/common/hw_detect.c")
     endif()
 endif()
 
-ExternalProject_Add(
-    HighFive_Configure
+set(HIGHFIVE_EXAMPLES OFF CACHE INTERNAL BOOL)
+set(HIGHFIVE_BUILD_DOCS OFF CACHE INTERNAL BOOL)
+set(HIGHFIVE_USE_BOOST OFF CACHE INTERNAL BOOL)
+set(HIGHFIVE_UNIT_TESTS OFF CACHE INTERNAL BOOL)
+set(HIGHFIVE_HAS_CONCEPTS OFF CACHE INTERNAL BOOL)
+if(WIN32)
+    set(HIGHFIVE_STATIC_HDF5 ON CACHE INTERNAL BOOL)
+endif()
+FetchContent_Declare(
+    HighFive
     GIT_REPOSITORY https://github.com/BlueBrain/HighFive.git
     GIT_TAG v2.9.0
-    GIT_SHALLOW TRUE
-    GIT_REMOTE_UPDATE_STRATEGY CHECKOUT
-    CMAKE_CACHE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_CURRENT_BINARY_DIR}/deps/ -DHIGHFIVE_EXAMPLES:BOOL=OFF -DHIGHFIVE_BUILD_DOCS:BOOL=OFF -DHIGHFIVE_USE_BOOST:BOOL=OFF -DHIGHFIVE_UNIT_TESTS:BOOL=OFF -DHIGHFIVE_HAS_CONCEPTS:BOOL=OFF $<$<BOOL:${WIN32}>:-DHIGHFIVE_STATIC_HDF5:BOOL=ON>
 )
-ExternalProject_Get_Property(HighFive_Configure SOURCE_DIR BINARY_DIR INSTALL_DIR)
-find_package(HighFive REQUIRED PATHS ${INSTALL_DIR})
+FetchContent_MakeAvailable(HighFive)
 if(WIN32)
     target_link_libraries(RcppPlanc PRIVATE "${R_HOME}/bin/x64/R.dll")
 endif()
-target_link_libraries(RcppPlanc PRIVATE ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} HighFive::HighFive hw_detect)
+target_link_libraries(RcppPlanc PRIVATE ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} HighFive hw_detect)
 #target_include_directories(RcppPlanc BEFORE PRIVATE ${HighFive_BINARY_DIR}/include)
 if(OpenMP_CXX_FOUND)
 target_compile_options(RcppPlanc PRIVATE ${OpenMP_CXX_FLAGS})
@@ -220,20 +225,20 @@ endif()
 endif()
 
 add_custom_command(TARGET RcppPlanc POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E remove ${BINARY_DIR}/CMakeFiles/hdf5/cmake_hdf5_test.c
+        COMMAND ${CMAKE_COMMAND} -E remove ${HighFive_BINARY_DIR}/CMakeFiles/hdf5/cmake_hdf5_test.c
         VERBATIM)
 if(WIN32)
 add_custom_command(TARGET RcppPlanc POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E remove ${SOURCE_DIR}/Makefile
+        COMMAND ${CMAKE_COMMAND} -E remove ${HighFive_SOURCE_DIR}/Makefile
         VERBATIM)
 add_custom_command(TARGET RcppPlanc POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E remove ${BINARY_DIR}/CMakeFiles/hdf5/cmake_hdf5_test.c
+        COMMAND ${CMAKE_COMMAND} -E remove ${HighFive_BINARY_DIR}/CMakeFiles/hdf5/cmake_hdf5_test.c
         VERBATIM)
 add_custom_command(TARGET RcppPlanc POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E remove ${SOURCE_DIR}/include/highfive/H5Version.hpp
+        COMMAND ${CMAKE_COMMAND} -E remove ${HighFive_SOURCE_DIR}/include/highfive/H5Version.hpp
         VERBATIM)
 add_custom_command(TARGET RcppPlanc POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E remove ${INSTALL_DIR}/include/highfive/H5Version.hpp
+        COMMAND ${CMAKE_COMMAND} -E remove ${HighFive_BINARY_DIR}/include/highfive/H5Version.hpp
         VERBATIM)
 add_custom_command(TARGET RcppPlanc POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E remove ${PROJECT_SOURCE_DIR}/../src/CMakeFiles/CheckTypeSize/SIZE_OF_VOIDP.c
