@@ -120,8 +120,8 @@ add_library(hw_detect OBJECT "${PROJECT_SOURCE_DIR}/../src/common/hw_detect.c")
         URL https://download.open-mpi.org/release/hwloc/v2.9/hwloc-2.9.3.tar.gz
         URL_HASH SHA256=5985db3a30bbe51234c2cd26ebe4ae9b4c3352ab788b1a464c40c0483bf4de59
         PATCH_COMMAND ${CMAKE_COMMAND} -E cat ${hwloc_patch_list} | ${PATCH} -p1 -l
-        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E env "CFLAGS=-Wno-comment -DNDEBUG $ENV{CFLAGS}" sh ../hwloc/configure --with-pic --prefix=${hwloc_SOURCE_DIR}/out/ --disable-picky --enable-shared=no --enable-static=yes
-        --disable-cairo --disable-libxml2 --disable-io --disable-plugin-dlopen --disable-plugin-ltdl --enable-embedded-mode $<$<BOOL:${WIN32}>:--build=x86_64-w64-mingw32>
+        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E env CFLAGS="-Wno-comment -DNDEBUG $ENV{CFLAGS}" sh ../hwloc/configure --with-pic --prefix=${hwloc_SOURCE_DIR}/out/ --disable-picky --enable-shared=no --enable-static=yes
+        --disable-cairo --disable-libxml2 --disable-io --disable-plugin-dlopen --disable-plugin-ltdl --enable-embedded-mode $<$<BOOL:${WIN32}>:--build=x86_64-w64-mingw32> $<$<BOOL:${APPLE}>:--build=*-*-darwin20>
         DOWNLOAD_EXTRACT_TIMESTAMP TRUE
         LIST_SEPARATOR " "
         VERSION 2.9.3

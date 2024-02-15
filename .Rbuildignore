@@ -4,6 +4,7 @@
 ^LICENSE-UT\.md$
 ^.*\.vscode
 ^.*\.vs
+^.*\.github
 cmake-build-relwithdebinfo
 cmake-build-debug
 cmake-build-relwithdebinfo-mingw-r
