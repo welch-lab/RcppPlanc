@@ -81,6 +81,10 @@ jobs:
         with:
           job-config: ${{ matrix.config.job-config }}
           token: ${{ secrets.RHUB_TOKEN }}
+      - name: "Install OSX deps"
+        if: ${{ runner.os == 'macOS' }}
+        run: $(which brew) install hdf5 pandoc
+        shell: bash
       - uses: r-hub/rhub2/actions/rhub-platform-info@v1
         with:
           token: ${{ secrets.RHUB_TOKEN }}
@@ -89,7 +93,6 @@ jobs:
         with:
           job-config: ${{ matrix.config.job-config }}
           token: ${{ secrets.RHUB_TOKEN }}
-          extra-packages: hdf5, pandoc
       - uses: r-hub/rhub2/actions/rhub-run-check@v1
         with:
           job-config: ${{ matrix.config.job-config }}
