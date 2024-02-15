@@ -38,6 +38,7 @@ else()
 endif()
 set_target_properties(RcppPlanc PROPERTIES PREFIX "")
 if(APPLE)
+target_link_libraries(RcppPlanc PRIVATE "-framework R")
 set_target_properties(RcppPlanc PROPERTIES SUFFIX ".so")
 endif()
 target_include_directories(RcppPlanc
