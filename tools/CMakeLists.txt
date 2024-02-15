@@ -34,7 +34,7 @@ add_library(RcppPlanc SHARED "${PROJECT_SOURCE_DIR}/../src/rcppplanc_nmf.cpp" "$
 if(WIN32)
 target_link_options(RcppPlanc PRIVATE -static-libgcc $<$<CONFIG:RELEASE>:-s> $<$<CONFIG:RELWITHDEBINFO>:-s>)
 else()
-    target_link_directories(RcppPlanc PRIVATE ${R_LDFLAGS})
+    target_link_options(RcppPlanc PRIVATE "-shared")
 endif()
 set_target_properties(RcppPlanc PROPERTIES PREFIX "")
 if(APPLE)

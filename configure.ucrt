@@ -8,9 +8,9 @@ fi
 CC=`"${R_HOME}/bin/R" CMD config CC`
 CXX=`"${R_HOME}/bin/R" CMD config CXX`
 CFLAGS=`"${R_HOME}/bin/R" CMD config CFLAGS`
-CPPFLAGS=`"${R_HOME}/bin/R" CMD config --cppflags`
+CPPFLAGS=`"${R_HOME}/bin/R" CMD config CPPFLAGS`
 CXXFLAGS=`"${R_HOME}/bin/R" CMD config CXXFLAGS`
-LDFLAGS=`"${R_HOME}/bin/R" CMD config --ldflags`
+LDFLAGS=`"${R_HOME}/bin/R" CMD config LDFLAGS`
 FLIBS=`"${R_HOME}/bin/R" CMD config FLIBS`
 
 CFLAGS="$CPPFLAGS $CFLAGS"
