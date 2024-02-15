@@ -85,6 +85,10 @@ jobs:
         if: ${{ runner.os == 'macOS' }}
         run: $(which brew) install hdf5 pandoc
         shell: bash
+      - name: "Install Windows deps"
+        if: ${{ runner.os == 'Windows' }}
+        run: C:\ProgramData\Chocolatey\bin\choco.exe install pandoc
+        shell: powershell
       - uses: r-hub/rhub2/actions/rhub-platform-info@v1
         with:
           token: ${{ secrets.RHUB_TOKEN }}
