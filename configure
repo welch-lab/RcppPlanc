@@ -36,4 +36,4 @@ $CMAKE ../tools \
   -DCMAKE_C_COMPILER="$CC" \
   -DCMAKE_CXX_COMPILER="$CXX" \
   -DR_HOME="$R_HOME"
-#echo "" >> _deps/highfive-src/include/highfive/bits/H5Friends.hpp
+echo "" >> _deps/highfive-src/include/highfive/bits/H5Friends.hpp
