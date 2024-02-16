@@ -1,7 +1,5 @@
-Index: hwloc/hwloc/topology-freebsd.c
-===================================================================
---- hwloc.orig/hwloc/topology-freebsd.c
-+++ hwloc/hwloc/topology-freebsd.c
+--- a/hwloc/topology-freebsd.c
++++ b/hwloc/topology-freebsd.c
 @@ -394,7 +394,7 @@ set_locality_info(hwloc_topology_t topol
      return -1;
    }
@@ -11,10 +9,8 @@ Index: hwloc/hwloc/topology-freebsd.c
      ptr = strstr(locality, nb);
      ptr = ptr + 2;
      for(int j = 0 ; j < ndomains ; j++){
-Index: hwloc/hwloc/topology-linux.c
-===================================================================
---- hwloc.orig/hwloc/topology-linux.c
-+++ hwloc/hwloc/topology-linux.c
+--- a/hwloc/topology-linux.c
++++ b/hwloc/topology-linux.c
 @@ -2588,7 +2588,7 @@ hwloc_get_sysfs_node_meminfo(struct hwlo
    uint64_t remaining_local_memory;
    int err;
@@ -383,10 +379,8 @@ Index: hwloc/hwloc/topology-linux.c
  	  hwloc_read_path_as_uint(str, &lines_per_tag, data->root_fd);
  
  	  /* first cpu in this cache, add the cache */
-Index: hwloc/hwloc/topology-rsmi.c
-===================================================================
---- hwloc.orig/hwloc/topology-rsmi.c
-+++ hwloc/hwloc/topology-rsmi.c
+--- a/hwloc/topology-rsmi.c
++++ b/hwloc/topology-rsmi.c
 @@ -347,7 +347,7 @@ hwloc_rsmi_discover(struct hwloc_backend
            continue;
          if ((get_device_io_link_type(i, j, &type, &hops) == 0) &&
@@ -396,10 +390,8 @@ Index: hwloc/hwloc/topology-rsmi.c
            xgmi_bws[i*nb+j] = 100000; /* TODO: verify the XGMI version before putting 100GB/s here? */
            xgmi_hops[i*nb+j] = hops;
            got_xgmi_bws = 1;
-Index: hwloc/hwloc/topology-windows.c
-===================================================================
---- hwloc.orig/hwloc/topology-windows.c
-+++ hwloc/hwloc/topology-windows.c
+--- a/hwloc/topology-windows.c
++++ b/hwloc/topology-windows.c
 @@ -1279,7 +1279,7 @@ hwloc_look_windows(struct hwloc_backend
        hwloc_obj_add_info(topology->levels[0][0], "OSRelease", "Vista"); /* or "Server 2008" */
    } /* earlier versions are ignored */
@@ -409,16 +401,14 @@ Index: hwloc/hwloc/topology-windows.c
    hwloc_obj_add_info(topology->levels[0][0], "OSVersion", versionstr);
  
  #if !defined(__CYGWIN__)
-Index: hwloc/hwloc/topology-xml.c
-===================================================================
---- hwloc.orig/hwloc/topology-xml.c
-+++ hwloc/hwloc/topology-xml.c
+--- a/hwloc/topology-xml.c
++++ b/hwloc/topology-xml.c
 @@ -741,7 +741,7 @@ hwloc__xml_import_userdata(hwloc_topolog
        fakename = malloc(6 + 1 + (name ? strlen(name) : 4) + 1);
        if (!fakename)
  	return -1;
 -      sprintf(fakename, encoded ? "base64%c%s" : "normal%c%s", name ? ':' : '-', name ? name : "anon");
-+      snprintf(fakename, sizeof(fakename), encoded ? "base64%c%s" : "normal%c%s", name ? ':' : '-', name ? name : "anon");
++      snprintf(fakename, 6 + 1 + (name ? strlen(name) : 4) + 1, encoded ? "base64%c%s" : "normal%c%s", name ? ':' : '-', name ? name : "anon");
        topology->userdata_import_cb(topology, obj, fakename, buffer, length);
        free(fakename);
  
@@ -664,10 +654,8 @@ Index: hwloc/hwloc/topology-xml.c
    state.new_prop(&state, "length", tmp);
    if (encoded)
      state.new_prop(&state, "encoding", "base64");
-Index: hwloc/include/hwloc/cuda.h
-===================================================================
---- hwloc.orig/include/hwloc/cuda.h
-+++ hwloc/include/hwloc/cuda.h
+--- a/include/hwloc/cuda.h
++++ b/include/hwloc/cuda.h
 @@ -112,7 +112,7 @@ hwloc_cuda_get_device_cpuset(hwloc_topol
      return -1;
    }
@@ -677,10 +665,8 @@ Index: hwloc/include/hwloc/cuda.h
    if (hwloc_linux_read_path_as_cpumask(path, set) < 0
        || hwloc_bitmap_iszero(set))
      hwloc_bitmap_copy(set, hwloc_topology_get_complete_cpuset(topology));
-Index: hwloc/include/hwloc/cudart.h
-===================================================================
---- hwloc.orig/include/hwloc/cudart.h
-+++ hwloc/include/hwloc/cudart.h
+--- a/include/hwloc/cudart.h
++++ b/include/hwloc/cudart.h
 @@ -109,7 +109,7 @@ hwloc_cudart_get_device_cpuset(hwloc_top
      return -1;
    }
@@ -690,10 +676,8 @@ Index: hwloc/include/hwloc/cudart.h
    if (hwloc_linux_read_path_as_cpumask(path, set) < 0
        || hwloc_bitmap_iszero(set))
      hwloc_bitmap_copy(set, hwloc_topology_get_complete_cpuset(topology));
-Index: hwloc/include/hwloc/levelzero.h
-===================================================================
---- hwloc.orig/include/hwloc/levelzero.h
-+++ hwloc/include/hwloc/levelzero.h
+--- a/include/hwloc/levelzero.h
++++ b/include/hwloc/levelzero.h
 @@ -82,7 +82,7 @@ hwloc_levelzero_get_device_cpuset(hwloc_
      return -1;
    }
@@ -703,10 +687,8 @@ Index: hwloc/include/hwloc/levelzero.h
            pci.address.domain, pci.address.bus, pci.address.device, pci.address.function);
    if (hwloc_linux_read_path_as_cpumask(path, set) < 0
        || hwloc_bitmap_iszero(set))
-Index: hwloc/include/hwloc/nvml.h
-===================================================================
---- hwloc.orig/include/hwloc/nvml.h
-+++ hwloc/include/hwloc/nvml.h
+--- a/include/hwloc/nvml.h
++++ b/include/hwloc/nvml.h
 @@ -77,7 +77,7 @@ hwloc_nvml_get_device_cpuset(hwloc_topol
      return -1;
    }
@@ -716,10 +698,8 @@ Index: hwloc/include/hwloc/nvml.h
    if (hwloc_linux_read_path_as_cpumask(path, set) < 0
        || hwloc_bitmap_iszero(set))
      hwloc_bitmap_copy(set, hwloc_topology_get_complete_cpuset(topology));
-Index: hwloc/include/hwloc/opencl.h
-===================================================================
---- hwloc.orig/include/hwloc/opencl.h
-+++ hwloc/include/hwloc/opencl.h
+--- a/include/hwloc/opencl.h
++++ b/include/hwloc/opencl.h
 @@ -154,7 +154,7 @@ hwloc_opencl_get_device_cpuset(hwloc_top
  		return 0;
  	}
@@ -729,10 +709,8 @@ Index: hwloc/include/hwloc/opencl.h
  	if (hwloc_linux_read_path_as_cpumask(path, set) < 0
  	    || hwloc_bitmap_iszero(set))
  		hwloc_bitmap_copy(set, hwloc_topology_get_complete_cpuset(topology));
-Index: hwloc/include/hwloc/openfabrics-verbs.h
-===================================================================
---- hwloc.orig/include/hwloc/openfabrics-verbs.h
-+++ hwloc/include/hwloc/openfabrics-verbs.h
+--- a/include/hwloc/openfabrics-verbs.h
++++ b/include/hwloc/openfabrics-verbs.h
 @@ -76,7 +76,7 @@ hwloc_ibv_get_device_cpuset(hwloc_topolo
      return -1;
    }
@@ -742,10 +720,8 @@ Index: hwloc/include/hwloc/openfabrics-verbs.h
  	  ibv_get_device_name(ibdev));
    if (hwloc_linux_read_path_as_cpumask(path, set) < 0
        || hwloc_bitmap_iszero(set))
-Index: hwloc/include/hwloc/rsmi.h
-===================================================================
---- hwloc.orig/include/hwloc/rsmi.h
-+++ hwloc/include/hwloc/rsmi.h
+--- a/include/hwloc/rsmi.h
++++ b/include/hwloc/rsmi.h
 @@ -85,7 +85,7 @@ hwloc_rsmi_get_device_cpuset(hwloc_topol
    bus = ((bdfid & 0xffff)>>8) & 0xff;
    device = ((bdfid & 0xff)>>3) & 0x1f;
