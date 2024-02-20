@@ -43,6 +43,16 @@ set_target_properties(RcppPlanc PROPERTIES SUFFIX ".so")
 endif()
 target_include_directories(RcppPlanc
 PRIVATE "${PROJECT_SOURCE_DIR}/../src/common;${PROJECT_SOURCE_DIR}/../src/nnls;${PROJECT_SOURCE_DIR}/../src/nmf")
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+execute_process(COMMAND clang -v ERROR_VARIABLE CLANGID)
+string(REGEX MATCH "\\(.*\\)" CLANGPARSE ${CLANGID})
+if(CLANGPARSE MATCHES "\\(CLANG\\: AOCC.*")
+set(BLA_VENDOR AOCL_mt)
+target_compile_options(RcppPlanc PRIVATE -zopt -O3 -flto -fstrip-mining -freciprocal-math -finline-recursion=3
+                                     -fremap-arrays -fnt-store=aggressive -mrecip=all -optimize-strided-mem-cost
+                                     -fenable-aggressive-gather -favoid-fpe-causing-opt)
+endif()
+endif()
 
 set(MKL_DIR "${PROJECT_SOURCE_DIR}/cmake")
 find_package(MKL QUIET)
