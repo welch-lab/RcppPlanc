@@ -163,7 +163,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(HighFive)
 if(WIN32)
     target_link_libraries(RcppPlanc PRIVATE "${R_HOME}/bin/x64/R.dll")
-else()
+elseif(LINUX)
     #rhel 8 libstdc++ unexported symbol workaround
     check_cxx_symbol_exists(std::filesystem::exists "filesystem" HAVE_FS)
     if(NOT HAVE_FS)
