@@ -17,6 +17,12 @@
 #elif defined(HAVE_OPENBLAS_CBLAS_H)
 #include "openblas/cblas.h"
 #else
+#if defined(BLAS_IMPLICIT)
+#if defined(USING_R)
+#include "R_ext/BLAS.h"
+#endif
+#include "cblas.h"
+#endif
 #include "cblas.h"
 #endif
 #endif
