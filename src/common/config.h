@@ -7,7 +7,11 @@
 #else
 
 #if defined(__APPLE__)
-#include <vecLib/cblas.h>
+#if defined(HARDCODED_VECLIB)
+#include <cblas.h>
+#else
+#include "vecLib/cblas.h"
+#endif
 #elif defined(HAVE_FLEXIBLAS_CBLAS_H)
 #include "flexiblas/cblas.h"
 #elif defined(HAVE_OPENBLAS_CBLAS_H)
