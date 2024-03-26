@@ -37,5 +37,6 @@ $CMAKE ../tools \
   -DCMAKE_POSITION_INDEPENDENT_CODE:bool=ON \
   -DCMAKE_C_COMPILER="$CC" \
   -DCMAKE_CXX_COMPILER="$CXX" \
-  -DR_HOME="$R_HOME"
+  -DR_HOME="$R_HOME" \
+  -DPASSTHROUGH_CONFIGURE_ARGS="$@"
 echo "" >> _deps/highfive-src/include/highfive/bits/H5Friends.hpp
