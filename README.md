@@ -14,8 +14,29 @@ implements wrappers for the vanilla NMF and NNLS algorithms. It also implements 
 OS on ARM64 will always use the built in [vecLib](https://developer.apple.com/documentation/accelerate/veclib?language=objc) framework.)
 - A modern R toolchain (Rtools on Windows, the system toolchain on UNIX-alikes)
 - A modern R (tested on 4.2+)
-- CMake >=3.16
+- CMake >=3.22
 - HDF5 (tested against 1.12.0)
+
+## Installation
+
+### From Source:
+1. Install the requirements above.
+2. Ensure your libraries can be found by CMake.
+3. `devtools::install_github(welch-lab/RcppPlanc)`
+### Binary (R-universe, CRAN pending)
+#### MacOS x86-64 and Windows
+`install.packages('RcppPlanc', repos = c('https://welch-lab.r-universe.dev', 'https://cloud.r-project.org'))`
+#### Ubuntu 22.04 (YMMV on other linuxes)
+1. Ensure libhdf5, libhwloc, and libopenblas are installed.
+
+```
+install.packages("RcppPlanc", repos = c(
+linux = 'https://welch-lab.r-universe.dev/bin/linux/jammy/4.3',
+sources = 'https://welch-lab.r-universe.dev',
+cran = 'https://cloud.r-project.org'))
+```
+#### MacOS arm64
+Wait for https://github.com/r-universe-org/help/issues/387 to be resolved or install from source.
 
 ## Caveats
 
