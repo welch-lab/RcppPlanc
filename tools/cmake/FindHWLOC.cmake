@@ -26,7 +26,7 @@
 #  HWLOC_INCDIR          - Where to find the header files
 #  HWLOC_LIBDIR          - Where to find the library files
 #
-# For CMakeLikst.txt, do:
+# For CMakeLists.txt, do:
 #   find_package(HWLOC)
 #   target_link_libraries(hw_detect PRIVATE "${HWLOC_LDFLAGS}")
 #   target_include_directories(hw_detect PRIVATE "${HWLOC_INCLUDE_DIRS}")
@@ -354,6 +354,7 @@ if (PKG_CONFIG_EXECUTABLE AND HWLOC_FOUND)
   find_package_handle_standard_args(HWLOC DEFAULT_MSG
     HWLOC_LIBRARIES)
 else()
+  set(HWLOC_LDFLAGS ${HWLOC_LIBRARIES})
   find_package_handle_standard_args(HWLOC DEFAULT_MSG
     HWLOC_LIBRARIES
     HWLOC_WORKS)
