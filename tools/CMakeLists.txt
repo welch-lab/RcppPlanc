@@ -40,7 +40,7 @@ else()
     target_link_options(RcppPlanc PRIVATE "-shared")
 endif()
 set_target_properties(RcppPlanc PROPERTIES PREFIX "")
-if(APPLE)
+if(APPLE AND R_SHLIB_EXT MATCHES ".so")
 set_target_properties(RcppPlanc PROPERTIES SUFFIX ${R_SHLIB_EXT})
 endif()
 target_include_directories(RcppPlanc
