@@ -41,7 +41,7 @@ else()
 endif()
 set_target_properties(RcppPlanc PROPERTIES PREFIX "")
 if(APPLE)
-set_target_properties(RcppPlanc PROPERTIES SUFFIX ".so")
+set_target_properties(RcppPlanc PROPERTIES SUFFIX ${R_SHLIB_EXT})
 endif()
 target_include_directories(RcppPlanc
 PRIVATE "${PROJECT_SOURCE_DIR}/../src/common;${PROJECT_SOURCE_DIR}/../src/nnls;${PROJECT_SOURCE_DIR}/../src/nmf")
