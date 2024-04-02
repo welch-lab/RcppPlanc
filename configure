@@ -42,5 +42,5 @@ $CMAKE ../tools \
   -DR_HOME="$R_HOME" \
   -DR_SHLIB_EXT="$R_SHLIB_EXT" \
   -DPASSTHROUGH_CONFIGURE_ARGS="$*" \
-  "${CMAKE_ARGS}
+  ${CMAKE_ARGS}
 echo "" >> _deps/highfive-src/include/highfive/bits/H5Friends.hpp
