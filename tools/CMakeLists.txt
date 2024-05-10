@@ -5,7 +5,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_
         list(PREPEND CMAKE_SYSTEM_PREFIX_PATH
                 /usr/local/ # Bandaid isysroot issues
         )
-        execute_process(COMMAND xcrun --sdk macosx --show-sdk-path COMMAND_ECHO STDERR)
+        execute_process(COMMAND xcrun --sdk macosx --show-sdk-path RESULTS_VARIABLE SDK_PATH)
+        message(STATUS ${SDK_PATH})
 endif()
 if(WIN32)
 SET(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
