@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.22 FATAL_ERROR)
 set(CMAKE_OSX_DEPLOYMENT_TARGET "11" CACHE STRING "Target MacOS Version")
 mark_as_advanced(CMAKE_OSX_DEPLOYMENT_TARGET)
-if(CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
-        list(PREPEND CMAKE_SYSTEM_PREFIX_PATH
-                /usr/local/ # Bandaid isysroot issues
-        )
+if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+        #list(PREPEND CMAKE_SYSTEM_PREFIX_PATH
+        #        /usr/local/ # Bandaid isysroot issues
+        #)
         execute_process(COMMAND xcrun --sdk macosx --show-sdk-path RESULTS_VARIABLE SDK_PATH)
         message(STATUS ${SDK_PATH})
 endif()
