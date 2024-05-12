@@ -6,9 +6,7 @@
 #define ARMA_USE_MKL_TYPES
 #else
 
-#if defined(__APPLE__)
-#include "vecLib/cblas.h"
-#elif defined(HAVE_FLEXIBLAS_CBLAS_H)
+#if defined(HAVE_FLEXIBLAS_CBLAS_H)
 #include "flexiblas/cblas.h"
 #elif defined(HAVE_OPENBLAS_CBLAS_H)
 #include "openblas/cblas.h"
