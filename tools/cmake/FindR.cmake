@@ -59,7 +59,12 @@ if(R_EXECUTABLE)
             R_VERSION_STRING "${R_VERSION_STRING}")
     endif()
 
-    set(R_HOME ${R_BASE_DIR} CACHE PATH "R home directory obtained from R RHOME")
+    
+    if(CMAKE_CROSSCOMPILING)
+      set(R_HOME $ENV{R_HOME_CROSS} CACHE PATH "R home directory obtained from R_HOME_CROSS environment variable")
+    else()
+      set(R_HOME ${R_BASE_DIR} CACHE PATH "R home directory obtained from R RHOME")
+    endif()
     mark_as_advanced(R_HOME)
 endif()
 
