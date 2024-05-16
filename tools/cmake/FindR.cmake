@@ -102,6 +102,8 @@ foreach(VAR IN LISTS MAKECONF_REPLACE)
     elseif(fromENV)
         cmake_path(CONVERT $ENV{${VARCLEAN}} TO_CMAKE_PATH_LIST TO_LIST)
         string(REPLACE "${VAR}" "${TO_LIST}" LIBR_STRING "${LIBR_STRING}")
+    else()
+        string(REPLACE "${VAR}" "" LIBR_STRING "${LIBR_STRING}")
     endif()
 endforeach()
     # Some cleanup in location of R.
