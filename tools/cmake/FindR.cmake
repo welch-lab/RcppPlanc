@@ -64,9 +64,6 @@ if(R_EXECUTABLE)
     mark_as_advanced(R_HOME)
 endif()
 
-# find libR by way of makeconf
-execute_process(COMMAND sed -e "s/LIBR = //" -e "t" -e "d"
-
 # Find the Rscript program.
 find_program(RSCRIPT_EXECUTABLE Rscript DOC "Rscript executable." HINTS "${R_HOME}/bin")
 
