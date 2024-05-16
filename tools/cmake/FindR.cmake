@@ -87,6 +87,7 @@ execute_process(COMMAND sed -e "s/LIBR = //" -e "t" -e "d" "${R_MAKECONF}"
                 OUTPUT_VARIABLE LIBR_STRING
                 ERROR_VARIABLE  LIBR_STRING
                 OUTPUT_STRIP_TRAILING_WHITESPACE)
+string(REGEX MATCHALL "\\$\\([A-Za-z0-9_]*\\)" MAKECONF_REPLACE ${LIBR_STRING})
 
     # Some cleanup in location of R.
     string(REGEX MATCHALL "\".*\"" _R_INCLUDE_location "${_R_INCLUDE_location}")
