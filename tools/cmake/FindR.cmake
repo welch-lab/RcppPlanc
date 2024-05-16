@@ -95,10 +95,11 @@ foreach(VAR IN LISTS MAKECONF_REPLACE)
             OUTPUT_VARIABLE TO_LIST
             ERROR_VARIABLE  TO_LIST
             OUTPUT_STRIP_TRAILING_WHITESPACE)
+    set(fromENV $ENV{${VARCLEAN}})
     if(TO_LIST)
         cmake_path(CONVERT ${TO_LIST} TO_CMAKE_PATH_LIST TO_LIST)
         string(REPLACE "${VAR}" "${TO_LIST}" LIBR_STRING "${LIBR_STRING}")
-    else()
+    elseif(fromENV)
         cmake_path(CONVERT $ENV{${VARCLEAN}} TO_CMAKE_PATH_LIST TO_LIST)
         string(REPLACE "${VAR}" "${TO_LIST}" LIBR_STRING "${LIBR_STRING}")
     endif()
