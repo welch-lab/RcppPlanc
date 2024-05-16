@@ -164,7 +164,9 @@ FetchContent_Declare(
     URL_HASH SHA256=6301def8ceb9f4d7a595988612db288b448a3c0546f6c83417dab38c64994d7e
 )
 FetchContent_MakeAvailable(HighFive)
+message("${R_LDFLAGS}")
 string(REPLACE " -lR" "" R_LDFLAGS ${R_LDFLAGS})
+message("${R_LDFLAGS}")
 target_link_options(RcppPlanc PRIVATE ${R_LDFLAGS})
 target_link_libraries(RcppPlanc PRIVATE "-lR")
 if(LINUX)
