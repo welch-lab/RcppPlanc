@@ -80,6 +80,8 @@ execute_process(COMMAND ${RSCRIPT_EXECUTABLE} --vanilla "-e" "file.path(R.home('
                 OUTPUT_VARIABLE R_MAKECONF
                 ERROR_VARIABLE  R_MAKECONF
                 OUTPUT_STRIP_TRAILING_WHITESPACE)
+string(REGEX MATCHALL "\".*\"" R_MAKECONF "${R_MAKECONF}")
+string(REGEX REPLACE "\"" "" R_MAKECONF "${R_MAKECONF}")
 # find libR by way of makeconf
 execute_process(COMMAND sed -e "s/LIBR = //" -e "t" -e "d" "${R_MAKECONF}"
                 OUTPUT_VARIABLE LIBR_STRING
@@ -89,7 +91,6 @@ execute_process(COMMAND sed -e "s/LIBR = //" -e "t" -e "d" "${R_MAKECONF}"
     # Some cleanup in location of R.
     string(REGEX MATCHALL "\".*\"" _R_INCLUDE_location "${_R_INCLUDE_location}")
     string(REGEX REPLACE "\"" "" _R_INCLUDE_location "${_R_INCLUDE_location}")
-    string(REGEX MATCHALL "\".*\"" LIBR_STRING "${LIBR_STRING}")
     string(REGEX REPLACE "\"" "" LIBR_STRING "${LIBR_STRING}")
     set(R_INCLUDE_DIR ${_R_INCLUDE_location})
     set(R_LDFLAGS ${LIBR_STRING})
