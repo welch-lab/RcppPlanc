@@ -88,7 +88,21 @@ execute_process(COMMAND sed -e "s/LIBR = //" -e "t" -e "d" "${R_MAKECONF}"
                 ERROR_VARIABLE  LIBR_STRING
                 OUTPUT_STRIP_TRAILING_WHITESPACE)
 string(REGEX MATCHALL "\\$\\([A-Za-z0-9_]*\\)" MAKECONF_REPLACE ${LIBR_STRING})
-
+foreach(VAR IN LISTS MAKECONF_REPLACE)
+    string(SUBSTRING ${VAR} 2 -1 VARCLEAN)
+    string(REPLACE ")" "" VARCLEAN ${VARCLEAN})
+    execute_process(COMMAND sed -e "s/${VARCLEAN} = //" -e "t" -e "d" "${R_MAKECONF}"
+            OUTPUT_VARIABLE TO_LIST
+            ERROR_VARIABLE  TO_LIST
+            OUTPUT_STRIP_TRAILING_WHITESPACE)
+    if(TO_LIST)
+        cmake_path(CONVERT ${TO_LIST} TO_CMAKE_PATH_LIST TO_LIST)
+        string(REPLACE "${VAR}" "${TO_LIST}" LIBR_STRING "${LIBR_STRING}")
+    else()
+        cmake_path(CONVERT $ENV{${VARCLEAN}} TO_CMAKE_PATH_LIST TO_LIST)
+        string(REPLACE "${VAR}" "${TO_LIST}" LIBR_STRING "${LIBR_STRING}")
+    endif()
+endforeach()
     # Some cleanup in location of R.
     string(REGEX MATCHALL "\".*\"" _R_INCLUDE_location "${_R_INCLUDE_location}")
     string(REGEX REPLACE "\"" "" _R_INCLUDE_location "${_R_INCLUDE_location}")
