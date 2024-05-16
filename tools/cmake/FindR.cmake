@@ -60,13 +60,12 @@ if(R_EXECUTABLE)
     endif()
 
     
-    if(CMAKE_CROSSCOMPILING)
-      set(R_HOME $ENV{R_HOME_CROSS} CACHE PATH "R home directory obtained from R_HOME_CROSS environment variable")
-    else()
-      set(R_HOME ${R_BASE_DIR} CACHE PATH "R home directory obtained from R RHOME")
-    endif()
+    set(R_HOME ${R_BASE_DIR} CACHE PATH "R home directory obtained from R RHOME")
     mark_as_advanced(R_HOME)
 endif()
+
+# find libR by way of makeconf
+execute_process(COMMAND sed -e "s/LIBR = //" -e "t" -e "d"
 
 # Find the Rscript program.
 find_program(RSCRIPT_EXECUTABLE Rscript DOC "Rscript executable." HINTS "${R_HOME}/bin")
@@ -80,13 +79,26 @@ execute_process(COMMAND ${RSCRIPT_EXECUTABLE} --vanilla "-e" "R.home('include')"
     ERROR_VARIABLE _R_INCLUDE_location
     OUTPUT_STRIP_TRAILING_WHITESPACE)
 
+execute_process(COMMAND ${RSCRIPT_EXECUTABLE} --vanilla "-e" "file.path(R.home('etc'), .Platform$r_arch, 'Makeconf')"
+                OUTPUT_VARIABLE R_MAKECONF
+                ERROR_VARIABLE  R_MAKECONF
+                OUTPUT_STRIP_TRAILING_WHITESPACE)
+# find libR by way of makeconf
+execute_process(COMMAND sed -e "s/LIBR = //" -e "t" -e "d" "${R_MAKECONF}"
+                OUTPUT_VARIABLE LIBR_STRING
+                ERROR_VARIABLE  LIBR_STRING
+                OUTPUT_STRIP_TRAILING_WHITESPACE)
+
     # Some cleanup in location of R.
     string(REGEX MATCHALL "\".*\"" _R_INCLUDE_location "${_R_INCLUDE_location}")
     string(REGEX REPLACE "\"" "" _R_INCLUDE_location "${_R_INCLUDE_location}")
+    string(REGEX MATCHALL "\".*\"" LIBR_STRING "${LIBR_STRING}")
+    string(REGEX REPLACE "\"" "" LIBR_STRING "${LIBR_STRING}")
     set(R_INCLUDE_DIR ${_R_INCLUDE_location})
+    set(R_LDFLAGS ${LIBR_STRING})
 
 mark_as_advanced(RSCRIPT_EXECUTABLE R_EXECUTABLE)
-set(_REQUIRED_R_VARIABLES R_EXECUTABLE RSCRIPT_EXECUTABLE R_INCLUDE_DIR)
+set(_REQUIRED_R_VARIABLES R_EXECUTABLE RSCRIPT_EXECUTABLE R_INCLUDE_DIR R_LDFLAGS)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
