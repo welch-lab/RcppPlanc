@@ -83,7 +83,7 @@ execute_process(COMMAND ${RSCRIPT_EXECUTABLE} --vanilla "-e" "file.path(R.home('
 string(REGEX MATCHALL "\".*\"" R_MAKECONF "${R_MAKECONF}")
 string(REGEX REPLACE "\"" "" R_MAKECONF "${R_MAKECONF}")
 # find libR by way of makeconf
-execute_process(COMMAND sed -e "s/LIBR = //" -e "t" -e "d" "${R_MAKECONF}"
+execute_process(COMMAND sed -e "s/^LIBR = //" -e "t" -e "d" "${R_MAKECONF}"
                 OUTPUT_VARIABLE LIBR_STRING
                 ERROR_VARIABLE  LIBR_STRING
                 OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -91,7 +91,7 @@ string(REGEX MATCHALL "\\$\\([A-Za-z0-9_]*\\)" MAKECONF_REPLACE ${LIBR_STRING})
 foreach(VAR IN LISTS MAKECONF_REPLACE)
     string(SUBSTRING ${VAR} 2 -1 VARCLEAN)
     string(REPLACE ")" "" VARCLEAN ${VARCLEAN})
-    execute_process(COMMAND sed -e "s/${VARCLEAN} = //" -e "t" -e "d" "${R_MAKECONF}"
+    execute_process(COMMAND sed -e "s/^${VARCLEAN} = //" -e "t" -e "d" "${R_MAKECONF}"
             OUTPUT_VARIABLE TO_LIST
             ERROR_VARIABLE  TO_LIST
             OUTPUT_STRIP_TRAILING_WHITESPACE)
