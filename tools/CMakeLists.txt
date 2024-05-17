@@ -156,6 +156,7 @@ set(HIGHFIVE_USE_BOOST OFF CACHE INTERNAL BOOL)
 set(HIGHFIVE_UNIT_TESTS OFF CACHE INTERNAL BOOL)
 set(HIGHFIVE_HAS_CONCEPTS OFF CACHE INTERNAL BOOL)
 if(WIN32 OR APPLE)
+    set(HDF5_USE_STATIC_LIBRARIES ON CACHE INTERNAL BOOL)
     set(HIGHFIVE_STATIC_HDF5 ON CACHE INTERNAL BOOL)
 endif()
 FetchContent_Declare(
@@ -164,6 +165,36 @@ FetchContent_Declare(
     URL_HASH SHA256=6301def8ceb9f4d7a595988612db288b448a3c0546f6c83417dab38c64994d7e
 )
 FetchContent_MakeAvailable(HighFive)
+# from https://gitlab.kitware.com/cmake/cmake/-/issues/18872#note_1090297
+# Since there is no compiler line to help us, add the additional required
+# libraries manually.
+set(_additional_libs sz aec z dl m)
+foreach(_additional_lib IN LISTS _additional_libs)
+    # If both static and shared are available, prefer static to avoid libdl
+    # annoyances ("Using 'dlopen' in statically linked applications requires
+    # at runtime the shared libraries from the glibc version used for
+    # linking")
+    if(HDF5_USE_STATIC_LIBRARIES)
+        set(_libnames ${_additional_lib} lib${_additional_lib}.a)
+    else()
+        set(_libnames ${_additional_lib})
+    endif(HDF5_USE_STATIC_LIBRARIES)
+    set(_libvar "LIB_${_additional_lib}")
+    find_library(${_libvar}
+            NAMES ${_libnames}
+            HINTS ${HDF5_ROOT}
+            PATH_SUFFIXES lib Lib
+            REQUIRED)
+    if(HDF5_FIND_DEBUG)
+        message(STATUS "${_additional_lib} (${_libvar}): ${${_libvar}}")
+    endif(HDF5_FIND_DEBUG)
+    if(${${_libvar}} STREQUAL "${_libvar}-NOTFOUND")
+        message(FATAL_ERROR "${_additional_lib} not found, required for HDF5 install")
+    endif()
+    list(APPEND HDF5_LIBRARIES ${${_libvar}})
+endforeach()
+list(REMOVE_DUPLICATES HDF5_LIBRARIES)
+
 string(REGEX MATCH "-lR" R_LINK_LINE ${R_LDFLAGS})
 string(REGEX MATCH "-framework R" R_FRAMEWORK_LINE ${R_LDFLAGS})
 string(REPLACE " -lR" "" R_LDFLAGS ${R_LDFLAGS})
@@ -177,7 +208,7 @@ if(LINUX)
     target_link_libraries(RcppPlanc PRIVATE stdc++fs)
     endif()
 endif()
-target_link_libraries(RcppPlanc PRIVATE ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} HighFive hw_detect)
+target_link_libraries(RcppPlanc PRIVATE ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} ${HDF5_LIBRARIES} HighFive hw_detect)
 #target_include_directories(RcppPlanc BEFORE PRIVATE ${HighFive_BINARY_DIR}/include)
 if(OpenMP_CXX_FOUND)
 target_compile_options(RcppPlanc PRIVATE ${OpenMP_CXX_FLAGS})
