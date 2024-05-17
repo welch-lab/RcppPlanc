@@ -166,6 +166,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(HighFive)
 message("${R_LDFLAGS}")
 string(REPLACE " -lR" "" R_LDFLAGS ${R_LDFLAGS})
+string(REPLACE " -framework R" "" R_LDFLAGS ${R_LDFLAGS})
 message("${R_LDFLAGS}")
 target_link_options(RcppPlanc PRIVATE ${R_LDFLAGS})
 target_link_libraries(RcppPlanc PRIVATE "-lR")
