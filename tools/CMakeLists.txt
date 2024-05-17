@@ -168,7 +168,7 @@ FetchContent_MakeAvailable(HighFive)
 # from https://gitlab.kitware.com/cmake/cmake/-/issues/18872#note_1090297
 # Since there is no compiler line to help us, add the additional required
 # libraries manually.
-set(_additional_libs sz aec z dl m)
+set(_additional_libs sz z dl m)
 foreach(_additional_lib IN LISTS _additional_libs)
     # If both static and shared are available, prefer static to avoid libdl
     # annoyances ("Using 'dlopen' in statically linked applications requires
