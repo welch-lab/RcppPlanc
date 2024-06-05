@@ -1,0 +1,3 @@
+[submodule "src/planc"]
+	path = src/planc
+	url = https://github.com/theAeon/planc.git

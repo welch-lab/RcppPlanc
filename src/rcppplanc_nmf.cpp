@@ -32,43 +32,12 @@ int m_initseed;
 arma::fvec m_regW;
 arma::fvec m_regH;
 
-// T1 e.g. BPPNMF<arma::sp_mat>
 // T2 e.g. arma::sp_mat
-template <class T1, class T2>
-Rcpp::List runNMF(T2 x, arma::uword k, const int& nCores, arma::uword niter,
+template <typename T2>
+Rcpp::List runNMF(T2 x, arma::uword k, const std::string& algo, const arma::uword& niter, const int& nCores,
                   Rcpp::Nullable<Rcpp::NumericMatrix> Winit,
                   Rcpp::Nullable<Rcpp::NumericMatrix> Hinit) {
-    arma::uword m = x.n_rows;
-    arma::uword n = x.n_cols;
-    if (k >= m) {
-        Rcpp::stop("`k` must be less than `nrow(x)`");
-    }
-    arma::mat W(m, k);
-    arma::mat H(n, k);
-    if (Winit.isNotNull()) {
-        W = Rcpp::as<arma::mat>(Winit);
-        if (W.n_rows != m || W.n_cols != k) {
-            Rcpp::stop("Winit must be of size " +
-              std::to_string(m) + " x " + std::to_string(k));
-        }
-    } else {
-        W = arma::randu<arma::mat>(m, k);
-    }
-    if (Hinit.isNotNull()) {
-        H = Rcpp::as<arma::mat>(Hinit);
-        if (H.n_rows != n || H.n_cols != k) {
-            Rcpp::stop("Hinit must be of size " +
-                std::to_string(n) + " x " + std::to_string(k));
-        }
-    } else {
-        H = arma::randu<arma::mat>(n, k);
-    }
-    T1 MyNMF(x, W, H, nCores);
-    MyNMF.num_iterations(niter);
-    MyNMF.symm_reg(-1);
-    // if (!m_regW.empty()) MyNMF.regW(m_regW);
-    // if (!m_regH.empty()) MyNMF.regH(m_regH);
-    MyNMF.computeNMF();
+    libcall = planc::nmf(x, k, niter, algo, Winit, Hinit);
     return Rcpp::List::create(
         Rcpp::Named("W") = MyNMF.getLeftLowRankFactor(),
         Rcpp::Named("H") = MyNMF.getRightLowRankFactor(),
@@ -117,46 +86,10 @@ Rcpp::List nmf(const SEXP& x, const arma::uword &k, const arma::uword &niter = 3
     Rcpp::List outlist;
     if (Rf_isS4(x)) {
         // Assume using dgCMatrix
-        if (algo == "anlsbpp") {
-            outlist = runNMF<planc::BPPNMF<arma::sp_mat>, arma::sp_mat>(
-                Rcpp::as<arma::sp_mat>(x), k, nCores, niter, Winit, Hinit
-            );
-        } else if (algo == "admm") {
-            outlist = runNMF<planc::AOADMMNMF<arma::sp_mat>, arma::sp_mat>(
-                Rcpp::as<arma::sp_mat>(x), k, nCores, niter, Winit, Hinit
-            );
-        } else if (algo == "hals") {
-            outlist = runNMF<planc::HALSNMF<arma::sp_mat>, arma::sp_mat>(
-                Rcpp::as<arma::sp_mat>(x), k, nCores, niter, Winit, Hinit
-            );
-        } else if (algo == "mu") {
-            outlist = runNMF<planc::MUNMF<arma::sp_mat>, arma::sp_mat>(
-                Rcpp::as<arma::sp_mat>(x), k, nCores, niter, Winit, Hinit
-            );
-        } else {
-          Rcpp::stop(R"(Please choose `algo` from "anlsbpp", "admm", "hals" or "mu".)");
-        }
+        outlist = runNMF<arma::sp_mat>(Rcpp::as<arma::sp_mat>(x), k, algo, niter, nCores, Winit, Hinit);
     } else {
         // Assume regular dense matrix
-        if (algo == "anlsbpp") {
-            outlist = runNMF<planc::BPPNMF<arma::mat>, arma::mat>(
-                Rcpp::as<arma::mat>(x), k, nCores, niter, Winit, Hinit
-            );
-        } else if (algo == "admm") {
-          outlist = runNMF<planc::AOADMMNMF<arma::mat>, arma::mat>(
-            Rcpp::as<arma::mat>(x), k, nCores, niter, Winit, Hinit
-          );
-        } else if (algo == "hals") {
-          outlist = runNMF<planc::HALSNMF<arma::mat>, arma::mat>(
-            Rcpp::as<arma::mat>(x), k, nCores, niter, Winit, Hinit
-          );
-        } else if (algo == "mu") {
-          outlist = runNMF<planc::MUNMF<arma::mat>, arma::mat>(
-            Rcpp::as<arma::mat>(x), k, nCores, niter, Winit, Hinit
-          );
-        } else {
-          Rcpp::stop(R"(Please choose `algo` from "anlsbpp", "admm", "hals" or "mu".)");
-        }
+        outlist = runNMF<arma::mat>(Rcpp::as<arma::mat>(x), k, algo, niter, nCores, Winit, Hinit);
     }
     return outlist;
 }
