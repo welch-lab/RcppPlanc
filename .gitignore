@@ -77,8 +77,6 @@ autom4te.cache
 /missing
 /stamp-h1
 
-src/Makevars
-src/Makevars.ucrt
 
 # https://www.gnu.org/software/libtool/
 

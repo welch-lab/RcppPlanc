@@ -4,3 +4,4 @@ rm -f src/*.o src/*.dll src/symbols.rds src/Makefile src/Makefile.ucrt src/*.cma
 rm -rf src/CMakefiles src/CPM_modules
 rm -rf src/_deps
 rm -rf src/hwloc-prefix
+rm -rf src/build

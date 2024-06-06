@@ -5,3 +5,4 @@ rm -rf src/CMakefiles src/CPM_modules
 rm inst/extdata/*transposed*
 rm -rf src/_deps
 rm -rf src/hwloc-prefix
+rm -rf src/build
