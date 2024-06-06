@@ -1,8 +1,8 @@
 // -*- mode: C++; c-indent-level: 4; c-basic-offset: 4; indent-tabs-mode: nil; -*-
 
 // we only include RcppArmadillo.h which pulls Rcpp.h in for us
-#include "config.h"
 #include <RcppArmadillo.h>
+#include "config.h"
 #include <progress.hpp>
 #include <functional>
 #include <utility>
