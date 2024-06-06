@@ -30,4 +30,4 @@ cmake -S ../planc \
   -DBUILD_SHARED_LIBS=OFF \
   -DBUILD_RCPP=ON
 
-${MAKE}
+cmake --build .
