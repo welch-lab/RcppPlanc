@@ -1,6 +1,3 @@
 [submodule "src/planc"]
 	path = src/planc
 	url = https://github.com/theAeon/planc.git
-[submodule "src/HighFive"]
-	path = src/HighFive
-	url = https://github.com/BlueBrain/HighFive.git
