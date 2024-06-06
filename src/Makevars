@@ -1,0 +1,2 @@
+PKG_CPPFLAGS = -Iplanc/common -Iplanc/nmf -Iplanc/nnls -IHighFive/include
+PKG_LIBS = build/libPLANC.a -lhdf5_hl -lhdf5 -lszip -ldl -lm
