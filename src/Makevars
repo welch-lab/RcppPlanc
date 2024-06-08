@@ -1,2 +1,2 @@
-PKG_CPPFLAGS = -Iplanc/common -Iplanc/nmf -Iplanc/nnls -IHighFive/include ${SHLIB_OPENMP_CXXFLAGS}
-PKG_LIBS = build/libnmflib.a ${SHLIB_OPENMP_CFLAGS} $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
+PKG_CPPFLAGS = -Iplanc/common -Iplanc/nmf -Iplanc/nnls -Ibuild/_deps/highfive-src/include -Ibuild/nmf ${SHLIB_OPENMP_CXXFLAGS}
+PKG_LIBS = build/lib/libnmflib.a ${SHLIB_OPENMP_CFLAGS} $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
