@@ -38,11 +38,31 @@ template <typename T2>
 Rcpp::List runNMF(T2 x, arma::uword k, const std::string& algo, const arma::uword& niter, const int& nCores,
                   Rcpp::Nullable<Rcpp::NumericMatrix> Winit,
                   Rcpp::Nullable<Rcpp::NumericMatrix> Hinit) {
-    libcall = planc::nmf(x, k, niter, algo, Winit, Hinit);
+    typedef planc::nmfOutput(*nmfCallType)(const T2&, const arma::uword&, const arma::uword&, const std::string&, const int&, const arma::mat&, const arma::mat&);
+    arma::mat nullMat = arma::mat(1, 1, arma::fill::none);
+    
+    planc::nmfOutput libcall{};
+    std::function nmfcall = static_cast<nmfCallType>(planc::nmf);
+    if (!Winit.isNotNull() and !Hinit.isNotNull()) planc::nmfOutput libcall = planc::nmf(x, k, niter, algo, nCores);
+    else if (Winit.isNotNull() and !Hinit.isNotNull()) {
+      using namespace std::placeholders;
+      auto nmfcallBoundW = std::bind(nmfcall, _1, _2, _3, _4, _5, Rcpp::as<arma::mat>(Winit), _6);
+      planc::nmfOutput libcall = nmfcallBoundW(x, k, niter, algo, nCores, nullMat);
+    }
+    else if (Hinit.isNotNull() and !Winit.isNotNull()) {
+      using namespace std::placeholders;
+      auto nmfcallBoundH = std::bind(nmfcall, _1, _2, _3, _4, _5, _6, Rcpp::as<arma::mat>(Hinit));
+      planc::nmfOutput libcall = nmfcallBoundH(x, k, niter, algo, nCores, nullMat);
+    }
+    else {
+      using namespace std::placeholders;
+      auto nmfcallBoundWH = std::bind(nmfcall, _1, _2, _3, _4, _5, Rcpp::as<arma::mat>(Winit), Rcpp::as<arma::mat>(Hinit));
+      planc::nmfOutput libcall = nmfcallBoundWH(x, k, niter, algo, nCores);
+    }
     return Rcpp::List::create(
-        Rcpp::Named("W") = MyNMF.getLeftLowRankFactor(),
-        Rcpp::Named("H") = MyNMF.getRightLowRankFactor(),
-        Rcpp::Named("objErr") = MyNMF.objErr()
+        Rcpp::Named("W") = libcall.outW,
+        Rcpp::Named("H") = libcall.outH,
+        Rcpp::Named("objErr") = libcall.objErr
     );
 }
 
@@ -1220,26 +1240,10 @@ arma::uword getBoundThreadCount() {
 
 // [[Rcpp::export(.openblaspthreadoff)]]
 void openblas_pthread_off(Rcpp::XPtr<void*> libloc) {
-    if (is_openmp()) {
-        if (const std::function<int()> openblas_parallel = get_openblas_parallel(libloc))
-        {
-            if (openblas_parallel() == 1) {
-                const std::function<void(int)> openblas_set = get_openblas_set(libloc);
-                openblas_set(1);
-            }
-        }
-    }
+  planc::nmflib::openblas_pthread_off(libloc);
 }
 
 // [[Rcpp::export(.openblaspthreadon)]]
 void openblas_pthread_on(Rcpp::XPtr<void*> libloc) {
-    if (is_openmp()) {
-        if (const std::function<int()> openblas_parallel = get_openblas_parallel(libloc))
-        {
-            if (openblas_parallel() == 1) {
-                const std::function<void(int)> openblas_set = get_openblas_set(libloc);
-                openblas_set(0);
-            }
-        }
-    }
+  planc::nmflib::openblas_pthread_on(libloc);
 }
