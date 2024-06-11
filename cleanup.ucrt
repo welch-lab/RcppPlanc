@@ -6,3 +6,4 @@ rm -rf src/_deps
 rm -rf src/hwloc-prefix
 rm -rf src/build
 rm src/Makevars
+rm src/Makevars.gen
