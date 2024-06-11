@@ -1,2 +1,2 @@
-PKG_CPPFLAGS = -Iplanc/common -Iplanc/nmf -Iplanc/nnls -Ibuild/_deps/highfive-src/include -Ibuild/nmf ${SHLIB_OPENMP_CXXFLAGS}
-PKG_LIBS = build/lib/libnmflib.a -lhdf5_hl -lhdf5 -lsz -lz build/hwloc-prefix/src/hwloc-build/hwloc/.libs/libhwloc_embedded.a ${SHLIB_OPENMP_CFLAGS} $(LAPACK_LIBS) @BLAS_LIBS@ $(FLIBS)
+PKG_CPPFLAGS = -Iplanc/common -Iplanc/nmf -Iplanc/nnls -Ibuild/_deps/highfive-src/include -Ibuild/nmf @CPPFLAGS@ ${SHLIB_OPENMP_CXXFLAGS}
+PKG_LIBS = build/lib/libnmflib.a -lhdf5_hl -lhdf5 -lsz -lz @LIBHWLOC_LINK@ ${SHLIB_OPENMP_CFLAGS} $(LAPACK_LIBS) @BLAS_LIBS@ $(FLIBS)
