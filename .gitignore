@@ -102,7 +102,9 @@ Makefile
 
 
 build/**
+src/build/**
 out/**
-src/Makefile.ucrt
+src/Makevars.gen
+src/Makevars
 /doc/
 /Meta/
