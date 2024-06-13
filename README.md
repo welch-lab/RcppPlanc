@@ -27,12 +27,12 @@ OS on ARM64 will always use the built in [vecLib](https://developer.apple.com/do
 ### Binary (R-universe, CRAN pending)
 #### MacOS and Windows
 `install.packages('RcppPlanc', repos = c('https://welch-lab.r-universe.dev', 'https://cloud.r-project.org'))`
-#### Ubuntu 22.04 (YMMV on other linuxes)
+#### Ubuntu 24.04 (YMMV on other linuxes)
 1. Ensure libhdf5, libhwloc, and libopenblas are installed.
 
 ```
 install.packages("RcppPlanc", repos = c(
-linux = 'https://welch-lab.r-universe.dev/bin/linux/jammy/4.3',
+linux = 'https://welch-lab.r-universe.dev/bin/linux/noble/4.4/',
 sources = 'https://welch-lab.r-universe.dev',
 cran = 'https://cloud.r-project.org'))
 ```
