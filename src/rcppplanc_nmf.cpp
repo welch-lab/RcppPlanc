@@ -113,12 +113,8 @@ Rcpp::List nmf(const SEXP& x, const arma::uword &k, const arma::uword &niter = 3
         // Assume regular dense matrix
         outlist = runNMF<arma::mat>(Rcpp::as<arma::mat>(x), k, algo, niter, nCores, Winit, Hinit);
     }
-    } catch (const std::nested_exception &e) {
-      try {
-        rethrow_if_nested(e);
-      } catch (const std::exception &neste) {
-        throw Rcpp::exception(neste.what());
-      }
+    } catch (const std::exception &e) {
+      throw Rcpp::exception(e.what());
     }
     return outlist;
 }
