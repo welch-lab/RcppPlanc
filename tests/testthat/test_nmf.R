@@ -13,32 +13,38 @@ test_that("dense, nmf, anlsbpp", {
     expect_equal(nrow(res$H), n)
     expect_equal(ncol(res$H), k)
     expect_lte(res$objErr, 2025)
-    
+    expect_gte(res$objErr, 1)
+
     # Using init W and H
     res <- nmf(mat, k, niter = 100, Winit = res$W, Hinit = res$H)
     expect_lte(res$objErr, 2025)
-    
+    expect_gte(res$objErr, 1)
+
     # Failing use
     expect_error({
       nmf(mat, k, algo = "hello")
     }, "Please choose `algo` from")
-    
-    
+
+
 })
 
 test_that("dense, nmf, admm", {
     res <- nmf(mat, k, niter = 100, algo = "admm")
     expect_lte(res$objErr, 2025)
+    expect_gte(res$objErr, 1)
+
 })
 
 test_that("dense, nmf, hals", {
     res <- nmf(mat, k, niter = 100, algo = "hals")
     expect_lte(res$objErr, 2030)
+    expect_gte(res$objErr, 1)
 })
 
 test_that("dense, nmf, mu", {
     res <- nmf(mat, k, niter = 100, algo = "mu")
     expect_lte(res$objErr, 2650)
+    expect_gte(res$objErr, 1)
 })
 
 symmat <- t(mat) %*% mat
@@ -47,23 +53,23 @@ lambda <- 5
 test_that("dense, symNMF, anlsbpp", {
     res <- symNMF(symmat, k, niter = 100, lambda = lambda, algo = "anlsbpp")
     expect_lte(res$objErr, 4e7)
-    
-    res <- symNMF(symmat, k, niter = 100, lambda = lambda, algo = "anlsbpp", 
+
+    res <- symNMF(symmat, k, niter = 100, lambda = lambda, algo = "anlsbpp",
                   Hinit = res$H)
     expect_lte(res$objErr, 4e7)
-    
+
     expect_error({
       symNMF(mat, k, 100)
     }, "Input `x` is not square.")
-    
+
     expect_error({
       symNMF(symmat, 1e4, 100)
     })
-    
+
     expect_error({
       symNMF(symmat, k, 100, Hinit = t(res$H))
     }, "Hinit must be of size ")
-    
+
     expect_error({
       symNMF(symmat, k, 100, algo = "hello")
     }, "Please choose `algo` from")
@@ -84,7 +90,7 @@ while (regenerate) {
     mat.sp[zero.idx] <- 0
     mat.sp <- as(mat.sp, "CsparseMatrix")
     # Make sure there is no col/row that has all zero
-    if (sum(Matrix::colSums(mat.sp) == 0) == 0 && 
+    if (sum(Matrix::colSums(mat.sp) == 0) == 0 &&
         sum(Matrix::rowSums(mat.sp) == 0) == 0) {
       regenerate <- FALSE
     }
@@ -99,6 +105,7 @@ test_that("sparse, nmf, anlsbpp", {
   expect_equal(nrow(res1$H), n)
   expect_equal(ncol(res1$H), k)
   expect_lte(res1$objErr, 800)
+  expect_gte(res1$objErr, 1)
   set.seed(1)
   res2 <- nmf(as.matrix(mat.sp), k, niter = 100)
   expect_true(all.equal(res1, res2))
@@ -106,11 +113,12 @@ test_that("sparse, nmf, anlsbpp", {
   res <- nmf(mat.sp, k, niter = 100, Winit = res1$W, Hinit = res1$H)
   # Expected max objective error
   expect_lte(res$objErr, 800)
+  expect_gte(res$objErr, 1)
   # Expected min sparsity of W
   W.sparsity <- sum(res$W == 0) / length(res$W)
   cat("\nW sparsity:",W.sparsity,"\n")
   expect_gte(W.sparsity, .4)
-  
+
   expect_error({
     nmf(mat, k, algo = "hello")
   }, "Please choose `algo` from")
@@ -119,16 +127,19 @@ test_that("sparse, nmf, anlsbpp", {
 test_that("sparse, nmf, admm", {
   res <- nmf(mat.sp, k, niter = 100, algo = "admm")
   expect_lte(res$objErr, 800)
+  expect_gte(res$objErr, 1)
 })
 
 test_that("sparse, nmf, hals", {
   res <- nmf(mat.sp, k, niter = 100, algo = "hals")
   expect_lte(res$objErr, 800)
+  expect_gte(res$objErr, 1)
 })
 
 test_that("sparse, nmf, mu", {
   res <- nmf(mat.sp, k, niter = 100, algo = "mu")
   expect_lte(res$objErr, 950)
+  expect_gte(res$objErr, 1)
 })
 
 symmat.sp <- Matrix::t(mat.sp) %*% mat.sp
