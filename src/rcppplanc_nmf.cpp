@@ -42,8 +42,8 @@ Rcpp::List runNMF(T2 x, arma::uword k, const std::string& algo, const arma::uwor
     arma::mat nullMat = arma::mat(1, 1, arma::fill::none);
 
     planc::nmfOutput libcall{};
-    std::function nmfcall = static_cast<nmfCallType>(planc::nmf);
-    if (!Winit.isNotNull() and !Hinit.isNotNull()) libcall = planc::nmf(x, k, niter, algo, nCores);
+    std::function nmfcall = static_cast<nmfCallType>(planc::nmflib<T2>::nmf);
+    if (!Winit.isNotNull() and !Hinit.isNotNull()) libcall = planc::nmflib<T2>::nmf(x, k, niter, algo, nCores);
     else if (Winit.isNotNull() and !Hinit.isNotNull()) {
       using namespace std::placeholders;
       auto nmfcallBoundW = std::bind(nmfcall, _1, _2, _3, _4, _5, Rcpp::as<arma::mat>(Winit), _6);
@@ -1052,10 +1052,10 @@ arma::uword getBoundThreadCount() {
 
 // [[Rcpp::export(.openblaspthreadoff)]]
 void openblas_pthread_off(Rcpp::XPtr<void*> libloc) {
-  planc::nmflib::openblas_pthread_off(libloc);
+  planc::openblas_pthread_off(static_cast<openblas_handle_t>(libloc));
 }
 
 // [[Rcpp::export(.openblaspthreadon)]]
 void openblas_pthread_on(Rcpp::XPtr<void*> libloc) {
-  planc::nmflib::openblas_pthread_on(libloc);
+  planc::openblas_pthread_on(static_cast<openblas_handle_t>(libloc));
 }
