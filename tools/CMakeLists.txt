@@ -292,7 +292,7 @@ endif()
 endif()
 endif()
 
-target_compile_definitions(RcppPlanc PRIVATE ARMA_64BIT_WORD)
+#target_compile_definitions(RcppPlanc PRIVATE ARMA_64BIT_WORD)
 
 add_custom_command(TARGET RcppPlanc POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E remove ${HighFive_BINARY_DIR}/CMakeFiles/hdf5/cmake_hdf5_test.c
