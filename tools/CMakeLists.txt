@@ -252,9 +252,9 @@ endif()
 #endif()
 list(JOIN BLAS_LIBRARIES " " BLAS_LIBRARY_STRING)
 string(TOUPPER ${BLAS_LIBRARY_STRING} BLAS_LIBRARY_STRING)
-if(BLAS_LIBRARIES MATCHES "")
-target_compile_definitions(RcppPlanc PRIVATE BLAS_IMPLICIT)
-endif()
+#if(BLAS_LIBRARIES MATCHES "")
+#target_compile_definitions(RcppPlanc PRIVATE BLAS_IMPLICIT)
+#endif()
 if(BLAS_LIBRARY_STRING MATCHES ^.*OPENBLAS.*)
     check_include_file("openblas/cblas.h" OPENBLAS_HEADER)
     if(OPENBLAS_HEADER)
@@ -291,6 +291,8 @@ else()
 endif()
 endif()
 endif()
+
+target_compile_definitions(RcppPlanc PRIVATE ARMA_64BIT_WORD)
 
 add_custom_command(TARGET RcppPlanc POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E remove ${HighFive_BINARY_DIR}/CMakeFiles/hdf5/cmake_hdf5_test.c
