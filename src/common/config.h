@@ -21,8 +21,9 @@
 #endif
 #endif
 
-// #if !defined(ARMA_64BIT_WORD)
-// #define ARMA_64BIT_WORD
+#if !defined(ARMA_64BIT_WORD)
+#define ARMA_64BIT_WORD
+#endif
 #ifndef ARMA_DONT_PRINT_FAST_MATH_WARNING
 #define ARMA_DONT_PRINT_FAST_MATH_WARNING
 #endif

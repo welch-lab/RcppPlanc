@@ -120,17 +120,17 @@ private:
         // Get a shuffled vector of numbers from 0 to numChunks-1
         arma::uvec shuffleOrder = arma::randperm<arma::uvec>(numChunks);
         this->samplingIdx[i] = arma::zeros<arma::uvec>(dataSize);
-        unsigned int lastEnd = -1u;
+        arma::uword lastEnd = -1ull;
         for (arma::uword j = 0; j < numChunks; ++j) {
             // origStart to origEnd marks a chunk of the original matrix
             arma::uword origStart = shuffleOrder[j] * CHUNK_SIZE;
-            arma::uword origEnd = (shuffleOrder[j] + 1u) * CHUNK_SIZE - 1u;
-            if (origEnd > dataSize - 1) origEnd = dataSize - 1u;
-            arma::uvec origIdx = arma::linspace<arma::uvec>(origStart, origEnd, origEnd - origStart + 1);
+            arma::uword origEnd = (shuffleOrder[j] + 1ull) * CHUNK_SIZE - 1ull;
+            if (origEnd > dataSize - 1ull) origEnd = dataSize - 1ull;
+            arma::uvec origIdx = arma::linspace<arma::uvec>(origStart, origEnd, origEnd - origStart + 1ull);
 
             // permStart to permEnd marks the location of the chunk in the permuted matrix
-            arma::uword permStart = lastEnd + 1u;
-            arma::uword permEnd = lastEnd + origEnd - origStart + 1u;
+            arma::uword permStart = lastEnd + 1ull;
+            arma::uword permEnd = lastEnd + origEnd - origStart + 1ull;
             this->samplingIdx[i].subvec(permStart, permEnd) = origIdx;
             lastEnd = permEnd;
         }
@@ -758,17 +758,17 @@ void ONLINEINMF<H5Mat, arma::mat>::permuteChunkIdx(int i) {
     // Get a shuffled vector of numbers from 0 to numChunks-1
     arma::uvec shuffleOrder = arma::randperm<arma::uvec>(numChunks);
     this->samplingIdx[i] = arma::zeros<arma::uvec>(dataSize);
-    unsigned int lastEnd = -1u;
+    arma::uword lastEnd = -1ull;
     for (arma::uword j = 0; j < numChunks; ++j) {
         // origStart to origEnd marks a chunk of the original matrix
         arma::uword origStart = shuffleOrder[j] * colChunkSize;
-        arma::uword origEnd = (shuffleOrder[j] + 1u) * colChunkSize - 1u;
-        if (origEnd > dataSize - 1u) origEnd = dataSize - 1;
-        arma::uvec origIdx = arma::linspace<arma::uvec>(origStart, origEnd, origEnd - origStart + 1u);
+        arma::uword origEnd = (shuffleOrder[j] + 1ull) * colChunkSize - 1ull;
+        if (origEnd > dataSize - 1ull) origEnd = dataSize - 1;
+        arma::uvec origIdx = arma::linspace<arma::uvec>(origStart, origEnd, origEnd - origStart + 1ull);
 
         // permStart to permEnd marks the location of the chunk in the permuted matrix
-        arma::uword permStart = lastEnd + 1u;
-        arma::uword permEnd = lastEnd + origEnd - origStart + 1u;
+        arma::uword permStart = lastEnd + 1ull;
+        arma::uword permEnd = lastEnd + origEnd - origStart + 1ull;
         this->samplingIdx[i].subvec(permStart, permEnd) = origIdx;
         lastEnd = permEnd;
     }
