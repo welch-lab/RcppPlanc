@@ -34,14 +34,14 @@ arma::fvec m_regW;
 arma::fvec m_regH;
 
 // T2 e.g. arma::sp_mat
-template <typename T2>
+template <typename T2, typename eT = typename T2::elem_type>
 Rcpp::List runNMF(T2 x, arma::uword k, const std::string& algo, const arma::uword& niter, const int& nCores,
                   Rcpp::Nullable<Rcpp::NumericMatrix> Winit,
                   Rcpp::Nullable<Rcpp::NumericMatrix> Hinit) {
-    typedef planc::nmfOutput(*nmfCallType)(const T2&, const arma::uword&, const arma::uword&, const std::string&, const int&, const arma::mat&, const arma::mat&);
+    typedef planc::nmfOutput<eT>(*nmfCallType)(const T2&, const arma::uword&, const arma::uword&, const std::string&, const int&, const arma::mat&, const arma::mat&);
     arma::mat nullMat = arma::mat(1, 1, arma::fill::none);
 
-    planc::nmfOutput libcall{};
+    planc::nmfOutput<eT> libcall{};
     std::function nmfcall = static_cast<nmfCallType>(planc::nmflib<T2>::nmf);
     if (!Winit.isNotNull() and !Hinit.isNotNull()) libcall = planc::nmflib<T2>::nmf(x, k, niter, algo, nCores);
     else if (Winit.isNotNull() and !Hinit.isNotNull()) {
