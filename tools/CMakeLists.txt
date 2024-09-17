@@ -132,6 +132,7 @@ add_library(hw_detect OBJECT "${PROJECT_SOURCE_DIR}/../src/common/hw_detect.c")
         list(APPEND cmd --build=x86_64-w64-mingw32)
     elseif(CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "ARM64")
         list(APPEND cmd --build=aarch64-w64-mingw32)
+        set(RTOOLS_ARM True)
     endif()
     elseif(PASSTHROUGH_CONFIGURE_ARGS)
         list(APPEND cmd ${PASSTHROUGH_CONFIGURE_ARGS})
@@ -140,7 +141,7 @@ add_library(hw_detect OBJECT "${PROJECT_SOURCE_DIR}/../src/common/hw_detect.c")
         URL https://download.open-mpi.org/release/hwloc/v2.9/hwloc-2.9.3.tar.gz
         URL_HASH SHA256=5985db3a30bbe51234c2cd26ebe4ae9b4c3352ab788b1a464c40c0483bf4de59
         PATCH_COMMAND ${CMAKE_COMMAND} -E cat ${hwloc_patch_list} | ${PATCH} -p1 -l
-        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E env "CFLAGS=-DNDEBUG $ENV{CFLAGS} $<$<BOOL:${APPLE}>:-mmacosx-version-min=11>" ${cmd}
+        CONFIGURE_COMMAND ${CMAKE_COMMAND} -E env "$<$<BOOL:${RTOOLS_ARM}>:LD=ld.lld>" "CFLAGS=-DNDEBUG $ENV{CFLAGS} $<$<BOOL:${APPLE}>:-mmacosx-version-min=11>" ${cmd}
     )
         ExternalProject_Get_Property(hwloc SOURCE_DIR BINARY_DIR)
     target_include_directories(hw_detect PRIVATE "${BINARY_DIR}/include" "${SOURCE_DIR}/include")
