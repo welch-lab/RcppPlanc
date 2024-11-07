@@ -121,121 +121,83 @@ Rcpp::List nmf(const SEXP& x, const arma::uword &k, const arma::uword &niter = 3
 
 // // T1 e.g. BPPNMF<arma::sp_mat>
 // // T2 e.g. arma::sp_mat
-// template <class T1, class T2>
-// Rcpp::List runSymNMF(T2 x, arma::uword k, const int& nCores, arma::uword niter, double symm_reg,
-//                      Rcpp::Nullable<Rcpp::NumericMatrix> Hinit) {
-//   arma::uword m = x.n_rows;
-//   arma::uword n = x.n_cols;
-//   if (m != n) {
-//     Rcpp::stop("Input `x` is not square.");
-//   }
-//   if (k >= m) {
-//     Rcpp::stop("`k` must be less than `nrow(x)`");
-//   }
-//   arma::mat W(n, k); // W and H are the same for symNMF!
-//   arma::mat H(n, k);
+template <class T2, typename eT = typename T2::elem_type>
+Rcpp::List runSymNMF(const T2& x, const arma::uword& k, const int& nCores, const arma::uword& niter, const double& symm_reg, const std::string& algo,
+                     Rcpp::Nullable<Rcpp::NumericMatrix> Hinit) {
+  typedef planc::nmfOutput<eT>(*symnmfCallType)(const T2&, const arma::uword&, const arma::uword&, const double&, const std::string&, const int&, const arma::mat&);
+  planc::nmfOutput<eT> libcall{};
+  std::function nmfcall = static_cast<symnmfCallType>(planc::nmflib<T2>::symNMF);
+  if (!Hinit.isNotNull()) {
+    arma::mat nullMat = arma::mat(1, 1, arma::fill::none);
+    libcall = planc::nmflib<T2>::symNMF(x, k, niter, symm_reg, algo, nCores, nullMat);
+  } else {
+    using namespace std::placeholders;
+    auto nmfcallBoundH = std::bind(nmfcall, _1, _2, _3, _4, _5, _6, Rcpp::as<arma::mat>(Hinit));
+    libcall = nmfcallBoundH(x, k, niter, symm_reg, algo, nCores);
+  }
+  return Rcpp::List::create(
+    Rcpp::Named("W") =libcall.outW,
+    Rcpp::Named("H") = libcall.outH,
+    Rcpp::Named("objErr") = libcall.objErr
+  );
+}
 //
-//   if (Hinit.isNotNull()) {
-//     H = Rcpp::as<arma::mat>(Hinit);
-//     if (H.n_rows != n || H.n_cols != k) {
-//       Rcpp::stop("Hinit must be of size " +
-//         std::to_string(n) + " x " + std::to_string(k));
-//     }
-//   } else {
-//     H = arma::randu<arma::mat>(n, k);
-//     double meanX = arma::mean(arma::mean(x));
-//     H = 2 * std::sqrt(meanX / k) * H;
-//     W = H;
-//     if (symm_reg == 0.0) {
-//       double symreg = x.max();
-//       symm_reg = symreg * symreg;
-//     }
-//   }
-//   T1 MyNMF(x, W, H, nCores);
-//   MyNMF.num_iterations(niter);
-//   MyNMF.symm_reg(symm_reg);
-//   if (!m_regW.empty()) MyNMF.regW(m_regW);
-//   if (!m_regH.empty()) MyNMF.regH(m_regH);
-//   MyNMF.computeNMF();
-//   return Rcpp::List::create(
-//     Rcpp::Named("W") = MyNMF.getLeftLowRankFactor(),
-//     Rcpp::Named("H") = MyNMF.getRightLowRankFactor(),
-//     Rcpp::Named("objErr") = MyNMF.objErr()
-//   );
-// }
-//
-// //' Perform Symmetric Non-negative Matrix Factorization
-// //'
-// //' Symmetric input matrix \eqn{X} of size \eqn{n \times n} is required. Two
-// //' approaches are provided. Alternating Non-negative Least Squares Block
-// //' Principal Pivoting algorithm (ANLSBPP) with symmetric regularization, where
-// //' the objective function is set to be \eqn{\arg\min_{H\ge0,W\ge0}||X-WH||_F^2+
-// //' \lambda||W-H||_F^2}, can be run with \code{algo = "anlsbpp"}.
-// //' Gaussian-Newton algorithm, where the objective function is set to be
-// //' \eqn{\arg\min_{H\ge0}||X-H^\mathsf{T}H||_F^2}, can be run with \code{algo =
-// //' "gnsym"}. In the objectives, \eqn{W} is of size \eqn{n \times k} and \eqn{H}
-// //' is of size \eqn{k \times n}. The returned results will all be
-// //' \eqn{n \times k}.
-// //'
-// //' @param x Input matrix for factorization. Must be symmetric. Can be either
-// //' dense or sparse.
-// //' @param k Integer. Factor matrix rank.
-// //' @param niter Integer. Maximum number of symNMF interations.
-// //' Default \code{30}
-// //' @param lambda Symmetric regularization parameter. Must be
-// //' non-negative. Default \code{0.0} uses the square of the maximum value in
-// //' \code{x}.
-// //' @param algo Algorithm to perform the factorization, choose from "gnsym" or
-// //' "anlsbpp". Default \code{"gnsym"}
-// //' @param nCores The number of parallel tasks that will be spawned. Only applies to anlsbpp.
-// //' Default \code{2}
-// //' @param Hinit Initial right-hand factor matrix, must be of size n x k.
-// //' Default \code{NULL}.
-// //' @returns A list with the following elements:
-// //' \itemize{
-// //'  \item{\code{W} - the result left-hand factor matrix, non-empty when using
-// //'  \code{"anlsbpp"}}
-// //'  \item{\code{H} - the result right hand matrix.}
-// //'  \item{\code{objErr} - the objective error of the factorization.}
-// //' }
-// //' @references
-// //' Srinivas Eswar and et al., Distributed-Memory Parallel Symmetric Nonnegative
-// //' Matrix Factorization, SC '20, 2020, 10.5555/3433701.3433799
-// // [[Rcpp::export()]]
-// Rcpp::List symNMF(const SEXP& x, const arma::uword& k, const arma::uword& niter = 30,
-//                  const double& lambda = 0.0, const std::string& algo = "gnsym", const int& nCores = 2,
-//                  const Rcpp::Nullable<Rcpp::NumericMatrix> &Hinit = R_NilValue) {
-// //   arma::mat out;
-//   Rcpp::List out;
-//   if (Rf_isS4(x)) {
-//     // Assume using dgCMatrix
-//     if (algo == "gnsym") {
-//       out = runSymNMF<planc::GNSYMNMF<arma::sp_mat>, arma::sp_mat>(
-//         Rcpp::as<arma::sp_mat>(x), k, nCores, niter, lambda, Hinit
-//       );
-//     } else if (algo == "anlsbpp") {
-//       out = runSymNMF<planc::BPPNMF<arma::sp_mat>, arma::sp_mat>(
-//         Rcpp::as<arma::sp_mat>(x), k, nCores, niter, lambda, Hinit
-//       );
-//     } else {
-//       Rcpp::stop(R"(Please choose `algo` from "gnsym" or "anlsbpp".)");
-//     }
-//   } else {
-//     // Assume using default matrix
-//     if (algo == "gnsym") {
-//       out = runSymNMF<planc::GNSYMNMF<arma::mat>, arma::mat>(
-//         Rcpp::as<arma::mat>(x), k, nCores, niter, lambda, Hinit
-//       );
-//     } else if (algo == "anlsbpp") {
-//       out = runSymNMF<planc::BPPNMF<arma::mat>, arma::mat>(
-//         Rcpp::as<arma::mat>(x), k, nCores, niter, lambda, Hinit
-//       );
-//     } else {
-//       Rcpp::stop(R"(Please choose `algo` from "gnsym" or "anlsbpp".)");
-//     }
-//   }
-//   return out;
-// }
+//' Perform Symmetric Non-negative Matrix Factorization
+//'
+//' Symmetric input matrix \eqn{X} of size \eqn{n \times n} is required. Two
+//' approaches are provided. Alternating Non-negative Least Squares Block
+//' Principal Pivoting algorithm (ANLSBPP) with symmetric regularization, where
+//' the objective function is set to be \eqn{\arg\min_{H\ge0,W\ge0}||X-WH||_F^2+
+//' \lambda||W-H||_F^2}, can be run with \code{algo = "anlsbpp"}.
+//' Gaussian-Newton algorithm, where the objective function is set to be
+//' \eqn{\arg\min_{H\ge0}||X-H^\mathsf{T}H||_F^2}, can be run with \code{algo =
+//' "gnsym"}. In the objectives, \eqn{W} is of size \eqn{n \times k} and \eqn{H}
+//' is of size \eqn{k \times n}. The returned results will all be
+//' \eqn{n \times k}.
+//'
+//' @param x Input matrix for factorization. Must be symmetric. Can be either
+//' dense or sparse.
+//' @param k Integer. Factor matrix rank.
+//' @param niter Integer. Maximum number of symNMF interations.
+//' Default \code{30}
+//' @param lambda Symmetric regularization parameter. Must be
+//' non-negative. Default \code{0.0} uses the square of the maximum value in
+//' \code{x}.
+//' @param algo Algorithm to perform the factorization, choose from "gnsym" or
+//' "anlsbpp". Default \code{"gnsym"}
+//' @param nCores The number of parallel tasks that will be spawned. Only applies to anlsbpp.
+//' Default \code{2}
+//' @param Hinit Initial right-hand factor matrix, must be of size n x k.
+//' Default \code{NULL}.
+//' @returns A list with the following elements:
+//' \itemize{
+//'  \item{\code{W} - the result left-hand factor matrix, non-empty when using
+//'  \code{"anlsbpp"}}
+//'  \item{\code{H} - the result right hand matrix.}
+//'  \item{\code{objErr} - the objective error of the factorization.}
+//' }
+//' @references
+//' Srinivas Eswar and et al., Distributed-Memory Parallel Symmetric Nonnegative
+//' Matrix Factorization, SC '20, 2020, 10.5555/3433701.3433799
+// [[Rcpp::export()]]
+Rcpp::List symNMF(const SEXP& x, const arma::uword& k, const arma::uword& niter = 30,
+                 const double& lambda = 0.0, const std::string& algo = "gnsym", const int& nCores = 2,
+                 const Rcpp::Nullable<Rcpp::NumericMatrix> &Hinit = R_NilValue) {
+//   arma::mat out;
+  Rcpp::List out;
+  if (Rf_isS4(x)) {
+    // Assume using dgCMatrix
+      out = runSymNMF<arma::sp_mat>(
+        Rcpp::as<arma::sp_mat>(x), k, nCores, niter, lambda, algo, Hinit
+      );
+  } else {
+    // Assume using default matrix
+      out = runSymNMF<arma::mat>(
+        Rcpp::as<arma::mat>(x), k, nCores, niter, lambda, algo, Hinit
+      );
+    }
+  return out;
+}
 
 
 // template <typename T>
@@ -441,10 +403,10 @@ Rcpp::List nmf(const SEXP& x, const arma::uword &k, const arma::uword &niter = 3
 //                    Rcpp::Nullable<std::vector<arma::mat>> Vinit = R_NilValue,
 //                    Rcpp::Nullable<arma::mat> Winit = R_NilValue) {
 //     if (Rf_isS4(objectList[0])) {
-//         return bppinmf_sparse(Rcpp::as<std::vector<arma::sp_mat>>(objectList), k, lambda,
+//         return nmflib::<>bppinmf(Rcpp::as<std::vector<arma::sp_mat>>(objectList), k, lambda,
 //                         niter, nCores, verbose, Hinit, Vinit, Winit);
 //     } else {
-//         return bppinmf_dense(Rcpp::as<std::vector<arma::mat>>(objectList), k, lambda,
+//         return bppinmf(Rcpp::as<std::vector<arma::mat>>(objectList), k, lambda,
 //                             niter, nCores, verbose, Hinit, Vinit, Winit);
 //     }
 //     return Rcpp::List::create();

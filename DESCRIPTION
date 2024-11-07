@@ -31,7 +31,7 @@ Suggests:
     testthat (>= 3.0.0)
 LinkingTo: Rcpp, RcppArmadillo, RcppProgress
 License: GPL (>= 2)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2
 SystemRequirements: C++17, cmake >= 3.16.0, hdf5, git, v8, gnumake, hwloc, GNU make
 Config/testthat/edition: 3
 Depends:
