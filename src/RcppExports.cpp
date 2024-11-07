@@ -78,6 +78,23 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// symNMF
+Rcpp::List symNMF(const SEXP& x, const arma::uword& k, const arma::uword& niter, const double& lambda, const std::string& algo, const int& nCores, const Rcpp::Nullable<Rcpp::NumericMatrix>& Hinit);
+RcppExport SEXP _RcppPlanc_symNMF(SEXP xSEXP, SEXP kSEXP, SEXP niterSEXP, SEXP lambdaSEXP, SEXP algoSEXP, SEXP nCoresSEXP, SEXP HinitSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const SEXP& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const arma::uword& >::type k(kSEXP);
+    Rcpp::traits::input_parameter< const arma::uword& >::type niter(niterSEXP);
+    Rcpp::traits::input_parameter< const double& >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type algo(algoSEXP);
+    Rcpp::traits::input_parameter< const int& >::type nCores(nCoresSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::Nullable<Rcpp::NumericMatrix>& >::type Hinit(HinitSEXP);
+    rcpp_result_gen = Rcpp::wrap(symNMF(x, k, niter, lambda, algo, nCores, Hinit));
+    return rcpp_result_gen;
+END_RCPP
+}
 // testcacheCalc
 arma::uword testcacheCalc(int rank);
 RcppExport SEXP _RcppPlanc_testcacheCalc(SEXP rankSEXP) {
@@ -125,6 +142,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppPlanc_rcpp_spmat_to_h5mat", (DL_FUNC) &_RcppPlanc_rcpp_spmat_to_h5mat, 7},
     {"_RcppPlanc_rcpp_spmat_to_h5spmat", (DL_FUNC) &_RcppPlanc_rcpp_spmat_to_h5spmat, 9},
     {"_RcppPlanc_nmf", (DL_FUNC) &_RcppPlanc_nmf, 7},
+    {"_RcppPlanc_symNMF", (DL_FUNC) &_RcppPlanc_symNMF, 7},
     {"_RcppPlanc_testcacheCalc", (DL_FUNC) &_RcppPlanc_testcacheCalc, 1},
     {"_RcppPlanc_getBoundThreadCount", (DL_FUNC) &_RcppPlanc_getBoundThreadCount, 0},
     {"_RcppPlanc_openblas_pthread_off", (DL_FUNC) &_RcppPlanc_openblas_pthread_off, 1},
