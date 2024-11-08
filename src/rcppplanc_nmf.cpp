@@ -44,20 +44,10 @@ Rcpp::List runNMF(T2 x, arma::uword k, const std::string& algo, const arma::uwor
     planc::nmfOutput<eT> libcall{};
     std::function nmfcall = static_cast<nmfCallType>(planc::nmflib<T2>::nmf);
     if (!Winit.isNotNull() and !Hinit.isNotNull()) libcall = planc::nmflib<T2>::nmf(x, k, niter, algo, nCores);
-    else if (Winit.isNotNull() and !Hinit.isNotNull()) {
-      using namespace std::placeholders;
-      auto nmfcallBoundW = std::bind(nmfcall, _1, _2, _3, _4, _5, Rcpp::as<arma::mat>(Winit), _6);
-      libcall = nmfcallBoundW(x, k, niter, algo, nCores, nullMat);
-    }
-    else if (Hinit.isNotNull() and !Winit.isNotNull()) {
-      using namespace std::placeholders;
-      auto nmfcallBoundH = std::bind(nmfcall, _1, _2, _3, _4, _5, _6, Rcpp::as<arma::mat>(Hinit));
-      libcall = nmfcallBoundH(x, k, niter, algo, nCores, nullMat);
-    }
     else {
-      using namespace std::placeholders;
-      auto nmfcallBoundWH = std::bind(nmfcall, _1, _2, _3, _4, _5, Rcpp::as<arma::mat>(Winit), Rcpp::as<arma::mat>(Hinit));
-      libcall = nmfcallBoundWH(x, k, niter, algo, nCores);
+        using namespace std::placeholders;
+        auto nmfcallBound = std::bind(nmfcall, _1, _2, _3, _4, _5, Rcpp::as<arma::mat>(Winit), Rcpp::as<arma::mat>(Hinit));
+        libcall = nmfcallBound(x, k, niter, algo, nCores);
     }
     return Rcpp::List::create(
         Rcpp::Named("W") = libcall.outW,
@@ -291,236 +281,87 @@ Rcpp::List symNMF(const SEXP& x, const arma::uword& k, const arma::uword& niter 
 //
 // // %%%%%%%%%%%%%%%%%% BPPINMF %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //
-// template <typename T>
-// std::vector<std::unique_ptr<T>> initMemMatPtr(std::vector<T> objectList)
-// {
-//     std::vector<std::unique_ptr<T>> matPtrVec;
-//     for (arma::uword i = 0; i < objectList.size(); ++i)
-//     {
-//         T E = T(objectList[i]);
-//         std::unique_ptr<T> ptr = std::make_unique<T>(E);
-//         matPtrVec.push_back(std::move(ptr));
-//     }
-//     return matPtrVec;
-// }
 //
-// template <typename T>
-// Rcpp::List runINMF(std::vector<T> objectList, arma::uword k, double lambda,
-//                    arma::uword niter, bool verbose, const int& ncores)
-// {
-//     std::vector<std::unique_ptr<T>> matPtrVec;
-//     matPtrVec = initMemMatPtr<T>(objectList);
-//     planc::BPPINMF<T> solver(matPtrVec, k, lambda);
-//     solver.initW();
-//     solver.initV();
-//     solver.initH();
-//     solver.optimizeALS(niter, verbose, ncores);
-//     std::vector<Rcpp::NumericMatrix> HList;
-//     std::vector<Rcpp::NumericMatrix> VList;
-//     for (arma::uword i = 0; i < objectList.size(); ++i)
-//     {
-//         HList.push_back(Rcpp::wrap(solver.getHi(i)));
-//         VList.push_back(Rcpp::wrap(solver.getVi(i)));
-//     }
-//     return Rcpp::List::create(
-//         Rcpp::Named("H") = Rcpp::wrap(HList),
-//         Rcpp::Named("V") = Rcpp::wrap(VList),
-//         Rcpp::Named("W") = solver.getW(),
-//         Rcpp::Named("objErr") = solver.objErr());
-// }
-// template <typename T>
-// Rcpp::List runINMF(std::vector<T> objectList, arma::uword k, double lambda,
-//                    arma::uword niter, bool verbose,
-//                    std::vector<arma::mat> HinitList, std::vector<arma::mat> VinitList, arma::mat Winit,
-//                    const int& ncores)
-// {
-//     std::vector<std::unique_ptr<T>> matPtrVec;
-//     matPtrVec = initMemMatPtr<T>(objectList);
-//     planc::BPPINMF<T> solver(matPtrVec, k, lambda);
-//     solver.initW(Winit);
-//     solver.initV(VinitList);
-//     solver.initH(HinitList);
-//     solver.optimizeALS(niter, verbose, ncores);
-//     std::vector<Rcpp::NumericMatrix> HList;
-//     std::vector<Rcpp::NumericMatrix> VList;
-//     for (arma::uword i = 0; i < objectList.size(); ++i)
-//     {
-//         HList.push_back(Rcpp::wrap(solver.getHi(i)));
-//         VList.push_back(Rcpp::wrap(solver.getVi(i)));
-//     }
-//     return Rcpp::List::create(
-//         Rcpp::Named("H") = Rcpp::wrap(HList),
-//         Rcpp::Named("V") = Rcpp::wrap(VList),
-//         Rcpp::Named("W") = solver.getW(),
-//         Rcpp::Named("objErr") = solver.objErr());
-// }
-//
-// Rcpp::List bppinmf_dense(const std::vector<arma::mat>& objectList, arma::uword k,
-//                          double lambda, arma::uword niter, const int& nCores, bool verbose = true,
-//                          Rcpp::Nullable<std::vector<arma::mat>> Hinit = R_NilValue,
-//                          Rcpp::Nullable<std::vector<arma::mat>> Vinit = R_NilValue,
-//                          Rcpp::Nullable<arma::mat> Winit = R_NilValue)
-// {
-//     if (Hinit.isNotNull() && Vinit.isNotNull() && Winit.isNotNull())
-//     {
-//         return runINMF<arma::mat>(objectList, k, lambda,
-//                                      niter, verbose,
-//                                      Rcpp::as<std::vector<arma::mat>>(Hinit),
-//                                      Rcpp::as<std::vector<arma::mat>>(Vinit),
-//                                      Rcpp::as<arma::mat>(Winit), nCores);
-//     }
-//     else
-//     {
-//         return runINMF<arma::mat>(objectList, k, lambda,
-//                                      niter, verbose, nCores);
-//     }
-// }
-//
-// Rcpp::List bppinmf_sparse(const std::vector<arma::sp_mat> &objectList, arma::uword k, double lambda,
-//                           arma::uword niter, const int &nCores, bool verbose = true,
-//                           Rcpp::Nullable<std::vector<arma::mat>> Hinit = R_NilValue,
-//                           Rcpp::Nullable<std::vector<arma::mat>> Vinit = R_NilValue,
-//                           Rcpp::Nullable<arma::mat> Winit = R_NilValue)
-// {
-//     if (Hinit.isNotNull() && Vinit.isNotNull() && Winit.isNotNull()) {
-//         return runINMF<arma::sp_mat>(objectList, k, lambda,
-//                                      niter, verbose,
-//                                      Rcpp::as<std::vector<arma::mat>>(Hinit),
-//                                      Rcpp::as<std::vector<arma::mat>>(Vinit),
-//                                      Rcpp::as<arma::mat>(Winit), nCores);
-//     }
-//     else {
-//         return runINMF<arma::sp_mat>(objectList, k, lambda,
-//                 niter, verbose, nCores);
-//     }
-// }
-//
-// // [[Rcpp::export(.bppinmf)]]
-// Rcpp::List bppinmf(Rcpp::List objectList, const arma::uword k, const int& nCores,
-//                    const double lambda = 5, const arma::uword niter = 30,
-//                    const bool verbose = true,
-//                    Rcpp::Nullable<std::vector<arma::mat>> Hinit = R_NilValue,
-//                    Rcpp::Nullable<std::vector<arma::mat>> Vinit = R_NilValue,
-//                    Rcpp::Nullable<arma::mat> Winit = R_NilValue) {
-//     if (Rf_isS4(objectList[0])) {
-//         return nmflib::<>bppinmf(Rcpp::as<std::vector<arma::sp_mat>>(objectList), k, lambda,
-//                         niter, nCores, verbose, Hinit, Vinit, Winit);
-//     } else {
-//         return bppinmf(Rcpp::as<std::vector<arma::mat>>(objectList), k, lambda,
-//                             niter, nCores, verbose, Hinit, Vinit, Winit);
-//     }
-//     return Rcpp::List::create();
-// }
-//
-// // [[Rcpp::export(.bppinmf_h5dense)]]
-// Rcpp::List bppinmf_h5dense(std::vector<std::string> filenames, std::vector<std::string> dataPath,
-//     arma::uword k, const int& nCores, double lambda, arma::uword niter, bool verbose = true,
-//     Rcpp::Nullable<std::vector<arma::mat>> Hinit = R_NilValue,
-//     Rcpp::Nullable<std::vector<arma::mat>> Vinit = R_NilValue,
-//     Rcpp::Nullable<arma::mat> Winit  = R_NilValue) {
-//     std::vector<std::unique_ptr<planc::H5Mat>> matPtrVec;
-//     for (arma::uword i = 0; i < filenames.size(); ++i) {
-//         planc::H5Mat h5m(filenames[i], dataPath[i]);
-//         std::unique_ptr<planc::H5Mat> ptr = std::make_unique<planc::H5Mat>(h5m);
-//         matPtrVec.push_back(std::move(ptr));
-//     }
-//     planc::BPPINMF<planc::H5Mat> solver(matPtrVec, k, lambda);
-//
-//     if (Winit.isNotNull()) {
-//         auto W = Rcpp::as<arma::mat>(Winit);
-//         solver.initW(W);
-//     } else {
-//         solver.initW();
-//     }
-//
-//     if (Vinit.isNotNull()) {
-//         auto VinitList = Rcpp::as<std::vector<arma::mat>>(Vinit);
-//         solver.initV(VinitList);
-//     } else {
-//         solver.initV();
-//     }
-//
-//     if (Hinit.isNotNull()) {
-//         auto HinitList = Rcpp::as<std::vector<arma::mat>>(Hinit);
-//         solver.initH(HinitList);
-//     } else {
-//         solver.initH();
-//     }
-//
-//     solver.optimizeALS(niter, verbose, nCores);
-//     Rcpp::List HList(filenames.size());
-//     Rcpp::List VList(filenames.size());
-//     for (arma::uword i = 0; i < filenames.size(); ++i)
-//     {
-//         HList[i] = solver.getHi(i);
-//         VList[i] = solver.getVi(i);
-//     }
-//     Rcpp::List output = Rcpp::List::create(
-//         Rcpp::Named("H") = Rcpp::wrap(HList),
-//         Rcpp::Named("V") = Rcpp::wrap(VList),
-//         Rcpp::Named("W") = Rcpp::wrap(solver.getW()),
-//         Rcpp::Named("objErr") = Rcpp::wrap(solver.objErr())
-//     );
-//     return output;
-//     }
-//
-// // [[Rcpp::export(.bppinmf_h5sparse)]]
-// Rcpp::List bppinmf_h5sparse(
-//     std::vector<std::string> filenames,
-//     std::vector<std::string> valuePath,
-//     std::vector<std::string> rowindPath,
-//     std::vector<std::string> colptrPath,
-//     arma::uvec nrow, arma::uvec ncol,
-//     arma::uword k, const int& nCores, double lambda, arma::uword niter,
-//     bool verbose = true,
-//     Rcpp::Nullable<std::vector<arma::mat>> Hinit = R_NilValue,
-//     Rcpp::Nullable<std::vector<arma::mat>> Vinit = R_NilValue,
-//     Rcpp::Nullable<arma::mat> Winit  = R_NilValue) {
-//     std::vector<std::unique_ptr<planc::H5SpMat>> matPtrVec;
-//     for (arma::uword i = 0; i < filenames.size(); ++i) {
-//         planc::H5SpMat h5spm(filenames[i], rowindPath[i], colptrPath[i], valuePath[i], nrow[i], ncol[i]);
-//         std::unique_ptr<planc::H5SpMat> ptr = std::make_unique<planc::H5SpMat>(h5spm);
-//         matPtrVec.push_back(std::move(ptr));
-//     }
-//     planc::BPPINMF<planc::H5SpMat> solver(matPtrVec, k, lambda);
-//
-//     if (Winit.isNotNull()) {
-//         auto W = Rcpp::as<arma::mat>(Winit);
-//         solver.initW(W);
-//     } else {
-//         solver.initW();
-//     }
-//
-//     if (Vinit.isNotNull()) {
-//         auto VinitList = Rcpp::as<std::vector<arma::mat>>(Vinit);
-//         solver.initV(VinitList);
-//     } else {
-//         solver.initV();
-//     }
-//
-//     if (Hinit.isNotNull()) {
-//         auto HinitList = Rcpp::as<std::vector<arma::mat>>(Hinit);
-//         solver.initH(HinitList);
-//     } else {
-//         solver.initH();
-//     }
-//
-//     solver.optimizeALS(niter, verbose, nCores);
-//     Rcpp::List HList(filenames.size());
-//     Rcpp::List VList(filenames.size());
-//     for (arma::uword i = 0; i < filenames.size(); ++i)
-//     {
-//         HList[i] = solver.getHi(i);
-//         VList[i] = solver.getVi(i);
-//     }
-//     Rcpp::List output = Rcpp::List::create(
-//         Rcpp::Named("H") = Rcpp::wrap(HList),
-//         Rcpp::Named("V") = Rcpp::wrap(VList),
-//         Rcpp::Named("W") = Rcpp::wrap(solver.getW()),
-//         Rcpp::Named("objErr") = Rcpp::wrap(solver.objErr())
-//     );
-//     return output;
-// }
+template <typename T, typename eT = typename T::elem_type>
+Rcpp::List runINMF(std::vector<T> objectList, arma::uword k, double lambda,
+                   arma::uword niter, bool verbose, const int& ncores)
+{
+  planc::inmfOutput<eT> libcall{};
+  libcall = planc::nmflib<T>::bppinmf(objectList, k, lambda, niter, verbose, ncores);
+  return Rcpp::List::create(
+      Rcpp::Named("H") = Rcpp::wrap(libcall.outHList),
+      Rcpp::Named("V") = Rcpp::wrap(libcall.outVList),
+      Rcpp::Named("W") = libcall.outW,
+      Rcpp::Named("objErr") = libcall.objErr);
+}
+template <typename T>
+Rcpp::List runINMF(std::vector<T> objectList, arma::uword k, double lambda,
+                   arma::uword niter, bool verbose,
+                   std::vector<arma::mat> HinitList, std::vector<arma::mat> VinitList, arma::mat Winit,
+                   const int& ncores)
+{
+  planc::inmfOutput<double> libcall{};
+  libcall = planc::nmflib<T>::bppinmf(objectList, k, lambda, niter, verbose, HinitList, VinitList, Winit, ncores);
+                                    return Rcpp::List::create(
+                                      Rcpp::Named("H") = Rcpp::wrap(libcall.outHList),
+                                      Rcpp::Named("V") = Rcpp::wrap(libcall.outVList),
+                                      Rcpp::Named("W") = libcall.outW,
+                                      Rcpp::Named("objErr") = libcall.objErr);
+}
+Rcpp::List bppinmf_dense(const std::vector<arma::mat>& objectList, arma::uword k,
+                         double lambda, arma::uword niter, const int& nCores, bool verbose = true,
+                         Rcpp::Nullable<std::vector<arma::mat>> Hinit = R_NilValue,
+                         Rcpp::Nullable<std::vector<arma::mat>> Vinit = R_NilValue,
+                         Rcpp::Nullable<arma::mat> Winit = R_NilValue)
+{
+    if (Hinit.isNotNull() && Vinit.isNotNull() && Winit.isNotNull())
+    {
+        return runINMF<arma::mat>(objectList, k, lambda,
+                                     niter, verbose,
+                                     Rcpp::as<std::vector<arma::mat>>(Hinit),
+                                     Rcpp::as<std::vector<arma::mat>>(Vinit),
+                                     Rcpp::as<arma::mat>(Winit), nCores);
+    }
+    else
+    {
+        return runINMF<arma::mat>(objectList, k, lambda,
+                                     niter, verbose, nCores);
+    }
+}
+Rcpp::List bppinmf_sparse(const std::vector<arma::sp_mat> &objectList, arma::uword k, double lambda,
+                          arma::uword niter, const int &nCores, bool verbose = true,
+                          Rcpp::Nullable<std::vector<arma::mat>> Hinit = R_NilValue,
+                          Rcpp::Nullable<std::vector<arma::mat>> Vinit = R_NilValue,
+                          Rcpp::Nullable<arma::mat> Winit = R_NilValue)
+{
+    if (Hinit.isNotNull() && Vinit.isNotNull() && Winit.isNotNull()) {
+        return runINMF<arma::sp_mat>(objectList, k, lambda,
+                                     niter, verbose,
+                                     Rcpp::as<std::vector<arma::mat>>(Hinit),
+                                     Rcpp::as<std::vector<arma::mat>>(Vinit),
+                                     Rcpp::as<arma::mat>(Winit), nCores);
+    }
+    else {
+        return runINMF<arma::sp_mat>(objectList, k, lambda,
+                niter, verbose, nCores);
+    }
+}
+//// [[Rcpp::export(.bppinmf)]]
+//Rcpp::List bppinmf(Rcpp::List objectList, const arma::uword k, const int& nCores,
+//                   const double lambda = 5, const arma::uword niter = 30,
+//                   const bool verbose = true,
+//                   Rcpp::Nullable<std::vector<arma::mat>> Hinit = R_NilValue,
+//                   Rcpp::Nullable<std::vector<arma::mat>> Vinit = R_NilValue,
+//                   Rcpp::Nullable<arma::mat> Winit = R_NilValue) {
+//    if (Rf_isS4(objectList[0])) {
+//        return bppinmf(Rcpp::as<std::vector<arma::sp_mat>>(objectList), k, lambda,
+//                        niter, nCores, verbose, Hinit, Vinit, Winit);
+//    } else {
+//        return bppinmf(Rcpp::as<std::vector<arma::mat>>(objectList), k, lambda,
+//                            niter, nCores, verbose, Hinit, Vinit, Winit);
+//    }
+//    return Rcpp::List::create();
+//}
 //
 //
 // // %%%%%%%%%%%%%%%%%% online INMF %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
