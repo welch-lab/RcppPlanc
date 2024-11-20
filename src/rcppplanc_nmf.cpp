@@ -1,6 +1,7 @@
 // -*- mode: C++; c-indent-level: 4; c-basic-offset: 4; indent-tabs-mode: nil; -*-
 
 // we only include RcppArmadillo.h which pulls Rcpp.h in for us
+#define ARMA_64BIT_WORD
 #include <RcppArmadillo.h>
 #include "config.h"
 #include <progress.hpp>
@@ -308,44 +309,44 @@ Rcpp::List runINMF(std::vector<T> objectList, arma::uword k, double lambda,
                                       Rcpp::Named("W") = libcall.outW,
                                       Rcpp::Named("objErr") = libcall.objErr);
 }
-Rcpp::List bppinmf_dense(const std::vector<arma::mat>& objectList, arma::uword k,
-                         double lambda, arma::uword niter, const int& nCores, bool verbose = true,
-                         Rcpp::Nullable<std::vector<arma::mat>> Hinit = R_NilValue,
-                         Rcpp::Nullable<std::vector<arma::mat>> Vinit = R_NilValue,
-                         Rcpp::Nullable<arma::mat> Winit = R_NilValue)
-{
-    if (Hinit.isNotNull() && Vinit.isNotNull() && Winit.isNotNull())
-    {
-        return runINMF<arma::mat>(objectList, k, lambda,
-                                     niter, verbose,
-                                     Rcpp::as<std::vector<arma::mat>>(Hinit),
-                                     Rcpp::as<std::vector<arma::mat>>(Vinit),
-                                     Rcpp::as<arma::mat>(Winit), nCores);
-    }
-    else
-    {
-        return runINMF<arma::mat>(objectList, k, lambda,
-                                     niter, verbose, nCores);
-    }
-}
-Rcpp::List bppinmf_sparse(const std::vector<arma::sp_mat> &objectList, arma::uword k, double lambda,
-                          arma::uword niter, const int &nCores, bool verbose = true,
-                          Rcpp::Nullable<std::vector<arma::mat>> Hinit = R_NilValue,
-                          Rcpp::Nullable<std::vector<arma::mat>> Vinit = R_NilValue,
-                          Rcpp::Nullable<arma::mat> Winit = R_NilValue)
-{
-    if (Hinit.isNotNull() && Vinit.isNotNull() && Winit.isNotNull()) {
-        return runINMF<arma::sp_mat>(objectList, k, lambda,
-                                     niter, verbose,
-                                     Rcpp::as<std::vector<arma::mat>>(Hinit),
-                                     Rcpp::as<std::vector<arma::mat>>(Vinit),
-                                     Rcpp::as<arma::mat>(Winit), nCores);
-    }
-    else {
-        return runINMF<arma::sp_mat>(objectList, k, lambda,
-                niter, verbose, nCores);
-    }
-}
+// Rcpp::List bppinmf_dense(const std::vector<arma::mat>& objectList, arma::uword k,
+//                          double lambda, arma::uword niter, const int& nCores, bool verbose = true,
+//                          Rcpp::Nullable<std::vector<arma::mat>> Hinit = R_NilValue,
+//                          Rcpp::Nullable<std::vector<arma::mat>> Vinit = R_NilValue,
+//                          Rcpp::Nullable<arma::mat> Winit = R_NilValue)
+// {
+//     if (Hinit.isNotNull() && Vinit.isNotNull() && Winit.isNotNull())
+//     {
+//         return runINMF<arma::mat>(objectList, k, lambda,
+//                                      niter, verbose,
+//                                      Rcpp::as<std::vector<arma::mat>>(Hinit),
+//                                      Rcpp::as<std::vector<arma::mat>>(Vinit),
+//                                      Rcpp::as<arma::mat>(Winit), nCores);
+//     }
+//     else
+//     {
+//         return runINMF<arma::mat>(objectList, k, lambda,
+//                                      niter, verbose, nCores);
+//     }
+// }
+// Rcpp::List bppinmf_sparse(const std::vector<arma::sp_mat> &objectList, arma::uword k, double lambda,
+//                           arma::uword niter, const int &nCores, bool verbose = true,
+//                           Rcpp::Nullable<std::vector<arma::mat>> Hinit = R_NilValue,
+//                           Rcpp::Nullable<std::vector<arma::mat>> Vinit = R_NilValue,
+//                           Rcpp::Nullable<arma::mat> Winit = R_NilValue)
+// {
+//     if (Hinit.isNotNull() && Vinit.isNotNull() && Winit.isNotNull()) {
+//         return runINMF<arma::sp_mat>(objectList, k, lambda,
+//                                      niter, verbose,
+//                                      Rcpp::as<std::vector<arma::mat>>(Hinit),
+//                                      Rcpp::as<std::vector<arma::mat>>(Vinit),
+//                                      Rcpp::as<arma::mat>(Winit), nCores);
+//     }
+//     else {
+//         return runINMF<arma::sp_mat>(objectList, k, lambda,
+//                 niter, verbose, nCores);
+//     }
+// }
 //// [[Rcpp::export(.bppinmf)]]
 //Rcpp::List bppinmf(Rcpp::List objectList, const arma::uword k, const int& nCores,
 //                   const double lambda = 5, const arma::uword niter = 30,
