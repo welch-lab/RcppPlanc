@@ -90,12 +90,8 @@ symNMF <- function(x, k, niter = 30L, lambda = 0.0, algo = "gnsym", nCores = 2L,
     .Call(`_RcppPlanc_symNMF`, x, k, niter, lambda, algo, nCores, Hinit)
 }
 
-.testCacheCalc <- function(rank) {
-    .Call(`_RcppPlanc_testcacheCalc`, rank)
-}
-
-.getBoundThreads <- function() {
-    .Call(`_RcppPlanc_getBoundThreadCount`)
+.bppinmf <- function(objectList, k, nCores, lambda = 5, niter = 30L, verbose = TRUE, Hinit = NULL, Vinit = NULL, Winit = NULL) {
+    .Call(`_RcppPlanc_bppinmf`, objectList, k, nCores, lambda, niter, verbose, Hinit, Vinit, Winit)
 }
 
 .openblaspthreadoff <- function(libloc) {

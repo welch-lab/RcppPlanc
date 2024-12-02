@@ -95,24 +95,22 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// testcacheCalc
-arma::uword testcacheCalc(int rank);
-RcppExport SEXP _RcppPlanc_testcacheCalc(SEXP rankSEXP) {
+// bppinmf
+Rcpp::List bppinmf(const Rcpp::List objectList, const arma::uword k, const int& nCores, const double lambda, const arma::uword niter, const bool verbose, Rcpp::Nullable<std::vector<arma::mat>> Hinit, Rcpp::Nullable<std::vector<arma::mat>> Vinit, Rcpp::Nullable<arma::mat> Winit);
+RcppExport SEXP _RcppPlanc_bppinmf(SEXP objectListSEXP, SEXP kSEXP, SEXP nCoresSEXP, SEXP lambdaSEXP, SEXP niterSEXP, SEXP verboseSEXP, SEXP HinitSEXP, SEXP VinitSEXP, SEXP WinitSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type rank(rankSEXP);
-    rcpp_result_gen = Rcpp::wrap(testcacheCalc(rank));
-    return rcpp_result_gen;
-END_RCPP
-}
-// getBoundThreadCount
-arma::uword getBoundThreadCount();
-RcppExport SEXP _RcppPlanc_getBoundThreadCount() {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(getBoundThreadCount());
+    Rcpp::traits::input_parameter< const Rcpp::List >::type objectList(objectListSEXP);
+    Rcpp::traits::input_parameter< const arma::uword >::type k(kSEXP);
+    Rcpp::traits::input_parameter< const int& >::type nCores(nCoresSEXP);
+    Rcpp::traits::input_parameter< const double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< const arma::uword >::type niter(niterSEXP);
+    Rcpp::traits::input_parameter< const bool >::type verbose(verboseSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<std::vector<arma::mat>> >::type Hinit(HinitSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<std::vector<arma::mat>> >::type Vinit(VinitSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<arma::mat> >::type Winit(WinitSEXP);
+    rcpp_result_gen = Rcpp::wrap(bppinmf(objectList, k, nCores, lambda, niter, verbose, Hinit, Vinit, Winit));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -143,8 +141,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppPlanc_rcpp_spmat_to_h5spmat", (DL_FUNC) &_RcppPlanc_rcpp_spmat_to_h5spmat, 9},
     {"_RcppPlanc_nmf", (DL_FUNC) &_RcppPlanc_nmf, 7},
     {"_RcppPlanc_symNMF", (DL_FUNC) &_RcppPlanc_symNMF, 7},
-    {"_RcppPlanc_testcacheCalc", (DL_FUNC) &_RcppPlanc_testcacheCalc, 1},
-    {"_RcppPlanc_getBoundThreadCount", (DL_FUNC) &_RcppPlanc_getBoundThreadCount, 0},
+    {"_RcppPlanc_bppinmf", (DL_FUNC) &_RcppPlanc_bppinmf, 9},
     {"_RcppPlanc_openblas_pthread_off", (DL_FUNC) &_RcppPlanc_openblas_pthread_off, 1},
     {"_RcppPlanc_openblas_pthread_on", (DL_FUNC) &_RcppPlanc_openblas_pthread_on, 1},
     {NULL, NULL, 0}

@@ -1,11 +1,14 @@
 // -*- mode: C++; c-indent-level: 4; c-basic-offset: 4; indent-tabs-mode: nil; -*-
 
 // we only include RcppArmadillo.h which pulls Rcpp.h in for us
+#ifndef ARMA_64BIT_WORD
 #define ARMA_64BIT_WORD
+#endif
 #include <RcppArmadillo.h>
 #include "config.h"
 #include <progress.hpp>
 #include <functional>
+#include <variant>
 #include <utility>
 //#include "bppnmf.hpp"
 //#include "bppinmf.hpp"
@@ -296,13 +299,13 @@ Rcpp::List runINMF(std::vector<T> objectList, arma::uword k, double lambda,
       Rcpp::Named("objErr") = libcall.objErr);
 }
 template <typename T>
-Rcpp::List runINMF(std::vector<T> objectList, arma::uword k, double lambda,
+Rcpp::List bppinmf(const std::vector<T>& objectList, arma::uword k, double lambda,
                    arma::uword niter, bool verbose,
-                   std::vector<arma::mat> HinitList, std::vector<arma::mat> VinitList, arma::mat Winit,
+                   Rcpp::Nullable<std::vector<arma::mat>> HinitList, Rcpp::Nullable<std::vector<arma::mat>> VinitList, Rcpp::Nullable<arma::mat> Winit,
                    const int& ncores)
 {
   planc::inmfOutput<double> libcall{};
-  libcall = planc::nmflib<T>::bppinmf(objectList, k, lambda, niter, verbose, HinitList, VinitList, Winit, ncores);
+  libcall = planc::nmflib<T>::bppinmf(objectList, k, lambda, niter, verbose, Rcpp::as<std::vector<arma::mat>>(HinitList), Rcpp::as<std::vector<arma::mat>>(VinitList), Rcpp::as<arma::mat>(Winit), ncores);
                                     return Rcpp::List::create(
                                       Rcpp::Named("H") = Rcpp::wrap(libcall.outHList),
                                       Rcpp::Named("V") = Rcpp::wrap(libcall.outVList),
@@ -347,22 +350,24 @@ Rcpp::List runINMF(std::vector<T> objectList, arma::uword k, double lambda,
 //                 niter, verbose, nCores);
 //     }
 // }
-//// [[Rcpp::export(.bppinmf)]]
-//Rcpp::List bppinmf(Rcpp::List objectList, const arma::uword k, const int& nCores,
-//                   const double lambda = 5, const arma::uword niter = 30,
-//                   const bool verbose = true,
-//                   Rcpp::Nullable<std::vector<arma::mat>> Hinit = R_NilValue,
-//                   Rcpp::Nullable<std::vector<arma::mat>> Vinit = R_NilValue,
-//                   Rcpp::Nullable<arma::mat> Winit = R_NilValue) {
-//    if (Rf_isS4(objectList[0])) {
-//        return bppinmf(Rcpp::as<std::vector<arma::sp_mat>>(objectList), k, lambda,
-//                        niter, nCores, verbose, Hinit, Vinit, Winit);
-//    } else {
-//        return bppinmf(Rcpp::as<std::vector<arma::mat>>(objectList), k, lambda,
-//                            niter, nCores, verbose, Hinit, Vinit, Winit);
-//    }
-//    return Rcpp::List::create();
-//}
+// [[Rcpp::export(.bppinmf)]]
+Rcpp::List bppinmf(const Rcpp::List objectList, const arma::uword k, const int& nCores,
+                   const double lambda = 5, const arma::uword niter = 30,
+                   const bool verbose = true,
+                   Rcpp::Nullable<std::vector<arma::mat>> Hinit = R_NilValue,
+                   Rcpp::Nullable<std::vector<arma::mat>> Vinit = R_NilValue,
+                   Rcpp::Nullable<arma::mat> Winit = R_NilValue) {
+    std::variant<std::vector<arma::mat>, std::vector<arma::sp_mat>> unwrap;
+    if (Rf_isS4(objectList)) {
+        unwrap = Rcpp::as<std::vector<arma::sp_mat>>(objectList);
+    }
+    else {
+        unwrap = Rcpp::as<std::vector<arma::mat>>(objectList);
+    }
+    return std::visit([k, lambda, niter, verbose, Hinit, Vinit, Winit, nCores](auto&& arg) {
+        return bppinmf(arg, k, lambda, niter, verbose, Hinit, Vinit, Winit, nCores);
+    }, unwrap);
+}
 //
 //
 // // %%%%%%%%%%%%%%%%%% online INMF %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -844,15 +849,6 @@ Rcpp::List runINMF(std::vector<T> objectList, arma::uword k, double lambda,
 //     return output;
 // }
 //
-// [[Rcpp::export(.testCacheCalc)]]
-arma::uword testcacheCalc(int rank) {
-    return chunk_size_dense<double>(rank);
-}
-
-// [[Rcpp::export(.getBoundThreads)]]
-arma::uword getBoundThreadCount() {
-    return get_num_bound_threads();
-}
 
 // [[Rcpp::export(.openblaspthreadoff)]]
 void openblas_pthread_off(Rcpp::XPtr<void*> libloc) {
