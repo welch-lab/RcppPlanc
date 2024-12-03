@@ -43,7 +43,7 @@ Rcpp::List runNMF(T2 x, arma::uword k, const std::string& algo, const arma::uwor
                   Rcpp::Nullable<Rcpp::NumericMatrix> Winit,
                   Rcpp::Nullable<Rcpp::NumericMatrix> Hinit) {
     typedef planc::nmfOutput<eT>(*nmfCallType)(const T2&, const arma::uword&, const arma::uword&, const std::string&, const int&, const arma::mat&, const arma::mat&);
-    arma::mat nullMat = arma::mat(1, 1, arma::fill::none);
+    arma::mat nullMat{};
 
     planc::nmfOutput<eT> libcall{};
     std::function nmfcall = static_cast<nmfCallType>(planc::nmflib<T2>::nmf);
@@ -122,7 +122,7 @@ Rcpp::List runSymNMF(const T2& x, const arma::uword& k, const int& nCores, const
   planc::nmfOutput<eT> libcall{};
   std::function nmfcall = static_cast<symnmfCallType>(planc::nmflib<T2>::symNMF);
   if (!Hinit.isNotNull()) {
-    arma::mat nullMat = arma::mat(1, 1, arma::fill::none);
+    arma::mat nullMat{};
     libcall = planc::nmflib<T2>::symNMF(x, k, niter, symm_reg, algo, nCores, nullMat);
   } else {
     using namespace std::placeholders;
@@ -179,6 +179,7 @@ Rcpp::List symNMF(const SEXP& x, const arma::uword& k, const arma::uword& niter 
                  const Rcpp::Nullable<Rcpp::NumericMatrix> &Hinit = R_NilValue) {
 //   arma::mat out;
   Rcpp::List out;
+    try {
   if (Rf_isS4(x)) {
     // Assume using dgCMatrix
       out = runSymNMF<arma::sp_mat>(
@@ -189,6 +190,9 @@ Rcpp::List symNMF(const SEXP& x, const arma::uword& k, const arma::uword& niter 
       out = runSymNMF<arma::mat>(
         Rcpp::as<arma::mat>(x), k, nCores, niter, lambda, algo, Hinit
       );
+    }
+    } catch (const std::exception &e) {
+      throw Rcpp::exception(e.what());
     }
   return out;
 }
