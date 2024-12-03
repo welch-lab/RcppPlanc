@@ -32,3 +32,4 @@ cmake -S ../planc \
   -DBUILD_RCPP=ON
 
 cmake --build .
+cmake --install .

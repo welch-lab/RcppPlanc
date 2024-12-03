@@ -47,3 +47,4 @@ $CMAKE -S ../planc \
   ${CMAKE_ARGS}
 
 ${MAKE}
+cmake --install .
