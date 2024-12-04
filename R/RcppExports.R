@@ -90,6 +90,14 @@ symNMF <- function(x, k, niter = 30L, lambda = 0.0, algo = "gnsym", nCores = 2L,
     .Call(`_RcppPlanc_symNMF`, x, k, niter, lambda, algo, nCores, Hinit)
 }
 
+.bppinmf_h5dense <- function(filenames, dataPath, k, nCores, lambda, niter, verbose = TRUE, Hinit = NULL, Vinit = NULL, Winit = NULL) {
+    .Call(`_RcppPlanc_bppinmf_h5`, filenames, dataPath, k, nCores, lambda, niter, verbose, Hinit, Vinit, Winit)
+}
+
+.bppinmf_h5sparse <- function(filenames, valuePath, rowindPath, colptrPath, nrow, ncol, k, nCores, lambda, niter, verbose = TRUE, Hinit = NULL, Vinit = NULL, Winit = NULL) {
+    .Call(`_RcppPlanc_bppinmf_h5sp`, filenames, valuePath, rowindPath, colptrPath, nrow, ncol, k, nCores, lambda, niter, verbose, Hinit, Vinit, Winit)
+}
+
 .bppinmf <- function(objectList, k, nCores, lambda = 5, niter = 30L, verbose = TRUE, Hinit = NULL, Vinit = NULL, Winit = NULL) {
     .Call(`_RcppPlanc_bppinmf`, objectList, k, nCores, lambda, niter, verbose, Hinit, Vinit, Winit)
 }
