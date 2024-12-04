@@ -95,6 +95,50 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// bppinmf_h5
+Rcpp::List bppinmf_h5(std::vector<std::string> filenames, std::vector<std::string> dataPath, arma::uword k, const int& nCores, double lambda, arma::uword niter, bool verbose, Rcpp::Nullable<std::vector<arma::mat>> Hinit, Rcpp::Nullable<std::vector<arma::mat>> Vinit, Rcpp::Nullable<arma::mat> Winit);
+RcppExport SEXP _RcppPlanc_bppinmf_h5(SEXP filenamesSEXP, SEXP dataPathSEXP, SEXP kSEXP, SEXP nCoresSEXP, SEXP lambdaSEXP, SEXP niterSEXP, SEXP verboseSEXP, SEXP HinitSEXP, SEXP VinitSEXP, SEXP WinitSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type filenames(filenamesSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type dataPath(dataPathSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type k(kSEXP);
+    Rcpp::traits::input_parameter< const int& >::type nCores(nCoresSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type niter(niterSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<std::vector<arma::mat>> >::type Hinit(HinitSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<std::vector<arma::mat>> >::type Vinit(VinitSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<arma::mat> >::type Winit(WinitSEXP);
+    rcpp_result_gen = Rcpp::wrap(bppinmf_h5(filenames, dataPath, k, nCores, lambda, niter, verbose, Hinit, Vinit, Winit));
+    return rcpp_result_gen;
+END_RCPP
+}
+// bppinmf_h5sp
+Rcpp::List bppinmf_h5sp(std::vector<std::string> filenames, std::vector<std::string> valuePath, std::vector<std::string> rowindPath, std::vector<std::string> colptrPath, arma::uvec nrow, arma::uvec ncol, arma::uword k, const int& nCores, double lambda, arma::uword niter, bool verbose, Rcpp::Nullable<std::vector<arma::mat>> Hinit, Rcpp::Nullable<std::vector<arma::mat>> Vinit, Rcpp::Nullable<arma::mat> Winit);
+RcppExport SEXP _RcppPlanc_bppinmf_h5sp(SEXP filenamesSEXP, SEXP valuePathSEXP, SEXP rowindPathSEXP, SEXP colptrPathSEXP, SEXP nrowSEXP, SEXP ncolSEXP, SEXP kSEXP, SEXP nCoresSEXP, SEXP lambdaSEXP, SEXP niterSEXP, SEXP verboseSEXP, SEXP HinitSEXP, SEXP VinitSEXP, SEXP WinitSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type filenames(filenamesSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type valuePath(valuePathSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type rowindPath(rowindPathSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string> >::type colptrPath(colptrPathSEXP);
+    Rcpp::traits::input_parameter< arma::uvec >::type nrow(nrowSEXP);
+    Rcpp::traits::input_parameter< arma::uvec >::type ncol(ncolSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type k(kSEXP);
+    Rcpp::traits::input_parameter< const int& >::type nCores(nCoresSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type niter(niterSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<std::vector<arma::mat>> >::type Hinit(HinitSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<std::vector<arma::mat>> >::type Vinit(VinitSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<arma::mat> >::type Winit(WinitSEXP);
+    rcpp_result_gen = Rcpp::wrap(bppinmf_h5sp(filenames, valuePath, rowindPath, colptrPath, nrow, ncol, k, nCores, lambda, niter, verbose, Hinit, Vinit, Winit));
+    return rcpp_result_gen;
+END_RCPP
+}
 // bppinmf
 Rcpp::List bppinmf(const Rcpp::List objectList, const arma::uword k, const int& nCores, const double lambda, const arma::uword niter, const bool verbose, Rcpp::Nullable<std::vector<arma::mat>> Hinit, Rcpp::Nullable<std::vector<arma::mat>> Vinit, Rcpp::Nullable<arma::mat> Winit);
 RcppExport SEXP _RcppPlanc_bppinmf(SEXP objectListSEXP, SEXP kSEXP, SEXP nCoresSEXP, SEXP lambdaSEXP, SEXP niterSEXP, SEXP verboseSEXP, SEXP HinitSEXP, SEXP VinitSEXP, SEXP WinitSEXP) {
@@ -141,6 +185,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppPlanc_rcpp_spmat_to_h5spmat", (DL_FUNC) &_RcppPlanc_rcpp_spmat_to_h5spmat, 9},
     {"_RcppPlanc_nmf", (DL_FUNC) &_RcppPlanc_nmf, 7},
     {"_RcppPlanc_symNMF", (DL_FUNC) &_RcppPlanc_symNMF, 7},
+    {"_RcppPlanc_bppinmf_h5", (DL_FUNC) &_RcppPlanc_bppinmf_h5, 10},
+    {"_RcppPlanc_bppinmf_h5sp", (DL_FUNC) &_RcppPlanc_bppinmf_h5sp, 14},
     {"_RcppPlanc_bppinmf", (DL_FUNC) &_RcppPlanc_bppinmf, 9},
     {"_RcppPlanc_openblas_pthread_off", (DL_FUNC) &_RcppPlanc_openblas_pthread_off, 1},
     {"_RcppPlanc_openblas_pthread_on", (DL_FUNC) &_RcppPlanc_openblas_pthread_on, 1},
