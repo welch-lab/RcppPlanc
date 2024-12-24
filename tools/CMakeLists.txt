@@ -165,16 +165,23 @@ if((WIN32 OR APPLE) AND NOT DEFINED ENV{CONDA_BUILD})
     set(HDF5_USE_STATIC_LIBRARIES ON CACHE INTERNAL BOOL)
     set(HIGHFIVE_STATIC_HDF5 ON CACHE INTERNAL BOOL)
 endif()
+find_package(HighFive CONFIG)
+if(NOT HighFive_FOUND)
 FetchContent_Declare(
     HighFive
     URL https://github.com/BlueBrain/HighFive/archive/refs/tags/v2.9.0.tar.gz
     URL_HASH SHA256=6301def8ceb9f4d7a595988612db288b448a3c0546f6c83417dab38c64994d7e
 )
 FetchContent_MakeAvailable(HighFive)
+endif()
 # from https://gitlab.kitware.com/cmake/cmake/-/issues/18872#note_1090297
 # Since there is no compiler line to help us, add the additional required
 # libraries manually.
+find_package(HDF5 CONFIG) #trust cmake config if it exists
+
+if(NOT HDF5_FOUND)
 set(_additional_libs sz z dl m)
+
 foreach(_additional_lib IN LISTS _additional_libs)
     # If both static and shared are available, prefer static to avoid libdl
     # annoyances ("Using 'dlopen' in statically linked applications requires
@@ -189,7 +196,7 @@ foreach(_additional_lib IN LISTS _additional_libs)
     find_library(${_libvar}
             NAMES ${_libnames}
             HINTS ${HDF5_ROOT}
-            PATH_SUFFIXES lib Lib
+            PATH_SUFFIXES lib Lib lib64 Lib64
             REQUIRED)
     if(HDF5_FIND_DEBUG)
         message(STATUS "${_additional_lib} (${_libvar}): ${${_libvar}}")
@@ -200,6 +207,7 @@ foreach(_additional_lib IN LISTS _additional_libs)
     list(APPEND HDF5_LIBRARIES ${${_libvar}})
 endforeach()
 list(REMOVE_DUPLICATES HDF5_LIBRARIES)
+endif()
 
 string(REGEX MATCH "-lR" R_LINK_LINE ${R_LDFLAGS})
 string(REGEX MATCH "-framework R" R_FRAMEWORK_LINE ${R_LDFLAGS})
