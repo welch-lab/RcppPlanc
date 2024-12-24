@@ -157,7 +157,7 @@ add_library(hw_detect OBJECT "${PROJECT_SOURCE_DIR}/../src/common/hw_detect.c")
 endif()
 
 if(DEFINED ENV{CONDA_BUILD})
-    find_package(HDF5 CONFIG REQUIRED)
+    find_package(HDF5 REQUIRED)
     check_include_file("HighFive.hpp" HighFive_Header)
 else()
 set(HIGHFIVE_EXAMPLES OFF CACHE INTERNAL BOOL)
