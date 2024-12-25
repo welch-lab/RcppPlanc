@@ -17,7 +17,7 @@
 #endif
 #include "cblas.h"
 #endif
-#include "cblas.h"
+#include <cblas.h>
 #endif
 #endif
 
