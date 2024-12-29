@@ -30,7 +30,7 @@ separate_arguments(PASSTHROUGH_CONFIGURE_ARGS)
 find_package(R REQUIRED)
 
 add_library(RcppPlanc SHARED "${PROJECT_SOURCE_DIR}/../src/rcppplanc_nmf.cpp" "${PROJECT_SOURCE_DIR}/../src/RcppExports.cpp" "${PROJECT_SOURCE_DIR}/../src/conversion.cpp" "${PROJECT_SOURCE_DIR}/../src/common/detect_blas.c" $<$<BOOL:${WIN32}>:${PROJECT_SOURCE_DIR}/../src/RcppPlanc-win.def>)
-if(WIN32)
+if(WIN32 AND NOT DEFINED ENV{CONDA_BUILD})
 target_link_options(RcppPlanc PRIVATE -static-libgcc $<$<CONFIG:RELEASE>:-s> $<$<CONFIG:RELWITHDEBINFO>:-s>)
 else()
     target_link_options(RcppPlanc PRIVATE "-shared")
