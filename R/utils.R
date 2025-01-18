@@ -62,7 +62,7 @@ as.H5Mat <- function(x, filename, dataPath = "data", overwrite = FALSE, ...) {
 #' @method as.H5Mat matrix
 as.H5Mat.matrix <- function(x, filename, dataPath = "data",
                             overwrite = FALSE, ...) {
-  res <- .rcpp_mat_to_h5mat(x, filename, dataPath)
+  res <- rcpp_mat_to_h5mat(x, filename, dataPath)
   H5Mat(res[1], res[2])
 }
 
@@ -71,7 +71,7 @@ as.H5Mat.matrix <- function(x, filename, dataPath = "data",
 #' @method as.H5Mat dgCMatrix
 as.H5Mat.dgCMatrix <- function(x, filename, dataPath = "data",
                                overwrite = FALSE, ...) {
-  res <- .rcpp_spmat_to_h5mat(x@x, x@i, x@p, nrow(x), ncol(x), filename, dataPath)
+  res <- rcpp_spmat_to_h5mat(x@x, x@i, x@p, nrow(x), ncol(x), filename, dataPath)
   H5Mat(res[1], res[2])
 }
 
@@ -229,7 +229,7 @@ as.H5SpMat.matrix <- function(x, filename, valuePath = "data",
 as.H5SpMat.dgCMatrix <- function(x, filename, valuePath = "data",
                                  rowindPath = "indices", colptrPath = "indptr",
                                  overwrite = FALSE, ...) {
-  res <- .rcpp_spmat_to_h5spmat(x@x, x@i, x@p, nrow(x), ncol(x), filename,
+  res <- rcpp_spmat_to_h5spmat(x@x, x@i, x@p, nrow(x), ncol(x), filename,
                                 valuePath, rowindPath, colptrPath)
   H5SpMat(res[1], res[2], res[3], res[4], nrow(x), ncol(x))
 }
