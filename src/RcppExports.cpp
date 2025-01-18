@@ -47,18 +47,18 @@ BEGIN_RCPP
 END_RCPP
 }
 // bppinmf_h5
-Rcpp::List bppinmf_h5(std::vector<std::string> filenames, std::vector<std::string> dataPath, arma::uword k, const int& nCores, double lambda, arma::uword niter, bool verbose, Rcpp::Nullable<std::vector<arma::mat>> Hinit, Rcpp::Nullable<std::vector<arma::mat>> Vinit, Rcpp::Nullable<arma::mat> Winit);
+Rcpp::List bppinmf_h5(const std::vector<std::string>& filenames, const std::vector<std::string>& dataPath, const arma::uword k, const int& nCores, const double lambda, const arma::uword niter, const bool verbose, Rcpp::Nullable<std::vector<arma::mat>> Hinit, Rcpp::Nullable<std::vector<arma::mat>> Vinit, Rcpp::Nullable<arma::mat> Winit);
 RcppExport SEXP _RcppPlanc_bppinmf_h5(SEXP filenamesSEXP, SEXP dataPathSEXP, SEXP kSEXP, SEXP nCoresSEXP, SEXP lambdaSEXP, SEXP niterSEXP, SEXP verboseSEXP, SEXP HinitSEXP, SEXP VinitSEXP, SEXP WinitSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::vector<std::string> >::type filenames(filenamesSEXP);
-    Rcpp::traits::input_parameter< std::vector<std::string> >::type dataPath(dataPathSEXP);
-    Rcpp::traits::input_parameter< arma::uword >::type k(kSEXP);
+    Rcpp::traits::input_parameter< const std::vector<std::string>& >::type filenames(filenamesSEXP);
+    Rcpp::traits::input_parameter< const std::vector<std::string>& >::type dataPath(dataPathSEXP);
+    Rcpp::traits::input_parameter< const arma::uword >::type k(kSEXP);
     Rcpp::traits::input_parameter< const int& >::type nCores(nCoresSEXP);
-    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
-    Rcpp::traits::input_parameter< arma::uword >::type niter(niterSEXP);
-    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    Rcpp::traits::input_parameter< const double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< const arma::uword >::type niter(niterSEXP);
+    Rcpp::traits::input_parameter< const bool >::type verbose(verboseSEXP);
     Rcpp::traits::input_parameter< Rcpp::Nullable<std::vector<arma::mat>> >::type Hinit(HinitSEXP);
     Rcpp::traits::input_parameter< Rcpp::Nullable<std::vector<arma::mat>> >::type Vinit(VinitSEXP);
     Rcpp::traits::input_parameter< Rcpp::Nullable<arma::mat> >::type Winit(WinitSEXP);
