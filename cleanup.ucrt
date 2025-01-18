@@ -1,9 +1,10 @@
 #!/bin/sh
 
-rm -f src/*.o src/*.dll src/symbols.rds src/Makefile src/Makefile.ucrt src/*.cmake src/CMakeCache.txt src/*.dll.a
-rm -rf src/CMakefiles src/CPM_modules
+rm -f src/*.obj src/*.o src/*.dll src/symbols.rds src/Makefile src/Makefile.ucrt src/*.cmake src/CMakeCache.txt src/*.dll.a
+rm -rf src/CMakefiles
 rm -rf src/_deps
 rm -rf src/hwloc-prefix
 rm -rf src/build
-rm src/Makevars
-rm src/Makevars.gen
+rm -f src/Makevars
+rm -f src/Makevars.gen
+rm -f src/*.dll src/*.dll.a

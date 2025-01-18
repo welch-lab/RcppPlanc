@@ -1,2 +1,2 @@
 PKG_CPPFLAGS = -Iplanc/common -Iplanc/nmf -Iplanc/nnls -Ibuild/_deps/highfive-src/include -Ibuild/nmf @CPPFLAGS@ ${SHLIB_OPENMP_CXXFLAGS} -DHIGHFIVE_HAS_CONCEPTS=0 -DMPI_NO_CPPBIND -DRcppPlanc_EXPORTS -D_GNU_SOURCE -D_POSIX_C_SOURCE=200809L
-PKG_LIBS = -Lbuild/nmf/ -lnmflib -lhdf5_hl -lhdf5 -lsz -lz @LIBHWLOC_LINK@ ${SHLIB_OPENMP_CFLAGS} $(LAPACK_LIBS) @BLAS_LIBS@ $(FLIBS)
+PKG_LIBS = -L./ -lnmflib ${SHLIB_OPENMP_CFLAGS}

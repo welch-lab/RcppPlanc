@@ -30,6 +30,7 @@ cmake -S ../planc \
   -DR_HOME="$R_HOME" \
   -DBUILD_SHARED_LIBS=ON \
   -DBUILD_RCPP=ON
+  -DCMAKE_INSTALL_PREFIX=${R_PACKAGE_DIR}
 
 cmake --build .
 cmake --install .
