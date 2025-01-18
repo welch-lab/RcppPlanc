@@ -9,21 +9,8 @@
 #include <progress.hpp>
 #include <functional>
 #include <variant>
-#include <utility>
-//#include "bppnmf.hpp"
-//#include "bppinmf.hpp"
-//#include "bppnnls.hpp"
-//#include "aoadmm.hpp"
-//#include "gnsym.hpp"
-//#include "hals.hpp"
-//#include "mu.hpp"
-//#include "data.hpp"
-//#include "onlineinmf.hpp"
-//#include "uinmf.hpp"
+#include <data.hpp>
 #include <nmf_lib.hpp>
-extern "C" {
-#include "detect_blas.h"
-}
 
 // [[Rcpp::plugins(openmp)]]
 // via the depends attribute we tell Rcpp to create hooks for
@@ -32,10 +19,10 @@ extern "C" {
 // [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::depends(RcppProgress)]]
 
-normtype m_input_normalization;
-int m_initseed;
-arma::fvec m_regW;
-arma::fvec m_regH;
+// normtype m_input_normalization;
+// int m_initseed;
+// arma::fvec m_regW;
+// arma::fvec m_regH;
 
 // T2 e.g. arma::sp_mat
 template <typename T2, typename eT = typename T2::elem_type>
@@ -322,26 +309,34 @@ std::vector<arma::mat> deRm(Rcpp::Nullable<std::vector<arma::mat>> wrapped, size
 }
 // the correct way TODO this is to implement an Rcpp exporter and use the templated function below.
 // [[Rcpp::export(.bppinmf_h5dense)]]
-Rcpp::List bppinmf_h5(std::vector<std::string> filenames, std::vector<std::string> dataPath,
-    arma::uword k, const int& nCores, double lambda, arma::uword niter, bool verbose = true,
+Rcpp::List bppinmf_h5(const std::vector<std::string>&filenames, const std::vector<std::string>&dataPath,
+    const arma::uword k, const int& nCores, const double lambda, const arma::uword niter, const bool verbose = true,
     Rcpp::Nullable<std::vector<arma::mat>> Hinit = R_NilValue,
     Rcpp::Nullable<std::vector<arma::mat>> Vinit = R_NilValue,
     Rcpp::Nullable<arma::mat> Winit  = R_NilValue) {
-    std::vector<planc::H5Mat> matVec;
+    std::vector<std::shared_ptr<planc::H5Mat>> matVec;
     for (arma::uword i = 0; i < filenames.size(); ++i) {
-        planc::H5Mat h5m(filenames[i], dataPath[i]);
-        matVec.push_back(h5m);
+        matVec.push_back(std::make_unique<planc::H5Mat>(planc::H5Mat(filenames[i], dataPath[i])));
     }
     planc::inmfOutput<double> libcall{};
-    if (Hinit.isNull() && Vinit.isNull() && Winit.isNull())
-    libcall = planc::nmflib<planc::H5Mat>::bppinmf(matVec, k, lambda, niter, verbose, nCores);
-    arma::mat WinitPass = deRm(Winit);
-    std::vector<arma::mat> VinitPass = deRm(Vinit, filenames.size());
-    std::vector<arma::mat> HinitPass = deRm(Hinit, filenames.size());
-    libcall = planc::nmflib<planc::H5Mat>::bppinmf(matVec, k, lambda, niter, verbose, HinitPass, VinitPass, WinitPass, nCores);
+    if (Hinit.isNull() && Vinit.isNull() && Winit.isNull()) {
+        libcall = planc::nmflib<planc::H5Mat>::bppinmf(matVec, k, lambda, niter, verbose, nCores);
+    } else {
+        arma::mat WinitPass = deRm(Winit);
+        std::vector<arma::mat> VinitPass = deRm(Vinit, filenames.size());
+        std::vector<arma::mat> HinitPass = deRm(Hinit, filenames.size());
+        libcall = planc::nmflib<planc::H5Mat>::bppinmf(matVec, k, lambda, niter, verbose, HinitPass, VinitPass, WinitPass, nCores);
+    }
+    std::vector<Rcpp::NumericMatrix> HList;
+    std::vector<Rcpp::NumericMatrix> VList;
+    for (arma::uword i = 0; i < matVec.size(); ++i)
+    {
+        HList.push_back(Rcpp::wrap(libcall.outHList[i]));
+        VList.push_back(Rcpp::wrap(libcall.outVList[i]));
+    }
     return Rcpp::List::create(
-           Rcpp::Named("H") = Rcpp::wrap(libcall.outHList),
-           Rcpp::Named("V") = Rcpp::wrap(libcall.outVList),
+      Rcpp::Named("H") = Rcpp::wrap(HList),
+      Rcpp::Named("V") = Rcpp::wrap(VList),
            Rcpp::Named("W") = libcall.outW,
            Rcpp::Named("objErr") = libcall.objErr);
     }
@@ -358,28 +353,37 @@ Rcpp::List bppinmf_h5sp(
     Rcpp::Nullable<std::vector<arma::mat>> Hinit = R_NilValue,
     Rcpp::Nullable<std::vector<arma::mat>> Vinit = R_NilValue,
     Rcpp::Nullable<arma::mat> Winit  = R_NilValue) {
-    std::vector<planc::H5SpMat> matVec;
+    std::vector<std::shared_ptr<planc::H5SpMat>> matVec;
     for (arma::uword i = 0; i < filenames.size(); ++i) {
-        planc::H5SpMat h5spm(filenames[i], rowindPath[i], colptrPath[i], valuePath[i], nrow[i], ncol[i]);
+        auto h5spm = std::make_shared<planc::H5SpMat>(filenames[i], rowindPath[i], colptrPath[i], valuePath[i], nrow[i], ncol[i]);
         matVec.push_back(h5spm);
     }
     planc::inmfOutput<double> libcall{};
-    if (Hinit.isNull() && Vinit.isNull() && Winit.isNull())
+    if (Hinit.isNull() && Vinit.isNull() && Winit.isNull()) {
         libcall = planc::nmflib<planc::H5SpMat>::bppinmf(matVec, k, lambda, niter, verbose, nCores);
-    arma::mat WinitPass = deRm(Winit);
-    std::vector<arma::mat> VinitPass = deRm(Vinit, filenames.size());
-    std::vector<arma::mat> HinitPass = deRm(Hinit, filenames.size());
-    libcall = planc::nmflib<planc::H5SpMat>::bppinmf(matVec, k, lambda, niter, verbose, HinitPass, VinitPass, WinitPass, nCores);
+    } else {
+        arma::mat WinitPass = deRm(Winit);
+        std::vector<arma::mat> VinitPass = deRm(Vinit, filenames.size());
+        std::vector<arma::mat> HinitPass = deRm(Hinit, filenames.size());
+        libcall = planc::nmflib<planc::H5SpMat>::bppinmf(matVec, k, lambda, niter, verbose, HinitPass, VinitPass, WinitPass, nCores);
+    }
+    std::vector<Rcpp::NumericMatrix> HList;
+    std::vector<Rcpp::NumericMatrix> VList;
+    for (arma::uword i = 0; i < matVec.size(); ++i)
+    {
+        HList.push_back(Rcpp::wrap(libcall.outHList[i]));
+        VList.push_back(Rcpp::wrap(libcall.outVList[i]));
+    }
     return Rcpp::List::create(
-           Rcpp::Named("H") = Rcpp::wrap(libcall.outHList),
-           Rcpp::Named("V") = Rcpp::wrap(libcall.outVList),
+           Rcpp::Named("H") = Rcpp::wrap(HList),
+           Rcpp::Named("V") = Rcpp::wrap(VList),
            Rcpp::Named("W") = libcall.outW,
            Rcpp::Named("objErr") = libcall.objErr);
 }
 
 
 template <typename T>
-Rcpp::List bppinmf(const std::vector<T>& objectList, arma::uword k, double lambda,
+Rcpp::List bppinmf(const std::vector<std::shared_ptr<T>>& objectList, arma::uword k, double lambda,
                    arma::uword niter, bool verbose,
                    Rcpp::Nullable<std::vector<arma::mat>> HinitList, Rcpp::Nullable<std::vector<arma::mat>> VinitList, Rcpp::Nullable<arma::mat> Winit,
                    const int& ncores)
@@ -391,9 +395,16 @@ Rcpp::List bppinmf(const std::vector<T>& objectList, arma::uword k, double lambd
   else {
     libcall = planc::nmflib<T>::bppinmf(objectList, k, lambda, niter, verbose, Rcpp::as<std::vector<arma::mat>>(HinitList), Rcpp::as<std::vector<arma::mat>>(VinitList), Rcpp::as<arma::mat>(Winit), ncores);
   }
+    std::vector<Rcpp::NumericMatrix> HList;
+    std::vector<Rcpp::NumericMatrix> VList;
+    for (arma::uword i = 0; i < objectList.size(); ++i)
+    {
+        HList.push_back(Rcpp::wrap(libcall.outHList[i]));
+        VList.push_back(Rcpp::wrap(libcall.outVList[i]));
+    }
   return Rcpp::List::create(
-    Rcpp::Named("H") = Rcpp::wrap(libcall.outHList),
-    Rcpp::Named("V") = Rcpp::wrap(libcall.outVList),
+    Rcpp::Named("H") = Rcpp::wrap(HList),
+    Rcpp::Named("V") = Rcpp::wrap(VList),
     Rcpp::Named("W") = libcall.outW,
     Rcpp::Named("objErr") = libcall.objErr);
 }
@@ -405,12 +416,13 @@ Rcpp::List bppinmf(const Rcpp::List objectList, const arma::uword k, const int& 
                    Rcpp::Nullable<std::vector<arma::mat>> Hinit = R_NilValue,
                    Rcpp::Nullable<std::vector<arma::mat>> Vinit = R_NilValue,
                    Rcpp::Nullable<arma::mat> Winit = R_NilValue) {
-    std::variant<std::vector<arma::mat>, std::vector<arma::sp_mat>> unwrap;
+    std::variant<std::vector<std::shared_ptr<arma::mat>>, std::vector<std::shared_ptr<arma::sp_mat>>> unwrap;
     if (Rf_isS4(objectList[0])) {
-        unwrap = Rcpp::as<std::vector<arma::sp_mat>>(objectList);
+        unwrap = planc::nmflib<arma::sp_mat>::initMemSharedPtr(Rcpp::as<std::vector<arma::sp_mat>>(objectList));
     } else {
-        unwrap = Rcpp::as<std::vector<arma::mat>>(objectList);
+        unwrap = planc::nmflib<arma::mat>::initMemSharedPtr(Rcpp::as<std::vector<arma::mat>>(objectList));
     }
+
     return std::visit([k, lambda, niter, verbose, Hinit, Vinit, Winit, nCores](auto&& arg) {
         return bppinmf(arg, k, lambda, niter, verbose, Hinit, Vinit, Winit, nCores);
     }, unwrap);
