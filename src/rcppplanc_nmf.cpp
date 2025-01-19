@@ -316,7 +316,7 @@ Rcpp::List bppinmf_h5(const std::vector<std::string>&filenames, const std::vecto
     Rcpp::Nullable<arma::mat> Winit  = R_NilValue) {
     std::vector<std::shared_ptr<planc::H5Mat>> matVec;
     for (arma::uword i = 0; i < filenames.size(); ++i) {
-        matVec.push_back(std::make_unique<planc::H5Mat>(planc::H5Mat(filenames[i], dataPath[i])));
+        matVec.push_back(std::make_shared<planc::H5Mat>(planc::H5Mat(filenames[i], dataPath[i])));
     }
     planc::inmfOutput<double> libcall{};
     if (Hinit.isNull() && Vinit.isNull() && Winit.isNull()) {
@@ -427,335 +427,280 @@ Rcpp::List bppinmf(const Rcpp::List objectList, const arma::uword k, const int& 
         return bppinmf(arg, k, lambda, niter, verbose, Hinit, Vinit, Winit, nCores);
     }, unwrap);
 }
-//
-//
-// // %%%%%%%%%%%%%%%%%% online INMF %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-//
-// template <typename T>
-// Rcpp::List onlineINMF_S1_mem(std::vector<T> objectList, arma::uword k, const int& nCores,
-//     double lambda, arma::uword maxEpoch = 5, arma::uword minibatchSize = 5000,
-//     arma::uword maxHALSIter = 1, bool verbose = true) {
-//     std::vector<std::unique_ptr<T>> matPtrVec = initMemMatPtr<T>(objectList);
-//     planc::ONLINEINMF<T, T> solver(matPtrVec, k, lambda);
-//     solver.runOnlineINMF(minibatchSize, maxEpoch, maxHALSIter, verbose, nCores);
-//
-//     Rcpp::List HList(objectList.size());
-//     Rcpp::List VList(objectList.size());
-//     Rcpp::List AList(objectList.size());
-//     Rcpp::List BList(objectList.size());
-//     for (arma::uword i = 0; i < objectList.size(); ++i)
-//     {
-//         HList[i] = solver.getHi(i);
-//         VList[i] = solver.getVi(i);
-//         AList[i] = solver.getAi(i);
-//         BList[i] = solver.getBi(i);
-//     }
-//     Rcpp::List output = Rcpp::List::create(
-//         Rcpp::Named("H") = Rcpp::wrap(HList),
-//         Rcpp::Named("V") = Rcpp::wrap(VList),
-//         Rcpp::Named("W") = Rcpp::wrap(solver.getW()),
-//         Rcpp::Named("A") = Rcpp::wrap(AList),
-//         Rcpp::Named("B") = Rcpp::wrap(BList),
-//         Rcpp::Named("objErr") = Rcpp::wrap(solver.objErr())
-//     );
-//     return output;
-//     }
-//
-// // [[Rcpp::export(.onlineINMF_S1)]]
-// Rcpp::List onlineINMF_S1(Rcpp::List objectList, arma::uword k, const int& nCores,
-//     double lambda, arma::uword maxEpoch = 5, arma::uword minibatchSize = 5000,
-//     arma::uword maxHALSIter = 1, bool verbose = true) {
-//     if (Rf_isS4(objectList[0])) {
-//         return onlineINMF_S1_mem<arma::sp_mat>(Rcpp::as<std::vector<arma::sp_mat>>(objectList),
-//             k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, verbose);
-//     } else {
-//         return onlineINMF_S1_mem<arma::mat>(Rcpp::as<std::vector<arma::mat>>(objectList),
-//             k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, verbose);
-//     }
-//     return Rcpp::List::create();
-// }
-//
-// // [[Rcpp::export(.onlineINMF_S1_h5dense)]]
-// Rcpp::List onlineINMF_S1_h5dense(std::vector<std::string> filenames,
-//     std::vector<std::string> dataPaths, arma::uword k, int nCores,
-//     double lambda, arma::uword maxEpoch = 5, arma::uword minibatchSize = 5000,
-//     arma::uword maxHALSIter = 1, bool verbose = true) {
-//     std::vector<std::unique_ptr<planc::H5Mat>> matPtrVec;
-//     for (arma::uword i = 0; i < filenames.size(); ++i)
-//     {
-//         planc::H5Mat E(filenames[i], dataPaths[i]);
-//         std::unique_ptr<planc::H5Mat> ptr = std::make_unique<planc::H5Mat>(E);
-//         matPtrVec.push_back(std::move(ptr));
-//     }
-//     planc::ONLINEINMF<planc::H5Mat, arma::mat> solver(matPtrVec, k, lambda);
-//     solver.runOnlineINMF(minibatchSize, maxEpoch, maxHALSIter, verbose, nCores);
-//
-//     Rcpp::List HList(filenames.size());
-//     Rcpp::List VList(filenames.size());
-//     Rcpp::List AList(filenames.size());
-//     Rcpp::List BList(filenames.size());
-//     for (arma::uword i = 0; i < filenames.size(); ++i)
-//     {
-//         HList[i] = solver.getHi(i);
-//         VList[i] = solver.getVi(i);
-//         AList[i] = solver.getAi(i);
-//         BList[i] = solver.getBi(i);
-//     }
-//     Rcpp::List output = Rcpp::List::create(
-//         Rcpp::Named("H") = Rcpp::wrap(HList),
-//         Rcpp::Named("V") = Rcpp::wrap(VList),
-//         Rcpp::Named("W") = Rcpp::wrap(solver.getW()),
-//         Rcpp::Named("A") = Rcpp::wrap(AList),
-//         Rcpp::Named("B") = Rcpp::wrap(BList),
-//         Rcpp::Named("objErr") = Rcpp::wrap(solver.objErr())
-//     );
-//     return output;
-// }
-//
-// // [[Rcpp::export(.onlineINMF_S1_h5sparse)]]
-// Rcpp::List onlineINMF_S1_h5sparse(
-//     std::vector<std::string> filenames,
-//     std::vector<std::string> valuePaths,
-//     std::vector<std::string> rowindPaths,
-//     std::vector<std::string> colptrPaths,
-//     arma::uvec nrows, arma::uvec ncols,
-//     arma::uword k, const int& nCores, double lambda,
-//     arma::uword maxEpoch = 5, arma::uword minibatchSize = 5000,
-//     arma::uword maxHALSIter = 1, bool verbose = true
-// ) {
-//     std::vector<std::unique_ptr<planc::H5SpMat>> matPtrVec;
-//     for (arma::uword i = 0; i < filenames.size(); ++i)
-//     {
-//         planc::H5SpMat E(filenames[i], rowindPaths[i], colptrPaths[i], valuePaths[i], nrows[i], ncols[i]);
-//         std::unique_ptr<planc::H5SpMat> ptr = std::make_unique<planc::H5SpMat>(E);
-//         matPtrVec.push_back(std::move(ptr));
-//     }
-//     planc::ONLINEINMF<planc::H5SpMat, arma::sp_mat> solver(matPtrVec, k, lambda);
-//     solver.runOnlineINMF(minibatchSize, maxEpoch, maxHALSIter, verbose, nCores);
-//
-//     Rcpp::List HList(filenames.size());
-//     Rcpp::List VList(filenames.size());
-//     Rcpp::List AList(filenames.size());
-//     Rcpp::List BList(filenames.size());
-//     for (arma::uword i = 0; i < filenames.size(); ++i)
-//     {
-//         HList[i] = solver.getHi(i);
-//         VList[i] = solver.getVi(i);
-//         AList[i] = solver.getAi(i);
-//         BList[i] = solver.getBi(i);
-//     }
-//     Rcpp::List output = Rcpp::List::create(
-//         Rcpp::Named("H") = Rcpp::wrap(HList),
-//         Rcpp::Named("V") = Rcpp::wrap(VList),
-//         Rcpp::Named("W") = Rcpp::wrap(solver.getW()),
-//         Rcpp::Named("A") = Rcpp::wrap(AList),
-//         Rcpp::Named("B") = Rcpp::wrap(BList),
-//         Rcpp::Named("objErr") = Rcpp::wrap(solver.objErr())
-//     );
-//     return output;
-// }
-//
-// template <typename T>
-// Rcpp::List onlineINMF_S23_mem(std::vector<T> objectList,
-//     std::vector<arma::mat> Vinit, arma::mat Winit,
-//     std::vector<arma::mat> Ainit, std::vector<arma::mat> Binit,
-//     std::vector<T> objectListNew,
-//     arma::uword k, const int& nCores, double lambda, bool project = false, arma::uword maxEpoch = 5,
-//     arma::uword minibatchSize = 5000, arma::uword maxHALSIter = 1, bool verbose = true) {
-//     std::vector<std::unique_ptr<T>> matPtrVec = initMemMatPtr<T>(objectList);
-//     std::vector<std::unique_ptr<T>> matPtrVecNew = initMemMatPtr<T>(objectListNew);
-//     planc::ONLINEINMF<T, T> solver(matPtrVec, k, lambda);
-//     if (!project) solver.initV(Vinit, false);
-//     solver.initW(Winit, false);
-//     if (!project) solver.initA(Ainit);
-//     if (!project) solver.initB(Binit);
-//     solver.runOnlineINMF(matPtrVecNew, project, minibatchSize, maxEpoch, maxHALSIter, verbose, nCores);
-//
-//     if (!project) {
-//         // Scenario 2
-//         arma::uword nDatasets = objectList.size() + objectListNew.size();
-//         Rcpp::List HList(nDatasets);
-//         Rcpp::List VList(nDatasets);
-//         Rcpp::List AList(nDatasets);
-//         Rcpp::List BList(nDatasets);
-//         for (arma::uword i = 0; i < nDatasets; ++i) {
-//             HList[i] = solver.getHi(i);
-//             VList[i] = solver.getVi(i);
-//             AList[i] = solver.getAi(i);
-//             BList[i] = solver.getBi(i);
-//         }
-//         Rcpp::List output = Rcpp::List::create(
-//             Rcpp::Named("H") = Rcpp::wrap(HList),
-//             Rcpp::Named("V") = Rcpp::wrap(VList),
-//             Rcpp::Named("W") = Rcpp::wrap(solver.getW()),
-//             Rcpp::Named("A") = Rcpp::wrap(AList),
-//             Rcpp::Named("B") = Rcpp::wrap(BList),
-//             Rcpp::Named("objErr") = Rcpp::wrap(solver.objErr())
-//         );
-//         return output;
-//     } else {
-//         // Scenario 3
-//         Rcpp::List HList(objectList.size());
-//         for (arma::uword i = 0; i < objectListNew.size(); ++i) {
-//             HList[i] = solver.getHi(i);
-//         }
-//         return Rcpp::List::create(
-//             Rcpp::Named("H") = HList
-//         );
-//     }
-// }
-//
-// // [[Rcpp::export(.onlineINMF_S23)]]
-// Rcpp::List onlineINMF_S23(
-//     Rcpp::List objectList,
-//     const std::vector<arma::mat>& Vinit, const arma::mat& Winit,
-//     const std::vector<arma::mat>& Ainit, const std::vector<arma::mat>& Binit,
-//     const Rcpp::List& objectListNew,
-//     arma::uword k, const int& nCores, double lambda, bool project = false, arma::uword maxEpoch = 5,
-//     arma::uword minibatchSize = 5000, arma::uword maxHALSIter = 1, bool verbose = true) {
-//     if (Rf_isS4(objectList[0])) {
-//         return onlineINMF_S23_mem<arma::sp_mat>(
-//             Rcpp::as<std::vector<arma::sp_mat>>(objectList),
-//             Vinit, Winit, Ainit, Binit,
-//             Rcpp::as<std::vector<arma::sp_mat>>(objectListNew),
-//             k, nCores,lambda, project, maxEpoch, minibatchSize, maxHALSIter, verbose);
-//     } else {
-//         return onlineINMF_S23_mem<arma::mat>(
-//             Rcpp::as<std::vector<arma::mat>>(objectList),
-//             Vinit, Winit, Ainit, Binit,
-//             Rcpp::as<std::vector<arma::mat>>(objectListNew),
-//             k, nCores, lambda, project, maxEpoch, minibatchSize, maxHALSIter, verbose);
-//     }
-//     return Rcpp::List::create();
-// }
-//
-// // [[Rcpp::export(.onlineINMF_S23_h5dense)]]
-// Rcpp::List onlineINMF_S23_h5dense(
-//     std::vector<std::string> filenames, std::vector<std::string> dataPaths,
-//     std::vector<std::string> filenamesNew, std::vector<std::string> dataPathsNew,
-//     std::vector<arma::mat> Vinit, const arma::mat& Winit,
-//     std::vector<arma::mat> Ainit, std::vector<arma::mat> Binit,
-//     arma::uword k, const int& nCores, double lambda, bool project = false, arma::uword maxEpoch = 5,
-//     arma::uword minibatchSize = 5000, arma::uword maxHALSIter = 1, bool verbose = true) {
-//     std::vector<std::unique_ptr<planc::H5Mat>> matPtrVec;
-//     for (arma::uword i = 0; i < filenames.size(); ++i)
-//     {
-//         planc::H5Mat E(filenames[i], dataPaths[i]);
-//         std::unique_ptr<planc::H5Mat> ptr = std::make_unique<planc::H5Mat>(E);
-//         matPtrVec.push_back(std::move(ptr));
-//     }
-//     std::vector<std::unique_ptr<planc::H5Mat>> matPtrVecNew;
-//     for (arma::uword i = 0; i < filenamesNew.size(); ++i)
-//     {
-//         planc::H5Mat E(filenamesNew[i], dataPathsNew[i]);
-//         std::unique_ptr<planc::H5Mat> ptr = std::make_unique<planc::H5Mat>(E);
-//         matPtrVecNew.push_back(std::move(ptr));
-//     }
-//     planc::ONLINEINMF<planc::H5Mat, arma::mat> solver(matPtrVec, k, lambda);
-//     solver.initV(Vinit, false);
-//     solver.initW(Winit, false);
-//     solver.initA(Ainit);
-//     solver.initB(Binit);
-//     solver.runOnlineINMF(matPtrVecNew, project, minibatchSize, maxEpoch, maxHALSIter, verbose, nCores);
-//     if (!project) {
-//         // Scenario 2
-//         arma::uword nDatasets = filenames.size() + filenamesNew.size();
-//         Rcpp::List HList(nDatasets);
-//         Rcpp::List VList(nDatasets);
-//         Rcpp::List AList(nDatasets);
-//         Rcpp::List BList(nDatasets);
-//         for (arma::uword i = 0; i < nDatasets; ++i) {
-//             HList[i] = solver.getHi(i);
-//             VList[i] = solver.getVi(i);
-//             AList[i] = solver.getAi(i);
-//             BList[i] = solver.getBi(i);
-//         }
-//         Rcpp::List output = Rcpp::List::create(
-//             Rcpp::Named("H") = Rcpp::wrap(HList),
-//             Rcpp::Named("V") = Rcpp::wrap(VList),
-//             Rcpp::Named("W") = Rcpp::wrap(solver.getW()),
-//             Rcpp::Named("A") = Rcpp::wrap(AList),
-//             Rcpp::Named("B") = Rcpp::wrap(BList),
-//             Rcpp::Named("objErr") = Rcpp::wrap(solver.objErr())
-//         );
-//         return output;
-//     } else {
-//         // Scenario 3
-//         Rcpp::List HList(filenamesNew.size());
-//         for (arma::uword i = 0; i < filenamesNew.size(); ++i) {
-//             HList[i] = solver.getHi(i);
-//         }
-//         return Rcpp::List::create(
-//             Rcpp::Named("H") = HList
-//         );
-//     }
-// }
-//
-// // [[Rcpp::export(.onlineINMF_S23_h5sparse)]]
-// Rcpp::List onlineINMF_S23_h5sparse(
-//     std::vector<std::string> filenames, std::vector<std::string> valuePaths,
-//     std::vector<std::string> rowindPaths, std::vector<std::string> colptrPaths,
-//     arma::uvec nrows, arma::uvec ncols,
-//     std::vector<std::string> filenamesNew, std::vector<std::string> valuePathsNew,
-//     std::vector<std::string> rowindPathsNew, std::vector<std::string> colptrPathsNew,
-//     arma::uvec nrowsNew, arma::uvec ncolsNew,
-//     std::vector<arma::mat> Vinit, const arma::mat& Winit,
-//     std::vector<arma::mat> Ainit, std::vector<arma::mat> Binit,
-//     arma::uword k, const int& nCores, double lambda, bool project = false, arma::uword maxEpoch = 5,
-//     arma::uword minibatchSize = 5000, arma::uword maxHALSIter = 1, bool verbose = true) {
-//     std::vector<std::unique_ptr<planc::H5SpMat>> matPtrVec;
-//     for (arma::uword i = 0; i < filenames.size(); ++i)
-//     {
-//         planc::H5SpMat E(filenames[i], rowindPaths[i], colptrPaths[i], valuePaths[i], nrows[i], ncols[i]);
-//         std::unique_ptr<planc::H5SpMat> ptr = std::make_unique<planc::H5SpMat>(E);
-//         matPtrVec.push_back(std::move(ptr));
-//     }
-//     std::vector<std::unique_ptr<planc::H5SpMat>> matPtrVecNew;
-//     for (arma::uword i = 0; i < filenamesNew.size(); ++i)
-//     {
-//         planc::H5SpMat E(filenamesNew[i], rowindPathsNew[i], colptrPathsNew[i], valuePathsNew[i], nrowsNew[i], ncolsNew[i]);
-//         std::unique_ptr<planc::H5SpMat> ptr = std::make_unique<planc::H5SpMat>(E);
-//         matPtrVecNew.push_back(std::move(ptr));
-//     }
-//     planc::ONLINEINMF<planc::H5SpMat, arma::sp_mat> solver(matPtrVec, k, lambda);
-//     solver.initV(Vinit, false);
-//     solver.initW(Winit, false);
-//     solver.initA(Ainit);
-//     solver.initB(Binit);
-//     solver.runOnlineINMF(matPtrVecNew, project, minibatchSize, maxEpoch, maxHALSIter, verbose, nCores);
-//     if (!project) {
-//         // Scenario 2
-//         arma::uword nDatasets = filenames.size() + filenamesNew.size();
-//         Rcpp::List HList(nDatasets);
-//         Rcpp::List VList(nDatasets);
-//         Rcpp::List AList(nDatasets);
-//         Rcpp::List BList(nDatasets);
-//         for (arma::uword i = 0; i < nDatasets; ++i) {
-//             HList[i] = solver.getHi(i);
-//             VList[i] = solver.getVi(i);
-//             AList[i] = solver.getAi(i);
-//             BList[i] = solver.getBi(i);
-//         }
-//         Rcpp::List output = Rcpp::List::create(
-//             Rcpp::Named("H") = Rcpp::wrap(HList),
-//             Rcpp::Named("V") = Rcpp::wrap(VList),
-//             Rcpp::Named("W") = Rcpp::wrap(solver.getW()),
-//             Rcpp::Named("A") = Rcpp::wrap(AList),
-//             Rcpp::Named("B") = Rcpp::wrap(BList),
-//             Rcpp::Named("objErr") = Rcpp::wrap(solver.objErr())
-//         );
-//         return output;
-//     } else {
-//         // Scenario 3
-//         Rcpp::List HList(filenamesNew.size());
-//         for (arma::uword i = 0; i < filenamesNew.size(); ++i) {
-//             HList[i] = solver.getHi(i);
-//         }
-//         return Rcpp::List::create(
-//             Rcpp::Named("H") = HList
-//         );
-//     }
-// }
+
+
+ // %%%%%%%%%%%%%%%%%% online INMF %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+ template <typename T>
+ Rcpp::List onlineINMF(std::vector<std::shared_ptr<T>> matPtrVec, arma::uword k, const int& nCores,
+     double lambda, arma::uword maxEpoch = 5, arma::uword minibatchSize = 5000,
+     arma::uword maxHALSIter = 1, bool verbose = true) {
+     planc::oinmfOutput<double> libcall = planc::nmflib<T, double>::oinmf(matPtrVec, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, verbose);
+
+    arma::uword nDatasets = matPtrVec.size();
+    std::vector<Rcpp::NumericMatrix> HList;
+    std::vector<Rcpp::NumericMatrix> VList;
+    std::vector<Rcpp::NumericMatrix> AList;
+    std::vector<Rcpp::NumericMatrix> BList;
+    for (arma::uword i = 0; i < nDatasets; ++i) {
+        HList.push_back(Rcpp::wrap(libcall.outHList[i]));
+        VList.push_back(Rcpp::wrap(libcall.outVList[i]));
+        AList.push_back(Rcpp::wrap(libcall.outAList[i]));
+        BList.push_back(Rcpp::wrap(libcall.outBList[i]));
+    }
+    return Rcpp::List::create(
+        Rcpp::Named("H") = Rcpp::wrap(HList),
+        Rcpp::Named("V") = Rcpp::wrap(VList),
+        Rcpp::Named("W") = Rcpp::wrap(libcall.outW),
+        Rcpp::Named("A") = Rcpp::wrap(AList),
+        Rcpp::Named("B") = Rcpp::wrap(BList),
+        Rcpp::Named("objErr") = Rcpp::wrap(libcall.objErr)
+    );
+}
+
+ // [[Rcpp::export(.onlineINMF_h5dense)]]
+ Rcpp::List onlineINMF_h5dense(std::vector<std::string> filenames,
+     std::vector<std::string> dataPaths, arma::uword k, int nCores,
+     double lambda, arma::uword maxEpoch = 5, arma::uword minibatchSize = 5000,
+     arma::uword maxHALSIter = 1, bool verbose = true) {
+     std::vector<std::shared_ptr<planc::H5Mat>> matPtrVec;
+     for (arma::uword i = 0; i < filenames.size(); ++i)
+     {
+         planc::H5Mat E(filenames[i], dataPaths[i]);
+         std::shared_ptr<planc::H5Mat> ptr = std::make_shared<planc::H5Mat>(E);
+         matPtrVec.push_back(std::move(ptr));
+     }
+    return onlineINMF<planc::H5Mat>(matPtrVec, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, verbose);
+ }
+
+ // [[Rcpp::export(.onlineINMF_h5sparse)]]
+ Rcpp::List onlineINMF_h5sparse(
+     std::vector<std::string> filenames,
+     std::vector<std::string> valuePaths,
+     std::vector<std::string> rowindPaths,
+     std::vector<std::string> colptrPaths,
+     arma::uvec nrows, arma::uvec ncols,
+     arma::uword k, const int& nCores, double lambda,
+     arma::uword maxEpoch = 5, arma::uword minibatchSize = 5000,
+     arma::uword maxHALSIter = 1, bool verbose = true
+ ) {
+     std::vector<std::shared_ptr<planc::H5SpMat>> matPtrVec;
+     for (arma::uword i = 0; i < filenames.size(); ++i)
+     {
+         planc::H5SpMat E(filenames[i], rowindPaths[i], colptrPaths[i], valuePaths[i], nrows[i], ncols[i]);
+         std::shared_ptr<planc::H5SpMat> ptr = std::make_shared<planc::H5SpMat>(E);
+         matPtrVec.push_back(std::move(ptr));
+     }
+    return onlineINMF<planc::H5SpMat>(matPtrVec, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, verbose);
+}
+
+ template <typename T>
+ Rcpp::List onlineINMF_initial(std::vector<std::shared_ptr<T>> matPtrVec,
+     std::vector<arma::mat> Vinit, arma::mat Winit,
+     std::vector<arma::mat> Ainit, std::vector<arma::mat> Binit,
+     std::vector<std::shared_ptr<T>> matPtrVecNew,
+     arma::uword k, const int& nCores, double lambda, arma::uword maxEpoch = 5,
+     arma::uword minibatchSize = 5000, arma::uword maxHALSIter = 1, bool verbose = true) {
+     planc::oinmfOutput<double> libcall = planc::nmflib<T, double>::oinmf(matPtrVec, Vinit, Winit, Ainit, Binit, matPtrVecNew, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, verbose);
+
+
+         // Scenario 2
+         arma::uword nDatasets = matPtrVec.size() + matPtrVecNew.size();
+         std::vector<Rcpp::NumericMatrix> HList;
+         std::vector<Rcpp::NumericMatrix> VList;
+         std::vector<Rcpp::NumericMatrix> AList;
+         std::vector<Rcpp::NumericMatrix> BList;
+         for (arma::uword i = 0; i < nDatasets; ++i) {
+             HList.push_back(Rcpp::wrap(libcall.outHList[i]));
+             VList.push_back(Rcpp::wrap(libcall.outVList[i]));
+             AList.push_back(Rcpp::wrap(libcall.outAList[i]));
+             BList.push_back(Rcpp::wrap(libcall.outBList[i]));
+         }
+         return Rcpp::List::create(
+             Rcpp::Named("H") = Rcpp::wrap(HList),
+             Rcpp::Named("V") = Rcpp::wrap(VList),
+             Rcpp::Named("W") = Rcpp::wrap(libcall.outW),
+             Rcpp::Named("A") = Rcpp::wrap(AList),
+             Rcpp::Named("B") = Rcpp::wrap(BList),
+             Rcpp::Named("objErr") = Rcpp::wrap(libcall.objErr)
+         );
+ }
+// [[Rcpp::export(.onlineINMF)]]
+Rcpp::List onlineINMF(Rcpp::List objectList, arma::uword k, const int& nCores,
+    double lambda, arma::uword maxEpoch = 5, arma::uword minibatchSize = 5000,
+    arma::uword maxHALSIter = 1, bool verbose = true) {
+    std::variant<std::vector<std::shared_ptr<arma::mat>>, std::vector<std::shared_ptr<arma::sp_mat>>> unwrap;
+    if (Rf_isS4(objectList[0])) {
+        unwrap = planc::nmflib<arma::sp_mat>::initMemSharedPtr(Rcpp::as<std::vector<arma::sp_mat>>(objectList));
+    } else {
+        unwrap = planc::nmflib<arma::mat>::initMemSharedPtr(Rcpp::as<std::vector<arma::mat>>(objectList));
+    }
+    return std::visit([k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, verbose](auto&& arg) {
+        return onlineINMF(arg, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, verbose);
+    }, unwrap);
+}
+template <typename T>
+Rcpp::List onlineINMF_project(
+    std::vector<std::shared_ptr<T>> matPtrVec, arma::mat Winit,
+    std::vector<std::shared_ptr<T>> matPtrVecNew,
+    arma::uword k, const int& nCores, double lambda) {
+    std::vector<arma::mat> libcall = planc::nmflib<T>::oinmf_project(matPtrVec, Winit, matPtrVecNew, k, nCores, lambda);
+
+    // Scenario 3
+    std::vector<Rcpp::NumericMatrix> HList;
+    for (arma::uword i = 0; i < matPtrVec.size(); ++i)
+    {
+        HList.push_back(Rcpp::wrap(libcall[i]));
+    }
+
+    return Rcpp::List::create(
+        Rcpp::Named("H") = Rcpp::wrap(HList)
+    );
+}
+
+ // [[Rcpp::export(.onlineINMF_withInitial)]]
+ Rcpp::List onlineINMF_withInitial(
+     Rcpp::List objectList,
+     const std::vector<arma::mat>& Vinit, const arma::mat& Winit,
+     const std::vector<arma::mat>& Ainit, const std::vector<arma::mat>& Binit,
+     const Rcpp::List& objectListNew,
+     arma::uword k, const int& nCores, double lambda, arma::uword maxEpoch = 5,
+     arma::uword minibatchSize = 5000, arma::uword maxHALSIter = 1, bool verbose = true) {
+    //std::variant<std::vector<std::shared_ptr<arma::mat>>, std::vector<std::shared_ptr<arma::sp_mat>>> unwrap;
+    //std::variant<std::vector<std::shared_ptr<arma::mat>>, std::vector<std::shared_ptr<arma::sp_mat>>> unwrap2;
+    if (Rf_isS4(objectList[0])) {
+        std::vector<std::shared_ptr<arma::sp_mat>> matvec = planc::nmflib<arma::sp_mat>::initMemSharedPtr(Rcpp::as<std::vector<arma::sp_mat>>(objectList));
+        std::vector<std::shared_ptr<arma::sp_mat>> matvecnew = planc::nmflib<arma::sp_mat>::initMemSharedPtr(Rcpp::as<std::vector<arma::sp_mat>>(objectListNew));
+        return onlineINMF_initial(matvec, Vinit, Winit, Ainit, Binit, matvecnew, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, verbose);
+    } else {
+        std::vector<std::shared_ptr<arma::mat>> matvec = planc::nmflib<arma::mat>::initMemSharedPtr(Rcpp::as<std::vector<arma::mat>>(objectList));
+        std::vector<std::shared_ptr<arma::mat>> matvecnew = planc::nmflib<arma::mat>::initMemSharedPtr(Rcpp::as<std::vector<arma::mat>>(objectListNew));
+        return onlineINMF_initial(matvec, Vinit, Winit, Ainit, Binit, matvecnew, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, verbose);
+    }
+    // return std::visit([Vinit, Winit, Ainit, Binit, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, verbose](auto&& arg, auto&& arg2) {
+    //     return onlineINMF_initial(arg, Vinit, Winit, Ainit, Binit, arg2, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, verbose);
+    // }, unwrap, unwrap2);
+ }
+
+// [[Rcpp::export(.onlineINMF_project)]]
+Rcpp::List onlineINMF_project(
+    Rcpp::List objectList, const arma::mat& Winit,
+    const Rcpp::List& objectListNew, arma::uword k, const int& nCores, double lambda) {
+    //std::variant<std::vector<std::shared_ptr<arma::mat>>, std::vector<std::shared_ptr<arma::sp_mat>>> unwrap;
+    //std::variant<std::vector<std::shared_ptr<arma::mat>>, std::vector<std::shared_ptr<arma::sp_mat>>> unwrap2;
+    if (Rf_isS4(objectList[0])) {
+        std::vector<std::shared_ptr<arma::sp_mat>> matvec = planc::nmflib<arma::sp_mat>::initMemSharedPtr(Rcpp::as<std::vector<arma::sp_mat>>(objectList));
+        std::vector<std::shared_ptr<arma::sp_mat>> matvecnew = planc::nmflib<arma::sp_mat>::initMemSharedPtr(Rcpp::as<std::vector<arma::sp_mat>>(objectListNew));
+        return onlineINMF_project(matvec, Winit, matvecnew, k, nCores, lambda);
+    } else {
+        std::vector<std::shared_ptr<arma::mat>> matvec = planc::nmflib<arma::mat>::initMemSharedPtr(Rcpp::as<std::vector<arma::mat>>(objectList));
+        std::vector<std::shared_ptr<arma::mat>> matvecnew = planc::nmflib<arma::mat>::initMemSharedPtr(Rcpp::as<std::vector<arma::mat>>(objectListNew));
+        return onlineINMF_project(matvec, Winit, matvecnew, k, nCores, lambda);
+
+    }
+    // return std::visit([Winit, k, nCores, lambda](auto&& arg, auto&& arg2) {
+    //     return onlineINMF_project(arg, Winit, arg2, k, nCores, lambda);
+    // }, unwrap, unwrap2);
+}
+
+ // [[Rcpp::export(.onlineINMF_h5dense_withInitial)]]
+ Rcpp::List onlineINMF_h5dense_withInitial(
+     std::vector<std::string> filenames, std::vector<std::string> dataPaths,
+     std::vector<std::string> filenamesNew, std::vector<std::string> dataPathsNew,
+     std::vector<arma::mat> Vinit, const arma::mat& Winit,
+     std::vector<arma::mat> Ainit, std::vector<arma::mat> Binit,
+     arma::uword k, const int& nCores, double lambda, arma::uword maxEpoch = 5,
+     arma::uword minibatchSize = 5000, arma::uword maxHALSIter = 1, bool verbose = true) {
+     std::vector<std::shared_ptr<planc::H5Mat>> matPtrVec;
+     for (arma::uword i = 0; i < filenames.size(); ++i)
+     {
+         planc::H5Mat E(filenames[i], dataPaths[i]);
+         std::shared_ptr<planc::H5Mat> ptr = std::make_shared<planc::H5Mat>(E);
+         matPtrVec.push_back(std::move(ptr));
+     }
+     std::vector<std::shared_ptr<planc::H5Mat>> matPtrVecNew;
+     for (arma::uword i = 0; i < filenamesNew.size(); ++i)
+     {
+         planc::H5Mat E(filenamesNew[i], dataPathsNew[i]);
+         std::shared_ptr<planc::H5Mat> ptr = std::make_shared<planc::H5Mat>(E);
+         matPtrVecNew.push_back(std::move(ptr));
+     }// Scenario 2
+    return onlineINMF_initial<planc::H5Mat>(matPtrVec, Vinit, Winit, Ainit, Binit, matPtrVecNew, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, verbose);
+ }
+
+// [[Rcpp::export(.onlineINMF_project_h5dense)]]
+Rcpp::List onlineINMF_project_h5dense(
+std::vector<std::string> filenames, std::vector<std::string> dataPaths,
+std::vector<std::string> filenamesNew, std::vector<std::string> dataPathsNew,
+const arma::mat& Winit,arma::uword k, const int& nCores, double lambda) {
+    std::vector<std::shared_ptr<planc::H5Mat>> matPtrVec;
+    for (arma::uword i = 0; i < filenames.size(); ++i) {
+        auto E = planc::H5Mat(filenames[i], dataPaths[i]);
+        std::shared_ptr<planc::H5Mat> ptr = std::make_shared<planc::H5Mat>(E);
+        matPtrVec.push_back(std::move(ptr));
+    }
+    std::vector<std::shared_ptr<planc::H5Mat>> matPtrVecNew;
+    for (arma::uword i = 0; i < filenamesNew.size(); ++i) {
+        auto E = planc::H5Mat(filenamesNew[i], dataPathsNew[i]);
+        std::shared_ptr<planc::H5Mat> ptr = std::make_shared<planc::H5Mat>(E);
+        matPtrVecNew.push_back(std::move(ptr));
+
+    }
+    return onlineINMF_project<planc::H5Mat>(matPtrVec, Winit, matPtrVecNew,
+             k, nCores, lambda);
+}
+
+// [[Rcpp::export(.onlineINMF_project_h5sparse)]]
+Rcpp::List onlineINMF_project_h5sparse(
+std::vector<std::string> filenames, std::vector<std::string> dataPaths, std::vector<std::string> valuePaths,
+     std::vector<std::string> rowindPaths, std::vector<std::string> colptrPaths, arma::uvec nrows, arma::uvec ncols,
+     std::vector<std::string> filenamesNew, std::vector<std::string> dataPathsNew, std::vector<std::string> valuePathsNew,
+          std::vector<std::string> rowindPathsNew, std::vector<std::string> colptrPathsNew,
+          arma::uvec nrowsNew, arma::uvec ncolsNew, const arma::mat& Winit,arma::uword k, const int& nCores, double lambda) {
+    std::vector<std::shared_ptr<planc::H5SpMat>> matPtrVec;
+    std::vector<std::shared_ptr<planc::H5SpMat>> matPtrVecNew;
+    for (arma::uword i = 0; i < filenames.size(); ++i) {
+        auto E = planc::H5SpMat(filenames[i], rowindPaths[i], colptrPaths[i], valuePaths[i], nrows[i], ncols[i]);
+        std::shared_ptr<planc::H5SpMat> ptr = std::make_shared<planc::H5SpMat>(E);
+        matPtrVec.push_back(std::move(ptr));
+    }
+    for (arma::uword i = 0; i < filenamesNew.size(); ++i) {
+        auto E = planc::H5SpMat(filenamesNew[i], rowindPathsNew[i], colptrPathsNew[i], valuePathsNew[i], nrowsNew[i], ncolsNew[i]);
+        std::shared_ptr<planc::H5SpMat> ptr = std::make_shared<planc::H5SpMat>(E);
+        matPtrVecNew.push_back(std::move(ptr));
+    }
+    return onlineINMF_project<planc::H5SpMat>(matPtrVec, Winit, matPtrVecNew,
+             k, nCores, lambda);
+}
+
+ // [[Rcpp::export(.onlineINMF_h5sparse_withInitial)]]
+ Rcpp::List onlineINMF_h5sparse_withInitial(
+     std::vector<std::string> filenames, std::vector<std::string> valuePaths,
+     std::vector<std::string> rowindPaths, std::vector<std::string> colptrPaths,
+     arma::uvec nrows, arma::uvec ncols,
+     std::vector<std::string> filenamesNew, std::vector<std::string> valuePathsNew,
+     std::vector<std::string> rowindPathsNew, std::vector<std::string> colptrPathsNew,
+     arma::uvec nrowsNew, arma::uvec ncolsNew,
+     std::vector<arma::mat> Vinit, const arma::mat& Winit,
+     std::vector<arma::mat> Ainit, std::vector<arma::mat> Binit,
+     arma::uword k, const int& nCores, double lambda, arma::uword maxEpoch = 5,
+     arma::uword minibatchSize = 5000, arma::uword maxHALSIter = 1, bool verbose = true) {
+     std::vector<std::shared_ptr<planc::H5SpMat>> matPtrVec;
+     for (arma::uword i = 0; i < filenames.size(); ++i)
+     {
+         planc::H5SpMat E(filenames[i], rowindPaths[i], colptrPaths[i], valuePaths[i], nrows[i], ncols[i]);
+         std::shared_ptr<planc::H5SpMat> ptr = std::make_shared<planc::H5SpMat>(E);
+         matPtrVec.push_back(std::move(ptr));
+     }
+     std::vector<std::shared_ptr<planc::H5SpMat>> matPtrVecNew;
+     for (arma::uword i = 0; i < filenamesNew.size(); ++i)
+     {
+         planc::H5SpMat E(filenamesNew[i], rowindPathsNew[i], colptrPathsNew[i], valuePathsNew[i], nrowsNew[i], ncolsNew[i]);
+         std::shared_ptr<planc::H5SpMat> ptr = std::make_shared<planc::H5SpMat>(E);
+         matPtrVecNew.push_back(std::move(ptr));
+     }
+    return onlineINMF_initial(matPtrVec, Vinit, Winit, Ainit, Binit, matPtrVecNew, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, verbose);
+ }
 // // %%%%%%%%%%%%%% UINMF %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //
 // template <typename T>
