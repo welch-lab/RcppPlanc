@@ -221,17 +221,17 @@ onlineINMF <- function(
         # Scenario 1
         res <- switch(
             mode,
-            matrix = .onlineINMF_S1(objectList, k, nCores, lambda, maxEpoch,
+            matrix = .onlineINMF(objectList, k, nCores, lambda, maxEpoch,
                                    minibatchSize, maxHALSIter, verbose),
-            dgCMatrix = .onlineINMF_S1(objectList, k, nCores, lambda, maxEpoch,
+            dgCMatrix = .onlineINMF(objectList, k, nCores, lambda, maxEpoch,
                                       minibatchSize, maxHALSIter, verbose),
-            H5Mat = .onlineINMF_S1_h5dense(sapply(objectList,
+            H5Mat = .onlineINMF_h5dense(sapply(objectList,
                                                  function(x) x$filename),
                                           sapply(objectList,
                                                  function(x) x$dataPath),
                                           k, nCores, lambda, maxEpoch, minibatchSize,
                                           maxHALSIter, verbose),
-            H5SpMat = .onlineINMF_S1_h5sparse(sapply(objectList,
+            H5SpMat = .onlineINMF_h5sparse(sapply(objectList,
                                                     function(x) x$filename),
                                              sapply(objectList,
                                                     function(x) x$valuePath),
@@ -252,16 +252,18 @@ onlineINMF <- function(
         if (mode2 != mode) {
             stop("newDatasets should be of the same class as original datasets")
         }
+        if (!isTRUE(project)) {
+            # Scenario 2 result
         res <- switch(
             mode,
-            matrix = .onlineINMF_S23(objectList, Vinit, Winit, Ainit, Binit,
-                                    newDatasets, k, nCores, lambda, project, maxEpoch,
+            matrix = .onlineINMF_withInitial(objectList, Vinit, Winit, Ainit, Binit,
+                                    newDatasets, k, nCores, lambda, maxEpoch,
                                     minibatchSize, maxHALSIter, verbose),
-            dgCMatrix = .onlineINMF_S23(objectList, Vinit, Winit, Ainit, Binit,
-                                       newDatasets, k, nCores, lambda, project,
+            dgCMatrix = .onlineINMF_withInitial(objectList, Vinit, Winit, Ainit, Binit,
+                                       newDatasets, k, nCores, lambda,
                                        maxEpoch, minibatchSize, maxHALSIter,
                                        verbose),
-            H5Mat = .onlineINMF_S23_h5dense(sapply(objectList,
+            H5Mat = .onlineINMF_h5dense_withInitial(sapply(objectList,
                                                   function(x) x$filename),
                                            sapply(objectList,
                                                   function(x) x$dataPath),
@@ -272,7 +274,7 @@ onlineINMF <- function(
                                            Vinit, Winit, Ainit, Binit,
                                            k, nCores, lambda, project, maxEpoch,
                                            minibatchSize, maxHALSIter, verbose),
-            H5SpMat = .onlineINMF_S23_h5sparse(sapply(objectList,
+            H5SpMat = .onlineINMF_h5sparse_withInitial(sapply(objectList,
                                                      function(x) x$filename),
                                               sapply(objectList,
                                                      function(x) x$valuePath),
@@ -301,13 +303,49 @@ onlineINMF <- function(
                                               minibatchSize, maxHALSIter,
                                               verbose)
         )
-        if (!isTRUE(project)) {
-            # Scenario 2 result
-            names(res$H) <- names(res$V) <- names(res$A) <- names(res$B) <- 
+            names(res$H) <- names(res$V) <- names(res$A) <- names(res$B) <-
                 c(names(objectList), names(newDatasets))
         } else {
+            res <- switch(
+              mode,
+              matrix = .onlineINMF_project(objectList, Winit, newDatasets, k, nCores, lambda),
+              dgCMatrix = .onlineINMF_project(objectList, Winit, newDatasets, k, nCores, lambda),
+              H5Mat = .onlineINMF_project_h5dense(sapply(objectList,
+                                                     function(x) x$filename),
+                                              sapply(objectList,
+                                                     function(x) x$dataPath),
+                                              sapply(newDatasets,
+                                                     function(x) x$filename),
+                                              sapply(newDatasets,
+                                                     function(x) x$dataPath),
+                                              Winit, k, nCores, lambda),
+              H5SpMat = .onlineINMF_project_h5sparse(sapply(objectList,
+                                                        function(x) x$filename),
+                                                 sapply(objectList,
+                                                        function(x) x$valuePath),
+                                                 sapply(objectList,
+                                                        function(x) x$rowindPath),
+                                                 sapply(objectList,
+                                                        function(x) x$colptrPath),
+                                                 sapply(objectList,
+                                                        function(x) x$nrow),
+                                                 sapply(objectList,
+                                                        function(x) x$ncol),
+                                                 sapply(newDatasets,
+                                                        function(x) x$filename),
+                                                 sapply(newDatasets,
+                                                        function(x) x$valuePath),
+                                                 sapply(newDatasets,
+                                                        function(x) x$rowindPath),
+                                                 sapply(newDatasets,
+                                                        function(x) x$colptrPath),
+                                                 sapply(newDatasets,
+                                                        function(x) x$nrow),
+                                                 sapply(newDatasets,
+                                                        function(x) x$ncol),
+                                                 Winit, k, nCores, lambda),
             # Scenario 3 result
-            names(res$H) <- names(newDatasets)
+            names(res$H) <- names(newDatasets))
         }
     }
     return(res)
