@@ -1,5 +1,7 @@
---- a/hwloc/distances.c
-+++ b/hwloc/distances.c
+Index: hwloc/hwloc/distances.c
+===================================================================
+--- hwloc.orig/hwloc/distances.c
++++ hwloc/hwloc/distances.c
 @@ -792,8 +792,8 @@ hwloc_internal_distances_refresh_one(hwl
  	obj = hwloc_get_pu_obj_by_os_index(topology, (unsigned) indexes[i]);
        else if (unique_type == HWLOC_OBJ_NUMANODE)
@@ -11,9 +13,11 @@
      } else {
        obj = hwloc_get_obj_by_type_and_gp_index(topology, different_types ? different_types[i] : unique_type, indexes[i]);
      }
---- a/hwloc/topology-linux.c
-+++ b/hwloc/topology-linux.c
-@@ -2862,9 +2862,9 @@ hwloc_linux_knl_parse_numa_distances(uns
+Index: hwloc/hwloc/topology-linux.c
+===================================================================
+--- hwloc.orig/hwloc/topology-linux.c
++++ hwloc/hwloc/topology-linux.c
+@@ -2963,9 +2963,9 @@ hwloc_linux_knl_parse_numa_distances(uns
        return -1;
      }
  

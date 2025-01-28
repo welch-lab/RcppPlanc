@@ -1,6 +1,8 @@
---- a/hwloc/components.c
-+++ b/hwloc/components.c
-@@ -123,8 +123,8 @@ hwloc_dlforeachfile(const char *_paths,
+Index: hwloc/hwloc/components.c
+===================================================================
+--- hwloc.orig/hwloc/components.c
++++ hwloc/hwloc/components.c
+@@ -122,8 +122,8 @@ hwloc_dlforeachfile(const char *_paths,
      if (colon)
        *colon = '\0';
  
@@ -11,7 +13,7 @@
  
      dir = opendir(path);
      if (!dir)
-@@ -197,8 +197,8 @@ hwloc__dlforeach_cb(const char *filename
+@@ -196,8 +196,8 @@ hwloc__dlforeach_cb(const char *filename
    struct hwloc__plugin_desc *desc, **prevdesc;
    char *componentsymbolname;
  
@@ -22,7 +24,7 @@
  
    basename = strrchr(filename, '/');
    if (!basename)
-@@ -207,62 +207,62 @@ hwloc__dlforeach_cb(const char *filename
+@@ -206,62 +206,62 @@ hwloc__dlforeach_cb(const char *filename
      basename++;
  
    if (hwloc_plugins_blacklist && strstr(hwloc_plugins_blacklist, basename)) {
@@ -107,7 +109,7 @@
  	      basename, (unsigned) component->type);
      goto out_with_handle;
    }
-@@ -276,16 +276,16 @@ hwloc__dlforeach_cb(const char *filename
+@@ -275,16 +275,16 @@ hwloc__dlforeach_cb(const char *filename
    desc->component = component;
    desc->handle = handle;
    desc->next = NULL;
@@ -128,7 +130,7 @@
    return 0;
  
   out_with_handle:
-@@ -299,8 +299,8 @@ hwloc_plugins_exit(void)
+@@ -298,8 +298,8 @@ hwloc_plugins_exit(void)
  {
    struct hwloc__plugin_desc *desc, *next;
  
@@ -139,7 +141,7 @@
  
    desc = hwloc_plugins;
    while (desc) {
-@@ -339,8 +339,8 @@ hwloc_plugins_init(void)
+@@ -338,8 +338,8 @@ hwloc_plugins_init(void)
  
    hwloc_plugins = NULL;
  
@@ -150,7 +152,7 @@
    err = hwloc_dlforeachfile(path, hwloc__dlforeach_cb, NULL);
    if (err)
      goto out_with_init;
-@@ -363,16 +363,16 @@ hwloc_disc_component_register(struct hwl
+@@ -362,16 +362,16 @@ hwloc_disc_component_register(struct hwl
  
    /* check that the component name is valid */
    if (!strcmp(component->name, HWLOC_COMPONENT_STOP_NAME)) {
@@ -172,7 +174,7 @@
      return -1;
    }
  
-@@ -386,9 +386,9 @@ hwloc_disc_component_register(struct hwl
+@@ -385,9 +385,9 @@ hwloc_disc_component_register(struct hwl
  				   |HWLOC_DISC_PHASE_MISC
  				   |HWLOC_DISC_PHASE_ANNOTATE
  				   |HWLOC_DISC_PHASE_TWEAK))) {
@@ -185,7 +187,7 @@
      return -1;
    }
  
-@@ -398,24 +398,24 @@ hwloc_disc_component_register(struct hwl
+@@ -397,24 +397,24 @@ hwloc_disc_component_register(struct hwl
        /* if two components have the same name, only keep the highest priority one */
        if ((*prev)->priority < component->priority) {
  	/* drop the existing component */
@@ -220,7 +222,7 @@
  
    prev = &hwloc_disc_components;
    while (NULL != *prev) {
-@@ -476,16 +476,16 @@ hwloc_components_init(void)
+@@ -475,16 +475,16 @@ hwloc_components_init(void)
    /* hwloc_static_components is created by configure in static-components.h */
    for(i=0; NULL != hwloc_static_components[i]; i++) {
      if (hwloc_static_components[i]->flags) {
@@ -242,7 +244,7 @@
        continue;
      }
      /* queue ->finalize() callback if any */
-@@ -505,16 +505,16 @@ hwloc_components_init(void)
+@@ -504,16 +504,16 @@ hwloc_components_init(void)
  #ifdef HWLOC_HAVE_PLUGINS
    for(desc = hwloc_plugins; NULL != desc; desc = desc->next) {
      if (desc->component->flags) {
@@ -264,7 +266,7 @@
        continue;
      }
      /* queue ->finalize() callback if any */
-@@ -610,8 +610,8 @@ hwloc_disc_component_blacklist_one(struc
+@@ -609,8 +609,8 @@ hwloc_disc_component_blacklist_one(struc
    if (!strcmp(name, "linuxpci") || !strcmp(name, "linuxio")) {
      /* replace linuxpci and linuxio with linux (with IO phases)
       * for backward compatibility with pre-v2.0 and v2.0 respectively */
@@ -275,7 +277,7 @@
      comp = hwloc_disc_component_find("linux", NULL);
      phases = HWLOC_DISC_PHASE_PCI | HWLOC_DISC_PHASE_IO | HWLOC_DISC_PHASE_MISC | HWLOC_DISC_PHASE_ANNOTATE;
  
-@@ -626,8 +626,8 @@ hwloc_disc_component_blacklist_one(struc
+@@ -625,8 +625,8 @@ hwloc_disc_component_blacklist_one(struc
      return -1;
    }
  
@@ -286,7 +288,7 @@
  
    for(i=0; i<topology->nr_blacklisted_components; i++) {
      if (topology->blacklisted_components[i].component == comp) {
-@@ -727,19 +727,19 @@ hwloc_disc_component_try_enable(struct h
+@@ -726,19 +726,19 @@ hwloc_disc_component_try_enable(struct h
  
    if (!(comp->phases & ~(topology->backend_excluded_phases | blacklisted_phases))) {
      /* all this backend phases are already excluded, exclude the backend entirely */
@@ -311,7 +313,7 @@
      return -1;
    }
  
-@@ -819,8 +819,8 @@ hwloc_disc_components_enable_others(stru
+@@ -818,8 +818,8 @@ hwloc_disc_components_enable_others(stru
  
  	name = curenv;
  	if (!strcmp(name, "linuxpci") || !strcmp(name, "linuxio")) {
@@ -322,7 +324,7 @@
  	  name = "linux";
  	}
  
-@@ -834,9 +834,9 @@ hwloc_disc_components_enable_others(stru
+@@ -833,9 +833,9 @@ hwloc_disc_components_enable_others(stru
  	    }
  	  if (comp->phases & ~blacklisted_phases)
  	    hwloc_disc_component_try_enable(topology, comp, 1 /* envvar forced */, blacklisted_phases);
@@ -335,7 +337,7 @@
  	}
  
  	/* restore chars (the second loop below needs env to be unmodified) */
-@@ -867,9 +867,9 @@ hwloc_disc_components_enable_others(stru
+@@ -866,9 +866,9 @@ hwloc_disc_components_enable_others(stru
  	}
  
        if (!(comp->phases & ~blacklisted_phases)) {
@@ -348,7 +350,7 @@
  	goto nextcomp;
        }
  
-@@ -883,13 +883,13 @@ nextcomp:
+@@ -882,13 +882,13 @@ nextcomp:
      /* print a summary */
      int first = 1;
      backend = topology->backends;
@@ -365,7 +367,7 @@
    }
  
    free(env);
-@@ -938,9 +938,9 @@ hwloc_backend_alloc(struct hwloc_topolog
+@@ -937,9 +937,9 @@ hwloc_backend_alloc(struct hwloc_topolog
    backend->topology = topology;
    /* filter-out component phases that are excluded */
    backend->phases = component->phases & ~topology->backend_excluded_phases;
@@ -378,7 +380,7 @@
    backend->flags = 0;
    backend->discover = NULL;
    backend->get_pci_busid_cpuset = NULL;
-@@ -967,9 +967,9 @@ hwloc_backend_enable(struct hwloc_backen
+@@ -966,9 +966,9 @@ hwloc_backend_enable(struct hwloc_backen
  
    /* check backend flags */
    if (backend->flags) {
@@ -391,7 +393,7 @@
      return -1;
    }
  
-@@ -977,9 +977,9 @@ hwloc_backend_enable(struct hwloc_backen
+@@ -976,9 +976,9 @@ hwloc_backend_enable(struct hwloc_backen
    pprev = &topology->backends;
    while (NULL != *pprev) {
      if ((*pprev)->component == backend->component) {
@@ -404,7 +406,7 @@
        hwloc_backend_disable(backend);
        errno = EBUSY;
        return -1;
-@@ -987,9 +987,9 @@ hwloc_backend_enable(struct hwloc_backen
+@@ -986,9 +986,9 @@ hwloc_backend_enable(struct hwloc_backen
      pprev = &((*pprev)->next);
    }
  
@@ -417,7 +419,7 @@
  
    /* enqueue at the end */
    pprev = &topology->backends;
-@@ -1071,9 +1071,9 @@ hwloc_backends_disable_all(struct hwloc_
+@@ -1070,9 +1070,9 @@ hwloc_backends_disable_all(struct hwloc_
  
    while (NULL != (backend = topology->backends)) {
      struct hwloc_backend *next = backend->next;
@@ -430,8 +432,10 @@
      hwloc_backend_disable(backend);
      topology->backends = next;
    }
---- a/hwloc/distances.c
-+++ b/hwloc/distances.c
+Index: hwloc/hwloc/distances.c
+===================================================================
+--- hwloc.orig/hwloc/distances.c
++++ hwloc/hwloc/distances.c
 @@ -36,16 +36,16 @@ hwloc_internal_distances_print_matrix(st
    int gp = !HWLOC_DIST_TYPE_USE_OS_INDEX(dist->unique_type);
    unsigned i, j;
@@ -517,21 +521,56 @@
      if (needcheck && hwloc__check_grouping_matrix(nbobjs, _values, accuracies[i], verbose) < 0)
        continue;
      nbgroups = hwloc__find_groups_by_min_distance(nbobjs, _values, accuracies[i], groupids, verbose);
---- a/hwloc/memattrs.c
-+++ b/hwloc/memattrs.c
-@@ -1268,8 +1268,8 @@ hwloc_internal_memattrs_guess_memory_tie
-     } else if (!strcmp(env, "spm_is_hbm")) {
-       hwloc_debug("Assuming SPM-tier is HBM, ignore bandwidth\n");
-       spm_is_hbm = 1;
--    } else if (HWLOC_SHOW_CRITICAL_ERRORS()) {
--      fprintf(stderr, "hwloc: Failed to recognize HWLOC_MEMTIERS_GUESS value %s\n", env);
-+    //} else if (HWLOC_SHOW_CRITICAL_ERRORS()) {
-+    //  fprintf(stderr, "hwloc: Failed to recognize HWLOC_MEMTIERS_GUESS value %s\n", env);
-     }
+Index: hwloc/hwloc/memattrs.c
+===================================================================
+--- hwloc.orig/hwloc/memattrs.c
++++ hwloc/hwloc/memattrs.c
+@@ -1699,7 +1699,7 @@ hwloc__force_memory_tiers(hwloc_topology
+ 
+   env = strdup(_env);
+   if (!env) {
+-    fprintf(stderr, "[hwloc/memtiers] failed to duplicate HWLOC_MEMTIERS envvar\n");
++  //  fprintf(stderr, "[hwloc/memtiers] failed to duplicate HWLOC_MEMTIERS envvar\n");
+     goto out;
    }
  
---- a/hwloc/pci-common.c
-+++ b/hwloc/pci-common.c
+@@ -1715,13 +1715,13 @@ hwloc__force_memory_tiers(hwloc_topology
+ 
+   nodeset = hwloc_bitmap_alloc();
+   if (!nodeset) {
+-    fprintf(stderr, "[hwloc/memtiers] failed to allocated forced tiers' nodeset\n");
++    // fprintf(stderr, "[hwloc/memtiers] failed to allocated forced tiers' nodeset\n");
+     goto out_with_envvar;
+   }
+ 
+   tiers = calloc(nr_tiers, sizeof(*tiers));
+   if (!tiers) {
+-    fprintf(stderr, "[hwloc/memtiers] failed to allocated forced tiers\n");
++    // fprintf(stderr, "[hwloc/memtiers] failed to allocated forced tiers\n");
+     goto out_with_nodeset;
+   }
+   nr_tiers = 0;
+@@ -1738,14 +1738,14 @@ hwloc__force_memory_tiers(hwloc_topology
+ 
+     equal = strchr(tmp, '=');
+     if (!equal) {
+-      fprintf(stderr, "[hwloc/memtiers] missing `=' before end of forced tier description at `%s'\n", tmp);
++      // fprintf(stderr, "[hwloc/memtiers] missing `=' before end of forced tier description at `%s'\n", tmp);
+       goto out_with_tiers;
+     }
+     *equal = '\0';
+ 
+     hwloc_bitmap_sscanf(nodeset, tmp);
+     if (hwloc_bitmap_iszero(nodeset)) {
+-      fprintf(stderr, "[hwloc/memtiers] empty forced tier nodeset `%s', aborting\n", tmp);
++      // fprintf(stderr, "[hwloc/memtiers] empty forced tier nodeset `%s', aborting\n", tmp);
+       goto out_with_tiers;
+     }
+     type = hwloc_memory_tier_type_sscanf(equal+1);
+Index: hwloc/hwloc/pci-common.c
+===================================================================
+--- hwloc.orig/hwloc/pci-common.c
++++ hwloc/hwloc/pci-common.c
 @@ -152,10 +152,10 @@ hwloc_pci_discovery_prepare(struct hwloc
  	    hwloc_pci_forced_locality_parse(topology, buffer);
  	  }
@@ -583,8 +622,10 @@
  	reported = 1;
        }
        if (*env) {
---- a/hwloc/topology-aix.c
-+++ b/hwloc/topology-aix.c
+Index: hwloc/hwloc/topology-aix.c
+===================================================================
+--- hwloc.orig/hwloc/topology-aix.c
++++ hwloc/hwloc/topology-aix.c
 @@ -535,7 +535,7 @@ hwloc_aix_set_area_membind(hwloc_topolog
    rsid_t rsid = { .at_subrange = &subrange };
    uint_t aix_policy;
@@ -605,8 +646,10 @@
        continue;
      }
      if (!rs_getinfo(rad, R_NUMPROCS, 0))
---- a/hwloc/topology-bgq.c
-+++ b/hwloc/topology-bgq.c
+Index: hwloc/hwloc/topology-bgq.c
+===================================================================
+--- hwloc.orig/hwloc/topology-bgq.c
++++ hwloc/hwloc/topology-bgq.c
 @@ -277,13 +277,13 @@ hwloc_bgq_component_instantiate(struct h
    if (err || strcmp(utsname.sysname, "CNK") || strcmp(utsname.machine, "BGQ")) {
      const char *env = getenv("HWLOC_FORCE_BGQ");
@@ -628,8 +671,10 @@
        return NULL;
      } else {
        forced_nonbgq = 1;
---- a/hwloc/topology-cuda.c
-+++ b/hwloc/topology-cuda.c
+Index: hwloc/hwloc/topology-cuda.c
+===================================================================
+--- hwloc.orig/hwloc/topology-cuda.c
++++ hwloc/hwloc/topology-cuda.c
 @@ -85,7 +85,7 @@ hwloc_cuda_discover(struct hwloc_backend
    if (cures) {
      if (cures != cudaErrorNoDevice && HWLOC_SHOW_ALL_ERRORS()) {
@@ -639,8 +684,10 @@
      }
      return -1;
    }
---- a/hwloc/topology-darwin.c
-+++ b/hwloc/topology-darwin.c
+Index: hwloc/hwloc/topology-darwin.c
+===================================================================
+--- hwloc.orig/hwloc/topology-darwin.c
++++ hwloc/hwloc/topology-darwin.c
 @@ -50,8 +50,8 @@ hwloc__darwin_cpukinds_add(struct hwloc_
                             char cluster_type, const char *compatible)
  {
@@ -663,25 +710,24 @@
        }
        kind = &kinds->kinds[i];
        goto found;
-@@ -123,14 +123,14 @@ static int hwloc__darwin_look_iokit_cpuk
+@@ -124,14 +124,14 @@ static int hwloc__darwin_look_iokit_cpuk
  
-   cpus_root = IORegistryEntryFromPath(kIOMainPortDefault, DT_PLANE ":/cpus");
+   cpus_root = IORegistryEntryFromPath(kIOMainPortDefault, cpu_plane_string);
    if (!cpus_root) {
--    fprintf(stderr, "hwloc/darwin/cpukinds: failed to find " DT_PLANE ":/cpus\n");
-+    //fprintf(stderr, "hwloc/darwin/cpukinds: failed to find " DT_PLANE ":/cpus\n");
+-    fprintf(stderr, "hwloc/darwin/cpukinds: failed to find %s\n", (const char *) cpu_plane_string);
++    // fprintf(stderr, "hwloc/darwin/cpukinds: failed to find %s\n", (const char *) cpu_plane_string);
      return -1;
    }
  
-   kret = IORegistryEntryGetChildIterator(cpus_root, DT_PLANE, &cpus_iter);
+   kret = IORegistryEntryGetChildIterator(cpus_root, dt_plane_name, &cpus_iter);
    if (kret != KERN_SUCCESS) {
--    if (HWLOC_SHOW_ALL_ERRORS())
+     if (HWLOC_SHOW_ALL_ERRORS())
 -      fprintf(stderr, "hwloc/darwin/cpukinds: failed to create iterator\n");
-+    //if (HWLOC_SHOW_ALL_ERRORS())
-+    //  fprintf(stderr, "hwloc/darwin/cpukinds: failed to create iterator\n");
++     // fprintf(stderr, "hwloc/darwin/cpukinds: failed to create iterator\n");
      IOObjectRelease(cpus_root);
      return -1;
    }
-@@ -162,17 +162,17 @@ static int hwloc__darwin_look_iokit_cpuk
+@@ -163,17 +163,17 @@ static int hwloc__darwin_look_iokit_cpuk
        continue;
      }
      if (CFGetTypeID(ref) != CFNumberGetTypeID()) {
@@ -704,9 +750,9 @@
          CFRelease(ref);
          continue;
        }
-@@ -209,21 +209,21 @@ static int hwloc__darwin_look_iokit_cpuk
+@@ -210,21 +210,21 @@ static int hwloc__darwin_look_iokit_cpuk
      /* get cluster-type */
-     ref = IORegistryEntrySearchCFProperty(cpus_child, DT_PLANE, CFSTR("cluster-type"), kCFAllocatorDefault, kNilOptions);
+     ref = IORegistryEntrySearchCFProperty(cpus_child, dt_plane_name, CFSTR("cluster-type"), kCFAllocatorDefault, kNilOptions);
      if (!ref) {
 -      if (HWLOC_SHOW_ALL_ERRORS())
 -        fprintf(stderr, "hwloc/darwin/cpukinds: failed to find cluster-type\n");
@@ -734,7 +780,7 @@
        CFRelease(ref);
        continue;
      }
-@@ -234,9 +234,9 @@ static int hwloc__darwin_look_iokit_cpuk
+@@ -235,9 +235,9 @@ static int hwloc__darwin_look_iokit_cpuk
          hwloc_debug("got cluster-type %c\n", u8_values[0]);
          cluster_type = u8_values[0];
        } else {
@@ -747,9 +793,9 @@
          CFRelease(ref);
          continue;
        }
-@@ -246,14 +246,14 @@ static int hwloc__darwin_look_iokit_cpuk
+@@ -247,14 +247,14 @@ static int hwloc__darwin_look_iokit_cpuk
      /* get compatible */
-     ref = IORegistryEntrySearchCFProperty(cpus_child, DT_PLANE, CFSTR("compatible"), kCFAllocatorDefault, kNilOptions);
+     ref = IORegistryEntrySearchCFProperty(cpus_child, dt_plane_name, CFSTR("compatible"), kCFAllocatorDefault, kNilOptions);
      if (!ref) {
 -      if (HWLOC_SHOW_ALL_ERRORS())
 -        fprintf(stderr, "hwloc/darwin/cpukinds: failed to find compatible\n");
@@ -767,7 +813,7 @@
        CFRelease(ref);
        continue;
      }
-@@ -269,8 +269,8 @@ static int hwloc__darwin_look_iokit_cpuk
+@@ -270,8 +270,8 @@ static int hwloc__darwin_look_iokit_cpuk
          if (!compatible[i] && compatible[i+1])
            compatible[i] = ';';
        if (!compatible[0]) {
@@ -778,7 +824,7 @@
          CFRelease(ref);
          continue;
        }
-@@ -301,9 +301,9 @@ static int hwloc__darwin_look_iokit_cpuk
+@@ -302,9 +302,9 @@ static int hwloc__darwin_look_iokit_cpuk
        kinds->kinds[i].perflevel = 0;
      } else {
        *matched_perflevels = 0;
@@ -791,7 +837,7 @@
      }
    }
  
-@@ -494,9 +494,9 @@ static void hwloc__darwin_look_perflevel
+@@ -495,9 +495,9 @@ static void hwloc__darwin_look_perflevel
         */
        size_t s;
        snprintf(name, sizeof(name), "hw.perflevel%u.l2perflevels", level);
@@ -804,7 +850,7 @@
      }
  
      /* assume PUs are contigous for now. */
-@@ -525,9 +525,9 @@ static void hwloc__darwin_look_perflevel
+@@ -526,9 +526,9 @@ static void hwloc__darwin_look_perflevel
         */
        size_t s;
        snprintf(name, sizeof(name), "hw.perflevel%u.l3perflevels", level);
@@ -817,8 +863,10 @@
      }
  
      hwloc__darwin_build_perflevel_cache_level(topology, cpuset, cpus, HWLOC_OBJ_L3CACHE, 3, size, linesize);
---- a/hwloc/topology-levelzero.c
-+++ b/hwloc/topology-levelzero.c
+Index: hwloc/hwloc/topology-levelzero.c
+===================================================================
+--- hwloc.orig/hwloc/topology-levelzero.c
++++ hwloc/hwloc/topology-levelzero.c
 @@ -90,8 +90,8 @@ hwloc__levelzero_properties_get(ze_devic
      case ZE_DEVICE_TYPE_MCA: type = "MCA"; break;
      case ZE_DEVICE_TYPE_VPU: type = "VPU"; break;
@@ -856,7 +904,7 @@
                osdev = NULL; /* we'll ignore it but we'll still agregate its subdevice memories into totalHBM/DDRkB */
              } else {
                osdev = sub_osdevs[mprop.subdeviceId];
-@@ -639,9 +639,9 @@ hwloc_levelzero_discover(struct hwloc_ba
+@@ -658,9 +658,9 @@ hwloc_levelzero_discover(struct hwloc_ba
  
    res = zeInit(0);
    if (res != ZE_RESULT_SUCCESS) {
@@ -869,9 +917,24 @@
      return 0;
    }
  
---- a/hwloc/topology-linux.c
-+++ b/hwloc/topology-linux.c
-@@ -2784,36 +2784,36 @@ hwloc_linux_knl_parse_numa_distances(uns
+Index: hwloc/hwloc/topology-linux.c
+===================================================================
+--- hwloc.orig/hwloc/topology-linux.c
++++ hwloc/hwloc/topology-linux.c
+@@ -1750,9 +1750,9 @@ warn_preferred_many_fallback(hwloc_const
+ {
+   static int warned = 0;
+   if (!warned && HWLOC_SHOW_ALL_ERRORS() && hwloc_bitmap_weight(nodeset) > 1) {
+-    fprintf(stderr, "[hwloc/membind] MPOL_PREFERRED_MANY not supported by the kernel.\n");
+-    fprintf(stderr, "If *all* given nodes must be used, use strict binding or the interleave policy.\n");
+-    fprintf(stderr, "Otherwise the old MPOL_PREFERRED will only use the first given node.\n");
++    // fprintf(stderr, "[hwloc/membind] MPOL_PREFERRED_MANY not supported by the kernel.\n");
++    // fprintf(stderr, "If *all* given nodes must be used, use strict binding or the interleave policy.\n");
++    // fprintf(stderr, "Otherwise the old MPOL_PREFERRED will only use the first given node.\n");
+     warned = 1;
+   }
+ }
+@@ -2885,36 +2885,36 @@ hwloc_linux_knl_parse_numa_distances(uns
      return 0;
  
    if (nbnodes != 2 && nbnodes != 4 && nbnodes != 8) {
@@ -918,7 +981,7 @@
  	return -1;
        }
        /* did we already see this value? */
-@@ -2825,8 +2825,8 @@ hwloc_linux_knl_parse_numa_distances(uns
+@@ -2926,8 +2926,8 @@ hwloc_linux_knl_parse_numa_distances(uns
        if (k == summary->nb_values) {
  	/* add a new value */
  	if (k == 4) {
@@ -929,7 +992,7 @@
  	  return -1;
  	}
  	summary->values[k].value = distance;
-@@ -2840,25 +2840,25 @@ hwloc_linux_knl_parse_numa_distances(uns
+@@ -2941,25 +2941,25 @@ hwloc_linux_knl_parse_numa_distances(uns
  
    if (nbnodes == 2) {
      if (summary->nb_values != 2) {
@@ -964,7 +1027,7 @@
        return -1;
      }
  
-@@ -3032,7 +3032,7 @@ hwloc_linux_knl_read_hwdata_properties(s
+@@ -3133,7 +3133,7 @@ hwloc_linux_knl_read_hwdata_properties(s
  
    /* file must start with version information */
    if (sscanf(data_beg, "version: %d", &version) != 1) {
@@ -973,7 +1036,7 @@
      return -1;
    }
  
-@@ -3388,16 +3388,16 @@ hwloc_linux_knl_numa_quirk(struct hwloc_
+@@ -3493,16 +3493,16 @@ hwloc_linux_knl_numa_quirk(struct hwloc_
        && strcmp(hwdata.cluster_mode, "Quadrant")
        && strcmp(hwdata.cluster_mode, "SNC2")
        && strcmp(hwdata.cluster_mode, "SNC4")) {
@@ -994,7 +1057,7 @@
      goto error;
    }
  
-@@ -3418,8 +3418,8 @@ hwloc_linux_knl_numa_quirk(struct hwloc_
+@@ -3523,8 +3523,8 @@ hwloc_linux_knl_numa_quirk(struct hwloc_
      if (!strcmp(hwdata.memory_mode, "Cache")) {
        /* Quadrant-Cache */
        if (nbnodes != 1) {
@@ -1005,7 +1068,7 @@
  	goto error;
        }
        hwloc_linux_knl_add_cluster(topology, nodes[0], NULL, &hwdata, mscache_as_l3, 1, failednodes);
-@@ -3427,8 +3427,8 @@ hwloc_linux_knl_numa_quirk(struct hwloc_
+@@ -3532,8 +3532,8 @@ hwloc_linux_knl_numa_quirk(struct hwloc_
      } else {
        /* Quadrant-Flat/Hybrid */
        if (nbnodes != 2) {
@@ -1016,7 +1079,7 @@
  	goto error;
        }
        if (!strcmp(hwdata.memory_mode, "Flat"))
-@@ -3440,8 +3440,8 @@ hwloc_linux_knl_numa_quirk(struct hwloc_
+@@ -3545,8 +3545,8 @@ hwloc_linux_knl_numa_quirk(struct hwloc_
      if (!strcmp(hwdata.memory_mode, "Cache")) {
        /* SNC2-Cache */
        if (nbnodes != 2) {
@@ -1027,7 +1090,7 @@
  	goto error;
        }
        hwloc_linux_knl_add_cluster(topology, nodes[0], NULL, &hwdata, mscache_as_l3, 2, failednodes);
-@@ -3451,13 +3451,13 @@ hwloc_linux_knl_numa_quirk(struct hwloc_
+@@ -3556,13 +3556,13 @@ hwloc_linux_knl_numa_quirk(struct hwloc_
        /* SNC2-Flat/Hybrid */
        unsigned ddr[2], mcdram[2];
        if (nbnodes != 4) {
@@ -1045,7 +1108,7 @@
  	goto error;
        }
        if (!strcmp(hwdata.memory_mode, "Flat"))
-@@ -3470,8 +3470,8 @@ hwloc_linux_knl_numa_quirk(struct hwloc_
+@@ -3575,8 +3575,8 @@ hwloc_linux_knl_numa_quirk(struct hwloc_
      if (!strcmp(hwdata.memory_mode, "Cache")) {
        /* SNC4-Cache */
        if (nbnodes != 4) {
@@ -1056,7 +1119,7 @@
  	goto error;
        }
        hwloc_linux_knl_add_cluster(topology, nodes[0], NULL, &hwdata, mscache_as_l3, 4, failednodes);
-@@ -3483,13 +3483,13 @@ hwloc_linux_knl_numa_quirk(struct hwloc_
+@@ -3588,13 +3588,13 @@ hwloc_linux_knl_numa_quirk(struct hwloc_
        /* SNC4-Flat/Hybrid */
        unsigned ddr[4], mcdram[4];
        if (nbnodes != 8) {
@@ -1074,7 +1137,18 @@
  	goto error;
        }
        if (!strcmp(hwdata.memory_mode, "Flat"))
-@@ -3875,8 +3875,8 @@ list_sysfsnode(struct hwloc_topology *to
+@@ -3878,8 +3878,8 @@ annotate_cxl_dax(hwloc_obj_t obj, unsign
+     if (pcibdf) {
+       if (interleave_ways) {
+         if (interleave_ways >= 16) {
+-          if (HWLOC_SHOW_CRITICAL_ERRORS())
+-            fprintf(stderr, "Found more than 16 interleaved devices for region%u, ignoring the last ones.\n", region);
++          //if (HWLOC_SHOW_CRITICAL_ERRORS())
++          //  fprintf(stderr, "Found more than 16 interleaved devices for region%u, ignoring the last ones.\n", region);
+           break;
+         }
+         *(curbdfptr++) = ',';
+@@ -4079,8 +4079,8 @@ list_sysfsnode(struct hwloc_topology *to
      char *sn, *tn;
      hwloc_bitmap_asprintf(&sn, nodeset);
      hwloc_bitmap_asprintf(&tn, topology->levels[0][0]->nodeset);
@@ -1085,18 +1159,49 @@
      free(sn);
      free(tn);
      hwloc_bitmap_free(nodeset);
-@@ -4045,8 +4045,8 @@ look_sysfsnode(struct hwloc_topology *to
+@@ -4264,8 +4264,8 @@ look_sysfsnode(struct hwloc_topology *to
  	failednodes++;
  	continue;
        }
--      if (HWLOC_SHOW_CRITICAL_ERRORS())
+-      if (allow_overlapping_node_cpusets < 2 && HWLOC_SHOW_CRITICAL_ERRORS())
 -        fprintf(stderr, "hwloc/linux: node P#%u cpuset intersects with previous nodes, forcing its acceptance\n", osnode);
-+      // if (HWLOC_SHOW_CRITICAL_ERRORS())
++      // if (allow_overlapping_node_cpusets < 2 && HWLOC_SHOW_CRITICAL_ERRORS())
 +      //  fprintf(stderr, "hwloc/linux: node P#%u cpuset intersects with previous nodes, forcing its acceptance\n", osnode);
      }
      hwloc_bitmap_or(nodes_cpuset, nodes_cpuset, cpuset);
  
-@@ -5577,8 +5577,8 @@ hwloc_linuxfs_look_cpu(struct hwloc_back
+@@ -5760,18 +5760,18 @@ hwloc_gather_system_info(struct hwloc_to
+   if (env && *env) {
+     file = fopen(env, "w");
+     if (file) {
+-      if (*data->utsname.sysname)
+-	fprintf(file, "OSName: %s\n", data->utsname.sysname);
+-      if (*data->utsname.release)
+-	fprintf(file, "OSRelease: %s\n", data->utsname.release);
+-      if (*data->utsname.version)
+-	fprintf(file, "OSVersion: %s\n", data->utsname.version);
+-      if (*data->utsname.nodename)
+-	fprintf(file, "HostName: %s\n", data->utsname.nodename);
+-      if (*data->utsname.machine)
+-	fprintf(file, "Architecture: %s\n", data->utsname.machine);
+-      fprintf(file, "FallbackNbProcessors: %d\n", data->fallback_nbprocessors);
+-      fprintf(file, "PageSize: %llu\n", (unsigned long long) data->pagesize);
++      //if (*data->utsname.sysname)
++	//fprintf(file, "OSName: %s\n", data->utsname.sysname);
++      //if (*data->utsname.release)
++	//fprintf(file, "OSRelease: %s\n", data->utsname.release);
++      //if (*data->utsname.version)
++	//fprintf(file, "OSVersion: %s\n", data->utsname.version);
++      //if (*data->utsname.nodename)
++	//fprintf(file, "HostName: %s\n", data->utsname.nodename);
++      //if (*data->utsname.machine)
++	//fprintf(file, "Architecture: %s\n", data->utsname.machine);
++      //fprintf(file, "FallbackNbProcessors: %d\n", data->fallback_nbprocessors);
++      //fprintf(file, "PageSize: %llu\n", (unsigned long long) data->pagesize);
+       fclose(file);
+     }
+   }
+@@ -5984,8 +5984,8 @@ hwloc_linuxfs_look_cpu(struct hwloc_back
    hwloc_debug("Found sysfs cpu files under /sys/devices/system/cpu with %s topology filenames\n",
  	      old_siblings_filenames ? "old" : "new");
    if (err < 0) {
@@ -1107,7 +1212,7 @@
      return -1;
    }
  
-@@ -6796,9 +6796,9 @@ hwloc__get_firmware_dmi_memory_info_one(
+@@ -7336,9 +7336,9 @@ hwloc__get_firmware_dmi_memory_info_one(
      }
      /* couldn't read a single full string from that buffer, we're screwed */
      if (!boff) {
@@ -1120,7 +1225,7 @@
        break;
      }
      /* reread buffer after previous string */
-@@ -6914,8 +6914,8 @@ hwloc_linuxfs_pci_look_pcidevices(struct
+@@ -7467,8 +7467,8 @@ hwloc_linuxfs_pci_look_pcidevices(struct
  #ifndef HWLOC_HAVE_32BITS_PCI_DOMAIN
      if (domain > 0xffff) {
        static int warned = 0;
@@ -1131,7 +1236,7 @@
        warned = 1;
        continue;
      }
-@@ -7254,8 +7254,8 @@ hwloc_linux_component_instantiate(struct
+@@ -7808,8 +7808,8 @@ hwloc_linux_component_instantiate(struct
        goto out_with_data;
      }
  #else
@@ -1142,9 +1247,11 @@
      errno = ENOSYS;
      goto out_with_data;
  #endif
---- a/hwloc/topology-nvml.c
-+++ b/hwloc/topology-nvml.c
-@@ -41,9 +41,9 @@ hwloc__nvml_get_peer_obj_by_pci(struct h
+Index: hwloc/hwloc/topology-nvml.c
+===================================================================
+--- hwloc.orig/hwloc/topology-nvml.c
++++ hwloc/hwloc/topology-nvml.c
+@@ -48,9 +48,9 @@ hwloc__nvml_get_peer_obj_by_pci(struct h
      /* we need PCI devices to be filtered-in */
      if (pfilter != HWLOC_TYPE_FILTER_KEEP_NONE) {
        static int warned = 0;
@@ -1157,7 +1264,7 @@
        warned = 1;
      } else {
        static int warned = 0;
-@@ -89,10 +89,10 @@ hwloc__nvml_get_peer_obj_by_pci(struct h
+@@ -105,10 +105,10 @@ hwloc__nvml_get_peer_obj_by_pci(struct h
    }
    default: {
      static int warned = 0;
@@ -1172,7 +1279,7 @@
      warned = 1;
      return NULL;
    }
-@@ -177,10 +177,10 @@ hwloc_nvml_discover(struct hwloc_backend
+@@ -193,10 +193,10 @@ hwloc_nvml_discover(struct hwloc_backend
  
    ret = nvmlInit();
    if (NVML_SUCCESS != ret) {
@@ -1187,7 +1294,7 @@
      return -1;
    }
    ret = nvmlDeviceGetCount(&nb);
-@@ -366,8 +366,8 @@ hwloc_nvml_discover(struct hwloc_backend
+@@ -383,8 +383,8 @@ hwloc_nvml_discover(struct hwloc_backend
            bw = 25000; /* multiple links may connect same GPUs */
          } else {
            static int warned = 0;
@@ -1198,8 +1305,10 @@
            warned = 1;
            continue;
          }
---- a/hwloc/topology-opencl.c
-+++ b/hwloc/topology-opencl.c
+Index: hwloc/hwloc/topology-opencl.c
+===================================================================
+--- hwloc.orig/hwloc/topology-opencl.c
++++ hwloc/hwloc/topology-opencl.c
 @@ -61,9 +61,9 @@ hwloc_opencl_discover(struct hwloc_backe
  
    clret = clGetPlatformIDs(0, NULL, &nr_platforms);
@@ -1213,8 +1322,10 @@
      return -1;
    }
    hwloc_debug("%u OpenCL platforms\n", nr_platforms);
---- a/hwloc/topology-pci.c
-+++ b/hwloc/topology-pci.c
+Index: hwloc/hwloc/topology-pci.c
+===================================================================
+--- hwloc.orig/hwloc/topology-pci.c
++++ hwloc/hwloc/topology-pci.c
 @@ -175,9 +175,9 @@ hwloc_look_pci(struct hwloc_backend *bac
    ret = pci_system_init();
    if (ret) {
@@ -1239,8 +1350,10 @@
        warned = 1;
        continue;
      }
---- a/hwloc/topology-rsmi.c
-+++ b/hwloc/topology-rsmi.c
+Index: hwloc/hwloc/topology-rsmi.c
+===================================================================
+--- hwloc.orig/hwloc/topology-rsmi.c
++++ hwloc/hwloc/topology-rsmi.c
 @@ -91,11 +91,11 @@ static int get_device_name(uint32_t dv_i
    rsmi_status_t rsmi_rc = rsmi_dev_name_get(dv_ind, device_name, size);
  
@@ -1356,8 +1469,10 @@
      goto out;
    }
  
---- a/hwloc/topology-solaris.c
-+++ b/hwloc/topology-solaris.c
+Index: hwloc/hwloc/topology-solaris.c
+===================================================================
+--- hwloc.orig/hwloc/topology-solaris.c
++++ hwloc/hwloc/topology-solaris.c
 @@ -642,8 +642,8 @@ hwloc_look_kstat(struct hwloc_topology *
  
        if (kstat_read(kc, ksp, NULL) == -1)
@@ -1426,9 +1541,11 @@
  	continue;
        }
        stat = (kstat_named_t *) kstat_data_lookup(ksp, (char *) "cpus");
---- a/hwloc/topology-synthetic.c
-+++ b/hwloc/topology-synthetic.c
-@@ -83,8 +83,8 @@ hwloc_synthetic_process_indexes(struct h
+Index: hwloc/hwloc/topology-synthetic.c
+===================================================================
+--- hwloc.orig/hwloc/topology-synthetic.c
++++ hwloc/hwloc/topology-synthetic.c
+@@ -84,8 +84,8 @@ hwloc_synthetic_process_indexes(struct h
  
    array = calloc(total, sizeof(*array));
    if (!array) {
@@ -1439,7 +1556,7 @@
      goto out;
    }
  
-@@ -96,16 +96,16 @@ hwloc_synthetic_process_indexes(struct h
+@@ -97,16 +97,16 @@ hwloc_synthetic_process_indexes(struct h
        const char *next;
        unsigned idx = strtoul(attr, (char **) &next, 10);
        if (next == attr) {
@@ -1460,7 +1577,7 @@
  	  goto out_with_array;
  	}
  	attr = next+1;
-@@ -148,28 +148,28 @@ hwloc_synthetic_process_indexes(struct h
+@@ -149,28 +149,28 @@ hwloc_synthetic_process_indexes(struct h
  	char *tmp2, *tmp3;
  	step = (unsigned) strtol(tmp, &tmp2, 0);
  	if (tmp2 == tmp || *tmp2 != '*') {
@@ -1497,7 +1614,7 @@
  	  free(loops);
  	  goto out_with_array;
  	}
-@@ -196,14 +196,14 @@ hwloc_synthetic_process_indexes(struct h
+@@ -197,14 +197,14 @@ hwloc_synthetic_process_indexes(struct h
        while (tmp) {
  	err = hwloc_type_sscanf(tmp, &type, &attrs, sizeof(attrs));
  	if (err < 0) {
@@ -1516,7 +1633,7 @@
  	  free(loops);
  	  goto out_with_array;
  	}
-@@ -222,9 +222,9 @@ hwloc_synthetic_process_indexes(struct h
+@@ -223,9 +223,9 @@ hwloc_synthetic_process_indexes(struct h
  	  break;
  	}
  	if (loops[cur_loop].level_depth == (unsigned)-1) {
@@ -1529,7 +1646,7 @@
  	  free(loops);
  	  goto out_with_array;
  	}
-@@ -242,8 +242,8 @@ hwloc_synthetic_process_indexes(struct h
+@@ -243,8 +243,8 @@ hwloc_synthetic_process_indexes(struct h
  	unsigned step, nb;
  	for(i=0; i<nr_loops; i++) {
  	  if (loops[i].level_depth == mydepth && i != cur_loop) {
@@ -1540,7 +1657,7 @@
  	    free(loops);
  	    goto out_with_array;
  	  }
-@@ -272,8 +272,8 @@ hwloc_synthetic_process_indexes(struct h
+@@ -273,8 +273,8 @@ hwloc_synthetic_process_indexes(struct h
  	loops[nr_loops].nb = total/nbs;
  	nr_loops++;
        } else {
@@ -1551,7 +1668,7 @@
  	free(loops);
  	goto out_with_array;
        }
-@@ -294,13 +294,13 @@ hwloc_synthetic_process_indexes(struct h
+@@ -295,13 +295,13 @@ hwloc_synthetic_process_indexes(struct h
      /* check that we have the right values (cannot pass total, cannot give duplicate 0) */
      for(j=0; j<total; j++) {
        if (array[j] >= total) {
@@ -1569,7 +1686,7 @@
  	goto out_with_array;
        }
      }
-@@ -365,8 +365,8 @@ hwloc_synthetic_parse_attrs(const char *
+@@ -366,8 +366,8 @@ hwloc_synthetic_parse_attrs(const char *
  
    next_pos = (const char *) strchr(attrs, ')');
    if (!next_pos) {
@@ -1580,7 +1697,7 @@
      errno = EINVAL;
      return -1;
    }
-@@ -388,15 +388,15 @@ hwloc_synthetic_parse_attrs(const char *
+@@ -392,15 +392,15 @@ hwloc_synthetic_parse_attrs(const char *
  
      } else {
        size_t length = strcspn(attrs, " )");
@@ -1599,7 +1716,7 @@
        errno = EINVAL;
        return -1;
      }
-@@ -405,8 +405,8 @@ hwloc_synthetic_parse_attrs(const char *
+@@ -409,8 +409,8 @@ hwloc_synthetic_parse_attrs(const char *
    sattr->memorysize = memorysize;
  
    if (index_string) {
@@ -1610,7 +1727,7 @@
      sind->string = index_string;
      sind->string_length = (unsigned long)index_string_length;
    }
-@@ -522,14 +522,14 @@ hwloc_backend_synthetic_init(struct hwlo
+@@ -527,14 +527,14 @@ hwloc_backend_synthetic_init(struct hwlo
        pos++;
  
        if (hwloc_type_sscanf(pos, &type, &attrs, sizeof(attrs)) < 0) {
@@ -1629,7 +1746,7 @@
  	errno = EINVAL;
  	goto error;
        }
-@@ -549,8 +549,8 @@ hwloc_backend_synthetic_init(struct hwlo
+@@ -555,8 +555,8 @@ hwloc_backend_synthetic_init(struct hwlo
  
        next_pos = strchr(pos, ']');
        if (!next_pos) {
@@ -1640,7 +1757,7 @@
  	errno = EINVAL;
  	goto error;
        }
-@@ -581,23 +581,23 @@ hwloc_backend_synthetic_init(struct hwlo
+@@ -587,23 +587,23 @@ hwloc_backend_synthetic_init(struct hwlo
  	  type = HWLOC_OBJ_GROUP;
  	} else {
  	  /* FIXME: allow generic "Cache" string? would require to deal with possibly duplicate cache levels */
@@ -1670,7 +1787,7 @@
  	errno = EINVAL;
  	goto error;
        }
-@@ -619,14 +619,14 @@ hwloc_backend_synthetic_init(struct hwlo
+@@ -625,14 +625,14 @@ hwloc_backend_synthetic_init(struct hwlo
      /* number of normal children */
      item = strtoul(pos, (char **)&next_pos, 0);
      if (next_pos == pos) {
@@ -1689,7 +1806,7 @@
        errno = EINVAL;
        goto error;
      }
-@@ -643,14 +643,14 @@ hwloc_backend_synthetic_init(struct hwlo
+@@ -650,14 +650,14 @@ hwloc_backend_synthetic_init(struct hwlo
      }
  
      if (count + 1 >= HWLOC_SYNTHETIC_MAX_DEPTH) {
@@ -1708,7 +1825,7 @@
        errno = EINVAL;
        goto error;
      }
-@@ -660,8 +660,8 @@ hwloc_backend_synthetic_init(struct hwlo
+@@ -667,8 +667,8 @@ hwloc_backend_synthetic_init(struct hwlo
    }
  
    if (data->level[count-1].attr.type != HWLOC_OBJ_TYPE_NONE && data->level[count-1].attr.type != HWLOC_OBJ_PU) {
@@ -1719,7 +1836,7 @@
      errno = EINVAL;
      return -1;
    }
-@@ -679,43 +679,43 @@ hwloc_backend_synthetic_init(struct hwlo
+@@ -686,43 +686,43 @@ hwloc_backend_synthetic_init(struct hwlo
  
    /* sanity checks */
    if (!type_count[HWLOC_OBJ_PU]) {
@@ -1777,7 +1894,7 @@
      errno = EINVAL;
      return -1;
    }
-@@ -727,8 +727,8 @@ hwloc_backend_synthetic_init(struct hwlo
+@@ -734,8 +734,8 @@ hwloc_backend_synthetic_init(struct hwlo
        unset++;
    }
    if (unset && unset != count-2) {
@@ -1788,7 +1905,7 @@
      errno = EINVAL;
      return -1;
    }
-@@ -813,8 +813,8 @@ hwloc_backend_synthetic_init(struct hwlo
+@@ -820,8 +820,8 @@ hwloc_backend_synthetic_init(struct hwlo
    /* enforce a NUMA level */
    if (!type_count[HWLOC_OBJ_NUMANODE] && !data->numa_attached_nr) {
      /* insert a NUMA level below the automatic machine root */
@@ -1799,9 +1916,9 @@
      /* move existing levels by one */
      memmove(&data->level[2], &data->level[1], count*sizeof(struct hwloc_synthetic_level_data_s));
      data->level[1].attr.type = HWLOC_OBJ_NUMANODE;
-@@ -1362,8 +1362,8 @@ hwloc__export_synthetic_memory_children(
+@@ -1407,8 +1407,8 @@ hwloc__export_synthetic_memory_children(
      /* v1: export a single NUMA child */
-     if (parent->memory_arity > 1 || mchild->type != HWLOC_OBJ_NUMANODE) {
+     if (parent->memory_arity > 1) {
        /* not supported */
 -      if (verbose)
 -	fprintf(stderr, "Cannot export to synthetic v1 if multiple memory children are attached to the same location.\n");
@@ -1810,26 +1927,18 @@
        errno = EINVAL;
        return -1;
      }
-@@ -1389,14 +1389,14 @@ hwloc__export_synthetic_memory_children(
+@@ -1441,8 +1441,8 @@ hwloc__export_synthetic_memory_children(
      while (numanode && numanode->type != HWLOC_OBJ_NUMANODE) {
-       if (verbose) {
-         static int warned = 0;
--        if (!warned)
--          fprintf(stderr, "Ignoring memory objects that are not NUMA nodes.\n");
-+        // if (!warned)
-+        // fprintf(stderr, "Ignoring memory objects that are not NUMA nodes.\n");
-         warned = 1;
-       }
        if (verbose && numanode->memory_arity > 1) {
          static int warned = 0;
 -        if (!warned)
 -          fprintf(stderr, "Ignoring non-first memory children at non-first level of memory hierarchy.\n");
 +        // if (!warned)
-+        // fprintf(stderr, "Ignoring non-first memory children at non-first level of memory hierarchy.\n");
++        //  fprintf(stderr, "Ignoring non-first memory children at non-first level of memory hierarchy.\n");
          warned = 1;
        }
        numanode = numanode->memory_first_child;
-@@ -1515,16 +1515,16 @@ hwloc_topology_export_synthetic(struct h
+@@ -1561,16 +1561,16 @@ hwloc_topology_export_synthetic(struct h
    /* TODO: flag to force all indexes, not only for PU and NUMA? */
  
    if (!obj->symmetric_subtree) {
@@ -1850,19 +1959,21 @@
      errno = EINVAL;
      return -1;
    }
-@@ -1542,8 +1542,8 @@ hwloc_topology_export_synthetic(struct h
-     while ((node = node->next_cousin) != NULL) {
-       assert(hwloc__obj_type_is_normal(node->parent->type)); /* only depth-1 memory children for now */
-       if (node->parent->depth != pdepth) {
+@@ -1592,8 +1592,8 @@ hwloc_topology_export_synthetic(struct h
+       while (!hwloc__obj_type_is_normal(parent->type))
+         parent = parent->parent;
+       if (parent->depth != pdepth) {
 -	if (verbose)
 -	  fprintf(stderr, "Cannot export to synthetic v1 if memory is attached to parents at different depths.\n");
-+       // if (verbose)
-+       // fprintf(stderr, "Cannot export to synthetic v1 if memory is attached to parents at different depths.\n");
++	// if (verbose)
++	//  fprintf(stderr, "Cannot export to synthetic v1 if memory is attached to parents at different depths.\n");
  	errno = EINVAL;
  	return -1;
        }
---- a/hwloc/topology-windows.c
-+++ b/hwloc/topology-windows.c
+Index: hwloc/hwloc/topology-windows.c
+===================================================================
+--- hwloc.orig/hwloc/topology-windows.c
++++ hwloc/hwloc/topology-windows.c
 @@ -366,8 +366,8 @@ hwloc_win_get_processor_groups(void)
    hwloc_debug("found %lu windows processor groups\n", nr_processor_groups);
  
@@ -1874,9 +1985,11 @@
    }
  
    length = 0;
---- a/hwloc/topology-x86.c
-+++ b/hwloc/topology-x86.c
-@@ -80,7 +80,7 @@ cpuiddump_read(const char *dirpath, unsi
+Index: hwloc/hwloc/topology-x86.c
+===================================================================
+--- hwloc.orig/hwloc/topology-x86.c
++++ hwloc/hwloc/topology-x86.c
+@@ -87,7 +87,7 @@ cpuiddump_read(const char *dirpath, unsi
  
    cpuiddump = malloc(sizeof(*cpuiddump));
    if (!cpuiddump) {
@@ -1885,7 +1998,7 @@
      goto out;
    }
  
-@@ -91,7 +91,7 @@ cpuiddump_read(const char *dirpath, unsi
+@@ -98,7 +98,7 @@ cpuiddump_read(const char *dirpath, unsi
    snprintf(filename, filenamelen, "%s/pu%u", dirpath, idx);
    file = fopen(filename, "r");
    if (!file) {
@@ -1894,7 +2007,7 @@
      goto out_with_filename;
    }
  
-@@ -100,7 +100,7 @@ cpuiddump_read(const char *dirpath, unsi
+@@ -107,7 +107,7 @@ cpuiddump_read(const char *dirpath, unsi
      nr++;
    cpuiddump->entries = malloc(nr * sizeof(struct cpuiddump_entry));
    if (!cpuiddump->entries) {
@@ -1903,7 +2016,7 @@
      goto out_with_file;
    }
  
-@@ -156,8 +156,8 @@ cpuiddump_find_by_input(unsigned *eax, u
+@@ -163,8 +163,8 @@ cpuiddump_find_by_input(unsigned *eax, u
      return;
    }
  
@@ -1914,7 +2027,7 @@
    *eax = 0;
    *ebx = 0;
    *ecx = 0;
-@@ -1647,9 +1647,9 @@ hwloc_x86_discover(struct hwloc_backend
+@@ -1721,9 +1721,9 @@ hwloc_x86_discover(struct hwloc_backend
  
  #if HAVE_DECL_RUNNING_ON_VALGRIND
    if (RUNNING_ON_VALGRIND && !data->src_cpuiddump_path) {
@@ -1927,12 +2040,8 @@
      return 0;
    }
  #endif
-@@ -1728,20 +1728,20 @@ hwloc_x86_check_cpuiddump_input(const ch
-   path = malloc(strlen(src_cpuiddump_path) + strlen("/hwloc-cpuid-info") + 1);
-   if (!path)
-     goto out_with_dir;
--  sprintf(path, "%s/hwloc-cpuid-info", src_cpuiddump_path);
-+  snprintf(path, 20, "%s/hwloc-cpuid-info", src_cpuiddump_path);
+@@ -1805,17 +1805,17 @@ hwloc_x86_check_cpuiddump_input(const ch
+   sprintf(path, "%s/hwloc-cpuid-info", src_cpuiddump_path);
    file = fopen(path, "r");
    if (!file) {
 -    fprintf(stderr, "hwloc/x86: Couldn't open dumped cpuid summary %s\n", path);
@@ -1946,13 +2055,13 @@
      goto out_with_path;
    }
    fclose(file);
-   if (strcmp(line, "Architecture: x86\n")) {
+   if (strncmp(line, "Architecture: x86", 17)) {
 -    fprintf(stderr, "hwloc/x86: Found non-x86 dumped cpuid summary in %s: %s\n", path, line);
 +    // fprintf(stderr, "hwloc/x86: Found non-x86 dumped cpuid summary in %s: %s\n", path, line);
      goto out_with_path;
    }
    free(path);
-@@ -1752,21 +1752,21 @@ hwloc_x86_check_cpuiddump_input(const ch
+@@ -1826,21 +1826,21 @@ hwloc_x86_check_cpuiddump_input(const ch
        unsigned long idx = strtoul(dirent->d_name+2, &end, 10);
        if (!*end)
  	hwloc_bitmap_set(set, idx);
@@ -1981,7 +2090,7 @@
      return -1;
    }
  
-@@ -1829,8 +1829,8 @@ hwloc_x86_component_instantiate(struct h
+@@ -1909,8 +1909,8 @@ hwloc_x86_component_instantiate(struct h
        data->src_cpuiddump_path = strdup(src_cpuiddump_path);
        assert(!hwloc_bitmap_iszero(set)); /* enforced by hwloc_x86_check_cpuiddump_input() */
        data->nbprocs = hwloc_bitmap_weight(set);
@@ -1992,8 +2101,10 @@
      }
      hwloc_bitmap_free(set);
    }
---- a/hwloc/topology-xml-libxml.c
-+++ b/hwloc/topology-xml-libxml.c
+Index: hwloc/hwloc/topology-xml-libxml.c
+===================================================================
+--- hwloc.orig/hwloc/topology-xml-libxml.c
++++ hwloc/hwloc/topology-xml-libxml.c
 @@ -81,16 +81,16 @@ hwloc__libxml_import_next_attr(hwloc__xm
              lstate->attr = attr;
              return 0;
@@ -2113,8 +2224,10 @@
      goto out_with_doc;
    }
  
---- a/hwloc/topology-xml-nolibxml.c
-+++ b/hwloc/topology-xml-nolibxml.c
+Index: hwloc/hwloc/topology-xml-nolibxml.c
+===================================================================
+--- hwloc.orig/hwloc/topology-xml-nolibxml.c
++++ hwloc/hwloc/topology-xml-nolibxml.c
 @@ -326,9 +326,9 @@ hwloc_nolibxml_look_done(struct hwloc_xm
  {
    hwloc_nolibxml_free_buffers(bdata);
@@ -2128,7 +2241,7 @@
  }
  
  /********************
-@@ -749,7 +749,8 @@ hwloc_nolibxml_export_file(hwloc_topolog
+@@ -750,7 +750,8 @@ hwloc_nolibxml_export_file(hwloc_topolog
      return -1;
  
    if (!strcmp(filename, "-")) {
@@ -2138,7 +2251,7 @@
    } else {
      file = fopen(filename, "w");
      if (!file) {
-@@ -768,8 +769,8 @@ hwloc_nolibxml_export_file(hwloc_topolog
+@@ -769,8 +770,8 @@ hwloc_nolibxml_export_file(hwloc_topolog
  
    free(buffer);
  
@@ -2149,7 +2262,7 @@
    return ret;
  }
  
-@@ -849,7 +850,8 @@ hwloc_nolibxml_export_diff_file(hwloc_to
+@@ -850,7 +851,8 @@ hwloc_nolibxml_export_diff_file(hwloc_to
      return -1;
  
    if (!strcmp(filename, "-")) {
@@ -2159,7 +2272,7 @@
    } else {
      file = fopen(filename, "w");
      if (!file) {
-@@ -868,8 +870,8 @@ hwloc_nolibxml_export_diff_file(hwloc_to
+@@ -869,8 +871,8 @@ hwloc_nolibxml_export_diff_file(hwloc_to
  
    free(buffer);
  
@@ -2170,8 +2283,10 @@
    return ret;
  }
  
---- a/hwloc/topology-xml.c
-+++ b/hwloc/topology-xml.c
+Index: hwloc/hwloc/topology-xml.c
+===================================================================
+--- hwloc.orig/hwloc/topology-xml.c
++++ hwloc/hwloc/topology-xml.c
 @@ -119,20 +119,20 @@ hwloc__xml_import_object_attr(struct hwl
      obj->os_index = strtoul(value, NULL, 10);
    else if (!strcmp(name, "gp_index")) {
@@ -2527,7 +2642,7 @@
    }
  }
  
-@@ -617,9 +617,9 @@ hwloc__xml_v1import_distances(struct hwl
+@@ -623,9 +623,9 @@ hwloc__xml_v1import_distances(struct hwl
      matrix = malloc(nbobjs*nbobjs*sizeof(float));
      v1dist = malloc(sizeof(*v1dist));
      if (!matrix || !v1dist) {
@@ -2540,7 +2655,7 @@
        free(v1dist);
        free(matrix);
        return -1;
-@@ -672,8 +672,8 @@ hwloc__xml_v1import_distances(struct hwl
+@@ -678,8 +678,8 @@ hwloc__xml_v1import_distances(struct hwl
        /* distances with a single object are useless, even if the XML isn't invalid */
        assert(nbobjs == 1);
        if (hwloc__xml_verbose())
@@ -2551,7 +2666,7 @@
        free(matrix);
        free(v1dist);
  
-@@ -797,7 +797,7 @@ static void hwloc__xml_import_report_out
+@@ -803,7 +803,7 @@ static void hwloc__xml_import_report_out
      hwloc_bitmap_asprintf(&cc2, old->complete_cpuset);
    hwloc_obj_type_snprintf(t2, sizeof(t2), old, 0);
  
@@ -2560,7 +2675,7 @@
    fprintf(stderr, "* hwloc has encountered an out-of-order XML topology load.\n");
    fprintf(stderr, "* Object %s cpuset %s complete %s\n",
  	  t1, c1, cc1);
-@@ -814,7 +814,7 @@ static void hwloc__xml_import_report_out
+@@ -820,7 +820,7 @@ static void hwloc__xml_import_report_out
      fprintf(stderr, "* the input XML was generated by an unspecified ancient hwloc release.\n");
    fprintf(stderr, "* Please check that your input topology XML file is valid.\n");
    fprintf(stderr, "* Set HWLOC_DEBUG_CHECK=1 in the environment to detect further issues.\n");
@@ -2569,7 +2684,7 @@
  
    free(c1);
    free(cc1);
-@@ -853,9 +853,9 @@ hwloc__xml_import_object(hwloc_topology_
+@@ -859,9 +859,9 @@ hwloc__xml_import_object(hwloc_topology_
  	  if (!parent)
  	    obj->type = HWLOC_OBJ_MACHINE;
  	  else {
@@ -2582,7 +2697,7 @@
  	    goto error_with_object;
  	  }
  	} else if (!strcasecmp(attrvalue, "Tile")) {
-@@ -870,22 +870,22 @@ hwloc__xml_import_object(hwloc_topology_
+@@ -880,22 +880,22 @@ hwloc__xml_import_object(hwloc_topology_
  	  /* ignore possible future type */
  	  obj->type = _HWLOC_OBJ_FUTURE;
  	  ignored = 1;
@@ -2614,7 +2729,7 @@
  	goto error_with_object;
        }
        hwloc__xml_import_object_attr(topology, data, obj, attrname, attrvalue, state, &ignored);
-@@ -913,9 +913,9 @@ hwloc__xml_import_object(hwloc_topology_
+@@ -923,9 +923,9 @@ hwloc__xml_import_object(hwloc_topology_
        } else if (!parent) {
  	ret = hwloc__xml_import_pagetype(topology, &topology->machine_memory, &childstate);
        } else {
@@ -2627,7 +2742,7 @@
  	ret = -1;
        }
  
-@@ -926,9 +926,9 @@ hwloc__xml_import_object(hwloc_topology_
+@@ -936,9 +936,9 @@ hwloc__xml_import_object(hwloc_topology_
      } else if (!strcmp(tag, "userdata")) {
        ret = hwloc__xml_import_userdata(topology, obj, &childstate);
      } else {
@@ -2640,7 +2755,7 @@
        ret = -1;
      }
  
-@@ -947,23 +947,23 @@ hwloc__xml_import_object(hwloc_topology_
+@@ -957,23 +957,23 @@ hwloc__xml_import_object(hwloc_topology_
      /* check parent/child types for 2.x */
      if (hwloc__obj_type_is_normal(obj->type)) {
        if (!hwloc__obj_type_is_normal(parent->type)) {
@@ -2673,7 +2788,7 @@
  	goto error_with_object;
        }
      }
-@@ -972,16 +972,16 @@ hwloc__xml_import_object(hwloc_topology_
+@@ -982,16 +982,16 @@ hwloc__xml_import_object(hwloc_topology_
      /* check parent/child types for pre-v2.0 */
      if (hwloc__obj_type_is_normal(obj->type) || HWLOC_OBJ_NUMANODE == obj->type) {
        if (hwloc__obj_type_is_special(parent->type)) {
@@ -2696,7 +2811,7 @@
  	goto error_with_object;
        }
      }
-@@ -1069,9 +1069,9 @@ hwloc__xml_import_object(hwloc_topology_
+@@ -1079,9 +1079,9 @@ hwloc__xml_import_object(hwloc_topology_
        if (obj->type == HWLOC_OBJ_GROUP) {
  	ignored = 1;
        } else {
@@ -2709,7 +2824,7 @@
  	goto error_with_object;
        }
      } else if (!obj->nodeset != !obj->complete_nodeset) {
-@@ -1079,9 +1079,9 @@ hwloc__xml_import_object(hwloc_topology_
+@@ -1089,9 +1089,9 @@ hwloc__xml_import_object(hwloc_topology_
        if (obj->type == HWLOC_OBJ_GROUP) {
  	ignored = 1;
        } else {
@@ -2722,7 +2837,7 @@
  	goto error_with_object;
        }
      } else if (obj->nodeset && !obj->cpuset) {
-@@ -1089,9 +1089,9 @@ hwloc__xml_import_object(hwloc_topology_
+@@ -1099,9 +1099,9 @@ hwloc__xml_import_object(hwloc_topology_
        if (obj->type == HWLOC_OBJ_GROUP) {
  	ignored = 1;
        } else {
@@ -2735,7 +2850,7 @@
  	goto error_with_object;
        }
      }
-@@ -1108,46 +1108,46 @@ hwloc__xml_import_object(hwloc_topology_
+@@ -1118,46 +1118,46 @@ hwloc__xml_import_object(hwloc_topology_
    /* check that cache attributes are coherent with the actual type */
    if (hwloc__obj_type_is_cache(obj->type)
        && obj->type != hwloc_cache_type_by_depth_type(obj->attr->cache.depth, obj->attr->cache.type)) {
@@ -2800,7 +2915,7 @@
        goto error_with_object;
      }
      data->nbnumanodes++;
-@@ -1187,9 +1187,9 @@ hwloc__xml_import_object(hwloc_topology_
+@@ -1239,9 +1239,9 @@ hwloc__xml_import_object(hwloc_topology_
  				     &childrengotignored,
  				     &childstate);
      } else {
@@ -2813,7 +2928,7 @@
        ret = -1;
      }
  
-@@ -1285,9 +1285,9 @@ hwloc__xml_v2import_support(hwloc_topolo
+@@ -1337,9 +1337,9 @@ hwloc__xml_v2import_support(hwloc_topolo
      else if (!strcmp(attrname, "value"))
        value = atoi(attrvalue);
      else {
@@ -2826,7 +2941,7 @@
      }
    }
  
-@@ -1373,9 +1373,9 @@ hwloc__xml_v2import_distances(hwloc_topo
+@@ -1426,9 +1426,9 @@ hwloc__xml_v2import_distances(hwloc_topo
        nbobjs = strtoul(attrvalue, NULL, 10);
      else if (!strcmp(attrname, "type")) {
        if (hwloc_type_sscanf(attrvalue, &unique_type, NULL, 0) < 0) {
@@ -2839,7 +2954,7 @@
  	goto out;
        }
      }
-@@ -1393,17 +1393,17 @@ hwloc__xml_v2import_distances(hwloc_topo
+@@ -1450,17 +1450,17 @@ hwloc__xml_v2import_distances(hwloc_topo
        name = attrvalue;
      }
      else {
@@ -2863,7 +2978,7 @@
      goto out;
    }
  
-@@ -1412,9 +1412,9 @@ hwloc__xml_v2import_distances(hwloc_topo
+@@ -1469,9 +1469,9 @@ hwloc__xml_v2import_distances(hwloc_topo
    if (heterotypes)
      different_types = malloc(nbobjs*sizeof(*different_types));
    if (!indexes || !u64values || (heterotypes && !different_types)) {
@@ -2876,7 +2991,7 @@
      goto out_with_arrays;
    }
  
-@@ -1438,26 +1438,26 @@ hwloc__xml_v2import_distances(hwloc_topo
+@@ -1502,26 +1502,26 @@ hwloc__xml_v2import_distances(hwloc_topo
      else if (!strcmp(tag, "u64values"))
        is_u64values = 1;
      if (!is_index && !is_u64values) {
@@ -2912,7 +3027,7 @@
        goto out_with_arrays;
      }
  
-@@ -1465,9 +1465,9 @@ hwloc__xml_v2import_distances(hwloc_topo
+@@ -1529,9 +1529,9 @@ hwloc__xml_v2import_distances(hwloc_topo
        /* get indexes */
        const char *tmp, *tmp2;
        if (nr_indexes >= nbobjs) {
@@ -2925,7 +3040,7 @@
  	goto out_with_arrays;
        }
        tmp = buffer;
-@@ -1480,16 +1480,16 @@ hwloc__xml_v2import_distances(hwloc_topo
+@@ -1544,16 +1544,16 @@ hwloc__xml_v2import_distances(hwloc_topo
              /* reached the end of this indexes attribute */
              break;
  	  if (hwloc_type_sscanf(tmp, &t, NULL, 0) < 0) {
@@ -2948,7 +3063,7 @@
  	    goto out_with_arrays;
  	  }
  	  tmp = tmp2+1;
-@@ -1510,9 +1510,9 @@ hwloc__xml_v2import_distances(hwloc_topo
+@@ -1574,9 +1574,9 @@ hwloc__xml_v2import_distances(hwloc_topo
        /* get uint64_t values */
        const char *tmp;
        if (nr_u64values >= nbobjs*nbobjs) {
@@ -2961,7 +3076,7 @@
  	goto out_with_arrays;
        }
        tmp = buffer;
-@@ -1534,9 +1534,9 @@ hwloc__xml_v2import_distances(hwloc_topo
+@@ -1598,9 +1598,9 @@ hwloc__xml_v2import_distances(hwloc_topo
  
      ret = state->global->close_tag(&childstate);
      if (ret < 0) {
@@ -2974,7 +3089,7 @@
        goto out_with_arrays;
      }
  
-@@ -1544,37 +1544,37 @@ hwloc__xml_v2import_distances(hwloc_topo
+@@ -1608,37 +1608,37 @@ hwloc__xml_v2import_distances(hwloc_topo
    }
  
    if (nr_indexes != nbobjs) {
@@ -3027,7 +3142,7 @@
        goto out_ignore;
      }
    }
-@@ -1637,30 +1637,30 @@ hwloc__xml_import_memattr_value(hwloc_to
+@@ -1701,30 +1701,30 @@ hwloc__xml_import_memattr_value(hwloc_to
      else if (!strcmp(attrname, "initiator_obj_type"))
        initiator_obj_type_s = attrvalue;
      else {
@@ -3070,7 +3185,7 @@
      return -1;
    }
    target_obj_gp_index = strtoull(target_obj_gp_index_s, NULL, 10);
-@@ -1670,9 +1670,9 @@ hwloc__xml_import_memattr_value(hwloc_to
+@@ -1734,9 +1734,9 @@ hwloc__xml_import_memattr_value(hwloc_to
      /* add a value with initiator */
      struct hwloc_internal_location_s loc;
      if (!initiator_cpuset_s && (!initiator_obj_gp_index_s || !initiator_obj_type_s)) {
@@ -3083,7 +3198,7 @@
        return -1;
      }
  
-@@ -1681,9 +1681,9 @@ hwloc__xml_import_memattr_value(hwloc_to
+@@ -1745,9 +1745,9 @@ hwloc__xml_import_memattr_value(hwloc_to
        loc.type = HWLOC_LOCATION_TYPE_CPUSET;
        loc.location.cpuset = hwloc_bitmap_alloc();
        if (!loc.location.cpuset) {
@@ -3096,7 +3211,7 @@
          return -1;
        }
        hwloc_bitmap_sscanf(loc.location.cpuset, initiator_cpuset_s);
-@@ -1691,9 +1691,9 @@ hwloc__xml_import_memattr_value(hwloc_to
+@@ -1755,9 +1755,9 @@ hwloc__xml_import_memattr_value(hwloc_to
        loc.type = HWLOC_LOCATION_TYPE_OBJECT;
        loc.location.object.gp_index = strtoull(initiator_obj_gp_index_s, NULL, 10);
        if (hwloc_type_sscanf(initiator_obj_type_s, &loc.location.object.type, NULL, 0) < 0) {
@@ -3109,7 +3224,7 @@
          return -1;
        }
      }
-@@ -1729,9 +1729,9 @@ hwloc__xml_import_memattr(hwloc_topology
+@@ -1793,9 +1793,9 @@ hwloc__xml_import_memattr(hwloc_topology
      else if (!strcmp(attrname, "flags"))
        flags = strtoul(attrvalue, NULL, 10);
      else {
@@ -3122,9 +3237,9 @@
        return -1;
      }
    }
-@@ -1767,9 +1767,9 @@ hwloc__xml_import_memattr(hwloc_topology
-     if (!strcmp(tag, "memattr_value")) {
-       ret = hwloc__xml_import_memattr_value(topology, id, flags, &childstate);
+@@ -1835,9 +1835,9 @@ hwloc__xml_import_memattr(hwloc_topology
+       ret = hwloc___xml_import_info(&infoname, &infovalue, &childstate);
+       /* ignored */
      } else {
 -      if (hwloc__xml_verbose())
 -        fprintf(stderr, "%s: memattr with unrecognized child %s\n",
@@ -3135,7 +3250,7 @@
        ret = -1;
      }
  
-@@ -1806,9 +1806,9 @@ hwloc__xml_import_cpukind(hwloc_topology
+@@ -1874,9 +1874,9 @@ hwloc__xml_import_cpukind(hwloc_topology
      } else if (!strcmp(attrname, "forced_efficiency")) {
        forced_efficiency = atoi(attrvalue);
      } else {
@@ -3148,7 +3263,7 @@
        hwloc_bitmap_free(cpuset);
        return -1;
      }
-@@ -1829,9 +1829,9 @@ hwloc__xml_import_cpukind(hwloc_topology
+@@ -1897,9 +1897,9 @@ hwloc__xml_import_cpukind(hwloc_topology
        if (!ret && infoname && infovalue)
          hwloc__add_info(&infos, &nr_infos, infoname, infovalue);
      } else {
@@ -3161,7 +3276,7 @@
        ret = -1;
      }
  
-@@ -1842,9 +1842,9 @@ hwloc__xml_import_cpukind(hwloc_topology
+@@ -1910,9 +1910,9 @@ hwloc__xml_import_cpukind(hwloc_topology
    }
  
    if (!cpuset) {
@@ -3174,7 +3289,7 @@
      goto error;
    }
  
-@@ -1899,9 +1899,9 @@ hwloc__xml_import_diff_one(hwloc__xml_im
+@@ -1967,9 +1967,9 @@ hwloc__xml_import_diff_one(hwloc__xml_im
      else if (!strcmp(attrname, "obj_attr_newvalue"))
        obj_attr_newvalue_s = attrvalue;
      else {
@@ -3187,7 +3302,7 @@
        return -1;
      }
    }
-@@ -1917,17 +1917,17 @@ hwloc__xml_import_diff_one(hwloc__xml_im
+@@ -1985,17 +1985,17 @@ hwloc__xml_import_diff_one(hwloc__xml_im
  
        /* obj_attr mandatory generic attributes */
        if (!obj_depth_s || !obj_index_s || !obj_attr_type_s) {
@@ -3211,7 +3326,7 @@
  	break;
        }
  
-@@ -1935,8 +1935,8 @@ hwloc__xml_import_diff_one(hwloc__xml_im
+@@ -2003,8 +2003,8 @@ hwloc__xml_import_diff_one(hwloc__xml_im
        obj_attr_type = atoi(obj_attr_type_s);
        if (obj_attr_type == HWLOC_TOPOLOGY_DIFF_OBJ_ATTR_INFO && !obj_attr_name_s) {
  	if (hwloc__xml_verbose())
@@ -3222,22 +3337,22 @@
  	break;
        }
  
-@@ -2095,9 +2095,9 @@ hwloc_look_xml(struct hwloc_backend *bac
-     goto failed;
+@@ -2164,9 +2164,9 @@ hwloc_look_xml(struct hwloc_backend *bac
  
-   if (data->version_major > 2) {
+   if (data->version_major > 3
+       || (data->version_major == 3 && data->version_minor > 0)) {
 -    if (hwloc__xml_verbose())
--      fprintf(stderr, "%s: cannot import XML version %u.%u > 2\n",
+-      fprintf(stderr, "%s: cannot import XML version %u.%u > 3.0\n",
 -	      data->msgprefix, data->version_major, data->version_minor);
-+    //if (hwloc__xml_verbose())
-+    //  fprintf(stderr, "%s: cannot import XML version %u.%u > 2\n",
++    // if (hwloc__xml_verbose())
++      // fprintf(stderr, "%s: cannot import XML version %u.%u > 3.0\n",
 +	//      data->msgprefix, data->version_major, data->version_minor);
      goto err;
    }
  
-@@ -2145,9 +2145,9 @@ hwloc_look_xml(struct hwloc_backend *bac
-         if (ret < 0)
-           goto failed;
+@@ -2221,9 +2221,9 @@ hwloc_look_xml(struct hwloc_backend *bac
+         /* move 3.x topology info back to the root object */
+         hwloc_obj_add_info(topology->levels[0][0], infoname, infovalue);
        } else {
 -	if (hwloc__xml_verbose())
 -	  fprintf(stderr, "%s: ignoring unknown tag `%s' after root object.\n",
@@ -3248,7 +3363,7 @@
  	goto done;
        }
        state.global->close_child(&childstate);
-@@ -2159,9 +2159,9 @@ hwloc_look_xml(struct hwloc_backend *bac
+@@ -2235,9 +2235,9 @@ hwloc_look_xml(struct hwloc_backend *bac
  
  done:
    if (!root->cpuset) {
@@ -3261,7 +3376,7 @@
      goto err;
    }
  
-@@ -2229,15 +2229,15 @@ done:
+@@ -2305,15 +2305,15 @@ done:
    if (data->version_major >= 2) {
      /* v2 must have non-empty nodesets since at least one NUMA node is required */
      if (!root->nodeset) {
@@ -3283,7 +3398,7 @@
        goto err;
      }
    } else {
-@@ -2269,9 +2269,9 @@ done:
+@@ -2345,9 +2345,9 @@ done:
   failed:
    if (data->look_done)
      data->look_done(data, -1);
@@ -3296,7 +3411,7 @@
   err:
    hwloc_free_object_siblings_and_children(root->first_child);
    root->first_child = NULL;
-@@ -2672,8 +2672,8 @@ hwloc__xml_export_object_contents (hwloc
+@@ -2748,8 +2748,8 @@ hwloc__xml_export_object_contents (hwloc
  
        logical_to_v2array = malloc(nbobjs * sizeof(*logical_to_v2array));
        if (!logical_to_v2array) {
@@ -3307,9 +3422,11 @@
  	continue;
        }
  
---- a/hwloc/topology.c
-+++ b/hwloc/topology.c
-@@ -175,7 +175,7 @@ static void report_insert_error(hwloc_ob
+Index: hwloc/hwloc/topology.c
+===================================================================
+--- hwloc.orig/hwloc/topology.c
++++ hwloc/hwloc/topology.c
+@@ -178,7 +178,7 @@ static void report_insert_error(hwloc_ob
      report_insert_error_format_obj(newstr, sizeof(newstr), new);
      report_insert_error_format_obj(oldstr, sizeof(oldstr), old);
  
@@ -3317,8 +3434,8 @@
 +    /*fprintf(stderr, "****************************************************************************\n");
      fprintf(stderr, "* hwloc %s received invalid information from the operating system.\n", HWLOC_VERSION);
      fprintf(stderr, "*\n");
-     fprintf(stderr, "* Failed with: %s\n", msg);
-@@ -184,15 +184,15 @@ static void report_insert_error(hwloc_ob
+     fprintf(stderr, "* Failed with error: %s\n", msg);
+@@ -188,15 +188,15 @@ static void report_insert_error(hwloc_ob
      fprintf(stderr, "*\n");
      fprintf(stderr, "* The following FAQ entry in the hwloc documentation may help:\n");
      fprintf(stderr, "*   What should I do when hwloc reports \"operating system\" warnings?\n");
@@ -3342,7 +3459,7 @@
      reported = 1;
    }
  }
-@@ -3199,8 +3199,8 @@ hwloc_connect_levels(hwloc_topology_t to
+@@ -3235,8 +3235,8 @@ hwloc_connect_levels(hwloc_topology_t to
        tmpnbobjs = realloc(topology->level_nbobjects,
  			  2 * topology->nb_levels_allocated * sizeof(*topology->level_nbobjects));
        if (!tmplevels || !tmpnbobjs) {
@@ -3353,7 +3470,7 @@
  
  	/* if one realloc succeeded, make sure the caller will free the new buffer */
  	if (tmplevels)
-@@ -3590,18 +3590,18 @@ hwloc_discover(struct hwloc_topology *to
+@@ -3626,18 +3626,18 @@ hwloc_discover(struct hwloc_topology *to
    hwloc_debug("%s", "\nRemoving empty objects\n");
    remove_empty(topology, &topology->levels[0][0]);
    if (!topology->levels[0][0]) {
@@ -3378,9 +3495,11 @@
      return -1;
    }
    hwloc_debug_print_objects(0, topology->levels[0][0]);
---- a/hwloc/cpukinds.c
-+++ b/hwloc/cpukinds.c
-@@ -504,8 +504,8 @@ hwloc_internal_cpukinds_rank(struct hwlo
+Index: hwloc/hwloc/cpukinds.c
+===================================================================
+--- hwloc.orig/hwloc/cpukinds.c
++++ hwloc/hwloc/cpukinds.c
+@@ -505,8 +505,8 @@ hwloc_internal_cpukinds_rank(struct hwlo
        heuristics = HWLOC_CPUKINDS_RANKING_FORCED_EFFICIENCY;
      else if (!strcmp(env, "no_forced_efficiency"))
        heuristics = HWLOC_CPUKINDS_RANKING_NO_FORCED_EFFICIENCY;
