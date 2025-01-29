@@ -17,7 +17,7 @@ CFLAGS="$CPPFLAGS $CFLAGS"
 CXXFLAGS="$CPPFLAGS $CXXFLAGS"
 
 RTOOLS=`"${R_HOME}/bin/R" CMD config R_TOOLS_SOFT`
-FC="$RTOOLS"/bin/gfortran.exe
+FC=`"${R_HOME}/bin/R" CMD config FC`
 
 cd src
 mkdir -p build && cd build
@@ -26,6 +26,7 @@ cmake -S ../planc \
   -DCMAKE_BUILD_TYPE=RelWithDebInfo \
   -DCMAKE_C_FLAGS_INIT="" \
   -DCMAKE_CXX_FLAGS_INIT="" \
+  -DRCPP_FLIBS="$FLIBS" \
   -DCMAKE_POSITION_INDEPENDENT_CODE:bool=ON \
   -DR_HOME="$R_HOME" \
   -DBUILD_SHARED_LIBS=ON \
