@@ -1,39 +1,19 @@
 
 rcpp_mat_to_h5mat <- function(x, filename, dataPath) {
-  res <- list(2)
-  res[1] <- filename
-  res[2] <- dataPath
+  res <- c(filename, dataPath)
   # Set the dimensions of the dataset
-  tDims <- list(2)
-  tDims[1] <- x$ncol()
-  tDims[2] <- x$nrow()
   hdf5r.Extra::h5Write(x, filename, dataPath, overwrite=TRUE, transpose=FALSE, block_size=1000L)
   return(res)
 }
-rcpp_spmat_to_h5mat <- function (data, rowind, colptr, nrow, ncol, filename, dataPath)
+rcpp_spmat_to_h5mat <- function (x, filename, dataPath, overwrite)
 {
-  res <- list(2)
-  res[1] <- filename
-  res[2] <- dataPath
-  tDims <- list(2)
-  tDims[1] <- ncol
-  tDims[2] <- nrow
-  x <- Matrix::sparseMatrix(i = rowind, p = colptr, x = data, dims = tDims, index1 = FALSE, repr = "C")
+  res <- c(filename, dataPath)
   x <- as.matrix(x)
-  hdf5r.Extra::h5Write(x, filename, dataPath, overwrite = TRUE, transpose = FALSE)
+  hdf5r.Extra::h5Write(x, filename, dataPath, overwrite = overwrite, transpose = FALSE)
   return(res)
 }
-rcpp_spmat_to_h5spmat <- function(value, rowind, colptr, nrow, ncol,
-filename, dataPath) {
-  res <- list(4)
-  res[1] <- filename
-  res[2] <- dataPath + "/x"
-  res[3] <- dataPath + "/i"
-  res[4] <- dataPath + "/p"
-  tDims <- list(2)
-  tDims[1] <- ncol
-  tDims[2] <- nrow
-  x <- Matrix::sparseMatrix(i = rowind, p = colptr, x = value, dims = tDims, index1 = FALSE, repr = "C")
-  hdf5r.Extra::h5Write(x, filename, dataPath, overwrite = TRUE, transpose = TRUE)
+rcpp_spmat_to_h5spmat <- function(x, filename, dataPath, overwrite) {
+  res <- c(filename, paste0(dataPath, "/data"), paste0(dataPath, "/indices"), paste0(dataPath, "/indptr"))
+  hdf5r.Extra::h5Write(x, filename, dataPath, overwrite, transpose = FALSE)
   return(res)
 }

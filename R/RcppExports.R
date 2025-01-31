@@ -90,16 +90,16 @@ symNMF <- function(x, k, niter = 30L, lambda = 0.0, algo = "gnsym", nCores = 2L,
     .Call(`_RcppPlanc_bppinmf`, objectList, k, nCores, lambda, niter, verbose, Hinit, Vinit, Winit)
 }
 
-.onlineINMF <- function(objectList, k, nCores, lambda, maxEpoch = 5L, minibatchSize = 5000L, maxHALSIter = 1L, verbose = TRUE) {
-    .Call(`_RcppPlanc_onlineINMF`, objectList, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, verbose)
-}
-
 .onlineINMF_h5dense <- function(filenames, dataPaths, k, nCores, lambda, maxEpoch = 5L, minibatchSize = 5000L, maxHALSIter = 1L, verbose = TRUE) {
     .Call(`_RcppPlanc_onlineINMF_h5dense`, filenames, dataPaths, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, verbose)
 }
 
 .onlineINMF_h5sparse <- function(filenames, valuePaths, rowindPaths, colptrPaths, nrows, ncols, k, nCores, lambda, maxEpoch = 5L, minibatchSize = 5000L, maxHALSIter = 1L, verbose = TRUE) {
     .Call(`_RcppPlanc_onlineINMF_h5sparse`, filenames, valuePaths, rowindPaths, colptrPaths, nrows, ncols, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, verbose)
+}
+
+.onlineINMF <- function(objectList, k, nCores, lambda, maxEpoch = 5L, minibatchSize = 5000L, maxHALSIter = 1L, verbose = TRUE) {
+    .Call(`_RcppPlanc_onlineINMF`, objectList, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, verbose)
 }
 
 .onlineINMF_withInitial <- function(objectList, Vinit, Winit, Ainit, Binit, objectListNew, k, nCores, lambda, maxEpoch = 5L, minibatchSize = 5000L, maxHALSIter = 1L, verbose = TRUE) {

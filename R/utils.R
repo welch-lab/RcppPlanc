@@ -71,7 +71,7 @@ as.H5Mat.matrix <- function(x, filename, dataPath = "data",
 #' @method as.H5Mat dgCMatrix
 as.H5Mat.dgCMatrix <- function(x, filename, dataPath = "data",
                                overwrite = FALSE, ...) {
-  res <- rcpp_spmat_to_h5mat(x@x, x@i, x@p, nrow(x), ncol(x), filename, dataPath)
+  res <- rcpp_spmat_to_h5mat(x, filename, dataPath, overwrite)
   H5Mat(res[1], res[2])
 }
 
@@ -201,8 +201,7 @@ H5SpMat <- function(
 
 #' @export
 #' @rdname H5SpMat
-as.H5SpMat <- function(x, filename, valuePath = "data",
-                       rowindPath = "indices", colptrPath = "indptr",
+as.H5SpMat <- function(x, filename, datapath,
                        overwrite = FALSE, ...) {
   if (isFALSE(overwrite) && file.exists(filename)) {
     filename <- normalizePath(filename)
@@ -214,31 +213,27 @@ as.H5SpMat <- function(x, filename, valuePath = "data",
 #' @export
 #' @rdname H5SpMat
 #' @method as.H5SpMat matrix
-as.H5SpMat.matrix <- function(x, filename, valuePath = "data",
-                              rowindPath = "indices", colptrPath = "indptr",
+as.H5SpMat.matrix <- function(x, filename, dataPath="",
                               overwrite = FALSE, ...) {
   x <- methods::as(x, "CsparseMatrix")
-  as.H5SpMat.dgCMatrix(x, filename = filename, valuePath = valuePath,
-                       rowindPath = rowindPath, colptrPath = colptrPath,
+  as.H5SpMat.dgCMatrix(x, filename = filename, dataPath = dataPath,
                        overwrite = overwrite)
 }
 
 #' @export
 #' @rdname H5SpMat
 #' @method as.H5SpMat dgCMatrix
-as.H5SpMat.dgCMatrix <- function(x, filename, valuePath = "data",
-                                 rowindPath = "indices", colptrPath = "indptr",
+as.H5SpMat.dgCMatrix <- function(x, filename, dataPath = "",
                                  overwrite = FALSE, ...) {
-  res <- rcpp_spmat_to_h5spmat(x@x, x@i, x@p, nrow(x), ncol(x), filename,
-                                valuePath, rowindPath, colptrPath)
+  res <- rcpp_spmat_to_h5spmat(x, filename,
+                                dataPath, overwrite)
   H5SpMat(res[1], res[2], res[3], res[4], nrow(x), ncol(x))
 }
 
 #' @export
 #' @rdname H5SpMat
 #' @method as.H5SpMat default
-as.H5SpMat.default <- function(x, filename, valuePath = "data",
-                               rowindPath = "indices", colptrPath = "indptr",
+as.H5SpMat.default <- function(x, filename, dataPath = "",
                                overwrite = FALSE, ...) {
   if (methods::canCoerce(x, "CsparseMatrix")) {
       x <- methods::as(x, "CsparseMatrix")
@@ -248,8 +243,7 @@ as.H5SpMat.default <- function(x, filename, valuePath = "data",
   } else {
     stop("No method for coercing \"", class(x)[1], "\" to \"dgCMatrix\"")
   }
-  as.H5SpMat(x, filename = filename, valuePath = valuePath,
-             rowindPath = rowindPath, colptrPath = colptrPath,
+  as.H5SpMat(x, filename = filename, dataPath = dataPath,
              overwrite = overwrite, ...)
 }
 
@@ -261,15 +255,13 @@ as.H5SpMat.default <- function(x, filename, valuePath = "data",
 #' @export
 #' @examples
 #' h <- H5SpMat(system.file("extdata/ctrl_sparse.h5", package = "RcppPlanc"),
-#'              "data", "indices", "indptr", 173, 300)
+#'              "", 173, 300)
 #' format(h)
 format.H5SpMat <- function(x, ...) {
   msg <- paste0(
     "Argument list for constructing HDF5 CSC sparse matrix\n",
     "filename:    ", x$filename, "\n",
-    "value path:  ", x$valuePath, "\n",
-    "rowind path: ", x$rowindPath, "\n",
-    "colptr path: ", x$colptrPath, "\n",
+    "data path:  ",  x$datapath, "\n",
     "dimension:   ", x$nrow, " x ", x$ncol, "\n"
   )
   return(msg)
@@ -283,7 +275,7 @@ format.H5SpMat <- function(x, ...) {
 #' @export
 #' @examples
 #' h <- H5SpMat(system.file("extdata/ctrl_sparse.h5", package = "RcppPlanc"),
-#'              "data", "indices", "indptr", 173, 300)
+#'              "", 173, 300)
 #' print(h)
 print.H5SpMat <- function(x, ...) {
   cat(format.H5SpMat(x, ...))
@@ -299,7 +291,7 @@ print.H5SpMat <- function(x, ...) {
 #' @export
 #' @examples
 #' h <- H5SpMat(system.file("extdata/ctrl_sparse.h5", package = "RcppPlanc"),
-#'              "data", "indices", "indptr", 173, 300)
+#'              "", 173, 300)
 #' dim(h)
 #' nrow(h)
 #' ncol(h)

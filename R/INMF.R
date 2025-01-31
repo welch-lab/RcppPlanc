@@ -272,7 +272,7 @@ onlineINMF <- function(
                                            sapply(newDatasets,
                                                   function(x) x$dataPath),
                                            Vinit, Winit, Ainit, Binit,
-                                           k, nCores, lambda, project, maxEpoch,
+                                           k, nCores, lambda, maxEpoch,
                                            minibatchSize, maxHALSIter, verbose),
             H5SpMat = .onlineINMF_h5sparse_withInitial(sapply(objectList,
                                                      function(x) x$filename),
@@ -299,7 +299,7 @@ onlineINMF <- function(
                                               sapply(newDatasets,
                                                      function(x) x$ncol),
                                               Vinit, Winit, Ainit, Binit,
-                                              k, nCores, lambda, project, maxEpoch,
+                                              k, nCores, lambda, maxEpoch,
                                               minibatchSize, maxHALSIter,
                                               verbose)
         )

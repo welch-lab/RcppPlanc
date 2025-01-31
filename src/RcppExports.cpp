@@ -109,24 +109,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// onlineINMF
-Rcpp::List onlineINMF(Rcpp::List objectList, arma::uword k, const int& nCores, double lambda, arma::uword maxEpoch, arma::uword minibatchSize, arma::uword maxHALSIter, bool verbose);
-RcppExport SEXP _RcppPlanc_onlineINMF(SEXP objectListSEXP, SEXP kSEXP, SEXP nCoresSEXP, SEXP lambdaSEXP, SEXP maxEpochSEXP, SEXP minibatchSizeSEXP, SEXP maxHALSIterSEXP, SEXP verboseSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::List >::type objectList(objectListSEXP);
-    Rcpp::traits::input_parameter< arma::uword >::type k(kSEXP);
-    Rcpp::traits::input_parameter< const int& >::type nCores(nCoresSEXP);
-    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
-    Rcpp::traits::input_parameter< arma::uword >::type maxEpoch(maxEpochSEXP);
-    Rcpp::traits::input_parameter< arma::uword >::type minibatchSize(minibatchSizeSEXP);
-    Rcpp::traits::input_parameter< arma::uword >::type maxHALSIter(maxHALSIterSEXP);
-    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(onlineINMF(objectList, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, verbose));
-    return rcpp_result_gen;
-END_RCPP
-}
 // onlineINMF_h5dense
 Rcpp::List onlineINMF_h5dense(std::vector<std::string> filenames, std::vector<std::string> dataPaths, arma::uword k, int nCores, double lambda, arma::uword maxEpoch, arma::uword minibatchSize, arma::uword maxHALSIter, bool verbose);
 RcppExport SEXP _RcppPlanc_onlineINMF_h5dense(SEXP filenamesSEXP, SEXP dataPathsSEXP, SEXP kSEXP, SEXP nCoresSEXP, SEXP lambdaSEXP, SEXP maxEpochSEXP, SEXP minibatchSizeSEXP, SEXP maxHALSIterSEXP, SEXP verboseSEXP) {
@@ -166,6 +148,24 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< arma::uword >::type maxHALSIter(maxHALSIterSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
     rcpp_result_gen = Rcpp::wrap(onlineINMF_h5sparse(filenames, valuePaths, rowindPaths, colptrPaths, nrows, ncols, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// onlineINMF
+Rcpp::List onlineINMF(Rcpp::List objectList, arma::uword k, const int& nCores, double lambda, arma::uword maxEpoch, arma::uword minibatchSize, arma::uword maxHALSIter, bool verbose);
+RcppExport SEXP _RcppPlanc_onlineINMF(SEXP objectListSEXP, SEXP kSEXP, SEXP nCoresSEXP, SEXP lambdaSEXP, SEXP maxEpochSEXP, SEXP minibatchSizeSEXP, SEXP maxHALSIterSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::List >::type objectList(objectListSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type k(kSEXP);
+    Rcpp::traits::input_parameter< const int& >::type nCores(nCoresSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type maxEpoch(maxEpochSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type minibatchSize(minibatchSizeSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type maxHALSIter(maxHALSIterSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(onlineINMF(objectList, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -339,9 +339,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppPlanc_bppinmf_h5", (DL_FUNC) &_RcppPlanc_bppinmf_h5, 10},
     {"_RcppPlanc_bppinmf_h5sp", (DL_FUNC) &_RcppPlanc_bppinmf_h5sp, 14},
     {"_RcppPlanc_bppinmf", (DL_FUNC) &_RcppPlanc_bppinmf, 9},
-    {"_RcppPlanc_onlineINMF", (DL_FUNC) &_RcppPlanc_onlineINMF, 8},
     {"_RcppPlanc_onlineINMF_h5dense", (DL_FUNC) &_RcppPlanc_onlineINMF_h5dense, 9},
     {"_RcppPlanc_onlineINMF_h5sparse", (DL_FUNC) &_RcppPlanc_onlineINMF_h5sparse, 13},
+    {"_RcppPlanc_onlineINMF", (DL_FUNC) &_RcppPlanc_onlineINMF, 8},
     {"_RcppPlanc_onlineINMF_withInitial", (DL_FUNC) &_RcppPlanc_onlineINMF_withInitial, 13},
     {"_RcppPlanc_onlineINMF_project", (DL_FUNC) &_RcppPlanc_onlineINMF_project, 6},
     {"_RcppPlanc_onlineINMF_h5dense_withInitial", (DL_FUNC) &_RcppPlanc_onlineINMF_h5dense_withInitial, 15},
