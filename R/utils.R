@@ -38,13 +38,13 @@
 #' H5MatEx()
 #' }
 H5Mat <- function(
-    filename,
-    dataPath
+  filename,
+  dataPath
 ) {
-    if (!file.exists(filename)) stop("File not found: ", filename)
-    argList <- list(filename = filename, dataPath = dataPath)
-    class(argList) <- "H5Mat"
-    return(argList)
+  if (!file.exists(filename)) stop("File not found: ", filename)
+  argList <- list(filename = filename, dataPath = dataPath)
+  class(argList) <- "H5Mat"
+  return(argList)
 }
 
 #' @export
@@ -119,10 +119,8 @@ format.H5Mat <- function(x, ...) {
 #'            "data")
 #' print(h)
 print.H5Mat <- function(x, ...) {
-    cat(format.H5Mat(x, ...))
+  cat(format.H5Mat(x, ...))
 }
-
-
 
 
 #' Argument list object for using a sparse matrix stored in HDF5 file
@@ -179,24 +177,24 @@ print.H5Mat <- function(x, ...) {
 #' H5SpMatEx()
 #' }
 H5SpMat <- function(
-    filename,
-    valuePath,
-    rowindPath,
-    colptrPath,
-    nrow,
-    ncol
+  filename,
+  valuePath,
+  rowindPath,
+  colptrPath,
+  nrow,
+  ncol
 ) {
-    if (!file.exists(filename)) stop("File not found: ", filename)
-    argList <- list(
-        filename = filename,
-        valuePath = valuePath,
-        rowindPath = rowindPath,
-        colptrPath = colptrPath,
-        nrow = nrow,
-        ncol = ncol
-    )
-    class(argList) <- "H5SpMat"
-    return(argList)
+  if (!file.exists(filename)) stop("File not found: ", filename)
+  argList <- list(
+    filename = filename,
+    valuePath = valuePath,
+    rowindPath = rowindPath,
+    colptrPath = colptrPath,
+    nrow = nrow,
+    ncol = ncol
+  )
+  class(argList) <- "H5SpMat"
+  return(argList)
 }
 
 #' @export
@@ -213,7 +211,7 @@ as.H5SpMat <- function(x, filename, datapath,
 #' @export
 #' @rdname H5SpMat
 #' @method as.H5SpMat matrix
-as.H5SpMat.matrix <- function(x, filename, dataPath="",
+as.H5SpMat.matrix <- function(x, filename, dataPath = "",
                               overwrite = FALSE, ...) {
   x <- methods::as(x, "CsparseMatrix")
   as.H5SpMat.dgCMatrix(x, filename = filename, dataPath = dataPath,
@@ -226,7 +224,7 @@ as.H5SpMat.matrix <- function(x, filename, dataPath="",
 as.H5SpMat.dgCMatrix <- function(x, filename, dataPath = "",
                                  overwrite = FALSE, ...) {
   res <- rcpp_spmat_to_h5spmat(x, filename,
-                                dataPath, overwrite)
+                               dataPath, overwrite)
   H5SpMat(res[1], res[2], res[3], res[4], nrow(x), ncol(x))
 }
 
@@ -236,10 +234,10 @@ as.H5SpMat.dgCMatrix <- function(x, filename, dataPath = "",
 as.H5SpMat.default <- function(x, filename, dataPath = "",
                                overwrite = FALSE, ...) {
   if (methods::canCoerce(x, "CsparseMatrix")) {
-      x <- methods::as(x, "CsparseMatrix")
+    x <- methods::as(x, "CsparseMatrix")
   } else if (methods::canCoerce(x, "matrix")) {
-      x <- as.matrix(x)
-      x <- methods::as(x, "CsparseMatrix")
+    x <- as.matrix(x)
+    x <- methods::as(x, "CsparseMatrix")
   } else {
     stop("No method for coercing \"", class(x)[1], "\" to \"dgCMatrix\"")
   }
@@ -261,7 +259,7 @@ format.H5SpMat <- function(x, ...) {
   msg <- paste0(
     "Argument list for constructing HDF5 CSC sparse matrix\n",
     "filename:    ", x$filename, "\n",
-    "data path:  ",  x$datapath, "\n",
+    "data path:  ", x$datapath, "\n",
     "dimension:   ", x$nrow, " x ", x$ncol, "\n"
   )
   return(msg)
@@ -297,7 +295,7 @@ print.H5SpMat <- function(x, ...) {
 #' ncol(h)
 #' dim(h) <- c(200, 200)
 #' h
-dim.H5SpMat <- function(x) {return(c(x$nrow, x$ncol))}
+dim.H5SpMat <- function(x) { return(c(x$nrow, x$ncol)) }
 
 #' @rdname dim-H5SpMat
 #' @export
@@ -308,21 +306,21 @@ dim.H5SpMat <- function(x) {return(c(x$nrow, x$ncol))}
 }
 
 .typeOfInput <- function(objectList, null.rm = TRUE) {
-    classes <- sapply(objectList, function(x) class(x)[1])
-    if (isTRUE(null.rm)) classes <- classes[classes != "NULL"]
-    if (!all(classes == classes[1])) {
-      stop("All datasets should be of the same class of input")
-    }
-    if (!classes[1] %in% c("matrix", "dgCMatrix", "H5Mat", "H5SpMat")) {
-      stop("Datasets of class `", classes[1], "` is currently not supported.")
-    }
-    return(classes[1])
+  classes <- sapply(objectList, function(x) class(x)[1])
+  if (isTRUE(null.rm)) classes <- classes[classes != "NULL"]
+  if (!all(classes == classes[1])) {
+    stop("All datasets should be of the same class of input")
+  }
+  if (!classes[1] %in% c("matrix", "dgCMatrix", "H5Mat", "H5SpMat")) {
+    stop("Datasets of class `", classes[1], "` is currently not supported.")
+  }
+  return(classes[1])
 }
 
 .makeUnsharedIdx <- function(EiNames, PiNames) {
-    res <- rep(-1L, length(EiNames))
-    for (i in seq_along(EiNames)) {
-        res[i] <- match(EiNames[i], PiNames) - 1
-    }
-    return(res)
+  res <- rep(-1L, length(EiNames))
+  for (i in seq_along(EiNames)) {
+    res[i] <- match(EiNames[i], PiNames) - 1
+  }
+  return(res)
 }
