@@ -1,8 +1,8 @@
 Package: RcppPlanc
 Type: Package
 Title: Parallel Low-Rank Approximation with Nonnegativity Constraints
-Version: 1.0.0
-Date: 2024-01-08
+Version: 1.1.0
+Date: 2025-02-04
 Authors@R: c(
   person(given = 'Andrew', family = 'Robbins', email = 'robbiand@umich.edu', role = c('aut', 'cre')),
   person(given = 'Yichen', family = 'Wang', email = 'wayichen@umich.edu', role = c('aut')),
@@ -23,7 +23,8 @@ Encoding: UTF-8
 Imports:
     methods,
     Rcpp,
-    Matrix
+    Matrix,
+    hdf5r.Extra
 Suggests:
     knitr,
     withr,
@@ -32,7 +33,7 @@ Suggests:
 LinkingTo: Rcpp, RcppArmadillo, RcppProgress
 License: GPL (>= 2)
 RoxygenNote: 7.3.2
-SystemRequirements: C++17, cmake >= 3.16.0, hdf5, git, v8, gnumake, hwloc, GNU make
+SystemRequirements: C++17, cmake >= 3.21.0, hdf5, git, v8, gnumake, hwloc, GNU make
 Config/testthat/edition: 3
 Depends:
     R (>= 2.10)

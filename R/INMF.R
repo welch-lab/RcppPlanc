@@ -53,38 +53,38 @@
 #' set.seed(1)
 #' result <- inmf(list(ctrl.sparse, stim.sparse), k = 10, niter = 10)
 inmf <- function(
-    objectList,
-    k = 20,
-    lambda = 5,
-    niter = 30,
-    nCores = 2,
-    Hinit = NULL,
-    Vinit = NULL,
-    Winit = NULL,
-    verbose = FALSE
+  objectList,
+  k = 20,
+  lambda = 5,
+  niter = 30,
+  nCores = 2,
+  Hinit = NULL,
+  Vinit = NULL,
+  Winit = NULL,
+  verbose = FALSE
 ) {
-    mode <- .typeOfInput(objectList)
-    res <- switch(
-        mode,
-        matrix = .bppinmf(objectList, k, nCores, lambda, niter, verbose,
+  mode <- .typeOfInput(objectList)
+  res <- switch(
+    mode,
+    matrix = .bppinmf(objectList, k, nCores, lambda, niter, verbose,
+                      Hinit, Vinit, Winit),
+    dgCMatrix = .bppinmf(objectList, k, nCores, lambda, niter, verbose,
                          Hinit, Vinit, Winit),
-        dgCMatrix = .bppinmf(objectList, k, nCores, lambda, niter, verbose,
-                            Hinit, Vinit, Winit),
-        H5Mat = .bppinmf_h5dense(sapply(objectList, function(x) x$filename),
-                                sapply(objectList, function(x) x$dataPath),
-                                k, nCores, lambda, niter, verbose, Hinit, Vinit, Winit),
-        H5SpMat = .bppinmf_h5sparse(filenames = sapply(objectList, function(x) x$filename),
-                                    valuePath = sapply(objectList, function(x) x$valuePath),
-                                    rowindPath = sapply(objectList, function(x) x$rowindPath),
-                                    colptrPath = sapply(objectList, function(x) x$colptrPath),
-                                    nrow = sapply(objectList, function(x) x$nrow),
-                                    ncol = sapply(objectList, function(x) x$ncol),
-                                    k = k, nCores = nCores, lambda = lambda, niter = niter,
-                                    verbose = verbose, Hinit = Hinit,
-                                    Vinit = Vinit, Winit = Winit)
-    )
-    names(res$H) <- names(res$V) <- names(objectList)
-    return(res)
+    H5Mat = .bppinmf_h5dense(sapply(objectList, function(x) x$filename),
+                             sapply(objectList, function(x) x$dataPath),
+                             k, nCores, lambda, niter, verbose, Hinit, Vinit, Winit),
+    H5SpMat = .bppinmf_h5sparse(filenames = sapply(objectList, function(x) x$filename),
+                                valuePath = sapply(objectList, function(x) x$valuePath),
+                                rowindPath = sapply(objectList, function(x) x$rowindPath),
+                                colptrPath = sapply(objectList, function(x) x$colptrPath),
+                                nrow = sapply(objectList, function(x) x$nrow),
+                                ncol = sapply(objectList, function(x) x$ncol),
+                                k = k, nCores = nCores, lambda = lambda, niter = niter,
+                                verbose = verbose, Hinit = Hinit,
+                                Vinit = Vinit, Winit = Winit)
+  )
+  names(res$H) <- names(res$V) <- names(objectList)
+  return(res)
 }
 
 #' Perform Integrative Non-negative Matrix Factorization Using Online Learning
@@ -201,154 +201,154 @@ inmf <- function(
 #'                    Ainit = res4$A, Binit = res4$B, minibatchSize = 50, k = 10)
 #'
 onlineINMF <- function(
-    objectList,
-    newDatasets = NULL,
-    project = FALSE,
-    k = 20,
-    lambda = 5,
-    maxEpoch = 5,
-    minibatchSize = 5000,
-    maxHALSIter = 1,
-    nCores = 2,
-    Vinit = NULL,
-    Winit = NULL,
-    Ainit = NULL,
-    Binit = NULL,
-    verbose = FALSE
+  objectList,
+  newDatasets = NULL,
+  project = FALSE,
+  k = 20,
+  lambda = 5,
+  maxEpoch = 5,
+  minibatchSize = 5000,
+  maxHALSIter = 1,
+  nCores = 2,
+  Vinit = NULL,
+  Winit = NULL,
+  Ainit = NULL,
+  Binit = NULL,
+  verbose = FALSE
 ) {
-    mode <- .typeOfInput(objectList)
-    if (is.null(newDatasets)) {
-        # Scenario 1
-        res <- switch(
-            mode,
-            matrix = .onlineINMF(objectList, k, nCores, lambda, maxEpoch,
-                                   minibatchSize, maxHALSIter, verbose),
-            dgCMatrix = .onlineINMF(objectList, k, nCores, lambda, maxEpoch,
-                                      minibatchSize, maxHALSIter, verbose),
-            H5Mat = .onlineINMF_h5dense(sapply(objectList,
-                                                 function(x) x$filename),
-                                          sapply(objectList,
-                                                 function(x) x$dataPath),
-                                          k, nCores, lambda, maxEpoch, minibatchSize,
-                                          maxHALSIter, verbose),
-            H5SpMat = .onlineINMF_h5sparse(sapply(objectList,
-                                                    function(x) x$filename),
-                                             sapply(objectList,
-                                                    function(x) x$valuePath),
-                                             sapply(objectList,
-                                                    function(x) x$rowindPath),
-                                             sapply(objectList,
-                                                    function(x) x$colptrPath),
-                                             sapply(objectList,
-                                                    function(x) x$nrow),
-                                             sapply(objectList,
-                                                    function(x) x$ncol),
-                                             k, nCores, lambda, maxEpoch, minibatchSize,
-                                             maxHALSIter, verbose)
-        )
-        names(res$H) <- names(res$V) <- names(res$A) <- names(res$B) <- names(objectList)
-    } else {
-        mode2 <- .typeOfInput(newDatasets)
-        if (mode2 != mode) {
-            stop("newDatasets should be of the same class as original datasets")
-        }
-        if (!isTRUE(project)) {
-            # Scenario 2 result
-        res <- switch(
-            mode,
-            matrix = .onlineINMF_withInitial(objectList, Vinit, Winit, Ainit, Binit,
-                                    newDatasets, k, nCores, lambda, maxEpoch,
-                                    minibatchSize, maxHALSIter, verbose),
-            dgCMatrix = .onlineINMF_withInitial(objectList, Vinit, Winit, Ainit, Binit,
-                                       newDatasets, k, nCores, lambda,
-                                       maxEpoch, minibatchSize, maxHALSIter,
-                                       verbose),
-            H5Mat = .onlineINMF_h5dense_withInitial(sapply(objectList,
-                                                  function(x) x$filename),
-                                           sapply(objectList,
-                                                  function(x) x$dataPath),
-                                           sapply(newDatasets,
-                                                  function(x) x$filename),
-                                           sapply(newDatasets,
-                                                  function(x) x$dataPath),
-                                           Vinit, Winit, Ainit, Binit,
-                                           k, nCores, lambda, maxEpoch,
-                                           minibatchSize, maxHALSIter, verbose),
-            H5SpMat = .onlineINMF_h5sparse_withInitial(sapply(objectList,
-                                                     function(x) x$filename),
-                                              sapply(objectList,
-                                                     function(x) x$valuePath),
-                                              sapply(objectList,
-                                                     function(x) x$rowindPath),
-                                              sapply(objectList,
-                                                     function(x) x$colptrPath),
-                                              sapply(objectList,
-                                                     function(x) x$nrow),
-                                              sapply(objectList,
-                                                     function(x) x$ncol),
-                                              sapply(newDatasets,
-                                                     function(x) x$filename),
-                                              sapply(newDatasets,
-                                                     function(x) x$valuePath),
-                                              sapply(newDatasets,
-                                                     function(x) x$rowindPath),
-                                              sapply(newDatasets,
-                                                     function(x) x$colptrPath),
-                                              sapply(newDatasets,
-                                                     function(x) x$nrow),
-                                              sapply(newDatasets,
-                                                     function(x) x$ncol),
-                                              Vinit, Winit, Ainit, Binit,
-                                              k, nCores, lambda, maxEpoch,
-                                              minibatchSize, maxHALSIter,
-                                              verbose)
-        )
-            names(res$H) <- names(res$V) <- names(res$A) <- names(res$B) <-
-                c(names(objectList), names(newDatasets))
-        } else {
-            res <- switch(
-              mode,
-              matrix = .onlineINMF_project(objectList, Winit, newDatasets, k, nCores, lambda),
-              dgCMatrix = .onlineINMF_project(objectList, Winit, newDatasets, k, nCores, lambda),
-              H5Mat = .onlineINMF_project_h5dense(sapply(objectList,
-                                                     function(x) x$filename),
-                                              sapply(objectList,
-                                                     function(x) x$dataPath),
-                                              sapply(newDatasets,
-                                                     function(x) x$filename),
-                                              sapply(newDatasets,
-                                                     function(x) x$dataPath),
-                                              Winit, k, nCores, lambda),
-              H5SpMat = .onlineINMF_project_h5sparse(sapply(objectList,
-                                                        function(x) x$filename),
-                                                 sapply(objectList,
-                                                        function(x) x$valuePath),
-                                                 sapply(objectList,
-                                                        function(x) x$rowindPath),
-                                                 sapply(objectList,
-                                                        function(x) x$colptrPath),
-                                                 sapply(objectList,
-                                                        function(x) x$nrow),
-                                                 sapply(objectList,
-                                                        function(x) x$ncol),
-                                                 sapply(newDatasets,
-                                                        function(x) x$filename),
-                                                 sapply(newDatasets,
-                                                        function(x) x$valuePath),
-                                                 sapply(newDatasets,
-                                                        function(x) x$rowindPath),
-                                                 sapply(newDatasets,
-                                                        function(x) x$colptrPath),
-                                                 sapply(newDatasets,
-                                                        function(x) x$nrow),
-                                                 sapply(newDatasets,
-                                                        function(x) x$ncol),
-                                                 Winit, k, nCores, lambda),
-            # Scenario 3 result
-            names(res$H) <- names(newDatasets))
-        }
+  mode <- .typeOfInput(objectList)
+  if (is.null(newDatasets)) {
+    # Scenario 1
+    res <- switch(
+      mode,
+      matrix = .onlineINMF(objectList, k, nCores, lambda, maxEpoch,
+                           minibatchSize, maxHALSIter, verbose),
+      dgCMatrix = .onlineINMF(objectList, k, nCores, lambda, maxEpoch,
+                              minibatchSize, maxHALSIter, verbose),
+      H5Mat = .onlineINMF_h5dense(sapply(objectList,
+                                         function(x) x$filename),
+                                  sapply(objectList,
+                                         function(x) x$dataPath),
+                                  k, nCores, lambda, maxEpoch, minibatchSize,
+                                  maxHALSIter, verbose),
+      H5SpMat = .onlineINMF_h5sparse(sapply(objectList,
+                                            function(x) x$filename),
+                                     sapply(objectList,
+                                            function(x) x$valuePath),
+                                     sapply(objectList,
+                                            function(x) x$rowindPath),
+                                     sapply(objectList,
+                                            function(x) x$colptrPath),
+                                     sapply(objectList,
+                                            function(x) x$nrow),
+                                     sapply(objectList,
+                                            function(x) x$ncol),
+                                     k, nCores, lambda, maxEpoch, minibatchSize,
+                                     maxHALSIter, verbose)
+    )
+    names(res$H) <- names(res$V) <- names(res$A) <- names(res$B) <- names(objectList)
+  } else {
+    mode2 <- .typeOfInput(newDatasets)
+    if (mode2 != mode) {
+      stop("newDatasets should be of the same class as original datasets")
     }
-    return(res)
+    if (!isTRUE(project)) {
+      # Scenario 2 result
+      res <- switch(
+        mode,
+        matrix = .onlineINMF_withInitial(objectList, Vinit, Winit, Ainit, Binit,
+                                         newDatasets, k, nCores, lambda, maxEpoch,
+                                         minibatchSize, maxHALSIter, verbose),
+        dgCMatrix = .onlineINMF_withInitial(objectList, Vinit, Winit, Ainit, Binit,
+                                            newDatasets, k, nCores, lambda,
+                                            maxEpoch, minibatchSize, maxHALSIter,
+                                            verbose),
+        H5Mat = .onlineINMF_h5dense_withInitial(sapply(objectList,
+                                                       function(x) x$filename),
+                                                sapply(objectList,
+                                                       function(x) x$dataPath),
+                                                sapply(newDatasets,
+                                                       function(x) x$filename),
+                                                sapply(newDatasets,
+                                                       function(x) x$dataPath),
+                                                Vinit, Winit, Ainit, Binit,
+                                                k, nCores, lambda, maxEpoch,
+                                                minibatchSize, maxHALSIter, verbose),
+        H5SpMat = .onlineINMF_h5sparse_withInitial(sapply(objectList,
+                                                          function(x) x$filename),
+                                                   sapply(objectList,
+                                                          function(x) x$valuePath),
+                                                   sapply(objectList,
+                                                          function(x) x$rowindPath),
+                                                   sapply(objectList,
+                                                          function(x) x$colptrPath),
+                                                   sapply(objectList,
+                                                          function(x) x$nrow),
+                                                   sapply(objectList,
+                                                          function(x) x$ncol),
+                                                   sapply(newDatasets,
+                                                          function(x) x$filename),
+                                                   sapply(newDatasets,
+                                                          function(x) x$valuePath),
+                                                   sapply(newDatasets,
+                                                          function(x) x$rowindPath),
+                                                   sapply(newDatasets,
+                                                          function(x) x$colptrPath),
+                                                   sapply(newDatasets,
+                                                          function(x) x$nrow),
+                                                   sapply(newDatasets,
+                                                          function(x) x$ncol),
+                                                   Vinit, Winit, Ainit, Binit,
+                                                   k, nCores, lambda, maxEpoch,
+                                                   minibatchSize, maxHALSIter,
+                                                   verbose)
+      )
+      names(res$H) <- names(res$V) <- names(res$A) <- names(res$B) <-
+        c(names(objectList), names(newDatasets))
+    } else {
+      res <- switch(
+        mode,
+        matrix = .onlineINMF_project(objectList, Winit, newDatasets, k, nCores, lambda),
+        dgCMatrix = .onlineINMF_project(objectList, Winit, newDatasets, k, nCores, lambda),
+        H5Mat = .onlineINMF_project_h5dense(sapply(objectList,
+                                                   function(x) x$filename),
+                                            sapply(objectList,
+                                                   function(x) x$dataPath),
+                                            sapply(newDatasets,
+                                                   function(x) x$filename),
+                                            sapply(newDatasets,
+                                                   function(x) x$dataPath),
+                                            Winit, k, nCores, lambda),
+        H5SpMat = .onlineINMF_project_h5sparse(sapply(objectList,
+                                                      function(x) x$filename),
+                                               sapply(objectList,
+                                                      function(x) x$valuePath),
+                                               sapply(objectList,
+                                                      function(x) x$rowindPath),
+                                               sapply(objectList,
+                                                      function(x) x$colptrPath),
+                                               sapply(objectList,
+                                                      function(x) x$nrow),
+                                               sapply(objectList,
+                                                      function(x) x$ncol),
+                                               sapply(newDatasets,
+                                                      function(x) x$filename),
+                                               sapply(newDatasets,
+                                                      function(x) x$valuePath),
+                                               sapply(newDatasets,
+                                                      function(x) x$rowindPath),
+                                               sapply(newDatasets,
+                                                      function(x) x$colptrPath),
+                                               sapply(newDatasets,
+                                                      function(x) x$nrow),
+                                               sapply(newDatasets,
+                                                      function(x) x$ncol),
+                                               Winit, k, nCores, lambda),
+        # Scenario 3 result
+        names(res$H) <- names(newDatasets))
+    }
+  }
+  return(res)
 }
 
 #' Perform Mosaic Integrative Non-negative Matrix Factorization with Unshared
@@ -415,50 +415,50 @@ onlineINMF <- function(
 #' result <- uinmf(list(ctrl.sparse, stim.sparse), 
 #'                 list(ctrl.unshared, stim.unshared))
 uinmf <- function(
-    objectList,
-    unsharedList,
-    k = 20,
-    lambda = 5,
-    niter = 30,
-    nCores = 2,
-    verbose = FALSE
+  objectList,
+  unsharedList,
+  k = 20,
+  lambda = 5,
+  niter = 30,
+  nCores = 2,
+  verbose = FALSE
 ) {
-    if (length(lambda) == 1) lambda <- rep(lambda, length(objectList))
-    if (length(lambda) != length(objectList)) {
-        stop("Must specify 1 lambda for all or each.")
-    }
-    mode <- .typeOfInput(objectList, null.rm = FALSE)
-    unshareCleanUp <- .uinmf.matchDatasets(objectList, unsharedList)
-    unsharedList <- unshareCleanUp[[1]]
-    whichUnshared <- unshareCleanUp[[2]]
-    res <- switch(
-        mode,
-        matrix = .uinmf_rcpp(objectList, unsharedList, whichUnshared,
+  if (length(lambda) == 1) lambda <- rep(lambda, length(objectList))
+  if (length(lambda) != length(objectList)) {
+    stop("Must specify 1 lambda for all or each.")
+  }
+  mode <- .typeOfInput(objectList, null.rm = FALSE)
+  unshareCleanUp <- .uinmf.matchDatasets(objectList, unsharedList)
+  unsharedList <- unshareCleanUp[[1]]
+  whichUnshared <- unshareCleanUp[[2]]
+  res <- switch(
+    mode,
+    matrix = .uinmf_rcpp(objectList, unsharedList, whichUnshared,
+                         k, nCores, lambda, niter, verbose),
+    dgCMatrix = .uinmf_rcpp(objectList, unsharedList, whichUnshared,
                             k, nCores, lambda, niter, verbose),
-        dgCMatrix = .uinmf_rcpp(objectList, unsharedList, whichUnshared,
-                               k, nCores, lambda, niter, verbose),
-        H5Mat = .uinmf_h5dense(sapply(objectList, function(x) x$filename),
-                              sapply(objectList, function(x) x$dataPath),
+    H5Mat = .uinmf_h5dense(sapply(objectList, function(x) x$filename),
+                           sapply(objectList, function(x) x$dataPath),
+                           sapply(unsharedList, function(x) x$filename),
+                           sapply(unsharedList, function(x) x$dataPath),
+                           whichUnshared, k, nCores, lambda, niter, verbose),
+    H5SpMat = .uinmf_h5sparse(sapply(objectList, function(x) x$filename),
+                              sapply(objectList, function(x) x$rowindPath),
+                              sapply(objectList, function(x) x$colptrPath),
+                              sapply(objectList, function(x) x$valuePath),
+                              sapply(objectList, function(x) x$nrow),
+                              sapply(objectList, function(x) x$ncol),
                               sapply(unsharedList, function(x) x$filename),
-                              sapply(unsharedList, function(x) x$dataPath),
-                              whichUnshared, k, nCores, lambda, niter, verbose),
-        H5SpMat = .uinmf_h5sparse(sapply(objectList, function(x) x$filename),
-                                 sapply(objectList, function(x) x$rowindPath),
-                                 sapply(objectList, function(x) x$colptrPath),
-                                 sapply(objectList, function(x) x$valuePath),
-                                 sapply(objectList, function(x) x$nrow),
-                                 sapply(objectList, function(x) x$ncol),
-                                 sapply(unsharedList, function(x) x$filename),
-                                 sapply(unsharedList, function(x) x$rowindPath),
-                                 sapply(unsharedList, function(x) x$colptrPath),
-                                 sapply(unsharedList, function(x) x$valuePath),
-                                 sapply(unsharedList, function(x) x$nrow),
-                                 sapply(unsharedList, function(x) x$ncol),
-                                 whichUnshared, k, nCores, lambda, niter, verbose)
-    )
-    names(res$H) <- names(res$V) <- names(objectList)
-    names(res$U) <- names(unsharedList)
-    return(res)
+                              sapply(unsharedList, function(x) x$rowindPath),
+                              sapply(unsharedList, function(x) x$colptrPath),
+                              sapply(unsharedList, function(x) x$valuePath),
+                              sapply(unsharedList, function(x) x$nrow),
+                              sapply(unsharedList, function(x) x$ncol),
+                              whichUnshared, k, nCores, lambda, niter, verbose)
+  )
+  names(res$H) <- names(res$V) <- names(objectList)
+  names(res$U) <- names(unsharedList)
+  return(res)
 }
 
 # Check and returns a processed `unsharedList` so it can be used with c++
@@ -468,43 +468,43 @@ uinmf <- function(
 # non-negs are 0-based index for which mat in `unsharedList` is the one for this
 # object. 
 .uinmf.matchDatasets <- function(objectList, unsharedList) {
-    if (is.null(names(objectList)) || is.null(names(unsharedList))) {
-        if (length(unsharedList) != length(objectList)) {
-            stop("Number of matrix in unshared feature list does not match, ",
-                 "please use named lists to indicate dataset matching.")
-        }
-        # No naming matching available, assume one-by-one matching
-        names(objectList) <- names(unsharedList) <- 
-            as.character(seq_along(objectList))
+  if (is.null(names(objectList)) || is.null(names(unsharedList))) {
+    if (length(unsharedList) != length(objectList)) {
+      stop("Number of matrix in unshared feature list does not match, ",
+           "please use named lists to indicate dataset matching.")
     }
-    # Remove unshared ones not existing in objectList First
-    unsharedList <- unsharedList[names(unsharedList) %in% names(objectList)]
-    # Remove empty unshared ones
-    unsharedList <- unsharedList[sapply(unsharedList, function(x) {
-        if (is.null(x)) return(FALSE)
-        if (is.null(nrow(x))) return(FALSE)
-        if (nrow(x) == 0) return(FALSE)
-        return(TRUE)
-    })]
-    
-    whichUnshared <- rep(-1, length(objectList))
-    for (i in seq_along(objectList)) {
-        d <- names(objectList)[i]
-        if (d %in% names(unsharedList)) {
-            # Guaranteed to cover all unshared data, b/c cleaned up above
-            if (ncol(unsharedList[[d]]) != ncol(objectList[[d]])) {
-                stop("Number of columns in each matrix from `unsharedList` ",
-                     "must match with the corresponding matrix from `object`")
-            }
-            whichUnshared[i] <- which(names(unsharedList) == d)[1] - 1
-        }
+    # No naming matching available, assume one-by-one matching
+    names(objectList) <- names(unsharedList) <-
+      as.character(seq_along(objectList))
+  }
+  # Remove unshared ones not existing in objectList First
+  unsharedList <- unsharedList[names(unsharedList) %in% names(objectList)]
+  # Remove empty unshared ones
+  unsharedList <- unsharedList[sapply(unsharedList, function(x) {
+    if (is.null(x)) return(FALSE)
+    if (is.null(nrow(x))) return(FALSE)
+    if (nrow(x) == 0) return(FALSE)
+    return(TRUE)
+  })]
+
+  whichUnshared <- rep(-1, length(objectList))
+  for (i in seq_along(objectList)) {
+    d <- names(objectList)[i]
+    if (d %in% names(unsharedList)) {
+      # Guaranteed to cover all unshared data, b/c cleaned up above
+      if (ncol(unsharedList[[d]]) != ncol(objectList[[d]])) {
+        stop("Number of columns in each matrix from `unsharedList` ",
+             "must match with the corresponding matrix from `object`")
+      }
+      whichUnshared[i] <- which(names(unsharedList) == d)[1] - 1
     }
-    
-    mode <- .typeOfInput(objectList, null.rm = FALSE)
-    mode2 <- .typeOfInput(unsharedList, null.rm = FALSE)
-    if (mode != mode2) {
-        stop("Data of unshared feature should be of the same class as ",
-             "input data")
-    }
-    return(list(unsharedList, whichUnshared))
+  }
+
+  mode <- .typeOfInput(objectList, null.rm = FALSE)
+  mode2 <- .typeOfInput(unsharedList, null.rm = FALSE)
+  if (mode != mode2) {
+    stop("Data of unshared feature should be of the same class as ",
+         "input data")
+  }
+  return(list(unsharedList, whichUnshared))
 }
