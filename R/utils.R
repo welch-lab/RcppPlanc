@@ -49,7 +49,7 @@ H5Mat <- function(
 
 #' @export
 #' @rdname H5Mat
-as.H5Mat <- function(x, filename, dataPath = "data", overwrite = FALSE, ...) {
+as.H5Mat <- function(x, filename, dataPath = "data", overwrite = FALSE) {
   if (isFALSE(overwrite) && file.exists(filename)) {
     filename <- normalizePath(filename)
     stop("File already exists at the given path: ", filename)
@@ -60,9 +60,8 @@ as.H5Mat <- function(x, filename, dataPath = "data", overwrite = FALSE, ...) {
 #' @export
 #' @rdname H5Mat
 #' @method as.H5Mat matrix
-as.H5Mat.matrix <- function(x, filename, dataPath = "data",
-                            overwrite = FALSE, ...) {
-  res <- rcpp_mat_to_h5mat(x, filename, dataPath)
+as.H5Mat.matrix <- function(x, filename, dataPath = "data", overwrite) {
+  res <- rcpp_mat_to_h5mat(x, filename, dataPath, overwrite = overwrite)
   H5Mat(res[1], res[2])
 }
 
@@ -70,16 +69,15 @@ as.H5Mat.matrix <- function(x, filename, dataPath = "data",
 #' @rdname H5Mat
 #' @method as.H5Mat dgCMatrix
 as.H5Mat.dgCMatrix <- function(x, filename, dataPath = "data",
-                               overwrite = FALSE, ...) {
-  res <- rcpp_spmat_to_h5mat(x, filename, dataPath, overwrite)
+                               overwrite = FALSE) {
+  res <- rcpp_spmat_to_h5mat(x, filename, dataPath, overwrite = overwrite)
   H5Mat(res[1], res[2])
 }
 
 #' @export
 #' @rdname H5Mat
 #' @method as.H5Mat default
-as.H5Mat.default <- function(x, filename, dataPath = "data",
-                             overwrite = FALSE, ...) {
+as.H5Mat.default <- function(x, filename, dataPath = "data", ...) {
   if (methods::canCoerce(x, "matrix")) x <- as.matrix(x)
   else if (methods::canCoerce(x, "CsparseMatrix")) x <- methods::as(x, 'CsparseMatrix')
   else {
@@ -99,7 +97,7 @@ as.H5Mat.default <- function(x, filename, dataPath = "data",
 #' h <- H5Mat(system.file("extdata/ctrl_dense.h5", package = "RcppPlanc"),
 #'            "data")
 #' format(h)
-format.H5Mat <- function(x, ...) {
+format.H5Mat <- function(x) {
   msg <- paste0(
     "Argument list for constructing HDF5 dense matrix\n",
     "filename:  ", x$filename, "\n",
@@ -200,7 +198,7 @@ H5SpMat <- function(
 #' @export
 #' @rdname H5SpMat
 as.H5SpMat <- function(x, filename, datapath,
-                       overwrite = FALSE, ...) {
+                       overwrite = FALSE) {
   if (isFALSE(overwrite) && file.exists(filename)) {
     filename <- normalizePath(filename)
     stop("File already exists at the given path: ", filename)
@@ -212,7 +210,7 @@ as.H5SpMat <- function(x, filename, datapath,
 #' @rdname H5SpMat
 #' @method as.H5SpMat matrix
 as.H5SpMat.matrix <- function(x, filename, dataPath = "",
-                              overwrite = FALSE, ...) {
+                              overwrite = FALSE) {
   x <- methods::as(x, "CsparseMatrix")
   as.H5SpMat.dgCMatrix(x, filename = filename, dataPath = dataPath,
                        overwrite = overwrite)
@@ -222,7 +220,7 @@ as.H5SpMat.matrix <- function(x, filename, dataPath = "",
 #' @rdname H5SpMat
 #' @method as.H5SpMat dgCMatrix
 as.H5SpMat.dgCMatrix <- function(x, filename, dataPath = "",
-                                 overwrite = FALSE, ...) {
+                                 overwrite = FALSE) {
   res <- rcpp_spmat_to_h5spmat(x, filename,
                                dataPath, overwrite)
   H5SpMat(res[1], res[2], res[3], res[4], nrow(x), ncol(x))
@@ -255,7 +253,7 @@ as.H5SpMat.default <- function(x, filename, dataPath = "",
 #' h <- H5SpMat(system.file("extdata/ctrl_sparse.h5", package = "RcppPlanc"),
 #'              "", 173, 300)
 #' format(h)
-format.H5SpMat <- function(x, ...) {
+format.H5SpMat <- function(x) {
   msg <- paste0(
     "Argument list for constructing HDF5 CSC sparse matrix\n",
     "filename:    ", x$filename, "\n",

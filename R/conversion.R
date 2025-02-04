@@ -1,7 +1,7 @@
-rcpp_mat_to_h5mat <- function(x, filename, dataPath) {
+rcpp_mat_to_h5mat <- function(x, filename, dataPath, overwrite = TRUE) {
   res <- c(filename, dataPath)
   # Set the dimensions of the dataset
-  hdf5r.Extra::h5Write(x, filename, dataPath, overwrite = TRUE, transpose = FALSE, block_size = 1000L)
+  hdf5r.Extra::h5Write(x, filename, dataPath, overwrite, transpose = FALSE, block_size = 1000L)
   return(res)
 }
 

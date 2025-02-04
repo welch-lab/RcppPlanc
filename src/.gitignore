@@ -124,7 +124,6 @@ src/Makevars
 # Compiled Object files
 *.slo
 *.lo
-*.o
 *.obj
 
 # Precompiled Headers
@@ -132,9 +131,7 @@ src/Makevars
 *.pch
 
 # Compiled Dynamic libraries
-*.so
 *.dylib
-*.dll
 
 # Fortran module files
 *.mod
@@ -261,11 +258,9 @@ dkms.conf
 
 ### CMake template
 CMakeLists.txt.user
-CMakeCache.txt
 CMakeFiles
 CMakeScripts
 Testing
-cmake_install.cmake
 install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
