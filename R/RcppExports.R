@@ -126,6 +126,18 @@ symNMF <- function(x, k, niter = 30L, lambda = 0.0, algo = "gnsym", nCores = 2L,
     .Call(`_RcppPlanc_onlineINMF_h5sparse_withInitial`, filenames, valuePaths, rowindPaths, colptrPaths, nrows, ncols, filenamesNew, valuePathsNew, rowindPathsNew, colptrPathsNew, nrowsNew, ncolsNew, Vinit, Winit, Ainit, Binit, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, verbose)
 }
 
+.uinmf_rcpp <- function(objectList, unsharedList, whichUnshared, k, nCores, lambda, niter, verbose) {
+    .Call(`_RcppPlanc_uinmf_rcpp`, objectList, unsharedList, whichUnshared, k, nCores, lambda, niter, verbose)
+}
+
+.uinmf_h5dense <- function(filenames, dataPaths, unsharedFilenames, unsharedDataPaths, whichUnshared, k, nCores, lambda, niter, verbose) {
+    .Call(`_RcppPlanc_uinmf_h5dense`, filenames, dataPaths, unsharedFilenames, unsharedDataPaths, whichUnshared, k, nCores, lambda, niter, verbose)
+}
+
+.uinmf_h5sparse <- function(filenames, rowindPaths, colptrPaths, valuePaths, nrows, ncols, unsharedFilenames, unsharedRowindPaths, unsharedColptrPaths, unsharedValuePaths, unsharedNrows, unsharedNcols, whichUnshared, k, nCores, lambda, niter, verbose) {
+    .Call(`_RcppPlanc_uinmf_h5sparse`, filenames, rowindPaths, colptrPaths, valuePaths, nrows, ncols, unsharedFilenames, unsharedRowindPaths, unsharedColptrPaths, unsharedValuePaths, unsharedNrows, unsharedNcols, whichUnshared, k, nCores, lambda, niter, verbose)
+}
+
 .openblaspthreadoff <- function(libloc) {
     invisible(.Call(`_RcppPlanc_openblas_pthread_off`, libloc))
 }
