@@ -171,68 +171,68 @@ p1 <- ctrl.sparse[1:10,]
 p2 <- stim.sparse[11:30,]
 p1.dense <- as.matrix(p1)
 p2.dense <- as.matrix(p2)
-#  test_that("uinmf", {
-#  set.seed(1)
-#  res1 <- uinmf(list(ctrl.sparse, stim.sparse), list(p1, p2))
-#  expect_length(res1, 5)
-#  expect_length(res1$H, 2)
-#  expect_length(res1$V, 2)
-#  expect_length(res1$U, 2)
-#  expect_true(all.equal(dim(res1$W), c(173, 20)))
-#  expect_true(all.equal(dim(res1$U[[1]]), c(10, 20)))
-#  expect_true(all.equal(dim(res1$U[[2]]), c(20, 20)))
-#  expect_lte(res1$objErr, 4.5e4)
-#  set.seed(1)
-#  res2 <- uinmf(list(ctrl.dense, stim.dense), list(p1.dense, p2.dense))
-#  expect_true(all.equal(res1, res2))
-#   expect_error(uinmf(list(ctrl.sparse, stim.sparse), list(p1, p2), lambda = 1:3),
-#                "Must specify 1 lambda for all or each.")
-#   expect_error(uinmf(list(ctrl.sparse, stim.sparse), list(p1)),
-#                "Number of matrix in unshared feature list does not match")
-#   expect_error(uinmf(list(ctrl.sparse, stim.sparse), list(p1.dense, p2.dense)),
-#                "Data of unshared feature should be of the same class as")
-#   expect_error(uinmf(list(ctrl.sparse, stim.sparse), list(p1, p2[,1:100])),
-#                "Number of columns in each matrix from")
-#   set.seed(1)
-#   res3 <- uinmf(list(a = ctrl.sparse, b = stim.sparse), list(a = p1))
-#   set.seed(1)
-#   res4 <- uinmf(list(a = ctrl.dense, b = stim.dense), list(a = p1.dense))
-#   expect_true(all.equal(res3, res4))
-#   expect_equal(length(res4$U), 1)
-# })
-#
-# test_that("auxiliary", {
-#   expect_error(H5Mat("thisFilenameShouldNotExist", "something"),
-#                "File not found")
-#   expect_error(as.H5Mat(ctrl.dense, "temp_new_dense.h5", overwrite = FALSE),
-#                "File already exists at the given path")
-#
-#   # Test if `as.H5Mat.dgCMatrix` S3 method convert sparse to h5 dense correctly
-#   ctrl.h5ds_2 <- as.H5Mat(ctrl.sparse, "temp_ctrl_dense.h5")
-#   set.seed(1)
-#   res1 <- onlineINMF(list(ctrl.sparse, stim.sparse), k = k, minibatchSize = 50)
-#   set.seed(1)
-#   res2 <- onlineINMF(list(ctrl.h5ds_2, stim.h5ds), k = k, minibatchSize = 50)
-#   expect_true(all.equal(res1, res2))
-#
-#   expect_no_error(print.H5Mat(ctrl.h5ds))
-#
-#
-#   expect_error(H5SpMat("thisFilenameShouldNotExist", "something", "a", "b", 1, 2),
-#                "File not found")
-#   expect_error(as.H5SpMat(ctrl.dense, "temp_new_sparse.h5", overwrite = FALSE),
-#                "File already exists at the given path")
-#
-#   # Test if `as.H5SpMat.matrix` S3 method convert dense to h5 sparse correctly
-#   ctrl.h5sp_2 <- as.H5SpMat(ctrl.dense, filename = "temp_ctrl_sparse.h5")
-#   set.seed(1)
-#   res1 <- onlineINMF(list(ctrl.sparse, stim.sparse), k = k, minibatchSize = 50)
-#   set.seed(1)
-#   res2 <- onlineINMF(list(ctrl.h5sp_2, stim.h5sp), k = k, minibatchSize = 50)
-#   expect_true(all.equal(res1, res2, tolerance = 1e-6))
-#
-#   expect_no_error(print.H5SpMat(ctrl.h5sp))
-# })
+ test_that("uinmf", {
+ set.seed(1)
+ res1 <- uinmf(list(ctrl.sparse, stim.sparse), list(p1, p2))
+ expect_length(res1, 5)
+ expect_length(res1$H, 2)
+ expect_length(res1$V, 2)
+ expect_length(res1$U, 2)
+ expect_true(all.equal(dim(res1$W), c(173, 20)))
+ expect_true(all.equal(dim(res1$U[[1]]), c(10, 20)))
+ expect_true(all.equal(dim(res1$U[[2]]), c(20, 20)))
+ expect_lte(res1$objErr, 4.5e4)
+ set.seed(1)
+ res2 <- uinmf(list(ctrl.dense, stim.dense), list(p1.dense, p2.dense))
+ expect_true(all.equal(res1, res2))
+  expect_error(uinmf(list(ctrl.sparse, stim.sparse), list(p1, p2), lambda = 1:3),
+               "Must specify 1 lambda for all or each.")
+  expect_error(uinmf(list(ctrl.sparse, stim.sparse), list(p1)),
+               "Number of matrix in unshared feature list does not match")
+  expect_error(uinmf(list(ctrl.sparse, stim.sparse), list(p1.dense, p2.dense)),
+               "Data of unshared feature should be of the same class as")
+  expect_error(uinmf(list(ctrl.sparse, stim.sparse), list(p1, p2[,1:100])),
+               "Number of columns in each matrix from")
+  set.seed(1)
+  res3 <- uinmf(list(a = ctrl.sparse, b = stim.sparse), list(a = p1))
+  set.seed(1)
+  res4 <- uinmf(list(a = ctrl.dense, b = stim.dense), list(a = p1.dense))
+  expect_true(all.equal(res3, res4))
+  expect_equal(length(res4$U), 1)
+})
+
+test_that("auxiliary", {
+  expect_error(H5Mat("thisFilenameShouldNotExist", "something"),
+               "File not found")
+  expect_error(as.H5Mat(ctrl.dense, "temp_new_dense.h5", overwrite = FALSE),
+               "File already exists at the given path")
+
+  # Test if `as.H5Mat.dgCMatrix` S3 method convert sparse to h5 dense correctly
+  ctrl.h5ds_2 <- as.H5Mat(ctrl.sparse, "temp_ctrl_dense.h5")
+  set.seed(1)
+  res1 <- onlineINMF(list(ctrl.sparse, stim.sparse), k = k, minibatchSize = 50)
+  set.seed(1)
+  res2 <- onlineINMF(list(ctrl.h5ds_2, stim.h5ds), k = k, minibatchSize = 50)
+  expect_true(all.equal(res1, res2))
+
+  expect_no_error(print.H5Mat(ctrl.h5ds))
+
+
+  expect_error(H5SpMat("thisFilenameShouldNotExist", "something", "a", "b", 1, 2),
+               "File not found")
+  expect_error(as.H5SpMat(ctrl.dense, "temp_new_sparse.h5", overwrite = FALSE),
+               "File already exists at the given path")
+
+  # Test if `as.H5SpMat.matrix` S3 method convert dense to h5 sparse correctly
+  ctrl.h5sp_2 <- as.H5SpMat(ctrl.dense, filename = "temp_ctrl_sparse.h5")
+  set.seed(1)
+  res1 <- onlineINMF(list(ctrl.sparse, stim.sparse), k = k, minibatchSize = 50)
+  set.seed(1)
+  res2 <- onlineINMF(list(ctrl.h5sp_2, stim.h5sp), k = k, minibatchSize = 50)
+  expect_true(all.equal(res1, res2, tolerance = 1e-6))
+
+  expect_no_error(print.H5SpMat(ctrl.h5sp))
+})
 
 unlink("temp_ctrl_dense.h5")
 unlink("temp_ctrl_sparse.h5")
