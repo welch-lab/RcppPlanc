@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 if test -z "$CMAKE"; then CMAKE="`which cmake`"; fi
 if test -z "$CMAKE"; then CMAKE=/Applications/CMake.app/Contents/bin/cmake; fi
@@ -32,7 +32,7 @@ CXXFLAGS="$CPPFLAGS $CXXFLAGS $EXTRACXXFLAGS"
 
 cd src
 mkdir -p build && cd build
-$CMAKE -S ../planc \
+$CMAKE --debug-find -S ../planc \
   -DCMAKE_EXPORT_COMPILE_COMMANDS=TRUE \
   -DCMAKE_BUILD_TYPE=RelWithDebInfo \
   -DCMAKE_POSITION_INDEPENDENT_CODE:bool=ON \
