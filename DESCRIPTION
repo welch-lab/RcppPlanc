@@ -9,7 +9,6 @@ Authors@R: c(
   person(given = 'Joshua', family = 'Welch', role = c('cph')),
   person(given = 'Ramakrishnan', family = 'Kannan', role = c('cph'), comment = "The original PLANC code"),
   person("UT-Batelle", role = c('cph'), comment = "The original PLANC code"))
-Maintainer: Andrew Robbins <robbiand@umich.edu>
 Description: 'Rcpp' bindings for 'PLANC', a highly parallel
              and extensible NMF/NTF  (Non-negative Matrix/Tensor Factorization) library.
              Wraps algorithms described in

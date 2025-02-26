@@ -4,7 +4,7 @@ if test -z "$CMAKE"; then CMAKE="`which cmake`"; fi
 if test -z "$CMAKE"; then CMAKE=/Applications/CMake.app/Contents/bin/cmake; fi
 if ! test -f "$CMAKE"; then echo "no ‘cmake’ command found"; exit 1; fi
 
-: ${R_HOME=`R RHOME`}
+: ${R_HOME:=`R RHOME`}
 if test -z "${R_HOME}"; then
   echo "could not determine R_HOME"
   exit 1
@@ -18,7 +18,7 @@ CXX=${RCXX%% *}
 RCXX=${RCXX#$CXX}
 EXTRACXXFLAGS=$(echo "$RCXX"| sed -e  "s/-std=[^ ]\{0,\}//")
 CFLAGS=`"${R_HOME}/bin/R" CMD config CFLAGS`
-CPPFLAGS=`"${R_HOME}/bin/R" CMD config CPPFLAGS`
+CPPFLAGS=`"${R_HOME}/bin/R" CMD conhfig CPPFLAGS`
 CXXFLAGS=`"${R_HOME}/bin/R" CMD config CXXFLAGS`
 R_LDFLAGS=`"${R_HOME}/bin/R" CMD config LDFLAGS`
 R_SHLDFLAGS=`"${R_HOME}/bin/R" CMD config SHLIB_LDFLAGS`
@@ -32,7 +32,7 @@ CXXFLAGS="$CPPFLAGS $CXXFLAGS $EXTRACXXFLAGS"
 
 cd src
 mkdir -p build && cd build
-$CMAKE -S ../planc \
+$CMAKE --debug-find -S ../planc \
   -DCMAKE_EXPORT_COMPILE_COMMANDS=TRUE \
   -DCMAKE_BUILD_TYPE=RelWithDebInfo \
   -DCMAKE_POSITION_INDEPENDENT_CODE:bool=ON \
@@ -41,6 +41,7 @@ $CMAKE -S ../planc \
   -DPASSTHROUGH_CONFIGURE_ARGS="$*" \
   -DBUILD_RCPP=ON \
   -DR_SHLIB_EXT="$R_SHLIB_EXT" \
+  -DR_RHOME="$R_RHOME" \
   -DCMAKE_INSTALL_PREFIX=$R_PACKAGE_DIR \
   ${CMAKE_ARGS}
 
