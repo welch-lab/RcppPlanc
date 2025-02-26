@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if test -z "$CMAKE"; then CMAKE="`which cmake`"; fi
 if test -z "$CMAKE"; then CMAKE=/Applications/CMake.app/Contents/bin/cmake; fi
@@ -18,7 +18,7 @@ CXX=${RCXX%% *}
 RCXX=${RCXX#$CXX}
 EXTRACXXFLAGS=$(echo "$RCXX"| sed -e  "s/-std=[^ ]\{0,\}//")
 CFLAGS=`"${R_HOME}/bin/R" CMD config CFLAGS`
-CPPFLAGS=`"${R_HOME}/bin/R" CMD config CPPFLAGS`
+CPPFLAGS=`"${R_HOME}/bin/R" CMD conhfig CPPFLAGS`
 CXXFLAGS=`"${R_HOME}/bin/R" CMD config CXXFLAGS`
 R_LDFLAGS=`"${R_HOME}/bin/R" CMD config LDFLAGS`
 R_SHLDFLAGS=`"${R_HOME}/bin/R" CMD config SHLIB_LDFLAGS`
