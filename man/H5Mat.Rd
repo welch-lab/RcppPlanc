@@ -10,13 +10,13 @@
 \usage{
 H5Mat(filename, dataPath)
 
-as.H5Mat(x, filename, dataPath = "data", overwrite = FALSE, ...)
+as.H5Mat(x, filename, dataPath = "data", overwrite = FALSE)
 
-\method{as.H5Mat}{matrix}(x, filename, dataPath = "data", overwrite = FALSE, ...)
+\method{as.H5Mat}{matrix}(x, filename, dataPath = "data", overwrite)
 
-\method{as.H5Mat}{dgCMatrix}(x, filename, dataPath = "data", overwrite = FALSE, ...)
+\method{as.H5Mat}{dgCMatrix}(x, filename, dataPath = "data", overwrite = FALSE)
 
-\method{as.H5Mat}{default}(x, filename, dataPath = "data", overwrite = FALSE, ...)
+\method{as.H5Mat}{default}(x, filename, dataPath = "data", ...)
 }
 \arguments{
 \item{filename}{Filename of the HDF5 file}

@@ -4,7 +4,7 @@
 \alias{format.H5SpMat}
 \title{prepare character information of a H5SpMat object}
 \usage{
-\method{format}{H5SpMat}(x, ...)
+\method{format}{H5SpMat}(x)
 }
 \arguments{
 \item{x}{H5SpMat argument list object}
@@ -19,6 +19,6 @@ prepare character information of a H5SpMat object
 }
 \examples{
 h <- H5SpMat(system.file("extdata/ctrl_sparse.h5", package = "RcppPlanc"),
-             "data", "indices", "indptr", 173, 300)
+             "", 173, 300)
 format(h)
 }
