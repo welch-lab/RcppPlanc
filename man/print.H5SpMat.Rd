@@ -19,6 +19,6 @@ Show information of a H5SpMat object
 }
 \examples{
 h <- H5SpMat(system.file("extdata/ctrl_sparse.h5", package = "RcppPlanc"),
-             "data", "indices", "indptr", 173, 300)
+             "", 173, 300)
 print(h)
 }

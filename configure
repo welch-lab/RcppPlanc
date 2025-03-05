@@ -4,7 +4,7 @@ if test -z "$CMAKE"; then CMAKE="`which cmake`"; fi
 if test -z "$CMAKE"; then CMAKE=/Applications/CMake.app/Contents/bin/cmake; fi
 if ! test -f "$CMAKE"; then echo "no ‘cmake’ command found"; exit 1; fi
 
-: ${R_HOME:=`R RHOME`}
+: ${R_HOME:=$(R RHOME)}
 if test -z "${R_HOME}"; then
   echo "could not determine R_HOME"
   exit 1
@@ -41,7 +41,7 @@ $CMAKE --debug-find -S ../planc \
   -DPASSTHROUGH_CONFIGURE_ARGS="$*" \
   -DBUILD_RCPP=ON \
   -DR_SHLIB_EXT="$R_SHLIB_EXT" \
-  -DR_RHOME="$R_RHOME" \
+  -DR_RHOME="$R_HOME" \
   -DCMAKE_INSTALL_PREFIX=$R_PACKAGE_DIR \
   ${CMAKE_ARGS}
 

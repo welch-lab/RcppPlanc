@@ -10,45 +10,13 @@
 \usage{
 H5SpMat(filename, valuePath, rowindPath, colptrPath, nrow, ncol)
 
-as.H5SpMat(
-  x,
-  filename,
-  valuePath = "data",
-  rowindPath = "indices",
-  colptrPath = "indptr",
-  overwrite = FALSE,
-  ...
-)
+as.H5SpMat(x, filename, datapath, overwrite = FALSE)
 
-\method{as.H5SpMat}{matrix}(
-  x,
-  filename,
-  valuePath = "data",
-  rowindPath = "indices",
-  colptrPath = "indptr",
-  overwrite = FALSE,
-  ...
-)
+\method{as.H5SpMat}{matrix}(x, filename, dataPath = "", overwrite = FALSE)
 
-\method{as.H5SpMat}{dgCMatrix}(
-  x,
-  filename,
-  valuePath = "data",
-  rowindPath = "indices",
-  colptrPath = "indptr",
-  overwrite = FALSE,
-  ...
-)
+\method{as.H5SpMat}{dgCMatrix}(x, filename, dataPath = "", overwrite = FALSE)
 
-\method{as.H5SpMat}{default}(
-  x,
-  filename,
-  valuePath = "data",
-  rowindPath = "indices",
-  colptrPath = "indptr",
-  overwrite = FALSE,
-  ...
-)
+\method{as.H5SpMat}{default}(x, filename, dataPath = "", overwrite = FALSE, ...)
 }
 \arguments{
 \item{filename}{Filename of the HDF5 file}
