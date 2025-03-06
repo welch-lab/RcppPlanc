@@ -5,6 +5,7 @@
 ^.*\.vscode
 ^.*\.vs
 ^.*\.github
+src/planc/.git
 cmake-build-relwithdebinfo
 cmake-build-debug
 cmake-build-relwithdebinfo-mingw-r
