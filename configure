@@ -45,5 +45,8 @@ $CMAKE -S ../planc \
   -DCMAKE_INSTALL_PREFIX=$R_PACKAGE_DIR \
   ${CMAKE_ARGS}
 
+echo "" >>  _deps/highfive-src/include/highfive/bits/H5Friends.hpp
+echo "" >>  CMakeFiles/hdf5/cmake_hdf5_test.c
+
 ${MAKE}
 $CMAKE --install .
