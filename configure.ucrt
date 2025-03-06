@@ -33,5 +33,9 @@ cmake -S ../planc \
   -DBUILD_RCPP=ON \
   -DCMAKE_INSTALL_PREFIX=${R_PACKAGE_DIR}
 
+echo "" >>  _deps/highfive-src/include/highfive/bits/H5Friends.hpp
+
 cmake --build .
 cmake --install .
+
+sed -i ' '  nmf/nmflib_export.h
