@@ -90,28 +90,28 @@ symNMF <- function(x, k, niter = 30L, lambda = 0.0, algo = "gnsym", nCores = 2L,
     .Call(`_RcppPlanc_bppinmf`, objectList, k, nCores, lambda, niter, verbose, Hinit, Vinit, Winit)
 }
 
-.onlineINMF_h5dense <- function(filenames, dataPaths, k, nCores, lambda, maxEpoch = 5L, minibatchSize = 5000L, maxHALSIter = 1L, verbose = TRUE) {
-    .Call(`_RcppPlanc_onlineINMF_h5dense`, filenames, dataPaths, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, verbose)
+.onlineINMF_h5dense <- function(filenames, dataPaths, k, nCores, lambda, maxEpoch = 5L, minibatchSize = 5000L, maxHALSIter = 1L, permuteChunkSize = 1000L, verbose = TRUE) {
+    .Call(`_RcppPlanc_onlineINMF_h5dense`, filenames, dataPaths, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, permuteChunkSize, verbose)
 }
 
-.onlineINMF_h5sparse <- function(filenames, valuePaths, rowindPaths, colptrPaths, nrows, ncols, k, nCores, lambda, maxEpoch = 5L, minibatchSize = 5000L, maxHALSIter = 1L, verbose = TRUE) {
-    .Call(`_RcppPlanc_onlineINMF_h5sparse`, filenames, valuePaths, rowindPaths, colptrPaths, nrows, ncols, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, verbose)
+.onlineINMF_h5sparse <- function(filenames, valuePaths, rowindPaths, colptrPaths, nrows, ncols, k, nCores, lambda, maxEpoch = 5L, minibatchSize = 5000L, maxHALSIter = 1L, permuteChunkSize = 1000L, verbose = TRUE) {
+    .Call(`_RcppPlanc_onlineINMF_h5sparse`, filenames, valuePaths, rowindPaths, colptrPaths, nrows, ncols, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, permuteChunkSize, verbose)
 }
 
-.onlineINMF <- function(objectList, k, nCores, lambda, maxEpoch = 5L, minibatchSize = 5000L, maxHALSIter = 1L, verbose = TRUE) {
-    .Call(`_RcppPlanc_onlineINMF`, objectList, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, verbose)
+.onlineINMF <- function(objectList, k, nCores, lambda, maxEpoch = 5L, minibatchSize = 5000L, maxHALSIter = 1L, permuteChunkSize = 1000L, verbose = TRUE) {
+    .Call(`_RcppPlanc_onlineINMF`, objectList, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, permuteChunkSize, verbose)
 }
 
-.onlineINMF_withInitial <- function(objectList, Vinit, Winit, Ainit, Binit, objectListNew, k, nCores, lambda, maxEpoch = 5L, minibatchSize = 5000L, maxHALSIter = 1L, verbose = TRUE) {
-    .Call(`_RcppPlanc_onlineINMF_withInitial`, objectList, Vinit, Winit, Ainit, Binit, objectListNew, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, verbose)
+.onlineINMF_withInitial <- function(objectList, Hinit, Vinit, Winit, Ainit, Binit, objectListNew, k, nCores, lambda, maxEpoch = 5L, minibatchSize = 5000L, maxHALSIter = 1L, permuteChunkSize = 1000L, verbose = TRUE) {
+    .Call(`_RcppPlanc_onlineINMF_withInitial`, objectList, Hinit, Vinit, Winit, Ainit, Binit, objectListNew, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, permuteChunkSize, verbose)
 }
 
 .onlineINMF_project <- function(objectList, Winit, objectListNew, k, nCores, lambda) {
     .Call(`_RcppPlanc_onlineINMF_project`, objectList, Winit, objectListNew, k, nCores, lambda)
 }
 
-.onlineINMF_h5dense_withInitial <- function(filenames, dataPaths, filenamesNew, dataPathsNew, Vinit, Winit, Ainit, Binit, k, nCores, lambda, maxEpoch = 5L, minibatchSize = 5000L, maxHALSIter = 1L, verbose = TRUE) {
-    .Call(`_RcppPlanc_onlineINMF_h5dense_withInitial`, filenames, dataPaths, filenamesNew, dataPathsNew, Vinit, Winit, Ainit, Binit, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, verbose)
+.onlineINMF_h5dense_withInitial <- function(filenames, dataPaths, filenamesNew, dataPathsNew, Hinit, Vinit, Winit, Ainit, Binit, k, nCores, lambda, maxEpoch = 5L, minibatchSize = 5000L, maxHALSIter = 1L, permuteChunkSize = 1000L, verbose = TRUE) {
+    .Call(`_RcppPlanc_onlineINMF_h5dense_withInitial`, filenames, dataPaths, filenamesNew, dataPathsNew, Hinit, Vinit, Winit, Ainit, Binit, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, permuteChunkSize, verbose)
 }
 
 .onlineINMF_project_h5dense <- function(filenames, dataPaths, filenamesNew, dataPathsNew, Winit, k, nCores, lambda) {
@@ -122,8 +122,8 @@ symNMF <- function(x, k, niter = 30L, lambda = 0.0, algo = "gnsym", nCores = 2L,
     .Call(`_RcppPlanc_onlineINMF_project_h5sparse`, filenames, dataPaths, valuePaths, rowindPaths, colptrPaths, nrows, ncols, filenamesNew, dataPathsNew, valuePathsNew, rowindPathsNew, colptrPathsNew, nrowsNew, ncolsNew, Winit, k, nCores, lambda)
 }
 
-.onlineINMF_h5sparse_withInitial <- function(filenames, valuePaths, rowindPaths, colptrPaths, nrows, ncols, filenamesNew, valuePathsNew, rowindPathsNew, colptrPathsNew, nrowsNew, ncolsNew, Vinit, Winit, Ainit, Binit, k, nCores, lambda, maxEpoch = 5L, minibatchSize = 5000L, maxHALSIter = 1L, verbose = TRUE) {
-    .Call(`_RcppPlanc_onlineINMF_h5sparse_withInitial`, filenames, valuePaths, rowindPaths, colptrPaths, nrows, ncols, filenamesNew, valuePathsNew, rowindPathsNew, colptrPathsNew, nrowsNew, ncolsNew, Vinit, Winit, Ainit, Binit, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, verbose)
+.onlineINMF_h5sparse_withInitial <- function(filenames, valuePaths, rowindPaths, colptrPaths, nrows, ncols, filenamesNew, valuePathsNew, rowindPathsNew, colptrPathsNew, nrowsNew, ncolsNew, Hinit, Vinit, Winit, Ainit, Binit, k, nCores, lambda, maxEpoch = 5L, minibatchSize = 5000L, maxHALSIter = 1L, permuteChunkSize = 1000L, verbose = TRUE) {
+    .Call(`_RcppPlanc_onlineINMF_h5sparse_withInitial`, filenames, valuePaths, rowindPaths, colptrPaths, nrows, ncols, filenamesNew, valuePathsNew, rowindPathsNew, colptrPathsNew, nrowsNew, ncolsNew, Hinit, Vinit, Winit, Ainit, Binit, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, permuteChunkSize, verbose)
 }
 
 .uinmf_rcpp <- function(objectList, unsharedList, whichUnshared, k, nCores, lambda, niter, verbose) {

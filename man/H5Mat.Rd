@@ -10,11 +10,11 @@
 \usage{
 H5Mat(filename, dataPath)
 
-as.H5Mat(x, filename, dataPath = "data", overwrite = FALSE)
+as.H5Mat(x, filename, dataPath = "data", overwrite = FALSE, ...)
 
-\method{as.H5Mat}{matrix}(x, filename, dataPath = "data", overwrite)
+\method{as.H5Mat}{matrix}(x, filename, dataPath = "data", overwrite, ...)
 
-\method{as.H5Mat}{dgCMatrix}(x, filename, dataPath = "data", overwrite = FALSE)
+\method{as.H5Mat}{dgCMatrix}(x, filename, dataPath = "data", overwrite = FALSE, ...)
 
 \method{as.H5Mat}{default}(x, filename, dataPath = "data", ...)
 }
@@ -30,7 +30,7 @@ written; for \code{print}, a \code{H5Mat} argument list object}
 \item{overwrite}{Logical, whether to overwrite the file if already exists at
 the given path. Default \code{FALSE}.}
 
-\item{...}{not used}
+\item{...}{Passed down to hdf5r.Extra::h5Write}
 }
 \value{
 H5Mat object, indeed a list object.

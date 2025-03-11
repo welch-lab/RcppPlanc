@@ -16,7 +16,7 @@
 #' Default \code{"data"} when using \code{as.H5Mat}.
 #' @param overwrite Logical, whether to overwrite the file if already exists at
 #' the given path. Default \code{FALSE}.
-#' @param ... not used
+#' @param ... Passed down to hdf5r.Extra::h5Write
 #' @rdname H5Mat
 #' @return H5Mat object, indeed a list object.
 #' @examples
@@ -49,7 +49,7 @@ H5Mat <- function(
 
 #' @export
 #' @rdname H5Mat
-as.H5Mat <- function(x, filename, dataPath = "data", overwrite = FALSE) {
+as.H5Mat <- function(x, filename, dataPath = "data", overwrite = FALSE, ...) {
   if (isFALSE(overwrite) && file.exists(filename)) {
     filename <- normalizePath(filename)
     stop("File already exists at the given path: ", filename)
@@ -60,8 +60,8 @@ as.H5Mat <- function(x, filename, dataPath = "data", overwrite = FALSE) {
 #' @export
 #' @rdname H5Mat
 #' @method as.H5Mat matrix
-as.H5Mat.matrix <- function(x, filename, dataPath = "data", overwrite) {
-  res <- rcpp_mat_to_h5mat(x, filename, dataPath, overwrite = overwrite)
+as.H5Mat.matrix <- function(x, filename, dataPath = "data", overwrite, ...) {
+  res <- rcpp_mat_to_h5mat(x, filename, dataPath, overwrite = overwrite, ...)
   H5Mat(res[1], res[2])
 }
 
@@ -69,8 +69,8 @@ as.H5Mat.matrix <- function(x, filename, dataPath = "data", overwrite) {
 #' @rdname H5Mat
 #' @method as.H5Mat dgCMatrix
 as.H5Mat.dgCMatrix <- function(x, filename, dataPath = "data",
-                               overwrite = FALSE) {
-  res <- rcpp_spmat_to_h5mat(x, filename, dataPath, overwrite = overwrite)
+                               overwrite = FALSE, ...) {
+  res <- rcpp_spmat_to_h5mat(x, filename, dataPath, overwrite = overwrite, ...)
   H5Mat(res[1], res[2])
 }
 

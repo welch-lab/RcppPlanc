@@ -110,8 +110,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // onlineINMF_h5dense
-Rcpp::List onlineINMF_h5dense(const std::vector<std::string>& filenames, const std::vector<std::string>& dataPaths, const arma::uword k, const int nCores, const double lambda, const arma::uword maxEpoch, const arma::uword minibatchSize, const arma::uword maxHALSIter, const bool verbose);
-RcppExport SEXP _RcppPlanc_onlineINMF_h5dense(SEXP filenamesSEXP, SEXP dataPathsSEXP, SEXP kSEXP, SEXP nCoresSEXP, SEXP lambdaSEXP, SEXP maxEpochSEXP, SEXP minibatchSizeSEXP, SEXP maxHALSIterSEXP, SEXP verboseSEXP) {
+Rcpp::List onlineINMF_h5dense(const std::vector<std::string>& filenames, const std::vector<std::string>& dataPaths, const arma::uword k, const int nCores, const double lambda, const arma::uword maxEpoch, const arma::uword minibatchSize, const arma::uword maxHALSIter, const arma::uword permuteChunkSize, const bool verbose);
+RcppExport SEXP _RcppPlanc_onlineINMF_h5dense(SEXP filenamesSEXP, SEXP dataPathsSEXP, SEXP kSEXP, SEXP nCoresSEXP, SEXP lambdaSEXP, SEXP maxEpochSEXP, SEXP minibatchSizeSEXP, SEXP maxHALSIterSEXP, SEXP permuteChunkSizeSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -123,14 +123,15 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::uword >::type maxEpoch(maxEpochSEXP);
     Rcpp::traits::input_parameter< const arma::uword >::type minibatchSize(minibatchSizeSEXP);
     Rcpp::traits::input_parameter< const arma::uword >::type maxHALSIter(maxHALSIterSEXP);
+    Rcpp::traits::input_parameter< const arma::uword >::type permuteChunkSize(permuteChunkSizeSEXP);
     Rcpp::traits::input_parameter< const bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(onlineINMF_h5dense(filenames, dataPaths, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, verbose));
+    rcpp_result_gen = Rcpp::wrap(onlineINMF_h5dense(filenames, dataPaths, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, permuteChunkSize, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
 // onlineINMF_h5sparse
-Rcpp::List onlineINMF_h5sparse(const std::vector<std::string>& filenames, const std::vector<std::string>& valuePaths, const std::vector<std::string>& rowindPaths, const std::vector<std::string>& colptrPaths, arma::uvec nrows, arma::uvec ncols, const arma::uword k, const int& nCores, const double lambda, const arma::uword maxEpoch, const arma::uword minibatchSize, const arma::uword maxHALSIter, const bool verbose);
-RcppExport SEXP _RcppPlanc_onlineINMF_h5sparse(SEXP filenamesSEXP, SEXP valuePathsSEXP, SEXP rowindPathsSEXP, SEXP colptrPathsSEXP, SEXP nrowsSEXP, SEXP ncolsSEXP, SEXP kSEXP, SEXP nCoresSEXP, SEXP lambdaSEXP, SEXP maxEpochSEXP, SEXP minibatchSizeSEXP, SEXP maxHALSIterSEXP, SEXP verboseSEXP) {
+Rcpp::List onlineINMF_h5sparse(const std::vector<std::string>& filenames, const std::vector<std::string>& valuePaths, const std::vector<std::string>& rowindPaths, const std::vector<std::string>& colptrPaths, arma::uvec nrows, arma::uvec ncols, const arma::uword k, const int& nCores, const double lambda, const arma::uword maxEpoch, const arma::uword minibatchSize, const arma::uword maxHALSIter, const arma::uword permuteChunkSize, const bool verbose);
+RcppExport SEXP _RcppPlanc_onlineINMF_h5sparse(SEXP filenamesSEXP, SEXP valuePathsSEXP, SEXP rowindPathsSEXP, SEXP colptrPathsSEXP, SEXP nrowsSEXP, SEXP ncolsSEXP, SEXP kSEXP, SEXP nCoresSEXP, SEXP lambdaSEXP, SEXP maxEpochSEXP, SEXP minibatchSizeSEXP, SEXP maxHALSIterSEXP, SEXP permuteChunkSizeSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -146,14 +147,15 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::uword >::type maxEpoch(maxEpochSEXP);
     Rcpp::traits::input_parameter< const arma::uword >::type minibatchSize(minibatchSizeSEXP);
     Rcpp::traits::input_parameter< const arma::uword >::type maxHALSIter(maxHALSIterSEXP);
+    Rcpp::traits::input_parameter< const arma::uword >::type permuteChunkSize(permuteChunkSizeSEXP);
     Rcpp::traits::input_parameter< const bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(onlineINMF_h5sparse(filenames, valuePaths, rowindPaths, colptrPaths, nrows, ncols, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, verbose));
+    rcpp_result_gen = Rcpp::wrap(onlineINMF_h5sparse(filenames, valuePaths, rowindPaths, colptrPaths, nrows, ncols, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, permuteChunkSize, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
 // onlineINMF
-Rcpp::List onlineINMF(Rcpp::List objectList, arma::uword k, const int& nCores, double lambda, arma::uword maxEpoch, arma::uword minibatchSize, arma::uword maxHALSIter, bool verbose);
-RcppExport SEXP _RcppPlanc_onlineINMF(SEXP objectListSEXP, SEXP kSEXP, SEXP nCoresSEXP, SEXP lambdaSEXP, SEXP maxEpochSEXP, SEXP minibatchSizeSEXP, SEXP maxHALSIterSEXP, SEXP verboseSEXP) {
+Rcpp::List onlineINMF(Rcpp::List objectList, arma::uword k, const int& nCores, double lambda, arma::uword maxEpoch, arma::uword minibatchSize, arma::uword maxHALSIter, arma::uword permuteChunkSize, bool verbose);
+RcppExport SEXP _RcppPlanc_onlineINMF(SEXP objectListSEXP, SEXP kSEXP, SEXP nCoresSEXP, SEXP lambdaSEXP, SEXP maxEpochSEXP, SEXP minibatchSizeSEXP, SEXP maxHALSIterSEXP, SEXP permuteChunkSizeSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -164,18 +166,20 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< arma::uword >::type maxEpoch(maxEpochSEXP);
     Rcpp::traits::input_parameter< arma::uword >::type minibatchSize(minibatchSizeSEXP);
     Rcpp::traits::input_parameter< arma::uword >::type maxHALSIter(maxHALSIterSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type permuteChunkSize(permuteChunkSizeSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(onlineINMF(objectList, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, verbose));
+    rcpp_result_gen = Rcpp::wrap(onlineINMF(objectList, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, permuteChunkSize, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
 // onlineINMF_withInitial
-Rcpp::List onlineINMF_withInitial(Rcpp::List objectList, const std::vector<arma::mat>& Vinit, const arma::mat& Winit, const std::vector<arma::mat>& Ainit, const std::vector<arma::mat>& Binit, const Rcpp::List& objectListNew, const arma::uword k, const int& nCores, const double lambda, const arma::uword maxEpoch, const arma::uword minibatchSize, const arma::uword maxHALSIter, const bool verbose);
-RcppExport SEXP _RcppPlanc_onlineINMF_withInitial(SEXP objectListSEXP, SEXP VinitSEXP, SEXP WinitSEXP, SEXP AinitSEXP, SEXP BinitSEXP, SEXP objectListNewSEXP, SEXP kSEXP, SEXP nCoresSEXP, SEXP lambdaSEXP, SEXP maxEpochSEXP, SEXP minibatchSizeSEXP, SEXP maxHALSIterSEXP, SEXP verboseSEXP) {
+Rcpp::List onlineINMF_withInitial(Rcpp::List objectList, const std::vector<arma::mat>& Hinit, const std::vector<arma::mat>& Vinit, const arma::mat& Winit, const std::vector<arma::mat>& Ainit, const std::vector<arma::mat>& Binit, const Rcpp::List& objectListNew, const arma::uword k, const int& nCores, const double lambda, const arma::uword maxEpoch, const arma::uword minibatchSize, const arma::uword maxHALSIter, const arma::uword permuteChunkSize, const bool verbose);
+RcppExport SEXP _RcppPlanc_onlineINMF_withInitial(SEXP objectListSEXP, SEXP HinitSEXP, SEXP VinitSEXP, SEXP WinitSEXP, SEXP AinitSEXP, SEXP BinitSEXP, SEXP objectListNewSEXP, SEXP kSEXP, SEXP nCoresSEXP, SEXP lambdaSEXP, SEXP maxEpochSEXP, SEXP minibatchSizeSEXP, SEXP maxHALSIterSEXP, SEXP permuteChunkSizeSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::List >::type objectList(objectListSEXP);
+    Rcpp::traits::input_parameter< const std::vector<arma::mat>& >::type Hinit(HinitSEXP);
     Rcpp::traits::input_parameter< const std::vector<arma::mat>& >::type Vinit(VinitSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type Winit(WinitSEXP);
     Rcpp::traits::input_parameter< const std::vector<arma::mat>& >::type Ainit(AinitSEXP);
@@ -187,8 +191,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::uword >::type maxEpoch(maxEpochSEXP);
     Rcpp::traits::input_parameter< const arma::uword >::type minibatchSize(minibatchSizeSEXP);
     Rcpp::traits::input_parameter< const arma::uword >::type maxHALSIter(maxHALSIterSEXP);
+    Rcpp::traits::input_parameter< const arma::uword >::type permuteChunkSize(permuteChunkSizeSEXP);
     Rcpp::traits::input_parameter< const bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(onlineINMF_withInitial(objectList, Vinit, Winit, Ainit, Binit, objectListNew, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, verbose));
+    rcpp_result_gen = Rcpp::wrap(onlineINMF_withInitial(objectList, Hinit, Vinit, Winit, Ainit, Binit, objectListNew, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, permuteChunkSize, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -209,8 +214,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // onlineINMF_h5dense_withInitial
-Rcpp::List onlineINMF_h5dense_withInitial(const std::vector<std::string>& filenames, const std::vector<std::string>& dataPaths, const std::vector<std::string>& filenamesNew, const std::vector<std::string>& dataPathsNew, const std::vector<arma::mat>& Vinit, const arma::mat& Winit, const std::vector<arma::mat>& Ainit, const std::vector<arma::mat>& Binit, const arma::uword k, const int& nCores, const double lambda, const arma::uword maxEpoch, const arma::uword minibatchSize, const arma::uword maxHALSIter, const bool verbose);
-RcppExport SEXP _RcppPlanc_onlineINMF_h5dense_withInitial(SEXP filenamesSEXP, SEXP dataPathsSEXP, SEXP filenamesNewSEXP, SEXP dataPathsNewSEXP, SEXP VinitSEXP, SEXP WinitSEXP, SEXP AinitSEXP, SEXP BinitSEXP, SEXP kSEXP, SEXP nCoresSEXP, SEXP lambdaSEXP, SEXP maxEpochSEXP, SEXP minibatchSizeSEXP, SEXP maxHALSIterSEXP, SEXP verboseSEXP) {
+Rcpp::List onlineINMF_h5dense_withInitial(const std::vector<std::string>& filenames, const std::vector<std::string>& dataPaths, const std::vector<std::string>& filenamesNew, const std::vector<std::string>& dataPathsNew, const std::vector<arma::mat>& Hinit, const std::vector<arma::mat>& Vinit, const arma::mat& Winit, const std::vector<arma::mat>& Ainit, const std::vector<arma::mat>& Binit, const arma::uword k, const int& nCores, const double lambda, const arma::uword maxEpoch, const arma::uword minibatchSize, const arma::uword maxHALSIter, const arma::uword permuteChunkSize, const bool verbose);
+RcppExport SEXP _RcppPlanc_onlineINMF_h5dense_withInitial(SEXP filenamesSEXP, SEXP dataPathsSEXP, SEXP filenamesNewSEXP, SEXP dataPathsNewSEXP, SEXP HinitSEXP, SEXP VinitSEXP, SEXP WinitSEXP, SEXP AinitSEXP, SEXP BinitSEXP, SEXP kSEXP, SEXP nCoresSEXP, SEXP lambdaSEXP, SEXP maxEpochSEXP, SEXP minibatchSizeSEXP, SEXP maxHALSIterSEXP, SEXP permuteChunkSizeSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -218,6 +223,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const std::vector<std::string>& >::type dataPaths(dataPathsSEXP);
     Rcpp::traits::input_parameter< const std::vector<std::string>& >::type filenamesNew(filenamesNewSEXP);
     Rcpp::traits::input_parameter< const std::vector<std::string>& >::type dataPathsNew(dataPathsNewSEXP);
+    Rcpp::traits::input_parameter< const std::vector<arma::mat>& >::type Hinit(HinitSEXP);
     Rcpp::traits::input_parameter< const std::vector<arma::mat>& >::type Vinit(VinitSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type Winit(WinitSEXP);
     Rcpp::traits::input_parameter< const std::vector<arma::mat>& >::type Ainit(AinitSEXP);
@@ -228,8 +234,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::uword >::type maxEpoch(maxEpochSEXP);
     Rcpp::traits::input_parameter< const arma::uword >::type minibatchSize(minibatchSizeSEXP);
     Rcpp::traits::input_parameter< const arma::uword >::type maxHALSIter(maxHALSIterSEXP);
+    Rcpp::traits::input_parameter< const arma::uword >::type permuteChunkSize(permuteChunkSizeSEXP);
     Rcpp::traits::input_parameter< const bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(onlineINMF_h5dense_withInitial(filenames, dataPaths, filenamesNew, dataPathsNew, Vinit, Winit, Ainit, Binit, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, verbose));
+    rcpp_result_gen = Rcpp::wrap(onlineINMF_h5dense_withInitial(filenames, dataPaths, filenamesNew, dataPathsNew, Hinit, Vinit, Winit, Ainit, Binit, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, permuteChunkSize, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -280,8 +287,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // onlineINMF_h5sparse_withInitial
-Rcpp::List onlineINMF_h5sparse_withInitial(std::vector<std::string> filenames, std::vector<std::string> valuePaths, std::vector<std::string> rowindPaths, std::vector<std::string> colptrPaths, arma::uvec nrows, arma::uvec ncols, std::vector<std::string> filenamesNew, std::vector<std::string> valuePathsNew, std::vector<std::string> rowindPathsNew, std::vector<std::string> colptrPathsNew, arma::uvec nrowsNew, arma::uvec ncolsNew, std::vector<arma::mat> Vinit, const arma::mat& Winit, std::vector<arma::mat> Ainit, std::vector<arma::mat> Binit, arma::uword k, const int& nCores, double lambda, arma::uword maxEpoch, arma::uword minibatchSize, arma::uword maxHALSIter, bool verbose);
-RcppExport SEXP _RcppPlanc_onlineINMF_h5sparse_withInitial(SEXP filenamesSEXP, SEXP valuePathsSEXP, SEXP rowindPathsSEXP, SEXP colptrPathsSEXP, SEXP nrowsSEXP, SEXP ncolsSEXP, SEXP filenamesNewSEXP, SEXP valuePathsNewSEXP, SEXP rowindPathsNewSEXP, SEXP colptrPathsNewSEXP, SEXP nrowsNewSEXP, SEXP ncolsNewSEXP, SEXP VinitSEXP, SEXP WinitSEXP, SEXP AinitSEXP, SEXP BinitSEXP, SEXP kSEXP, SEXP nCoresSEXP, SEXP lambdaSEXP, SEXP maxEpochSEXP, SEXP minibatchSizeSEXP, SEXP maxHALSIterSEXP, SEXP verboseSEXP) {
+Rcpp::List onlineINMF_h5sparse_withInitial(std::vector<std::string> filenames, std::vector<std::string> valuePaths, std::vector<std::string> rowindPaths, std::vector<std::string> colptrPaths, arma::uvec nrows, arma::uvec ncols, std::vector<std::string> filenamesNew, std::vector<std::string> valuePathsNew, std::vector<std::string> rowindPathsNew, std::vector<std::string> colptrPathsNew, arma::uvec nrowsNew, arma::uvec ncolsNew, const std::vector<arma::mat>& Hinit, std::vector<arma::mat> Vinit, const arma::mat& Winit, std::vector<arma::mat> Ainit, std::vector<arma::mat> Binit, arma::uword k, const int& nCores, double lambda, arma::uword maxEpoch, arma::uword minibatchSize, arma::uword maxHALSIter, arma::uword permuteChunkSize, bool verbose);
+RcppExport SEXP _RcppPlanc_onlineINMF_h5sparse_withInitial(SEXP filenamesSEXP, SEXP valuePathsSEXP, SEXP rowindPathsSEXP, SEXP colptrPathsSEXP, SEXP nrowsSEXP, SEXP ncolsSEXP, SEXP filenamesNewSEXP, SEXP valuePathsNewSEXP, SEXP rowindPathsNewSEXP, SEXP colptrPathsNewSEXP, SEXP nrowsNewSEXP, SEXP ncolsNewSEXP, SEXP HinitSEXP, SEXP VinitSEXP, SEXP WinitSEXP, SEXP AinitSEXP, SEXP BinitSEXP, SEXP kSEXP, SEXP nCoresSEXP, SEXP lambdaSEXP, SEXP maxEpochSEXP, SEXP minibatchSizeSEXP, SEXP maxHALSIterSEXP, SEXP permuteChunkSizeSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -297,6 +304,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< std::vector<std::string> >::type colptrPathsNew(colptrPathsNewSEXP);
     Rcpp::traits::input_parameter< arma::uvec >::type nrowsNew(nrowsNewSEXP);
     Rcpp::traits::input_parameter< arma::uvec >::type ncolsNew(ncolsNewSEXP);
+    Rcpp::traits::input_parameter< const std::vector<arma::mat>& >::type Hinit(HinitSEXP);
     Rcpp::traits::input_parameter< std::vector<arma::mat> >::type Vinit(VinitSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type Winit(WinitSEXP);
     Rcpp::traits::input_parameter< std::vector<arma::mat> >::type Ainit(AinitSEXP);
@@ -307,8 +315,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< arma::uword >::type maxEpoch(maxEpochSEXP);
     Rcpp::traits::input_parameter< arma::uword >::type minibatchSize(minibatchSizeSEXP);
     Rcpp::traits::input_parameter< arma::uword >::type maxHALSIter(maxHALSIterSEXP);
+    Rcpp::traits::input_parameter< arma::uword >::type permuteChunkSize(permuteChunkSizeSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(onlineINMF_h5sparse_withInitial(filenames, valuePaths, rowindPaths, colptrPaths, nrows, ncols, filenamesNew, valuePathsNew, rowindPathsNew, colptrPathsNew, nrowsNew, ncolsNew, Vinit, Winit, Ainit, Binit, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, verbose));
+    rcpp_result_gen = Rcpp::wrap(onlineINMF_h5sparse_withInitial(filenames, valuePaths, rowindPaths, colptrPaths, nrows, ncols, filenamesNew, valuePathsNew, rowindPathsNew, colptrPathsNew, nrowsNew, ncolsNew, Hinit, Vinit, Winit, Ainit, Binit, k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, permuteChunkSize, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -405,15 +414,15 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppPlanc_bppinmf_h5", (DL_FUNC) &_RcppPlanc_bppinmf_h5, 10},
     {"_RcppPlanc_bppinmf_h5sp", (DL_FUNC) &_RcppPlanc_bppinmf_h5sp, 14},
     {"_RcppPlanc_bppinmf", (DL_FUNC) &_RcppPlanc_bppinmf, 9},
-    {"_RcppPlanc_onlineINMF_h5dense", (DL_FUNC) &_RcppPlanc_onlineINMF_h5dense, 9},
-    {"_RcppPlanc_onlineINMF_h5sparse", (DL_FUNC) &_RcppPlanc_onlineINMF_h5sparse, 13},
-    {"_RcppPlanc_onlineINMF", (DL_FUNC) &_RcppPlanc_onlineINMF, 8},
-    {"_RcppPlanc_onlineINMF_withInitial", (DL_FUNC) &_RcppPlanc_onlineINMF_withInitial, 13},
+    {"_RcppPlanc_onlineINMF_h5dense", (DL_FUNC) &_RcppPlanc_onlineINMF_h5dense, 10},
+    {"_RcppPlanc_onlineINMF_h5sparse", (DL_FUNC) &_RcppPlanc_onlineINMF_h5sparse, 14},
+    {"_RcppPlanc_onlineINMF", (DL_FUNC) &_RcppPlanc_onlineINMF, 9},
+    {"_RcppPlanc_onlineINMF_withInitial", (DL_FUNC) &_RcppPlanc_onlineINMF_withInitial, 15},
     {"_RcppPlanc_onlineINMF_project", (DL_FUNC) &_RcppPlanc_onlineINMF_project, 6},
-    {"_RcppPlanc_onlineINMF_h5dense_withInitial", (DL_FUNC) &_RcppPlanc_onlineINMF_h5dense_withInitial, 15},
+    {"_RcppPlanc_onlineINMF_h5dense_withInitial", (DL_FUNC) &_RcppPlanc_onlineINMF_h5dense_withInitial, 17},
     {"_RcppPlanc_onlineINMF_project_h5dense", (DL_FUNC) &_RcppPlanc_onlineINMF_project_h5dense, 8},
     {"_RcppPlanc_onlineINMF_project_h5sparse", (DL_FUNC) &_RcppPlanc_onlineINMF_project_h5sparse, 18},
-    {"_RcppPlanc_onlineINMF_h5sparse_withInitial", (DL_FUNC) &_RcppPlanc_onlineINMF_h5sparse_withInitial, 23},
+    {"_RcppPlanc_onlineINMF_h5sparse_withInitial", (DL_FUNC) &_RcppPlanc_onlineINMF_h5sparse_withInitial, 25},
     {"_RcppPlanc_uinmf_rcpp", (DL_FUNC) &_RcppPlanc_uinmf_rcpp, 8},
     {"_RcppPlanc_uinmf_h5dense", (DL_FUNC) &_RcppPlanc_uinmf_h5dense, 10},
     {"_RcppPlanc_uinmf_h5sparse", (DL_FUNC) &_RcppPlanc_uinmf_h5sparse, 18},
