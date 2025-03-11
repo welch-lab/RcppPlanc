@@ -10,7 +10,7 @@
 \usage{
 H5SpMat(filename, valuePath, rowindPath, colptrPath, nrow, ncol)
 
-as.H5SpMat(x, filename, datapath, overwrite = FALSE)
+as.H5SpMat(x, filename, dataPath, overwrite = FALSE)
 
 \method{as.H5SpMat}{matrix}(x, filename, dataPath = "", overwrite = FALSE)
 
@@ -38,6 +38,9 @@ Default \code{"indptr"} when using \code{as.H5SpMat}.}
 \item{x}{For \code{as.H5SpMat}, matrix of either dense or sparse type to be
 written; for \code{print}, a \code{H5SpMat} argument list object.}
 
+\item{dataPath}{For \code{as.H5SpMat} methods, the H5Group name for the
+sparse matrix. Default \code{""}.}
+
 \item{overwrite}{Logical, whether to overwrite the file if already exists at
 the given path. Default \code{FALSE}.}
 
@@ -59,25 +62,19 @@ constructed argument list.
 }
 \examples{
 if (require("withr")) {
-H5SpMatEx <- function(){
-withr::local_dir(withr::local_tempdir())
-h <- H5SpMat(system.file("extdata/ctrl_sparse.h5", package = "RcppPlanc"),
-             "data", "indices", "indptr", 173, 300)
-dim(h)
+  H5SpMatEx <- function() {
+    withr::local_dir(withr::local_tempdir())
+    h <- H5SpMat(system.file("extdata/ctrl_sparse.h5", package = "RcppPlanc"),
+                 "data", "indices", "indptr", 173, 300)
+    dim(h)
 
-library(Matrix)
-ctrl.dense <- as.matrix(ctrl.sparse)
-h1 <- as.H5SpMat(ctrl.sparse, "ctrl_from_sparse_to_sparse.h5",
-                 valuePath = "data", rowindPath = "indices",
-                 colptrPath = "indptr", nrow = nrow(ctrl.sparse),
-                 ncol = ncol(ctrl.sparse))
-h1
-h2 <- as.H5SpMat(ctrl.dense, "ctrl_from_dense_to_sparse.h5",
-                 valuePath = "data", rowindPath = "indices",
-                 colptrPath = "indptr", nrow = nrow(ctrl.sparse),
-                 ncol = ncol(ctrl.sparse))
-h2
-}
-H5SpMatEx()
+    library(Matrix)
+    ctrl.dense <- as.matrix(ctrl.sparse)
+    h1 <- as.H5SpMat(ctrl.sparse, "ctrl_from_sparse_to_sparse.h5", "matrix")
+    h1
+    h2 <- as.H5SpMat(ctrl.dense, "ctrl_from_dense_to_sparse.h5", "matrix")
+    h2
+  }
+  H5SpMatEx()
 }
 }
