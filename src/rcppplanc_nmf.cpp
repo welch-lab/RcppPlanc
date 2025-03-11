@@ -699,12 +699,13 @@ Rcpp::List onlineINMF_project_h5dense(
 
 // [[Rcpp::export(.onlineINMF_project_h5sparse)]]
 Rcpp::List onlineINMF_project_h5sparse(
-    std::vector<std::string> filenames, std::vector<std::string> dataPaths, std::vector<std::string> valuePaths,
-    std::vector<std::string> rowindPaths, std::vector<std::string> colptrPaths, arma::uvec nrows, arma::uvec ncols,
-    std::vector<std::string> filenamesNew, std::vector<std::string> dataPathsNew,
-    std::vector<std::string> valuePathsNew,
-    std::vector<std::string> rowindPathsNew, std::vector<std::string> colptrPathsNew,
-    arma::uvec nrowsNew, arma::uvec ncolsNew, const arma::mat&Winit, arma::uword k, const int&nCores, double lambda) {
+    std::vector<std::string> filenames, std::vector<std::string> valuePaths,
+    std::vector<std::string> rowindPaths, std::vector<std::string> colptrPaths, 
+    arma::uvec nrows, arma::uvec ncols, std::vector<std::string> filenamesNew, 
+    std::vector<std::string> valuePathsNew, std::vector<std::string> rowindPathsNew, 
+    std::vector<std::string> colptrPathsNew, arma::uvec nrowsNew, 
+    arma::uvec ncolsNew, const arma::mat&Winit, arma::uword k, 
+    const int&nCores, double lambda) {
     std::vector<std::shared_ptr<planc::H5SpMat>> matPtrVec;
     std::vector<std::shared_ptr<planc::H5SpMat>> matPtrVecNew;
     for (arma::uword i = 0; i < filenames.size(); ++i) {

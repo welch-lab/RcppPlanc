@@ -61,7 +61,7 @@ as.H5Mat <- function(x, filename, dataPath = "data", overwrite = FALSE, ...) {
 #' @rdname H5Mat
 #' @method as.H5Mat matrix
 as.H5Mat.matrix <- function(x, filename, dataPath = "data", overwrite, ...) {
-  res <- rcpp_mat_to_h5mat(x, filename, dataPath, overwrite = overwrite, ...)
+  res <- .rcpp_mat_to_h5mat(x, filename, dataPath, overwrite = overwrite, ...)
   H5Mat(res[1], res[2])
 }
 
@@ -70,7 +70,7 @@ as.H5Mat.matrix <- function(x, filename, dataPath = "data", overwrite, ...) {
 #' @method as.H5Mat dgCMatrix
 as.H5Mat.dgCMatrix <- function(x, filename, dataPath = "data",
                                overwrite = FALSE, ...) {
-  res <- rcpp_spmat_to_h5mat(x, filename, dataPath, overwrite = overwrite, ...)
+  res <- .rcpp_spmat_to_h5mat(x, filename, dataPath, overwrite = overwrite, ...)
   H5Mat(res[1], res[2])
 }
 
@@ -97,7 +97,7 @@ as.H5Mat.default <- function(x, filename, dataPath = "data", ...) {
 #' h <- H5Mat(system.file("extdata/ctrl_dense.h5", package = "RcppPlanc"),
 #'            "data")
 #' format(h)
-format.H5Mat <- function(x) {
+format.H5Mat <- function(x, ...) {
   msg <- paste0(
     "Argument list for constructing HDF5 dense matrix\n",
     "filename:  ", x$filename, "\n",
@@ -145,6 +145,8 @@ print.H5Mat <- function(x, ...) {
 #' @param colptrPath Path in the HDF5 file that points to a 1D integer array
 #' storing the number of non-zero values in each column of the sparse matrix.
 #' Default \code{"indptr"} when using \code{as.H5SpMat}.
+#' @param dataPath For \code{as.H5SpMat} methods, the H5Group name for the
+#' sparse matrix. Default \code{""}.
 #' @param nrow,ncol Integer, the true dimensionality of the sparse matrix.
 #' @param overwrite Logical, whether to overwrite the file if already exists at
 #' the given path. Default \code{FALSE}.
@@ -153,26 +155,20 @@ print.H5Mat <- function(x, ...) {
 #' @return H5SpMat object, indeed a list object.
 #' @examples
 #' if (require("withr")) {
-#' H5SpMatEx <- function(){
-#' withr::local_dir(withr::local_tempdir())
-#' h <- H5SpMat(system.file("extdata/ctrl_sparse.h5", package = "RcppPlanc"),
-#'              "data", "indices", "indptr", 173, 300)
-#' dim(h)
+#'   H5SpMatEx <- function() {
+#'     withr::local_dir(withr::local_tempdir())
+#'     h <- H5SpMat(system.file("extdata/ctrl_sparse.h5", package = "RcppPlanc"),
+#'                  "data", "indices", "indptr", 173, 300)
+#'     dim(h)
 #'
-#' library(Matrix)
-#' ctrl.dense <- as.matrix(ctrl.sparse)
-#' h1 <- as.H5SpMat(ctrl.sparse, "ctrl_from_sparse_to_sparse.h5",
-#'                  valuePath = "data", rowindPath = "indices",
-#'                  colptrPath = "indptr", nrow = nrow(ctrl.sparse),
-#'                  ncol = ncol(ctrl.sparse))
-#' h1
-#' h2 <- as.H5SpMat(ctrl.dense, "ctrl_from_dense_to_sparse.h5",
-#'                  valuePath = "data", rowindPath = "indices",
-#'                  colptrPath = "indptr", nrow = nrow(ctrl.sparse),
-#'                  ncol = ncol(ctrl.sparse))
-#' h2
-#' }
-#' H5SpMatEx()
+#'     library(Matrix)
+#'     ctrl.dense <- as.matrix(ctrl.sparse)
+#'     h1 <- as.H5SpMat(ctrl.sparse, "ctrl_from_sparse_to_sparse.h5", "matrix")
+#'     h1
+#'     h2 <- as.H5SpMat(ctrl.dense, "ctrl_from_dense_to_sparse.h5", "matrix")
+#'     h2
+#'   }
+#'   H5SpMatEx()
 #' }
 H5SpMat <- function(
   filename,
@@ -197,7 +193,7 @@ H5SpMat <- function(
 
 #' @export
 #' @rdname H5SpMat
-as.H5SpMat <- function(x, filename, datapath,
+as.H5SpMat <- function(x, filename, dataPath,
                        overwrite = FALSE) {
   if (isFALSE(overwrite) && file.exists(filename)) {
     filename <- normalizePath(filename)
@@ -221,7 +217,7 @@ as.H5SpMat.matrix <- function(x, filename, dataPath = "",
 #' @method as.H5SpMat dgCMatrix
 as.H5SpMat.dgCMatrix <- function(x, filename, dataPath = "",
                                  overwrite = FALSE) {
-  res <- rcpp_spmat_to_h5spmat(x, filename,
+  res <- .rcpp_spmat_to_h5spmat(x, filename,
                                dataPath, overwrite)
   H5SpMat(res[1], res[2], res[3], res[4], nrow(x), ncol(x))
 }
@@ -251,15 +247,30 @@ as.H5SpMat.default <- function(x, filename, dataPath = "",
 #' @export
 #' @examples
 #' h <- H5SpMat(system.file("extdata/ctrl_sparse.h5", package = "RcppPlanc"),
-#'              "", 173, 300)
+#'              "data", "indices", "indptr", 173, 300)
 #' format(h)
-format.H5SpMat <- function(x) {
-  msg <- paste0(
+format.H5SpMat <- function(x, ...) {
+  data_path <- x$valuePath
+  indices_path <- x$rowindPath
+  indptr_path <- x$colptrPath
+  if (dirname(data_path) == dirname(indices_path) &&
+      dirname(data_path) == dirname(indptr_path)) {
+    msg <- paste0(
     "Argument list for constructing HDF5 CSC sparse matrix\n",
     "filename:    ", x$filename, "\n",
-    "data path:  ", x$datapath, "\n",
+    "data path:  ", dirname(x$valuePath), "\n",
     "dimension:   ", x$nrow, " x ", x$ncol, "\n"
-  )
+    )
+  } else {
+    msg <- paste0(
+    "Argument list for constructing HDF5 CSC sparse matrix\n",
+    "filename:    ", x$filename, "\n",
+    "value path:  ", x$valuePath, "\n",
+    "rowind path: ", x$rowindPath, "\n",
+    "colptr path: ", x$colptrPath, "\n",
+    "dimension:   ", x$nrow, " x ", x$ncol, "\n"
+    )
+  }
   return(msg)
 }
 
@@ -271,7 +282,7 @@ format.H5SpMat <- function(x) {
 #' @export
 #' @examples
 #' h <- H5SpMat(system.file("extdata/ctrl_sparse.h5", package = "RcppPlanc"),
-#'              "", 173, 300)
+#'              "data", "indices", "indptr", 173, 300)
 #' print(h)
 print.H5SpMat <- function(x, ...) {
   cat(format.H5SpMat(x, ...))
@@ -287,7 +298,7 @@ print.H5SpMat <- function(x, ...) {
 #' @export
 #' @examples
 #' h <- H5SpMat(system.file("extdata/ctrl_sparse.h5", package = "RcppPlanc"),
-#'              "", 173, 300)
+#'              "data", "indices", "indptr", 173, 300)
 #' dim(h)
 #' nrow(h)
 #' ncol(h)

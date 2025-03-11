@@ -4,7 +4,7 @@
 \alias{format.H5Mat}
 \title{Prepare character information of a H5Mat object}
 \usage{
-\method{format}{H5Mat}(x)
+\method{format}{H5Mat}(x, ...)
 }
 \arguments{
 \item{x}{H5Mat argument list object}

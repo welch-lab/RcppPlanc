@@ -259,20 +259,18 @@ BEGIN_RCPP
 END_RCPP
 }
 // onlineINMF_project_h5sparse
-Rcpp::List onlineINMF_project_h5sparse(std::vector<std::string> filenames, std::vector<std::string> dataPaths, std::vector<std::string> valuePaths, std::vector<std::string> rowindPaths, std::vector<std::string> colptrPaths, arma::uvec nrows, arma::uvec ncols, std::vector<std::string> filenamesNew, std::vector<std::string> dataPathsNew, std::vector<std::string> valuePathsNew, std::vector<std::string> rowindPathsNew, std::vector<std::string> colptrPathsNew, arma::uvec nrowsNew, arma::uvec ncolsNew, const arma::mat& Winit, arma::uword k, const int& nCores, double lambda);
-RcppExport SEXP _RcppPlanc_onlineINMF_project_h5sparse(SEXP filenamesSEXP, SEXP dataPathsSEXP, SEXP valuePathsSEXP, SEXP rowindPathsSEXP, SEXP colptrPathsSEXP, SEXP nrowsSEXP, SEXP ncolsSEXP, SEXP filenamesNewSEXP, SEXP dataPathsNewSEXP, SEXP valuePathsNewSEXP, SEXP rowindPathsNewSEXP, SEXP colptrPathsNewSEXP, SEXP nrowsNewSEXP, SEXP ncolsNewSEXP, SEXP WinitSEXP, SEXP kSEXP, SEXP nCoresSEXP, SEXP lambdaSEXP) {
+Rcpp::List onlineINMF_project_h5sparse(std::vector<std::string> filenames, std::vector<std::string> valuePaths, std::vector<std::string> rowindPaths, std::vector<std::string> colptrPaths, arma::uvec nrows, arma::uvec ncols, std::vector<std::string> filenamesNew, std::vector<std::string> valuePathsNew, std::vector<std::string> rowindPathsNew, std::vector<std::string> colptrPathsNew, arma::uvec nrowsNew, arma::uvec ncolsNew, const arma::mat& Winit, arma::uword k, const int& nCores, double lambda);
+RcppExport SEXP _RcppPlanc_onlineINMF_project_h5sparse(SEXP filenamesSEXP, SEXP valuePathsSEXP, SEXP rowindPathsSEXP, SEXP colptrPathsSEXP, SEXP nrowsSEXP, SEXP ncolsSEXP, SEXP filenamesNewSEXP, SEXP valuePathsNewSEXP, SEXP rowindPathsNewSEXP, SEXP colptrPathsNewSEXP, SEXP nrowsNewSEXP, SEXP ncolsNewSEXP, SEXP WinitSEXP, SEXP kSEXP, SEXP nCoresSEXP, SEXP lambdaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::vector<std::string> >::type filenames(filenamesSEXP);
-    Rcpp::traits::input_parameter< std::vector<std::string> >::type dataPaths(dataPathsSEXP);
     Rcpp::traits::input_parameter< std::vector<std::string> >::type valuePaths(valuePathsSEXP);
     Rcpp::traits::input_parameter< std::vector<std::string> >::type rowindPaths(rowindPathsSEXP);
     Rcpp::traits::input_parameter< std::vector<std::string> >::type colptrPaths(colptrPathsSEXP);
     Rcpp::traits::input_parameter< arma::uvec >::type nrows(nrowsSEXP);
     Rcpp::traits::input_parameter< arma::uvec >::type ncols(ncolsSEXP);
     Rcpp::traits::input_parameter< std::vector<std::string> >::type filenamesNew(filenamesNewSEXP);
-    Rcpp::traits::input_parameter< std::vector<std::string> >::type dataPathsNew(dataPathsNewSEXP);
     Rcpp::traits::input_parameter< std::vector<std::string> >::type valuePathsNew(valuePathsNewSEXP);
     Rcpp::traits::input_parameter< std::vector<std::string> >::type rowindPathsNew(rowindPathsNewSEXP);
     Rcpp::traits::input_parameter< std::vector<std::string> >::type colptrPathsNew(colptrPathsNewSEXP);
@@ -282,7 +280,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< arma::uword >::type k(kSEXP);
     Rcpp::traits::input_parameter< const int& >::type nCores(nCoresSEXP);
     Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
-    rcpp_result_gen = Rcpp::wrap(onlineINMF_project_h5sparse(filenames, dataPaths, valuePaths, rowindPaths, colptrPaths, nrows, ncols, filenamesNew, dataPathsNew, valuePathsNew, rowindPathsNew, colptrPathsNew, nrowsNew, ncolsNew, Winit, k, nCores, lambda));
+    rcpp_result_gen = Rcpp::wrap(onlineINMF_project_h5sparse(filenames, valuePaths, rowindPaths, colptrPaths, nrows, ncols, filenamesNew, valuePathsNew, rowindPathsNew, colptrPathsNew, nrowsNew, ncolsNew, Winit, k, nCores, lambda));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -421,7 +419,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppPlanc_onlineINMF_project", (DL_FUNC) &_RcppPlanc_onlineINMF_project, 6},
     {"_RcppPlanc_onlineINMF_h5dense_withInitial", (DL_FUNC) &_RcppPlanc_onlineINMF_h5dense_withInitial, 17},
     {"_RcppPlanc_onlineINMF_project_h5dense", (DL_FUNC) &_RcppPlanc_onlineINMF_project_h5dense, 8},
-    {"_RcppPlanc_onlineINMF_project_h5sparse", (DL_FUNC) &_RcppPlanc_onlineINMF_project_h5sparse, 18},
+    {"_RcppPlanc_onlineINMF_project_h5sparse", (DL_FUNC) &_RcppPlanc_onlineINMF_project_h5sparse, 16},
     {"_RcppPlanc_onlineINMF_h5sparse_withInitial", (DL_FUNC) &_RcppPlanc_onlineINMF_h5sparse_withInitial, 25},
     {"_RcppPlanc_uinmf_rcpp", (DL_FUNC) &_RcppPlanc_uinmf_rcpp, 8},
     {"_RcppPlanc_uinmf_h5dense", (DL_FUNC) &_RcppPlanc_uinmf_h5dense, 10},

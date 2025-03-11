@@ -23,7 +23,7 @@ Retrieve the dimension of H5SpMat argument list
 }
 \examples{
 h <- H5SpMat(system.file("extdata/ctrl_sparse.h5", package = "RcppPlanc"),
-             "", 173, 300)
+             "data", "indices", "indptr", 173, 300)
 dim(h)
 nrow(h)
 ncol(h)
