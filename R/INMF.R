@@ -132,13 +132,16 @@ inmf <- function(
 #' @param maxHALSIter Maximum number of block coordinate descent (HALS
 #' algorithm) iterations to perform for each update of \eqn{W} and \eqn{V}.
 #' Default \code{1}. Changing this parameter is not recommended.
+#' @param permuteChunkSize Number of cells in a chunk being shuffled before
+#' subsetting to minibatches. Only appliable to in-memory data and for Scenario 
+#' 1 and 2. Default \code{1000}.
 #' @param nCores The number of parallel tasks that will be spawned.
 #' Default \code{2}
-#' @param Vinit,Winit,Ainit,Binit Pass the previous factorization result for
-#' datasets existing in \code{objectList}, in order to run scenario 2 or 3. All
-#' should have \code{length(objectList)} matrices inside. See description for
-#' dimensionality of \eqn{V_i} and \eqn{W_i}. \eqn{A_i} should be of size
-#' \eqn{k \times k} and \eqn{B_i} should be of size \eqn{m \times k}
+#' @param Hinit,Vinit,Winit,Ainit,Binit Pass the previous factorization result
+#' for datasets existing in \code{objectList}, in order to run scenario 2 or 3.
+#' All should have \code{length(objectList)} matrices inside. See description
+#' for dimensionality of \eqn{H_i}, \eqn{V_i} and \eqn{W_i}. \eqn{A_i} should
+#' be of size \eqn{k \times k} and \eqn{B_i} should be of size \eqn{m \times k}
 #' @param verbose Logical scalar. Whether to show information and progress.
 #' Default \code{FALSE}.
 #' @return A list of the following elements:
@@ -159,10 +162,10 @@ inmf <- function(
 #' online learning, Nat Biotechnol., 2021
 #' @examples
 #' library(Matrix)
-#' 
+#'
 #' # Scenario 1 with sparse matrices
 #' set.seed(1)
-#' res1 <- onlineINMF(list(ctrl.sparse, stim.sparse), 
+#' res1 <- onlineINMF(list(ctrl.sparse, stim.sparse),
 #'                    minibatchSize = 50, k = 10)
 #'
 #' # Scenario 2 with H5 dense matrices
@@ -175,8 +178,8 @@ inmf <- function(
 #' res2 <- onlineINMF(list(ctrl = h5dense1), minibatchSize = 50, k = 10)
 #' res3 <- onlineINMF(list(ctrl = h5dense1),
 #'                    newDatasets = list(stim = h5dense2),
-#'                    Vinit = res2$V, Winit = res2$W,
-#'                    Ainit = res2$A, Binit = res2$B, 
+#'                    Hinit = res2$H, Vinit = res2$V, Winit = res2$W,
+#'                    Ainit = res2$A, Binit = res2$B,
 #'                    minibatchSize = 50, k = 10)
 #'
 #' # Scenario 3 with H5 sparse matrices
@@ -197,8 +200,9 @@ inmf <- function(
 #' res4 <- onlineINMF(list(ctrl = h5sparse1), minibatchSize = 50, k = 10)
 #' res5 <- onlineINMF(list(ctrl = h5sparse1),
 #'                    newDatasets = list(stim = h5sparse2), project = TRUE,
-#'                    Vinit = res4$V, Winit = res4$W,
-#'                    Ainit = res4$A, Binit = res4$B, minibatchSize = 50, k = 10)
+#'                    Hinit = res4$H, Vinit = res4$V, Winit = res4$W,
+#'                    Ainit = res4$A, Binit = res4$B,
+#'                    minibatchSize = 50, k = 10)
 #'
 onlineINMF <- function(
   objectList,
@@ -209,7 +213,9 @@ onlineINMF <- function(
   maxEpoch = 5,
   minibatchSize = 5000,
   maxHALSIter = 1,
+  permuteChunkSize = 1000,
   nCores = 2,
+  Hinit = NULL,
   Vinit = NULL,
   Winit = NULL,
   Ainit = NULL,
@@ -222,29 +228,27 @@ onlineINMF <- function(
     res <- switch(
       mode,
       matrix = .onlineINMF(objectList, k, nCores, lambda, maxEpoch,
-                           minibatchSize, maxHALSIter, verbose),
+                           minibatchSize, maxHALSIter, permuteChunkSize, 
+                           verbose),
       dgCMatrix = .onlineINMF(objectList, k, nCores, lambda, maxEpoch,
-                              minibatchSize, maxHALSIter, verbose),
-      H5Mat = .onlineINMF_h5dense(sapply(objectList,
-                                         function(x) x$filename),
-                                  sapply(objectList,
-                                         function(x) x$dataPath),
-                                  k, nCores, lambda, maxEpoch, minibatchSize,
-                                  maxHALSIter, verbose),
-      H5SpMat = .onlineINMF_h5sparse(sapply(objectList,
-                                            function(x) x$filename),
-                                     sapply(objectList,
-                                            function(x) x$valuePath),
-                                     sapply(objectList,
-                                            function(x) x$rowindPath),
-                                     sapply(objectList,
-                                            function(x) x$colptrPath),
-                                     sapply(objectList,
-                                            function(x) x$nrow),
-                                     sapply(objectList,
-                                            function(x) x$ncol),
-                                     k, nCores, lambda, maxEpoch, minibatchSize,
-                                     maxHALSIter, verbose)
+                              minibatchSize, maxHALSIter, permuteChunkSize,
+                              verbose),
+      H5Mat = .onlineINMF_h5dense(
+        sapply(objectList, function(x) x$filename),
+        sapply(objectList, function(x) x$dataPath),
+        k, nCores, lambda, maxEpoch, minibatchSize,
+        maxHALSIter, permuteChunkSize, verbose
+      ),
+      H5SpMat = .onlineINMF_h5sparse(
+        sapply(objectList, function(x) x$filename),
+        sapply(objectList, function(x) x$valuePath),
+        sapply(objectList, function(x) x$rowindPath),
+        sapply(objectList, function(x) x$colptrPath),
+        sapply(objectList, function(x) x$nrow),
+        sapply(objectList, function(x) x$ncol),
+        k, nCores, lambda, maxEpoch, minibatchSize,
+        maxHALSIter, permuteChunkSize, verbose
+      )
     )
     names(res$H) <- names(res$V) <- names(res$A) <- names(res$B) <- names(objectList)
   } else {
@@ -256,52 +260,41 @@ onlineINMF <- function(
       # Scenario 2 result
       res <- switch(
         mode,
-        matrix = .onlineINMF_withInitial(objectList, Vinit, Winit, Ainit, Binit,
-                                         newDatasets, k, nCores, lambda, maxEpoch,
-                                         minibatchSize, maxHALSIter, verbose),
-        dgCMatrix = .onlineINMF_withInitial(objectList, Vinit, Winit, Ainit, Binit,
-                                            newDatasets, k, nCores, lambda,
-                                            maxEpoch, minibatchSize, maxHALSIter,
-                                            verbose),
-        H5Mat = .onlineINMF_h5dense_withInitial(sapply(objectList,
-                                                       function(x) x$filename),
-                                                sapply(objectList,
-                                                       function(x) x$dataPath),
-                                                sapply(newDatasets,
-                                                       function(x) x$filename),
-                                                sapply(newDatasets,
-                                                       function(x) x$dataPath),
-                                                Vinit, Winit, Ainit, Binit,
-                                                k, nCores, lambda, maxEpoch,
-                                                minibatchSize, maxHALSIter, verbose),
-        H5SpMat = .onlineINMF_h5sparse_withInitial(sapply(objectList,
-                                                          function(x) x$filename),
-                                                   sapply(objectList,
-                                                          function(x) x$valuePath),
-                                                   sapply(objectList,
-                                                          function(x) x$rowindPath),
-                                                   sapply(objectList,
-                                                          function(x) x$colptrPath),
-                                                   sapply(objectList,
-                                                          function(x) x$nrow),
-                                                   sapply(objectList,
-                                                          function(x) x$ncol),
-                                                   sapply(newDatasets,
-                                                          function(x) x$filename),
-                                                   sapply(newDatasets,
-                                                          function(x) x$valuePath),
-                                                   sapply(newDatasets,
-                                                          function(x) x$rowindPath),
-                                                   sapply(newDatasets,
-                                                          function(x) x$colptrPath),
-                                                   sapply(newDatasets,
-                                                          function(x) x$nrow),
-                                                   sapply(newDatasets,
-                                                          function(x) x$ncol),
-                                                   Vinit, Winit, Ainit, Binit,
-                                                   k, nCores, lambda, maxEpoch,
-                                                   minibatchSize, maxHALSIter,
-                                                   verbose)
+        matrix = .onlineINMF_withInitial(
+          objectList, Hinit, Vinit, Winit, Ainit, Binit,
+          newDatasets, k, nCores, lambda, maxEpoch,
+          minibatchSize, maxHALSIter, permuteChunkSize, verbose
+        ),
+        dgCMatrix = .onlineINMF_withInitial(
+          objectList, Hinit, Vinit, Winit, Ainit, Binit,
+          newDatasets, k, nCores, lambda,
+          maxEpoch, minibatchSize, maxHALSIter, permuteChunkSize, verbose
+        ),
+        H5Mat = .onlineINMF_h5dense_withInitial(
+          sapply(objectList, function(x) x$filename),
+          sapply(objectList, function(x) x$dataPath),
+          sapply(newDatasets, function(x) x$filename),
+          sapply(newDatasets, function(x) x$dataPath),
+          Hinit, Vinit, Winit, Ainit, Binit, k, nCores, lambda, maxEpoch,
+          minibatchSize, maxHALSIter, permuteChunkSize, verbose
+        ),
+        H5SpMat = .onlineINMF_h5sparse_withInitial(
+          sapply(objectList, function(x) x$filename),
+          sapply(objectList, function(x) x$valuePath),
+          sapply(objectList, function(x) x$rowindPath),
+          sapply(objectList, function(x) x$colptrPath),
+          sapply(objectList, function(x) x$nrow),
+          sapply(objectList, function(x) x$ncol),
+          sapply(newDatasets, function(x) x$filename),
+          sapply(newDatasets, function(x) x$valuePath),
+          sapply(newDatasets, function(x) x$rowindPath),
+          sapply(newDatasets, function(x) x$colptrPath),
+          sapply(newDatasets, function(x) x$nrow),
+          sapply(newDatasets, function(x) x$ncol),
+          Hinit, Vinit, Winit, Ainit, Binit,
+          k, nCores, lambda, maxEpoch, minibatchSize, maxHALSIter, 
+          permuteChunkSize, verbose
+        )
       )
       names(res$H) <- names(res$V) <- names(res$A) <- names(res$B) <-
         c(names(objectList), names(newDatasets))
@@ -310,40 +303,28 @@ onlineINMF <- function(
         mode,
         matrix = .onlineINMF_project(objectList, Winit, newDatasets, k, nCores, lambda),
         dgCMatrix = .onlineINMF_project(objectList, Winit, newDatasets, k, nCores, lambda),
-        H5Mat = .onlineINMF_project_h5dense(sapply(objectList,
-                                                   function(x) x$filename),
-                                            sapply(objectList,
-                                                   function(x) x$dataPath),
-                                            sapply(newDatasets,
-                                                   function(x) x$filename),
-                                            sapply(newDatasets,
-                                                   function(x) x$dataPath),
-                                            Winit, k, nCores, lambda),
-        H5SpMat = .onlineINMF_project_h5sparse(sapply(objectList,
-                                                      function(x) x$filename),
-                                               sapply(objectList,
-                                                      function(x) x$valuePath),
-                                               sapply(objectList,
-                                                      function(x) x$rowindPath),
-                                               sapply(objectList,
-                                                      function(x) x$colptrPath),
-                                               sapply(objectList,
-                                                      function(x) x$nrow),
-                                               sapply(objectList,
-                                                      function(x) x$ncol),
-                                               sapply(newDatasets,
-                                                      function(x) x$filename),
-                                               sapply(newDatasets,
-                                                      function(x) x$valuePath),
-                                               sapply(newDatasets,
-                                                      function(x) x$rowindPath),
-                                               sapply(newDatasets,
-                                                      function(x) x$colptrPath),
-                                               sapply(newDatasets,
-                                                      function(x) x$nrow),
-                                               sapply(newDatasets,
-                                                      function(x) x$ncol),
-                                               Winit, k, nCores, lambda),
+        H5Mat = .onlineINMF_project_h5dense(
+          sapply(objectList, function(x) x$filename),
+          sapply(objectList, function(x) x$dataPath),
+          sapply(newDatasets, function(x) x$filename),
+          sapply(newDatasets, function(x) x$dataPath),
+          Winit, k, nCores, lambda
+        ),
+        H5SpMat = .onlineINMF_project_h5sparse(
+          sapply(objectList, function(x) x$filename),
+          sapply(objectList, function(x) x$valuePath),
+          sapply(objectList, function(x) x$rowindPath),
+          sapply(objectList, function(x) x$colptrPath),
+          sapply(objectList, function(x) x$nrow),
+          sapply(objectList, function(x) x$ncol),
+          sapply(newDatasets, function(x) x$filename),
+          sapply(newDatasets, function(x) x$valuePath),
+          sapply(newDatasets, function(x) x$rowindPath),
+          sapply(newDatasets, function(x) x$colptrPath),
+          sapply(newDatasets, function(x) x$nrow),
+          sapply(newDatasets, function(x) x$ncol),
+          Winit, k, nCores, lambda
+        ),
         # Scenario 3 result
         names(res$H) <- names(newDatasets))
     }
@@ -407,12 +388,12 @@ onlineINMF <- function(
 #' factorization, Nat. Comm., 2022
 #' @examples
 #' # Fake matrices representing unshared features of the given datasets
-#' # Real-life use should have features that are not presented in the 
+#' # Real-life use should have features that are not presented in the
 #' # intersection of features of all datasets involved.
 #' ctrl.unshared <- ctrl.sparse[1:10,]
 #' stim.unshared <- stim.sparse[11:30,]
 #' set.seed(1)
-#' result <- uinmf(list(ctrl.sparse, stim.sparse), 
+#' result <- uinmf(list(ctrl.sparse, stim.sparse),
 #'                 list(ctrl.unshared, stim.unshared))
 uinmf <- function(
   objectList,
@@ -464,9 +445,9 @@ uinmf <- function(
 # Check and returns a processed `unsharedList` so it can be used with c++
 # also returns a matching vector so we don't make empty dataset and have error
 # If `objectList` has name a, b, c, d, and unsharedList has b, d, c,
-# then matching vector has c(-1, 0, 2, 1). `-1` indicates no shared features, 
+# then matching vector has c(-1, 0, 2, 1). `-1` indicates no shared features,
 # non-negs are 0-based index for which mat in `unsharedList` is the one for this
-# object. 
+# object.
 .uinmf.matchDatasets <- function(objectList, unsharedList) {
   if (is.null(names(objectList)) || is.null(names(unsharedList))) {
     if (length(unsharedList) != length(objectList)) {

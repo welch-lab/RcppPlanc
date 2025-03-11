@@ -76,12 +76,12 @@ ANLS algorithm.
 }
 \examples{
 # Fake matrices representing unshared features of the given datasets
-# Real-life use should have features that are not presented in the 
+# Real-life use should have features that are not presented in the
 # intersection of features of all datasets involved.
 ctrl.unshared <- ctrl.sparse[1:10,]
 stim.unshared <- stim.sparse[11:30,]
 set.seed(1)
-result <- uinmf(list(ctrl.sparse, stim.sparse), 
+result <- uinmf(list(ctrl.sparse, stim.sparse),
                 list(ctrl.unshared, stim.unshared))
 }
 \references{

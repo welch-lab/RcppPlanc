@@ -13,7 +13,9 @@ onlineINMF(
   maxEpoch = 5,
   minibatchSize = 5000,
   maxHALSIter = 1,
+  permuteChunkSize = 1000,
   nCores = 2,
+  Hinit = NULL,
   Vinit = NULL,
   Winit = NULL,
   Ainit = NULL,
@@ -48,14 +50,18 @@ dataset-specific effects more strongly (i.e. alignment should increase as
 algorithm) iterations to perform for each update of \eqn{W} and \eqn{V}.
 Default \code{1}. Changing this parameter is not recommended.}
 
+\item{permuteChunkSize}{Number of cells in a chunk being shuffled before
+subsetting to minibatches. Only appliable to in-memory data and for Scenario 
+1 and 2. Default \code{1000}.}
+
 \item{nCores}{The number of parallel tasks that will be spawned.
 Default \code{2}}
 
-\item{Vinit, Winit, Ainit, Binit}{Pass the previous factorization result for
-datasets existing in \code{objectList}, in order to run scenario 2 or 3. All
-should have \code{length(objectList)} matrices inside. See description for
-dimensionality of \eqn{V_i} and \eqn{W_i}. \eqn{A_i} should be of size
-\eqn{k \times k} and \eqn{B_i} should be of size \eqn{m \times k}}
+\item{Hinit, Vinit, Winit, Ainit, Binit}{Pass the previous factorization result
+for datasets existing in \code{objectList}, in order to run scenario 2 or 3.
+All should have \code{length(objectList)} matrices inside. See description
+for dimensionality of \eqn{H_i}, \eqn{V_i} and \eqn{W_i}. \eqn{A_i} should
+be of size \eqn{k \times k} and \eqn{B_i} should be of size \eqn{m \times k}}
 
 \item{verbose}{Logical scalar. Whether to show information and progress.
 Default \code{FALSE}.}
@@ -104,7 +110,7 @@ library(Matrix)
 
 # Scenario 1 with sparse matrices
 set.seed(1)
-res1 <- onlineINMF(list(ctrl.sparse, stim.sparse), 
+res1 <- onlineINMF(list(ctrl.sparse, stim.sparse),
                    minibatchSize = 50, k = 10)
 
 # Scenario 2 with H5 dense matrices
@@ -117,8 +123,8 @@ h5dense2 <- H5Mat(filename = system.file("extdata", "stim_dense.h5",
 res2 <- onlineINMF(list(ctrl = h5dense1), minibatchSize = 50, k = 10)
 res3 <- onlineINMF(list(ctrl = h5dense1),
                    newDatasets = list(stim = h5dense2),
-                   Vinit = res2$V, Winit = res2$W,
-                   Ainit = res2$A, Binit = res2$B, 
+                   Hinit = res2$H, Vinit = res2$V, Winit = res2$W,
+                   Ainit = res2$A, Binit = res2$B,
                    minibatchSize = 50, k = 10)
 
 # Scenario 3 with H5 sparse matrices
@@ -139,8 +145,9 @@ h5sparse2 <- H5SpMat(filename = system.file("extdata", "stim_sparse.h5",
 res4 <- onlineINMF(list(ctrl = h5sparse1), minibatchSize = 50, k = 10)
 res5 <- onlineINMF(list(ctrl = h5sparse1),
                    newDatasets = list(stim = h5sparse2), project = TRUE,
-                   Vinit = res4$V, Winit = res4$W,
-                   Ainit = res4$A, Binit = res4$B, minibatchSize = 50, k = 10)
+                   Hinit = res4$H, Vinit = res4$V, Winit = res4$W,
+                   Ainit = res4$A, Binit = res4$B,
+                   minibatchSize = 50, k = 10)
 
 }
 \references{
