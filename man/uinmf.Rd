@@ -82,7 +82,7 @@ ctrl.unshared <- ctrl.sparse[1:10,]
 stim.unshared <- stim.sparse[11:30,]
 set.seed(1)
 result <- uinmf(list(ctrl.sparse, stim.sparse),
-                list(ctrl.unshared, stim.unshared))
+                list(ctrl.unshared, stim.unshared), verbose = FALSE)
 }
 \references{
 April R. Kriebel and Joshua D. Welch, UINMF performs mosaic

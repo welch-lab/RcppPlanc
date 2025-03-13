@@ -51,7 +51,7 @@
 #' @examples
 #' library(Matrix)
 #' set.seed(1)
-#' result <- inmf(list(ctrl.sparse, stim.sparse), k = 10, niter = 10)
+#' result <- inmf(list(ctrl.sparse, stim.sparse), k = 10, niter = 10, verbose = FALSE)
 inmf <- function(
   objectList,
   k = 20,
@@ -166,7 +166,7 @@ inmf <- function(
 #' # Scenario 1 with sparse matrices
 #' set.seed(1)
 #' res1 <- onlineINMF(list(ctrl.sparse, stim.sparse),
-#'                    minibatchSize = 50, k = 10)
+#'                    minibatchSize = 50, k = 10, verbose = FALSE)
 #'
 #' # Scenario 2 with H5 dense matrices
 #' h5dense1 <- H5Mat(filename = system.file("extdata", "ctrl_dense.h5",
@@ -175,12 +175,12 @@ inmf <- function(
 #' h5dense2 <- H5Mat(filename = system.file("extdata", "stim_dense.h5",
 #'                              package = "RcppPlanc", mustWork = TRUE),
 #'                                           dataPath = "scaleData")
-#' res2 <- onlineINMF(list(ctrl = h5dense1), minibatchSize = 50, k = 10)
+#' res2 <- onlineINMF(list(ctrl = h5dense1), minibatchSize = 50, k = 10, verbose = FALSE)
 #' res3 <- onlineINMF(list(ctrl = h5dense1),
 #'                    newDatasets = list(stim = h5dense2),
 #'                    Hinit = res2$H, Vinit = res2$V, Winit = res2$W,
 #'                    Ainit = res2$A, Binit = res2$B,
-#'                    minibatchSize = 50, k = 10)
+#'                    minibatchSize = 50, k = 10, verbose = FALSE)
 #'
 #' # Scenario 3 with H5 sparse matrices
 #' h5sparse1 <- H5SpMat(filename = system.file("extdata", "ctrl_sparse.h5",
@@ -197,12 +197,12 @@ inmf <- function(
 #'                                 colptrPath = "scaleDataSparse/indptr",
 #'                                 nrow = nrow(stim.sparse),
 #'                                 ncol = nrow(stim.sparse))
-#' res4 <- onlineINMF(list(ctrl = h5sparse1), minibatchSize = 50, k = 10)
+#' res4 <- onlineINMF(list(ctrl = h5sparse1), minibatchSize = 50, k = 10, verbose = FALSE)
 #' res5 <- onlineINMF(list(ctrl = h5sparse1),
 #'                    newDatasets = list(stim = h5sparse2), project = TRUE,
 #'                    Hinit = res4$H, Vinit = res4$V, Winit = res4$W,
 #'                    Ainit = res4$A, Binit = res4$B,
-#'                    minibatchSize = 50, k = 10)
+#'                    minibatchSize = 50, k = 10, verbose = FALSE)
 #'
 onlineINMF <- function(
   objectList,
@@ -394,7 +394,7 @@ onlineINMF <- function(
 #' stim.unshared <- stim.sparse[11:30,]
 #' set.seed(1)
 #' result <- uinmf(list(ctrl.sparse, stim.sparse),
-#'                 list(ctrl.unshared, stim.unshared))
+#'                 list(ctrl.unshared, stim.unshared), verbose = FALSE)
 uinmf <- function(
   objectList,
   unsharedList,
