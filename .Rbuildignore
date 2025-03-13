@@ -6,6 +6,7 @@
 ^.*\.vs
 ^.*\.github
 src/planc/.git
+src/planc/bench/bench_in
 cmake-build-relwithdebinfo
 cmake-build-debug
 cmake-build-relwithdebinfo-mingw-r
