@@ -78,7 +78,7 @@ strategy.
 \examples{
 library(Matrix)
 set.seed(1)
-result <- inmf(list(ctrl.sparse, stim.sparse), k = 10, niter = 10)
+result <- inmf(list(ctrl.sparse, stim.sparse), k = 10, niter = 10, verbose = FALSE)
 }
 \references{
 Joshua D. Welch and et al., Single-Cell Multi-omic Integration
