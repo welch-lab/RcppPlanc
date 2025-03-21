@@ -2,6 +2,7 @@ library(RcppPlanc)
 library(testthat)
 library(Matrix)
 local_edition(3)
+source("helper-nmf.R")
 ctrl.h5ds <- H5Mat(filename = system.file("extdata", "ctrl_dense.h5",
                                           package = "RcppPlanc", mustWork = TRUE),
                    dataPath = "scaleData")
@@ -29,6 +30,7 @@ ni <- c(ncol(ctrl.dense), ncol(stim.dense))
 k <- 20
 
 test_that("inmf, w/o init", {
+  skip_on_winbuilder()
   # Dense cases
   set.seed(1)
   res1 <- inmf(list(ctrl.dense, stim.dense), k = k)
@@ -61,6 +63,7 @@ test_that("inmf, w/o init", {
 })
 
 test_that("inmf, w/ init", {
+  skip_on_winbuilder()
   set.seed(1)
   res0 <- inmf(list(ctrl.sparse, stim.sparse), k = k)
   res1 <- inmf(list(ctrl.sparse, stim.sparse), k = k, Hinit = res0$H, Vinit = res0$V, Winit = res0$W)
@@ -79,6 +82,7 @@ test_that("inmf, w/ init", {
 })
 
 test_that("onlineINMF, scenario 1", {
+  skip_on_winbuilder()
   set.seed(1)
   res1 <- onlineINMF(list(ctrl.sparse, stim.sparse), k = k, minibatchSize = 50)
   expect_length(res1, 6)
@@ -115,7 +119,7 @@ set.seed(42)
 res0 <- onlineINMF(list(ctrl.sparse, stim.sparse), k = k, minibatchSize = 50)
 # TODO create temp h5 file for new.data
 test_that("onlineINMF, scenario 2", {
-  
+  skip_on_winbuilder()
   set.seed(1)
   res1 <- onlineINMF(list(ctrl.sparse, stim.sparse), newDatasets = list(new.data),
                      k = k, minibatchSize = 50, permuteChunkSize = 32,
@@ -178,6 +182,7 @@ test_that("onlineINMF, scenario 2", {
 })
 
 test_that("onlineINMF, scenario 3", {
+  skip_on_winbuilder()
   expect_no_error(onlineINMF(list(ctrl.sparse, stim.sparse),
                              newDatasets = list(new.data), project = TRUE,
                              k = k, minibatchSize = 50, Winit = res0$W))
@@ -188,6 +193,7 @@ p2 <- stim.sparse[11:30,]
 p1.dense <- as.matrix(p1)
 p2.dense <- as.matrix(p2)
 test_that("uinmf", {
+ skip_on_winbuilder()
  set.seed(1)
  res1 <- uinmf(list(ctrl.sparse, stim.sparse), list(p1, p2))
  expect_length(res1, 5)
@@ -218,6 +224,7 @@ test_that("uinmf", {
 })
 
 test_that("auxiliary", {
+  skip_on_winbuilder()
   expect_error(H5Mat("thisFilenameShouldNotExist", "something"),
                "File not found")
   expect_error(as.H5Mat(ctrl.dense, "temp_new_dense.h5", overwrite = FALSE),

@@ -1,8 +1,8 @@
 Package: RcppPlanc
 Type: Package
 Title: Parallel Low-Rank Approximation with Nonnegativity Constraints
-Version: 1.1.0
-Date: 2025-02-04
+Version: 2.0.0
+Date: 2025-03-21f
 Authors@R: c(
   person(given = 'Andrew', family = 'Robbins', email = 'robbiand@umich.edu', role = c('aut', 'cre')),
   person(given = 'Yichen', family = 'Wang', email = 'wayichen@umich.edu', role = c('aut')),
@@ -36,6 +36,6 @@ RoxygenNote: 7.3.2
 SystemRequirements: C++17, cmake >= 3.21.0, hdf5, git, v8, patch, gnumake, hwloc, GNU make
 Config/testthat/edition: 3
 Depends:
-    R (>= 2.10)
+    R (>= 3.5)
 LazyData: true
 VignetteBuilder: knitr

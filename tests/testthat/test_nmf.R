@@ -1,3 +1,4 @@
+source("helper-nmf.R")
 set.seed(1)
 m <- 100
 n <- 300
@@ -5,6 +6,7 @@ k <- 10
 mat <- matrix(runif(m*n, 0, 1), nrow = m, ncol = n)
 
 test_that("dense, nmf, anlsbpp", {
+    skip_on_winbuilder()
     # Working use
     res <- nmf(mat, k, niter = 100)
     expect_type(res, "list")
@@ -29,6 +31,7 @@ test_that("dense, nmf, anlsbpp", {
 })
 
 test_that("dense, nmf, admm", {
+    skip_on_winbuilder()
     res <- nmf(mat, k, niter = 100, algo = "admm")
     expect_lte(res$objErr, 2025)
     expect_gte(res$objErr, 1)
@@ -36,12 +39,14 @@ test_that("dense, nmf, admm", {
 })
 
 test_that("dense, nmf, hals", {
+    skip_on_winbuilder()
     res <- nmf(mat, k, niter = 100, algo = "hals")
     expect_lte(res$objErr, 2030)
     expect_gte(res$objErr, 1)
 })
 
 test_that("dense, nmf, mu", {
+    skip_on_winbuilder()
     res <- nmf(mat, k, niter = 100, algo = "mu")
     expect_lte(res$objErr, 2650)
     expect_gte(res$objErr, 1)
@@ -51,6 +56,7 @@ symmat <- t(mat) %*% mat
 lambda <- 5
 
 test_that("dense, symNMF, anlsbpp", {
+    skip_on_winbuilder()
     res <- symNMF(symmat, k, niter = 100, lambda = lambda, algo = "anlsbpp")
     expect_lte(res$objErr, 4e7)
 
@@ -76,6 +82,7 @@ test_that("dense, symNMF, anlsbpp", {
 })
 
 test_that("dense, symNMF, gnsym", {
+  skip_on_winbuilder()
   res <- symNMF(symmat, k, niter = 100, algo = "gnsym")
   expect_lte(res$objErr, 5.8e4)
 })
@@ -97,6 +104,7 @@ while (regenerate) {
 }
 
 test_that("sparse, nmf, anlsbpp", {
+  skip_on_winbuilder()
   set.seed(1)
   res1 <- nmf(mat.sp, k, niter = 100)
   expect_type(res1, "list")
@@ -125,18 +133,21 @@ test_that("sparse, nmf, anlsbpp", {
 })
 
 test_that("sparse, nmf, admm", {
+  skip_on_winbuilder()
   res <- nmf(mat.sp, k, niter = 100, algo = "admm")
   expect_lte(res$objErr, 800)
   expect_gte(res$objErr, 1)
 })
 
 test_that("sparse, nmf, hals", {
+  skip_on_winbuilder()
   res <- nmf(mat.sp, k, niter = 100, algo = "hals")
   expect_lte(res$objErr, 800)
   expect_gte(res$objErr, 1)
 })
 
 test_that("sparse, nmf, mu", {
+  skip_on_winbuilder()
   res <- nmf(mat.sp, k, niter = 100, algo = "mu")
   expect_lte(res$objErr, 950)
   expect_gte(res$objErr, 1)
@@ -145,11 +156,13 @@ test_that("sparse, nmf, mu", {
 symmat.sp <- Matrix::t(mat.sp) %*% mat.sp
 
 test_that("sparse, symNMF, anlsbpp", {
+  skip_on_winbuilder()
   res <- symNMF(symmat.sp, k, niter = 100, lambda = lambda, algo = "anlsbpp")
   expect_lte(res$objErr, 4e5)
 })
 
 test_that("sparse, symNMF, gnsym", {
+  skip_on_winbuilder()
   res <- symNMF(symmat.sp, k, niter = 100, algo = "gnsym")
   expect_lte(res$objErr, 1e4)
 })
