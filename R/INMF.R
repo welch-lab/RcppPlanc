@@ -17,7 +17,7 @@
 #' \code{\link{onlineINMF}} optimizes the same objective with an online learning
 #' strategy.
 #' @param objectList list of input datasets. List elements should all be of the
-#' same class. Viable classes include: matrix, \linkS4class{dgCMatrix},
+#' same class. Viable classes include: matrix, dgCMatrix,
 #' \link{H5Mat}, \link{H5SpMat}.
 #' @param k Integer. Inner dimensionality to factorize the datasets into.
 #' Default \code{20}.
@@ -115,7 +115,7 @@ inmf <- function(
 #'  \item Projection of new datasets without updating the existing factorization
 #' }
 #' @param objectList list of input datasets. List elements should all be of the
-#' same class. Viable classes include: matrix, \linkS4class{dgCMatrix},
+#' same class. Viable classes include: matrix, dgCMatrix,
 #' \link{H5Mat}, \link{H5SpMat}.
 #' @param newDatasets Same requirements as for new arriving datasets. Default
 #' \code{NULL} for scenario 1, specify for scenario 2 or 3.
@@ -357,7 +357,7 @@ onlineINMF <- function(
 #' Similar to \code{\link{inmf}}, \code{uinmf} also optimizes the objective with
 #' ANLS algorithm.
 #' @param objectList list of input datasets. List elements should all be of the
-#' same class. Viable classes include: matrix, \linkS4class{dgCMatrix},
+#' same class. Viable classes include: matrix, dgCMatrix,
 #' \link{H5Mat}, \link{H5SpMat}.
 #' @param unsharedList List of input unshared feature matrices, with the same
 #' requirement as \code{objectList}.
