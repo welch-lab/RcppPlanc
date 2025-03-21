@@ -405,6 +405,32 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// bppnnls
+arma::mat bppnnls(const arma::mat& C, const SEXP& B, const int& nCores);
+RcppExport SEXP _RcppPlanc_bppnnls(SEXP CSEXP, SEXP BSEXP, SEXP nCoresSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type C(CSEXP);
+    Rcpp::traits::input_parameter< const SEXP& >::type B(BSEXP);
+    Rcpp::traits::input_parameter< const int& >::type nCores(nCoresSEXP);
+    rcpp_result_gen = Rcpp::wrap(bppnnls(C, B, nCores));
+    return rcpp_result_gen;
+END_RCPP
+}
+// bppnnls_prod
+arma::mat bppnnls_prod(const arma::mat& CtC, const arma::mat& CtB, const int& nCores);
+RcppExport SEXP _RcppPlanc_bppnnls_prod(SEXP CtCSEXP, SEXP CtBSEXP, SEXP nCoresSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type CtC(CtCSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type CtB(CtBSEXP);
+    Rcpp::traits::input_parameter< const int& >::type nCores(nCoresSEXP);
+    rcpp_result_gen = Rcpp::wrap(bppnnls_prod(CtC, CtB, nCores));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_RcppPlanc_nmf", (DL_FUNC) &_RcppPlanc_nmf, 7},
@@ -426,6 +452,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppPlanc_uinmf_h5sparse", (DL_FUNC) &_RcppPlanc_uinmf_h5sparse, 18},
     {"_RcppPlanc_openblas_pthread_off", (DL_FUNC) &_RcppPlanc_openblas_pthread_off, 1},
     {"_RcppPlanc_openblas_pthread_on", (DL_FUNC) &_RcppPlanc_openblas_pthread_on, 1},
+    {"_RcppPlanc_bppnnls", (DL_FUNC) &_RcppPlanc_bppnnls, 3},
+    {"_RcppPlanc_bppnnls_prod", (DL_FUNC) &_RcppPlanc_bppnnls_prod, 3},
     {NULL, NULL, 0}
 };
 
