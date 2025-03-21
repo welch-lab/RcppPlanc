@@ -25,7 +25,7 @@ onlineINMF(
 }
 \arguments{
 \item{objectList}{list of input datasets. List elements should all be of the
-same class. Viable classes include: matrix, \linkS4class{dgCMatrix},
+same class. Viable classes include: matrix, dgCMatrix,
 \link{H5Mat}, \link{H5SpMat}.}
 
 \item{newDatasets}{Same requirements as for new arriving datasets. Default
