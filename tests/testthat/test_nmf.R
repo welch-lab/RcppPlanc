@@ -18,7 +18,7 @@ test_that("dense, nmf, anlsbpp", {
     expect_gte(res$objErr, 1)
 
     # Using init W and H
-    res <- nmf(mat, k, niter = 100, Winit = res$W, Hinit = res$H)
+    res <- nmf(mat, k, niter = 100, Winit = res$W, Hinit = res$H, nCores = 2)
     expect_lte(res$objErr, 2025)
     expect_gte(res$objErr, 1)
 
@@ -32,7 +32,7 @@ test_that("dense, nmf, anlsbpp", {
 
 test_that("dense, nmf, admm", {
     skip_on_winbuilder()
-    res <- nmf(mat, k, niter = 100, algo = "admm")
+    res <- nmf(mat, k, niter = 100, algo = "admm", nCores = 2)
     expect_lte(res$objErr, 2025)
     expect_gte(res$objErr, 1)
 
@@ -40,14 +40,14 @@ test_that("dense, nmf, admm", {
 
 test_that("dense, nmf, hals", {
     skip_on_winbuilder()
-    res <- nmf(mat, k, niter = 100, algo = "hals")
+    res <- nmf(mat, k, niter = 100, algo = "hals", nCores = 2)
     expect_lte(res$objErr, 2030)
     expect_gte(res$objErr, 1)
 })
 
 test_that("dense, nmf, mu", {
     skip_on_winbuilder()
-    res <- nmf(mat, k, niter = 100, algo = "mu")
+    res <- nmf(mat, k, niter = 100, algo = "mu", nCores = 2)
     expect_lte(res$objErr, 2650)
     expect_gte(res$objErr, 1)
 })
@@ -57,11 +57,11 @@ lambda <- 5
 
 test_that("dense, symNMF, anlsbpp", {
     skip_on_winbuilder()
-    res <- symNMF(symmat, k, niter = 100, lambda = lambda, algo = "anlsbpp")
+    res <- symNMF(symmat, k, niter = 100, lambda = lambda, algo = "anlsbpp", nCores = 2)
     expect_lte(res$objErr, 4e7)
 
     res <- symNMF(symmat, k, niter = 100, lambda = lambda, algo = "anlsbpp",
-                  Hinit = res$H)
+                  Hinit = res$H, nCores = 2)
     expect_lte(res$objErr, 4e7)
 
     expect_error({
@@ -83,7 +83,7 @@ test_that("dense, symNMF, anlsbpp", {
 
 test_that("dense, symNMF, gnsym", {
   skip_on_winbuilder()
-  res <- symNMF(symmat, k, niter = 100, algo = "gnsym")
+  res <- symNMF(symmat, k, niter = 100, algo = "gnsym", nCores = 2)
   expect_lte(res$objErr, 5.8e4)
 })
 
@@ -106,7 +106,7 @@ while (regenerate) {
 test_that("sparse, nmf, anlsbpp", {
   skip_on_winbuilder()
   set.seed(1)
-  res1 <- nmf(mat.sp, k, niter = 100)
+  res1 <- nmf(mat.sp, k, niter = 100, nCores = 2)
   expect_type(res1, "list")
   expect_equal(nrow(res1$W), m)
   expect_equal(ncol(res1$W), k)
@@ -115,10 +115,10 @@ test_that("sparse, nmf, anlsbpp", {
   expect_lte(res1$objErr, 800)
   expect_gte(res1$objErr, 1)
   set.seed(1)
-  res2 <- nmf(as.matrix(mat.sp), k, niter = 100)
+  res2 <- nmf(as.matrix(mat.sp), k, niter = 100, nCores = 2)
   expect_true(all.equal(res1, res2))
   # Using init W and H
-  res <- nmf(mat.sp, k, niter = 100, Winit = res1$W, Hinit = res1$H)
+  res <- nmf(mat.sp, k, niter = 100, Winit = res1$W, Hinit = res1$H, nCores = 2)
   # Expected max objective error
   expect_lte(res$objErr, 800)
   expect_gte(res$objErr, 1)
@@ -134,21 +134,21 @@ test_that("sparse, nmf, anlsbpp", {
 
 test_that("sparse, nmf, admm", {
   skip_on_winbuilder()
-  res <- nmf(mat.sp, k, niter = 100, algo = "admm")
+  res <- nmf(mat.sp, k, niter = 100, algo = "admm", nCores = 2)
   expect_lte(res$objErr, 800)
   expect_gte(res$objErr, 1)
 })
 
 test_that("sparse, nmf, hals", {
   skip_on_winbuilder()
-  res <- nmf(mat.sp, k, niter = 100, algo = "hals")
+  res <- nmf(mat.sp, k, niter = 100, algo = "hals", nCores = 2)
   expect_lte(res$objErr, 800)
   expect_gte(res$objErr, 1)
 })
 
 test_that("sparse, nmf, mu", {
   skip_on_winbuilder()
-  res <- nmf(mat.sp, k, niter = 100, algo = "mu")
+  res <- nmf(mat.sp, k, niter = 100, algo = "mu", nCores = 2)
   expect_lte(res$objErr, 950)
   expect_gte(res$objErr, 1)
 })
@@ -157,12 +157,12 @@ symmat.sp <- Matrix::t(mat.sp) %*% mat.sp
 
 test_that("sparse, symNMF, anlsbpp", {
   skip_on_winbuilder()
-  res <- symNMF(symmat.sp, k, niter = 100, lambda = lambda, algo = "anlsbpp")
+  res <- symNMF(symmat.sp, k, niter = 100, lambda = lambda, algo = "anlsbpp", nCores = 2)
   expect_lte(res$objErr, 4e5)
 })
 
 test_that("sparse, symNMF, gnsym", {
   skip_on_winbuilder()
-  res <- symNMF(symmat.sp, k, niter = 100, algo = "gnsym")
+  res <- symNMF(symmat.sp, k, niter = 100, algo = "gnsym", nCores = 2)
   expect_lte(res$objErr, 1e4)
 })

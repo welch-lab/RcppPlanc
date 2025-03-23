@@ -43,7 +43,7 @@ The implementation currently supports the factorization of both dense and sparse
 
 ```{r nmfDense}
 mat <- matrix(runif(50*100), nrow = 50, ncol = 100)
-res <- nmf(mat, k = 10)
+res <- nmf(mat, k = 10, nCores = 2)
 ```
 
 The output result `res` is a list object with entries `res$W` and `res$H` for the output matrices as described above. Note that here matrix `res$H` is transposed (i.e. $n \times k$) for the sake of efficient implementation. `res$objErr` is the objective error computed for the result.
@@ -68,7 +68,7 @@ data("stim.sparse")
 To run iNMF with the datasets in hand, simply create a list of them and call the function `inmf()`.
 
 ```{r inmf, message=FALSE, results='hide'}
-res <- inmf(list(ctrl.sparse, stim.sparse), k = 20, lambda = 5)
+res <- inmf(list(ctrl.sparse, stim.sparse), k = 20, lambda = 5, nCores = 2)
 ```
 
 The returned result is also a list object, which contains the following entries:
@@ -115,7 +115,7 @@ With the argument list constructed, we can simply run any iNMF algorithm with ha
 >Note that it is recommended to apply `onlineINMF()` with HDF5 files due to the nature of the HALS algorithm it adopts. `inmf()` and `uinmf()` use ANLS updating approach which requires subsetting on rows of the data and could be very slow. Although this is still supported. Optimization might be updated in future versions.
 
 ```{r onlineinmf, message=FALSE, results='hide'}
-res <- onlineINMF(list(ctrl.h5sparse, stim.h5sparse), k = 20, lambda = 5, minibatchSize = 50)
+res <- onlineINMF(list(ctrl.h5sparse, stim.h5sparse), k = 20, lambda = 5, minibatchSize = 50, nCores = 2)
 ```
 
 Here, the result is also a similar list object but with two additional entries `res$A` and `res$B`. These are dataset specific matrices storing the algorithm update information but not the primary result of iNMF. These are needed for performing other scenarios of online iNMF. Please see `?onlineINMF` for more explanation. 

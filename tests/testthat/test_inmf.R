@@ -33,7 +33,7 @@ test_that("inmf, w/o init", {
   skip_on_winbuilder()
   # Dense cases
   set.seed(1)
-  res1 <- inmf(list(ctrl.dense, stim.dense), k = k)
+  res1 <- inmf(list(ctrl.dense, stim.dense), k = k, nCores = 2)
   expect_length(res1, 4)
   expect_length(res1$H, 2)
   expect_length(res1$V, 2)
@@ -48,7 +48,7 @@ test_that("inmf, w/o init", {
                "k must be <= m")
   # Sparse cases
   set.seed(1)
-  res2 <- inmf(list(ctrl.sparse, stim.sparse), k = k)
+  res2 <- inmf(list(ctrl.sparse, stim.sparse), k = k, nCores = 2)
   expect_true(all.equal(res1, res2))
   
   # dense h5 cases
@@ -58,16 +58,16 @@ test_that("inmf, w/o init", {
   
   # sparse h5 cases
   set.seed(1)
-  res4 <- inmf(objectList = list(ctrl.h5sp, stim.h5sp), k = k)
+  res4 <- inmf(objectList = list(ctrl.h5sp, stim.h5sp), k = k, nCores = 2)
   expect_true(all.equal(res1, res4, tolerance = 1e-6))
 })
 
 test_that("inmf, w/ init", {
   skip_on_winbuilder()
   set.seed(1)
-  res0 <- inmf(list(ctrl.sparse, stim.sparse), k = k)
-  res1 <- inmf(list(ctrl.sparse, stim.sparse), k = k, Hinit = res0$H, Vinit = res0$V, Winit = res0$W)
-  res2 <- inmf(list(ctrl.dense, stim.dense), k = k, Hinit = res0$H, Vinit = res0$V, Winit = res0$W)
+  res0 <- inmf(list(ctrl.sparse, stim.sparse), k = k, nCores = 2)
+  res1 <- inmf(list(ctrl.sparse, stim.sparse), k = k, Hinit = res0$H, Vinit = res0$V, Winit = res0$W, nCores = 2)
+  res2 <- inmf(list(ctrl.dense, stim.dense), k = k, Hinit = res0$H, Vinit = res0$V, Winit = res0$W,, nCores = 2)
   expect_true(all.equal(res1, res2))
   
   expect_error(inmf(list(ctrl.sparse, stim.sparse), k = k, 
@@ -84,7 +84,7 @@ test_that("inmf, w/ init", {
 test_that("onlineINMF, scenario 1", {
   skip_on_winbuilder()
   set.seed(1)
-  res1 <- onlineINMF(list(ctrl.sparse, stim.sparse), k = k, minibatchSize = 50)
+  res1 <- onlineINMF(list(ctrl.sparse, stim.sparse), k = k, minibatchSize = 50, nCores = 2)
   expect_length(res1, 6)
   expect_length(res1$H, 2)
   expect_length(res1$V, 2)
@@ -98,15 +98,15 @@ test_that("onlineINMF, scenario 1", {
                "All datasets should be of the same class")
   # TODO could be more error cases
   set.seed(1)
-  res2 <- onlineINMF(list(ctrl.dense, stim.dense), k = k, minibatchSize = 50)
+  res2 <- onlineINMF(list(ctrl.dense, stim.dense), k = k, minibatchSize = 50, nCores = 2)
   expect_true(all.equal(res1, res2))
   # dense h5 cases
   set.seed(1)
-  res3 <- onlineINMF(list(ctrl.h5ds, stim.h5ds), k = k, minibatchSize = 50)
+  res3 <- onlineINMF(list(ctrl.h5ds, stim.h5ds), k = k, minibatchSize = 50, nCores = 2)
   expect_true(all.equal(res1, res3))
   # sparse h5 cases
   set.seed(1)
-  res4 <- onlineINMF(list(ctrl.h5sp, stim.h5sp), k = k, minibatchSize = 50)
+  res4 <- onlineINMF(list(ctrl.h5sp, stim.h5sp), k = k, minibatchSize = 50, nCores = 2)
   expect_true(all.equal(res1, res4, tolerance = 1e-6))
 })
 set.seed(233)
@@ -124,12 +124,12 @@ test_that("onlineINMF, scenario 2", {
   res1 <- onlineINMF(list(ctrl.sparse, stim.sparse), newDatasets = list(new.data),
                      k = k, minibatchSize = 50, permuteChunkSize = 32,
                      Hinit = res0$H, Vinit = res0$V, Winit = res0$W,
-                     Ainit = res0$A, Binit = res0$B)
+                     Ainit = res0$A, Binit = res0$B, nCores = 2)
   set.seed(1)
   res2 <- onlineINMF(list(ctrl.dense, stim.dense), newDatasets = list(new.data.dense),
                      k = k, minibatchSize = 50, permuteChunkSize = 32,
                      Hinit = res0$H, Vinit = res0$V, Winit = res0$W,
-                     Ainit = res0$A, Binit = res0$B)
+                     Ainit = res0$A, Binit = res0$B, nCores = 2)
   expect_true(all.equal(res1, res2))
   expect_error(onlineINMF(list(ctrl.dense, stim.dense), newDatasets = list(new.data),
                           k = k, minibatchSize = 50, Hinit = res0$H, 
@@ -171,13 +171,13 @@ test_that("onlineINMF, scenario 2", {
   res3 <- onlineINMF(list(ctrl.h5sp, stim.h5sp), newDatasets = list(new.h5sp),
                      k = k, minibatchSize = 50, permuteChunkSize = 32,
                      Hinit = res0$H, Vinit = res0$V, Winit = res0$W,
-                     Ainit = res0$A, Binit = res0$B)
+                     Ainit = res0$A, Binit = res0$B, nCores = 2)
   expect_true(all.equal(res1, res3))
   set.seed(1)
   res4 <- onlineINMF(list(ctrl.h5ds, stim.h5ds), newDatasets = list(new.h5m),
                      k = k, minibatchSize = 50,  Hinit = res0$H, 
                      Vinit = res0$V, Winit = res0$W,
-                     Ainit = res0$A, Binit = res0$B)
+                     Ainit = res0$A, Binit = res0$B, nCores = 2)
   expect_true(all.equal(res1, res4))
 })
 
@@ -185,7 +185,7 @@ test_that("onlineINMF, scenario 3", {
   skip_on_winbuilder()
   expect_no_error(onlineINMF(list(ctrl.sparse, stim.sparse),
                              newDatasets = list(new.data), project = TRUE,
-                             k = k, minibatchSize = 50, Winit = res0$W))
+                             k = k, minibatchSize = 50, Winit = res0$W, nCores = 2))
 })
 
 p1 <- ctrl.sparse[1:10,]
@@ -195,7 +195,7 @@ p2.dense <- as.matrix(p2)
 test_that("uinmf", {
  skip_on_winbuilder()
  set.seed(1)
- res1 <- uinmf(list(ctrl.sparse, stim.sparse), list(p1, p2))
+ res1 <- uinmf(list(ctrl.sparse, stim.sparse), list(p1, p2), nCores = 2)
  expect_length(res1, 5)
  expect_length(res1$H, 2)
  expect_length(res1$V, 2)
@@ -205,7 +205,7 @@ test_that("uinmf", {
  expect_true(all.equal(dim(res1$U[[2]]), c(20, 20)))
  expect_lte(res1$objErr, 4.5e4)
  set.seed(1)
- res2 <- uinmf(list(ctrl.dense, stim.dense), list(p1.dense, p2.dense))
+ res2 <- uinmf(list(ctrl.dense, stim.dense), list(p1.dense, p2.dense), nCores = 2)
  expect_true(all.equal(res1, res2))
   expect_error(uinmf(list(ctrl.sparse, stim.sparse), list(p1, p2), lambda = 1:3),
                "Must specify 1 lambda for all or each.")
@@ -216,9 +216,9 @@ test_that("uinmf", {
   expect_error(uinmf(list(ctrl.sparse, stim.sparse), list(p1, p2[,1:100])),
                "Number of columns in each matrix from")
   set.seed(1)
-  res3 <- uinmf(list(a = ctrl.sparse, b = stim.sparse), list(a = p1))
+  res3 <- uinmf(list(a = ctrl.sparse, b = stim.sparse), list(a = p1), nCores = 2)
   set.seed(1)
-  res4 <- uinmf(list(a = ctrl.dense, b = stim.dense), list(a = p1.dense))
+  res4 <- uinmf(list(a = ctrl.dense, b = stim.dense), list(a = p1.dense), nCores = 2)
   expect_true(all.equal(res3, res4))
   expect_equal(length(res4$U), 1)
 })
