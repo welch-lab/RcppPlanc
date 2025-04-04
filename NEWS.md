@@ -1,3 +1,6 @@
+# RcppPlanc 2.0.3
+* 3rd attempt to refactor the BLAS detection of the CMake system. (0.1 and 0.2 were failed attempts at same)
+
 # RcppPlanc 2.0.0
 
 * Initial CRAN release
