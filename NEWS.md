@@ -1,3 +1,10 @@
+# RcppPlanc 2.0.4
+* Fixed data.cpp opening H5SpMat as ReadWrite instead of ReadOnly
+* CMake now checks R_RHOME before path.
+* Added fallback to guess R_LDFLAGS when Makeconf parsing fails.
+* Removed bad check_symbol_exists test in FindHWLOC.
+* Use HWLOC_LDFLAGS instead of pkgcfg_lib_HWLOC_hwloc to capture both pkgconf and find_library situations.
+
 # RcppPlanc 2.0.3
 * 3rd attempt to refactor the BLAS detection of the CMake system. (0.1 and 0.2 were failed attempts at same)
 
