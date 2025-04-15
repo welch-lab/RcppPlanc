@@ -1,3 +1,6 @@
+# RcppPlanc 2.0.5
+* Fixed typo in FindR.cmake (oops!)
+
 # RcppPlanc 2.0.4
 * Fixed data.cpp opening H5SpMat as ReadWrite instead of ReadOnly
 * CMake now checks R_RHOME before path.
