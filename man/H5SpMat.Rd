@@ -65,7 +65,7 @@ if (require("withr")) {
   H5SpMatEx <- function() {
     withr::local_dir(withr::local_tempdir())
     h <- H5SpMat(system.file("extdata/ctrl_sparse.h5", package = "RcppPlanc"),
-                 "data", "indices", "indptr", 173, 300)
+         "scaleDataSparse/data", "scaleDataSparse/indices", "scaleDataSparse/indptr", 173, 300)
     dim(h)
 
     library(Matrix)
