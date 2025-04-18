@@ -8,6 +8,8 @@ Authors@R: c(
   person(given = 'Yichen', family = 'Wang', email = 'wayichen@umich.edu', role = c('aut')),
   person(given = 'Joshua', family = 'Welch', role = c('cph'), comment = c(ORCID = "0000-0002-5869-2391")),
   person(given = 'Ramakrishnan', family = 'Kannan', role = c('cph'), comment = c(ORCID = "0000-0002-5852-4806")),
+  person("Conrad", "Sanderson", role = "cph", comment = c(ORCID = "0000-0002-0049-4501")),
+  person("Blue Brain Project/EPFL", role = "cph", comment = "HighFive Headers"),
   person("UT-Batelle", role = c('cph'), comment = "The original PLANC code"))
 Description: 'Rcpp' bindings for 'PLANC', a highly parallel
              and extensible NMF/NTF  (Non-negative Matrix/Tensor Factorization) library.
