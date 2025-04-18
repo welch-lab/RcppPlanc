@@ -1,5 +1,7 @@
 # RcppPlanc 2.0.5
 * Fixed typo in FindR.cmake (oops!)
+* Use HWLOC_LIBRARIES instead of HWLOC_LDFLAGS
+* Fixed mistake in H5SpMat constructor example
 
 # RcppPlanc 2.0.4
 * Fixed data.cpp opening H5SpMat as ReadWrite instead of ReadOnly
