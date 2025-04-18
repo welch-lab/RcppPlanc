@@ -3,6 +3,7 @@
 * Use HWLOC_LIBRARIES instead of HWLOC_LDFLAGS
 * Fixed mistake in H5SpMat constructor example
 * Added copyright indicators for HighFive and Armadillo
+* Fixed MKL detection
 
 # RcppPlanc 2.0.4
 * Fixed data.cpp opening H5SpMat as ReadWrite instead of ReadOnly
