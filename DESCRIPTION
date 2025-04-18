@@ -35,7 +35,7 @@ LinkingTo: Rcpp, RcppArmadillo, RcppProgress
 License: GPL (>= 2)
 Roxygen: list(load = "installed")
 RoxygenNote: 7.3.2
-SystemRequirements: C++17, cmake >= 3.21.0, hdf5, git, v8, patch, gnumake, hwloc, GNU make
+SystemRequirements: C++17, cmake >= 3.21.0, hdf5, git, patch, gnumake, hwloc, GNU make
 Config/testthat/edition: 3
 Depends:
     R (>= 3.5)
