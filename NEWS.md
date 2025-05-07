@@ -1,3 +1,6 @@
+# RcppPlanc 2.0.6
+* Sanitized regex from Rscript call in src/planc/CMakeLists/FindR.cmake
+
 # RcppPlanc 2.0.5
 * Fixed typo in FindR.cmake (oops!)
 * Use HWLOC_LIBRARIES instead of HWLOC_LDFLAGS
