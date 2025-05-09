@@ -1,3 +1,6 @@
+# RcppPlanc 2.0.7
+* Allow for empty LIBR_STRING on certain Linux machines.
+
 # RcppPlanc 2.0.6
 * Sanitized regex from Rscript call in src/planc/CMakeLists/FindR.cmake
 
