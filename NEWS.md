@@ -1,3 +1,6 @@
+# RcppPlanc 2.0.8
+* Add runtime check to make sure MKL actually works if detected
+
 # RcppPlanc 2.0.7
 * Allow for empty LIBR_STRING on certain Linux machines.
 
