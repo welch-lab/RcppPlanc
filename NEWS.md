@@ -1,3 +1,7 @@
+# RcppPlanc 2.0.9
+* Add check for path specifically used by Prof. Ripley's CRAN builders to disable MKL
+* Fix generic linkage for BLAS/LAPACK in BUILD_RCPP case
+
 # RcppPlanc 2.0.8
 * Add runtime check to make sure MKL actually works if detected
 
