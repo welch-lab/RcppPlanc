@@ -1,3 +1,7 @@
+# RcppPlanc 2.0.10
+* Removed masked cblas_sgemm as it was never being called and causing all sorts of linkage issues
+* Remove cblas library linkage and some includes.
+
 # RcppPlanc 2.0.9
 * Add check for path specifically used by Prof. Ripley's CRAN builders to disable MKL
 * Fix generic linkage for BLAS/LAPACK in BUILD_RCPP case
