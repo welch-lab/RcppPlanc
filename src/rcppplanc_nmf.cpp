@@ -27,8 +27,8 @@
 // T2 e.g. arma::sp_mat
 template<typename T2, typename eT = typename T2::elem_type>
 Rcpp::List runNMF(T2 x, arma::uword k, const std::string&algo, const arma::uword&niter, const int&nCores,
-                  const Rcpp::Nullable<Rcpp::NumericMatrix> Winit,
-                  const Rcpp::Nullable<Rcpp::NumericMatrix> Hinit) {
+                  const Rcpp::Nullable<arma::mat> Winit,
+                  const Rcpp::Nullable<arma::mat> Hinit) {
     typedef planc::nmfOutput<eT> (*nmfCallType)(const T2&, const arma::uword&, const arma::uword&, const std::string&,
                                                 const int&, const arma::mat&, const arma::mat&);
     planc::nmfOutput<eT> libcall{};
@@ -87,8 +87,8 @@ Rcpp::List runNMF(T2 x, arma::uword k, const std::string&algo, const arma::uword
 Rcpp::List nmf(const SEXP&x, const arma::uword&k, const arma::uword&niter = 30,
                const std::string&algo = "anlsbpp",
                const int&nCores = 2,
-               const Rcpp::Nullable<Rcpp::NumericMatrix>&Winit = R_NilValue,
-               const Rcpp::Nullable<Rcpp::NumericMatrix>&Hinit = R_NilValue) {
+               const Rcpp::Nullable<arma::mat>&Winit = R_NilValue,
+               const Rcpp::Nullable<arma::mat>&Hinit = R_NilValue) {
     Rcpp::List outlist;
     try {
         if (Rf_isS4(x)) {
@@ -111,7 +111,7 @@ Rcpp::List nmf(const SEXP&x, const arma::uword&k, const arma::uword&niter = 30,
 template<class T2, typename eT = typename T2::elem_type>
 Rcpp::List runSymNMF(const T2&x, const arma::uword&k, const int&nCores, const arma::uword&niter, const double&symm_reg,
                      const std::string&algo,
-                     const Rcpp::Nullable<Rcpp::NumericMatrix> Hinit) {
+                     const Rcpp::Nullable<arma::mat> Hinit) {
     typedef planc::nmfOutput<eT> (*symnmfCallType)(const T2&, const arma::uword&, const arma::uword&, const double&,
                                                    const std::string&, const int&, const arma::mat&);
     planc::nmfOutput<eT> libcall{};
@@ -173,7 +173,7 @@ Rcpp::List runSymNMF(const T2&x, const arma::uword&k, const int&nCores, const ar
 // [[Rcpp::export()]]
 Rcpp::List symNMF(const SEXP&x, const arma::uword&k, const arma::uword&niter = 30,
                   const double&lambda = 0.0, const std::string&algo = "gnsym", const int&nCores = 2,
-                  const Rcpp::Nullable<Rcpp::NumericMatrix>&Hinit = R_NilValue) {
+                  const Rcpp::Nullable<arma::mat>&Hinit = R_NilValue) {
     //   arma::mat out;
     Rcpp::List out;
     try {
