@@ -13,7 +13,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // nmf
-Rcpp::List nmf(const SEXP& x, const arma::uword& k, const arma::uword& niter, const std::string& algo, const int& nCores, const Rcpp::Nullable<Rcpp::NumericMatrix>& Winit, const Rcpp::Nullable<Rcpp::NumericMatrix>& Hinit);
+Rcpp::List nmf(const SEXP& x, const arma::uword& k, const arma::uword& niter, const std::string& algo, const int& nCores, const Rcpp::Nullable<arma::mat>& Winit, const Rcpp::Nullable<arma::mat>& Hinit);
 RcppExport SEXP _RcppPlanc_nmf(SEXP xSEXP, SEXP kSEXP, SEXP niterSEXP, SEXP algoSEXP, SEXP nCoresSEXP, SEXP WinitSEXP, SEXP HinitSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -23,14 +23,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::uword& >::type niter(niterSEXP);
     Rcpp::traits::input_parameter< const std::string& >::type algo(algoSEXP);
     Rcpp::traits::input_parameter< const int& >::type nCores(nCoresSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::Nullable<Rcpp::NumericMatrix>& >::type Winit(WinitSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::Nullable<Rcpp::NumericMatrix>& >::type Hinit(HinitSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::Nullable<arma::mat>& >::type Winit(WinitSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::Nullable<arma::mat>& >::type Hinit(HinitSEXP);
     rcpp_result_gen = Rcpp::wrap(nmf(x, k, niter, algo, nCores, Winit, Hinit));
     return rcpp_result_gen;
 END_RCPP
 }
 // symNMF
-Rcpp::List symNMF(const SEXP& x, const arma::uword& k, const arma::uword& niter, const double& lambda, const std::string& algo, const int& nCores, const Rcpp::Nullable<Rcpp::NumericMatrix>& Hinit);
+Rcpp::List symNMF(const SEXP& x, const arma::uword& k, const arma::uword& niter, const double& lambda, const std::string& algo, const int& nCores, const Rcpp::Nullable<arma::mat>& Hinit);
 RcppExport SEXP _RcppPlanc_symNMF(SEXP xSEXP, SEXP kSEXP, SEXP niterSEXP, SEXP lambdaSEXP, SEXP algoSEXP, SEXP nCoresSEXP, SEXP HinitSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -41,7 +41,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const double& >::type lambda(lambdaSEXP);
     Rcpp::traits::input_parameter< const std::string& >::type algo(algoSEXP);
     Rcpp::traits::input_parameter< const int& >::type nCores(nCoresSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::Nullable<Rcpp::NumericMatrix>& >::type Hinit(HinitSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::Nullable<arma::mat>& >::type Hinit(HinitSEXP);
     rcpp_result_gen = Rcpp::wrap(symNMF(x, k, niter, lambda, algo, nCores, Hinit));
     return rcpp_result_gen;
 END_RCPP
