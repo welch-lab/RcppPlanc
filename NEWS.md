@@ -2,6 +2,7 @@
 * Re-enabled static library builds for CRAN on *nix to silence (questionable) ODR violation from libASAN.
 * Replaced Rcpp::Nullable\<Rcpp::NumericMatrix\> with Rcpp::Nullable\<arma::mat\>, addressing  issue [17](https://github.com/welch-lab/RcppPlanc/issues/17/).
 * Re-enabled roxygen in-tree build.
+* Added mechanism for finding OPENMP_SHLIB_CXXFLAGS in static RCPP case
 
 # RcppPlanc 2.0.10
 * Removed masked cblas_sgemm as it was never being called and causing all sorts of linkage issues
