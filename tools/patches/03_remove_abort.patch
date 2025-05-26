@@ -62,3 +62,16 @@ Index: hwloc-2.11.2/hwloc/topology-linux.c
      if (hwloc_read_path_as_uint(str, &capacity, data->root_fd) >= 0)
        by_pu[i].capacity = capacity;
      i++;
+Index: hwloc-2.11.2/hwloc/memattrs.c
+===================================================================
+--- hwloc-2.11.2.orig/hwloc/memattrs.c
++++ hwloc-2.11.2/hwloc/memattrs.c
+@@ -1638,7 +1638,7 @@ hwloc__guess_memory_tiers_types(hwloc_to
+     case HWLOC_MEMORY_TIER_DRAM:
+     case HWLOC_MEMORY_TIER_HBM:
+       /* not possible */
+-      abort();
++      break;
+     default:
+       /* ignore HBM, NVM, ... */
+       break;

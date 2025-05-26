@@ -772,3 +772,16 @@ Index: hwloc-2.11.2/include/hwloc/rsmi.h
  
    osdev = NULL;
    while ((osdev = hwloc_get_next_osdev(topology, osdev)) != NULL) {
+Index: hwloc-2.11.2/hwloc/topology-x86.c
+===================================================================
+--- hwloc-2.11.2.orig/hwloc/topology-x86.c
++++ hwloc-2.11.2/hwloc/topology-x86.c
+@@ -1802,7 +1802,7 @@ hwloc_x86_check_cpuiddump_input(const ch
+   path = malloc(strlen(src_cpuiddump_path) + strlen("/hwloc-cpuid-info") + 1);
+   if (!path)
+     goto out_with_dir;
+-  sprintf(path, "%s/hwloc-cpuid-info", src_cpuiddump_path);
++  snprintf(path, ( strlen(src_cpuiddump_path) + strlen("/hwloc-cpuid-info") + 1), "%s/hwloc-cpuid-info", src_cpuiddump_path);
+   file = fopen(path, "r");
+   if (!file) {
+     // fprintf(stderr, "hwloc/x86: Couldn't open dumped cpuid summary %s\n", path);
