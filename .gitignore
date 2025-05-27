@@ -255,6 +255,7 @@ dkms.conf
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
+CMakePresets.json
 CMakeScripts
 Testing
 cmake_install.cmake
