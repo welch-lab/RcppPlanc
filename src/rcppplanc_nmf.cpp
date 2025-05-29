@@ -34,6 +34,9 @@ Rcpp::List runNMF(T2 x, arma::uword k, const std::string&algo, const arma::uword
     planc::nmfOutput<eT> libcall{};
     std::function nmfcall = static_cast<nmfCallType>(planc::nmflib<T2>::nmf);
     if (!Winit.isNotNull() and !Hinit.isNotNull()) libcall = planc::nmflib<T2>::nmf(x, k, niter, algo, nCores);
+    else if (!Winit.isNotNull() xor !Hinit.isNotNull()) {
+      Rcpp::stop("Must provide all or no initialization matrices.");
+    }
     else {
         using namespace std::placeholders;
         auto nmfcallBound = [nmfcall, capture0 = Rcpp::as<arma::mat>(Winit), capture1 = Rcpp::as<arma::mat>(Hinit)
