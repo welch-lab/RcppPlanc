@@ -26,6 +26,10 @@ test_that("dense, nmf, anlsbpp", {
     expect_error({
       nmf(mat, k, algo = "hello")
     }, "Please choose `algo` from")
+    expect_error({
+      nmf(mat, k, Hinit = res$H)
+    }, "Must provide")
+    
 
 
 })
