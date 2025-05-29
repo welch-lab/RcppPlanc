@@ -1,8 +1,8 @@
 Package: RcppPlanc
 Type: Package
 Title: Parallel Low-Rank Approximation with Nonnegativity Constraints
-Version: 2.0.11
-Date: 2025-05-22
+Version: 2.0.12
+Date: 2025-05-30
 Authors@R: c(
   person(given = 'Andrew', family = 'Robbins', email = 'robbiand@umich.edu', role = c('aut', 'cre'), comment = c(ORCID = "0009-0001-7961-7489")),
   person(given = 'Yichen', family = 'Wang', email = 'wayichen@umich.edu', role = c('aut')),

@@ -1,3 +1,9 @@
+# RcppPlanc 2.0.12
+* Added a few symbol removals to hwloc patches
+* Added an error message to address the real issue in [17](https://github.com/welch-lab/RcppPlanc/issues/17/)
+* Silenced confusing CMake find_package calls
+* Removed unnecessary CMakePresets from source.
+
 # RcppPlanc 2.0.11
 * Re-enabled static library builds for CRAN on *nix to silence (questionable) ODR violation from libASAN.
 * Replaced Rcpp::Nullable\<Rcpp::NumericMatrix\> with Rcpp::Nullable\<arma::mat\>, addressing  issue [17](https://github.com/welch-lab/RcppPlanc/issues/17/).
