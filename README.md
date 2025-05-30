@@ -2,7 +2,7 @@
 
 ## About
 
-RcppPlanc is, as the name implies, an Rcpp wrapper for [planc](https://github.com/ramkikannan/planc). Currently, it
+RcppPlanc is, as the name implies, an Rcpp wrapper for [planc](https://github.com/welch-lab/libplanc). Currently, it
 implements wrappers for the vanilla NMF and NNLS algorithms. It also implements integrative NMF as described in
 [Welch, J. D. et al, 2019](https://doi.org/10.1016/j.cell.2019.05.006), online integrative NMF as described in
 [Gao, C. et al, 2021](https://doi.org/10.1038/s41587-021-00867-x) and unshared integrative NMF as described in
@@ -10,32 +10,38 @@ implements wrappers for the vanilla NMF and NNLS algorithms. It also implements 
 
 ## Requirements
 
-- A fast BLAS library that provides a cblas header ([OpenBLAS](https://github.com/OpenMathLib/OpenBLAS) works well. Mac
-OS on ARM64 will always use the built in [vecLib](https://developer.apple.com/documentation/accelerate/veclib?language=objc) framework.)
+- A complete BLAS library. ([OpenBLAS](https://github.com/OpenMathLib/OpenBLAS) works well. Mac
+OS on ARM64 will always use the built in [vecLib](https://developer.apple.com/documentation/accelerate/veclib?language=objc) framework.) (Runtime)
 - A modern R toolchain (Rtools on Windows, the system toolchain on UNIX-alikes)
-- A modern R (tested on 4.2+)
-- CMake >=3.20
-- HDF5 (tested against 1.12.0)
+- A modern R (tested on 4.3+) (Runtime)
+- CMake >=3.21
+- HDF5 (tested against 1.12.0) (Runtime)
 - OpenMP implementation that uses v4.0 semantics (if using OpenMP). For the GNU stack, this means gcc 9.
 
 ## Installation
 
-### From Source:
-1. Install the requirements above.
-2. Ensure your libraries can be found by CMake.
-3. `devtools::install_github(welch-lab/RcppPlanc)`
-### Binary (R-universe, CRAN pending)
-#### MacOS and Windows
-`install.packages('RcppPlanc', repos = c('https://welch-lab.r-universe.dev', 'https://cloud.r-project.org'))`
+### Release (CRAN):
+`install.packages(RcppPlanc)`
+### Release (Conda Forge)
+`conda install r-rcppplanc -c conda-forge`
+### HEAD (R-universe, binary)
+1. Install the runtime requirements above.
+2. `install.packages('RcppPlanc', repos = c('https://welch-lab.r-universe.dev', 'https://cloud.r-project.org'))`
 #### Ubuntu 24.04 (YMMV on other linuxes)
 1. Ensure libhdf5, libhwloc, and libopenblas are installed.
 
+
 ```
 install.packages("RcppPlanc", repos = c(
-linux = 'https://welch-lab.r-universe.dev/bin/linux/noble/4.4/',
+linux = 'https://welch-lab.r-universe.dev/bin/linux/noble/4.5/',
 sources = 'https://welch-lab.r-universe.dev',
 cran = 'https://cloud.r-project.org'))
 ```
+
+#### SOURCE:
+1. Install the requirements above.
+2. Ensure your libraries can be found by CMake.
+3. `devtools::install_github("welch-lab/RcppPlanc")`
 
 ## Caveats
 
