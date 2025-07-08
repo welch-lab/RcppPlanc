@@ -31,7 +31,7 @@ Suggests:
     withr,
     rmarkdown,
     testthat (>= 3.0.0)
-LinkingTo: Rcpp, RcppArmadillo, RcppProgress
+LinkingTo: Rcpp, RcppArmadillo, RcppProgress, HighFive
 License: GPL (>= 2)
 URL: https://github.com/welch-lab/RcppPlanc/
 BugReports: https://github.com/welch-lab/RcppPlanc/issues/
