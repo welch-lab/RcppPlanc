@@ -1,7 +1,5 @@
-Index: hwloc-2.11.2/hwloc/distances.c
-===================================================================
---- hwloc-2.11.2.orig/hwloc/distances.c
-+++ hwloc-2.11.2/hwloc/distances.c
+--- a/hwloc/distances.c
++++ b/hwloc/distances.c
 @@ -792,8 +792,8 @@ hwloc_internal_distances_refresh_one(hwl
  	obj = hwloc_get_pu_obj_by_os_index(topology, (unsigned) indexes[i]);
        else if (unique_type == HWLOC_OBJ_NUMANODE)
@@ -13,11 +11,9 @@ Index: hwloc-2.11.2/hwloc/distances.c
      } else {
        obj = hwloc_get_obj_by_type_and_gp_index(topology, different_types ? different_types[i] : unique_type, indexes[i]);
      }
-Index: hwloc-2.11.2/hwloc/topology-linux.c
-===================================================================
---- hwloc-2.11.2.orig/hwloc/topology-linux.c
-+++ hwloc-2.11.2/hwloc/topology-linux.c
-@@ -2963,9 +2963,9 @@ hwloc_linux_knl_parse_numa_distances(uns
+--- a/hwloc/topology-linux.c
++++ b/hwloc/topology-linux.c
+@@ -3075,9 +3075,9 @@ hwloc_linux_knl_parse_numa_distances(uns
        return -1;
      }
  
@@ -30,30 +26,7 @@ Index: hwloc-2.11.2/hwloc/topology-linux.c
  
    hwloc_debug("Summary of KNL distance matrix:\n");
    for(k=0; k<summary->nb_values; k++)
-@@ -4751,11 +4751,11 @@ look_sysfscpukinds(struct hwloc_topology
-     by_pu[i].pu = pu;
- 
-     /* cpuinfo_max_freq is the hardware max. scaling_max_freq is the software policy current max */
--    snprintf(str, 55, "/sys/devices/system/cpu/cpu%d/cpufreq/cpuinfo_max_freq", i);
-+    snprintf(str, 63, "/sys/devices/system/cpu/cpu%d/cpufreq/cpuinfo_max_freq", i);
-     if (hwloc_read_path_as_uint(str, &maxfreq, data->root_fd) >= 0)
-       by_pu[i].max_freq = maxfreq;
-     /* base_frequency is in intel_pstate and works fine */
--    snprintf(str, 53, "/sys/devices/system/cpu/cpu%d/cpufreq/base_frequency", i);
-+    snprintf(str, 61, "/sys/devices/system/cpu/cpu%d/cpufreq/base_frequency", i);
-     if (hwloc_read_path_as_uint(str, &basefreq, data->root_fd) >= 0) {
-       by_pu[i].base_freq = basefreq;
-       use_cppc_nominal_freq = 0;
-@@ -4766,7 +4766,7 @@ look_sysfscpukinds(struct hwloc_topology
-      * maxfreq for E-cores and LP-E-cores but basefreq for P-cores on MTL.
-      */
-     if (use_cppc_nominal_freq != 0) {
--      snprintf(str, 53, "/sys/devices/system/cpu/cpu%d/acpi_cppc/nominal_freq", i);
-+      snprintf(str, 61, "/sys/devices/system/cpu/cpu%d/acpi_cppc/nominal_freq", i);
-       if (hwloc_read_path_as_uint(str, &basefreq, data->root_fd) >= 0 && basefreq > 0) {
-         by_pu[i].base_freq = basefreq * 1000; /* nominal_freq is already in MHz */
-         use_cppc_nominal_freq = 1;
-@@ -4777,7 +4777,7 @@ look_sysfscpukinds(struct hwloc_topology
+@@ -4889,7 +4889,7 @@ look_sysfscpukinds(struct hwloc_topology
      if (maxfreq && !basefreq)
        max_without_basefreq = 1;
      /* capacity */
@@ -62,11 +35,9 @@ Index: hwloc-2.11.2/hwloc/topology-linux.c
      if (hwloc_read_path_as_uint(str, &capacity, data->root_fd) >= 0)
        by_pu[i].capacity = capacity;
      i++;
-Index: hwloc-2.11.2/hwloc/memattrs.c
-===================================================================
---- hwloc-2.11.2.orig/hwloc/memattrs.c
-+++ hwloc-2.11.2/hwloc/memattrs.c
-@@ -1638,7 +1638,7 @@ hwloc__guess_memory_tiers_types(hwloc_to
+--- a/hwloc/memattrs.c
++++ b/hwloc/memattrs.c
+@@ -1733,7 +1733,7 @@ hwloc__guess_memory_tiers_types(hwloc_to
      case HWLOC_MEMORY_TIER_DRAM:
      case HWLOC_MEMORY_TIER_HBM:
        /* not possible */
