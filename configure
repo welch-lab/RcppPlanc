@@ -44,6 +44,7 @@ $CMAKE -S ../planc \
   -DR_RHOME="$R_HOME" \
   -DBUILD_SHARED_LIBS=OFF \
   -DCMAKE_INSTALL_PREFIX=$R_PACKAGE_DIR \
+  -DCMAKE_OSX_DEPLOYMENT_TARGET="11" \
   ${CMAKE_ARGS}
 
 echo "" >>  _deps/highfive-src/include/highfive/bits/H5Friends.hpp
