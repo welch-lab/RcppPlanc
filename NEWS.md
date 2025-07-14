@@ -1,3 +1,9 @@
+# RcppPlanc 2.0.13
+* Bumped HighFive to 3.0.0
+* Switched to CRAN-packaged HighFive in LinkingTo
+* Bumped vendored hwloc to 2.12.1
+* Moved CMake OSX SDK selection to configure script
+
 # RcppPlanc 2.0.12
 * Added a few symbol removals to hwloc patches
 * Added an error message to address the real issue in [17](https://github.com/welch-lab/RcppPlanc/issues/17/)
