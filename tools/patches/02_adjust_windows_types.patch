@@ -1,8 +1,6 @@
-Index: hwloc/hwloc/topology-windows.c
-===================================================================
---- hwloc.orig/hwloc/topology-windows.c
-+++ hwloc/hwloc/topology-windows.c
-@@ -216,9 +216,9 @@ static void hwloc_win_get_function_ptrs(
+--- a/hwloc/topology-windows.c
++++ b/hwloc/topology-windows.c
+@@ -224,9 +224,9 @@ static void hwloc_win_get_function_ptrs(
  {
    HMODULE kernel32, ntdll;
  
@@ -15,7 +13,7 @@ Index: hwloc/hwloc/topology-windows.c
  
      kernel32 = LoadLibrary(TEXT("kernel32.dll"));
      if (kernel32) {
-@@ -257,9 +257,9 @@ static void hwloc_win_get_function_ptrs(
+@@ -265,9 +265,9 @@ static void hwloc_win_get_function_ptrs(
      ntdll = GetModuleHandle(TEXT("ntdll"));
      RtlGetVersionProc = (PFN_RTLGETVERSION) GetProcAddress(ntdll, "RtlGetVersion");
  
@@ -28,7 +26,7 @@ Index: hwloc/hwloc/topology-windows.c
  }
  
  /*
-@@ -1115,7 +1115,7 @@ hwloc_look_windows(struct hwloc_backend
+@@ -1134,7 +1134,7 @@ hwloc_look_windows(struct hwloc_backend
  
  	      set = hwloc_bitmap_alloc();
  	      mask = procInfo->Group.GroupInfo[id].ActiveProcessorMask;
@@ -37,7 +35,7 @@ Index: hwloc/hwloc/topology-windows.c
  			  procInfo->Group.GroupInfo[id].ActiveProcessorCount, mask);
  	      /* KAFFINITY is ULONG_PTR */
  	      hwloc_bitmap_set_ith_ULONG_PTR(set, id, mask);
-@@ -1152,7 +1152,7 @@ hwloc_look_windows(struct hwloc_backend
+@@ -1171,7 +1171,7 @@ hwloc_look_windows(struct hwloc_backend
  	obj = hwloc_alloc_setup_object(topology, type, id);
          obj->cpuset = hwloc_bitmap_alloc();
          for (i = 0; i < num; i++) {
