@@ -41,7 +41,9 @@ H5Mat <- function(
   filename,
   dataPath
 ) {
-  if (!file.exists(filename)) stop("File not found: ", filename)
+  if (!file.exists(filename)) {
+    stop("File not found: ", filename)
+  }
   argList <- list(filename = filename, dataPath = dataPath)
   class(argList) <- "H5Mat"
   return(argList)
@@ -68,8 +70,13 @@ as.H5Mat.matrix <- function(x, filename, dataPath = "data", overwrite, ...) {
 #' @export
 #' @rdname H5Mat
 #' @method as.H5Mat dgCMatrix
-as.H5Mat.dgCMatrix <- function(x, filename, dataPath = "data",
-                               overwrite = FALSE, ...) {
+as.H5Mat.dgCMatrix <- function(
+  x,
+  filename,
+  dataPath = "data",
+  overwrite = FALSE,
+  ...
+) {
   res <- .rcpp_spmat_to_h5mat(x, filename, dataPath, overwrite = overwrite, ...)
   H5Mat(res[1], res[2])
 }
@@ -78,11 +85,17 @@ as.H5Mat.dgCMatrix <- function(x, filename, dataPath = "data",
 #' @rdname H5Mat
 #' @method as.H5Mat default
 as.H5Mat.default <- function(x, filename, dataPath = "data", ...) {
-  if (methods::canCoerce(x, "matrix")) x <- as.matrix(x)
-  else if (methods::canCoerce(x, "CsparseMatrix")) x <- methods::as(x, 'CsparseMatrix')
-  else {
-    stop("No method for coercing \"", class(x)[1], "\" to \"matrix\" or ",
-         "\"dgCMatrix\"")
+  if (methods::canCoerce(x, "matrix")) {
+    x <- as.matrix(x)
+  } else if (methods::canCoerce(x, "CsparseMatrix")) {
+    x <- methods::as(x, 'CsparseMatrix')
+  } else {
+    stop(
+      "No method for coercing \"",
+      class(x)[1],
+      "\" to \"matrix\" or ",
+      "\"dgCMatrix\""
+    )
   }
   as.H5Mat(x, filename, dataPath, ...)
 }
@@ -100,8 +113,12 @@ as.H5Mat.default <- function(x, filename, dataPath = "data", ...) {
 format.H5Mat <- function(x, ...) {
   msg <- paste0(
     "Argument list for constructing HDF5 dense matrix\n",
-    "filename:  ", x$filename, "\n",
-    "data path: ", x$dataPath, "\n"
+    "filename:  ",
+    x$filename,
+    "\n",
+    "data path: ",
+    x$dataPath,
+    "\n"
   )
   return(msg)
 }
@@ -178,7 +195,9 @@ H5SpMat <- function(
   nrow,
   ncol
 ) {
-  if (!file.exists(filename)) stop("File not found: ", filename)
+  if (!file.exists(filename)) {
+    stop("File not found: ", filename)
+  }
   argList <- list(
     filename = filename,
     valuePath = valuePath,
@@ -193,8 +212,7 @@ H5SpMat <- function(
 
 #' @export
 #' @rdname H5SpMat
-as.H5SpMat <- function(x, filename, dataPath,
-                       overwrite = FALSE) {
+as.H5SpMat <- function(x, filename, dataPath, overwrite = FALSE) {
   if (isFALSE(overwrite) && file.exists(filename)) {
     filename <- normalizePath(filename)
     stop("File already exists at the given path: ", filename)
@@ -205,28 +223,39 @@ as.H5SpMat <- function(x, filename, dataPath,
 #' @export
 #' @rdname H5SpMat
 #' @method as.H5SpMat matrix
-as.H5SpMat.matrix <- function(x, filename, dataPath = "",
-                              overwrite = FALSE) {
+as.H5SpMat.matrix <- function(x, filename, dataPath = "", overwrite = FALSE) {
   x <- methods::as(x, "CsparseMatrix")
-  as.H5SpMat.dgCMatrix(x, filename = filename, dataPath = dataPath,
-                       overwrite = overwrite)
+  as.H5SpMat.dgCMatrix(
+    x,
+    filename = filename,
+    dataPath = dataPath,
+    overwrite = overwrite
+  )
 }
 
 #' @export
 #' @rdname H5SpMat
 #' @method as.H5SpMat dgCMatrix
-as.H5SpMat.dgCMatrix <- function(x, filename, dataPath = "",
-                                 overwrite = FALSE) {
-  res <- .rcpp_spmat_to_h5spmat(x, filename,
-                               dataPath, overwrite)
+as.H5SpMat.dgCMatrix <- function(
+  x,
+  filename,
+  dataPath = "",
+  overwrite = FALSE
+) {
+  res <- .rcpp_spmat_to_h5spmat(x, filename, dataPath, overwrite)
   H5SpMat(res[1], res[2], res[3], res[4], nrow(x), ncol(x))
 }
 
 #' @export
 #' @rdname H5SpMat
 #' @method as.H5SpMat default
-as.H5SpMat.default <- function(x, filename, dataPath = "",
-                               overwrite = FALSE, ...) {
+as.H5SpMat.default <- function(
+  x,
+  filename,
+  dataPath = "",
+  overwrite = FALSE,
+  ...
+) {
   if (methods::canCoerce(x, "CsparseMatrix")) {
     x <- methods::as(x, "CsparseMatrix")
   } else if (methods::canCoerce(x, "matrix")) {
@@ -235,8 +264,13 @@ as.H5SpMat.default <- function(x, filename, dataPath = "",
   } else {
     stop("No method for coercing \"", class(x)[1], "\" to \"dgCMatrix\"")
   }
-  as.H5SpMat(x, filename = filename, dataPath = dataPath,
-             overwrite = overwrite, ...)
+  as.H5SpMat(
+    x,
+    filename = filename,
+    dataPath = dataPath,
+    overwrite = overwrite,
+    ...
+  )
 }
 
 #' prepare character information of a H5SpMat object
@@ -253,22 +287,44 @@ format.H5SpMat <- function(x, ...) {
   data_path <- x$valuePath
   indices_path <- x$rowindPath
   indptr_path <- x$colptrPath
-  if (dirname(data_path) == dirname(indices_path) &&
-      dirname(data_path) == dirname(indptr_path)) {
+  if (
+    dirname(data_path) == dirname(indices_path) &&
+      dirname(data_path) == dirname(indptr_path)
+  ) {
     msg <- paste0(
-    "Argument list for constructing HDF5 CSC sparse matrix\n",
-    "filename:    ", x$filename, "\n",
-    "data path:  ", dirname(x$valuePath), "\n",
-    "dimension:   ", x$nrow, " x ", x$ncol, "\n"
+      "Argument list for constructing HDF5 CSC sparse matrix\n",
+      "filename:    ",
+      x$filename,
+      "\n",
+      "data path:  ",
+      dirname(x$valuePath),
+      "\n",
+      "dimension:   ",
+      x$nrow,
+      " x ",
+      x$ncol,
+      "\n"
     )
   } else {
     msg <- paste0(
-    "Argument list for constructing HDF5 CSC sparse matrix\n",
-    "filename:    ", x$filename, "\n",
-    "value path:  ", x$valuePath, "\n",
-    "rowind path: ", x$rowindPath, "\n",
-    "colptr path: ", x$colptrPath, "\n",
-    "dimension:   ", x$nrow, " x ", x$ncol, "\n"
+      "Argument list for constructing HDF5 CSC sparse matrix\n",
+      "filename:    ",
+      x$filename,
+      "\n",
+      "value path:  ",
+      x$valuePath,
+      "\n",
+      "rowind path: ",
+      x$rowindPath,
+      "\n",
+      "colptr path: ",
+      x$colptrPath,
+      "\n",
+      "dimension:   ",
+      x$nrow,
+      " x ",
+      x$ncol,
+      "\n"
     )
   }
   return(msg)
@@ -304,7 +360,9 @@ print.H5SpMat <- function(x, ...) {
 #' ncol(h)
 #' dim(h) <- c(200, 200)
 #' h
-dim.H5SpMat <- function(x) { return(c(x$nrow, x$ncol)) }
+dim.H5SpMat <- function(x) {
+  return(c(x$nrow, x$ncol))
+}
 
 #' @rdname dim-H5SpMat
 #' @export
@@ -316,7 +374,9 @@ dim.H5SpMat <- function(x) { return(c(x$nrow, x$ncol)) }
 
 .typeOfInput <- function(objectList, null.rm = TRUE) {
   classes <- sapply(objectList, function(x) class(x)[1])
-  if (isTRUE(null.rm)) classes <- classes[classes != "NULL"]
+  if (isTRUE(null.rm)) {
+    classes <- classes[classes != "NULL"]
+  }
   if (!all(classes == classes[1])) {
     stop("All datasets should be of the same class of input")
   }
