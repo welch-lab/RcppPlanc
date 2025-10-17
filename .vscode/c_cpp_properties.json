@@ -35,8 +35,7 @@
                 "UNICODE",
                 "_UNICODE"
             ],
-            "windowsSdkVersion": "",
-            "compilerPath": "C:\\rtools43\\x86_64-w64-mingw32.static.posix\\bin\\gcc",
+            "compilerPath": "${RTOOLS45_HOME}\\x86_64-w64-mingw32.static.posix\\bin\\gcc",
             "cStandard": "c17",
             "cppStandard": "c++17",
             "intelliSenseMode": "${default}",

@@ -29,10 +29,9 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "C:/Program Files/R/R-4.3.1/bin/x64/Rterm.exe",
+            "program": "$eR_HOME}/bin/x64/Rterm.exe",
             "MIMode": "gdb",
-            "miDebuggerPath": "C:/rtools43/usr/bin/gdb.exe",
-            "cwd": "C:/Users/andrew/source/repos/theAeon/RcppPlanc",
+            "miDebuggerPath": "${RTOOLS45_HOME}/usr/bin/gdb.exe",
             "setupCommands": [
                 {
                     "description": "Enable pretty-printing for gdb",
@@ -51,7 +50,7 @@
             "request": "attach",
             "name": "attach lldb",
             "stopOnEntry": false,
-            "program": "C:/Program Files/R/R-4.3.1/bin/x64/Rterm.exe",
+            "program": "${R_HOME}/bin/x64/Rterm.exe",
             "pid": "${command:pickProcess}"
         },
         {
