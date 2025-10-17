@@ -5,9 +5,9 @@
 # rhub::rhub_setup()
 #
 # It is unlikely that you need to modify this file manually.
----
+
 name: R-hub
-run-name: "${{ github.event.inputs.id }}: ${{ github.event.inputs.name || format('Manually run by {0}', github.triggering_actor) }}"  # yamllint disable-line rule:line-length
+run-name: "${{ github.event.inputs.id }}: ${{ github.event.inputs.name || format('Manually run by {0}', github.triggering_actor) }}"
 
 on:
   workflow_dispatch:
@@ -24,16 +24,19 @@ on:
         type: string
 
 jobs:
+
   setup:
     runs-on: ubuntu-latest
     outputs:
       containers: ${{ steps.rhub-setup.outputs.containers }}
       platforms: ${{ steps.rhub-setup.outputs.platforms }}
+
     steps:
-      - uses: r-hub/actions/setup@v1
-        with:
-          config: ${{ github.event.inputs.config }}
-        id: rhub-setup
+    # NO NEED TO CHECKOUT HERE
+    - uses: r-hub/actions/setup@v1
+      with:
+        config: ${{ github.event.inputs.config }}
+      id: rhub-setup
 
   linux-containers:
     needs: setup
@@ -49,8 +52,6 @@ jobs:
 
     steps:
       - uses: r-hub/actions/checkout@v1
-        with:
-          submodules: recursive
       - uses: r-hub/actions/platform-info@v1
         with:
           token: ${{ secrets.RHUB_TOKEN }}
@@ -76,8 +77,6 @@ jobs:
 
     steps:
       - uses: r-hub/actions/checkout@v1
-        with:
-          submodules: recursive
       - uses: r-hub/actions/setup-r@v1
         with:
           job-config: ${{ matrix.config.job-config }}
