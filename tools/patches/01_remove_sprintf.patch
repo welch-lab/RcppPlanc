@@ -1,6 +1,6 @@
 --- a/hwloc/topology-freebsd.c
 +++ b/hwloc/topology-freebsd.c
-@@ -394,7 +394,7 @@ set_locality_info(hwloc_topology_t topol
+@@ -395,7 +395,7 @@ set_locality_info(hwloc_topology_t topol
      return -1;
    }
    for(int i = 0 ; i < ndomains ; i++){
@@ -11,7 +11,7 @@
      for(int j = 0 ; j < ndomains ; j++){
 --- a/hwloc/topology-linux.c
 +++ b/hwloc/topology-linux.c
-@@ -2753,7 +2753,7 @@ hwloc_get_sysfs_node_meminfo(struct hwlo
+@@ -2755,7 +2755,7 @@ hwloc_get_sysfs_node_meminfo(struct hwlo
    uint64_t remaining_local_memory;
    int err;
  
@@ -20,7 +20,7 @@
    err = hwloc_stat(path, &st, data->root_fd);
    if (!err) {
      types = 1 /* normal non-huge size */ + st.st_nlink - 2 /* ignore . and .. */;
-@@ -2775,7 +2775,7 @@ hwloc_get_sysfs_node_meminfo(struct hwlo
+@@ -2777,7 +2777,7 @@ hwloc_get_sysfs_node_meminfo(struct hwlo
    memory->page_types_len = 1; /* we'll increase it when successfully getting hugepage info */
  
    /* get the total memory */
@@ -29,7 +29,7 @@
    hwloc_parse_meminfo_info(data, meminfopath,
  			   &memory->local_memory);
    remaining_local_memory = memory->local_memory;
-@@ -2811,7 +2811,7 @@ hwloc_parse_nodes_distances(unsigned nbn
+@@ -2813,7 +2813,7 @@ hwloc_parse_nodes_distances(unsigned nbn
  
      /* Linux nodeX/distance file contains distance from X to other localities (from ACPI SLIT table or so),
       * store them in slots X*N...X*N+N-1 */
@@ -38,7 +38,7 @@
      if (hwloc_read_path_by_length(distancepath, string, len, fsroot_fd) <= 0)
        goto out_with_string;
  
-@@ -3785,10 +3785,10 @@ read_node_initiators(struct hwloc_linux_
+@@ -3787,10 +3787,10 @@ read_node_initiators(struct hwloc_linux_
     * access0 contains the fastest of GI and CPU. access1 contains the fastest of CPU.
     * Try access1 to avoid GI if any, or fallback to access0 otherwise.
     */
@@ -51,7 +51,7 @@
      dir = hwloc_opendir(accesspath, data->root_fd);
      if (!dir)
        return -1;
-@@ -3827,20 +3827,20 @@ read_node_local_memattrs(struct hwloc_to
+@@ -3829,20 +3829,20 @@ read_node_local_memattrs(struct hwloc_to
     * access0 contains the fastest of GI and CPU. access1 contains the fastest of CPU.
     * Try access1 to avoid GI if any, or fallback to access0 otherwise.
     */
@@ -76,7 +76,7 @@
    if (hwloc_read_path_as_uint(accesspath, &wbw, data->root_fd) == 0 && wbw > 0) {
      hwloc_internal_memattr_set_value(topology, HWLOC_MEMATTR_ID_WRITE_BANDWIDTH, HWLOC_OBJ_NUMANODE, (hwloc_uint64_t)-1, node->os_index, &loc, wbw);
    }
-@@ -3848,11 +3848,11 @@ read_node_local_memattrs(struct hwloc_to
+@@ -3850,11 +3850,11 @@ read_node_local_memattrs(struct hwloc_to
    if (rbw > 0 && wbw > 0)
      hwloc_internal_memattr_set_value(topology, HWLOC_MEMATTR_ID_BANDWIDTH, HWLOC_OBJ_NUMANODE, (hwloc_uint64_t)-1, node->os_index, &loc, (rbw+wbw)/2);
  
@@ -90,7 +90,7 @@
    if (hwloc_read_path_as_uint(accesspath, &wlat, data->root_fd) == 0 && wlat > 0) {
      hwloc_internal_memattr_set_value(topology, HWLOC_MEMATTR_ID_WRITE_LATENCY, HWLOC_OBJ_NUMANODE, (hwloc_uint64_t)-1, node->os_index, &loc, wlat);
    }
-@@ -3877,7 +3877,7 @@ read_node_mscaches(struct hwloc_topology
+@@ -3879,7 +3879,7 @@ read_node_mscaches(struct hwloc_topology
    DIR *mscdir;
    struct dirent *dirent;
  
@@ -99,7 +99,7 @@
    mscdir = hwloc_opendir(mscpath, data->root_fd);
    if (!mscdir)
      return -1;
-@@ -3894,15 +3894,15 @@ read_node_mscaches(struct hwloc_topology
+@@ -3896,15 +3896,15 @@ read_node_mscaches(struct hwloc_topology
  
      depth = atoi(dirent->d_name+5);
  
@@ -118,7 +118,7 @@
      if (hwloc_read_path_as_uint(mscpath, &associativity, data->root_fd) < 0)
        continue;
      /* 0 for direct-mapped, 1 for indexed (don't know how many ways), 2 for custom/other */
-@@ -4359,7 +4359,7 @@ look_sysfsnode(struct hwloc_topology *to
+@@ -4361,7 +4361,7 @@ look_sysfsnode(struct hwloc_topology *to
      hwloc_bitmap_t cpuset;
  
      osnode = indexes[i];
@@ -127,7 +127,7 @@
      cpuset = hwloc__alloc_read_path_as_cpumask(nodepath, data->root_fd);
      if (!cpuset) {
        /* This NUMA object won't be inserted, we'll ignore distances */
-@@ -4863,11 +4863,11 @@ look_sysfscpukinds(struct hwloc_topology
+@@ -4909,12 +4909,12 @@ look_sysfscpukinds(struct hwloc_topology
      by_pu[i].pu = pu;
  
      /* cpuinfo_max_freq is the hardware max. scaling_max_freq is the software policy current max */
@@ -135,13 +135,14 @@
 +    snprintf(str, 63, "/sys/devices/system/cpu/cpu%d/cpufreq/cpuinfo_max_freq", pu);
      if (hwloc_read_path_as_uint(str, &maxfreq, data->root_fd) >= 0)
        by_pu[i].max_freq = maxfreq;
-     /* base_frequency is in intel_pstate and works fine */
--    sprintf(str, "/sys/devices/system/cpu/cpu%d/cpufreq/base_frequency", pu);
-+    snprintf(str, 61, "/sys/devices/system/cpu/cpu%d/cpufreq/base_frequency", pu);
-     if (hwloc_read_path_as_uint(str, &basefreq, data->root_fd) >= 0) {
-       by_pu[i].base_freq = basefreq;
-       use_cppc_nominal_freq = 0;
-@@ -4878,7 +4878,7 @@ look_sysfscpukinds(struct hwloc_topology
+     if (use_cppc_nominal_freq != 1) {
+       /* base_frequency is in intel_pstate and works fine */
+-      sprintf(str, "/sys/devices/system/cpu/cpu%d/cpufreq/base_frequency", pu);
++      snprintf(str, 61, "/sys/devices/system/cpu/cpu%d/cpufreq/base_frequency", pu);
+       if (hwloc_read_path_as_uint(str, &basefreq, data->root_fd) >= 0) {
+         by_pu[i].base_freq = basefreq;
+         use_cppc_nominal_freq = 0;
+@@ -4926,7 +4926,7 @@ look_sysfscpukinds(struct hwloc_topology
       * maxfreq for E-cores and LP-E-cores but basefreq for P-cores on MTL.
       */
      if (use_cppc_nominal_freq != 0) {
@@ -150,7 +151,7 @@
        if (hwloc_read_path_as_uint(str, &basefreq, data->root_fd) >= 0 && basefreq > 0) {
          by_pu[i].base_freq = basefreq * 1000; /* nominal_freq is already in MHz */
          use_cppc_nominal_freq = 1;
-@@ -4889,7 +4889,7 @@ look_sysfscpukinds(struct hwloc_topology
+@@ -4937,7 +4937,7 @@ look_sysfscpukinds(struct hwloc_topology
      if (maxfreq && !basefreq)
        max_without_basefreq = 1;
      /* capacity */
@@ -159,7 +160,7 @@
      if (hwloc_read_path_as_uint(str, &capacity, data->root_fd) >= 0)
        by_pu[i].capacity = capacity;
      i++;
-@@ -5035,7 +5035,7 @@ look_sysfscpu(struct hwloc_topology *top
+@@ -5083,7 +5083,7 @@ look_sysfscpu(struct hwloc_topology *top
  	}
        } else {
  	/* /sys/devices/system/cpu/online unavailable, check the cpu online file */
@@ -168,7 +169,7 @@
  	if (hwloc_read_path_by_length(str, online, sizeof(online), data->root_fd) > 0) {
  	  if (!atoi(online)) {
  	    hwloc_debug("os proc %lu is offline\n", cpu);
-@@ -5045,7 +5045,7 @@ look_sysfscpu(struct hwloc_topology *top
+@@ -5093,7 +5093,7 @@ look_sysfscpu(struct hwloc_topology *top
        }
  
        /* check whether the kernel exports topology information for this cpu */
@@ -177,7 +178,7 @@
        if (hwloc_access(str, X_OK, data->root_fd) < 0 && errno == ENOENT) {
  	hwloc_debug("os proc %lu has no accessible /sys/devices/system/cpu/cpu%lu/topology\n",
  		   cpu, cpu);
-@@ -5077,9 +5077,9 @@ look_sysfscpu(struct hwloc_topology *top
+@@ -5125,9 +5125,9 @@ look_sysfscpu(struct hwloc_topology *top
        /* look at the core */
        hwloc_bitmap_t coreset;
        if (old_filenames)
@@ -189,7 +190,7 @@
        coreset = hwloc__alloc_read_path_as_cpumask(str, data->root_fd);
        if (coreset) {
          unsigned mycoreid = (unsigned) -1;
-@@ -5090,7 +5090,7 @@ look_sysfscpu(struct hwloc_topology *top
+@@ -5138,7 +5138,7 @@ look_sysfscpu(struct hwloc_topology *top
  	  unsigned siblingid, siblingcoreid;
  
  	  mycoreid = (unsigned) -1;
@@ -198,7 +199,7 @@
  	  if (hwloc_read_path_as_int(str, &tmpint, data->root_fd) == 0)
  	    mycoreid = (unsigned) tmpint;
  	  gotcoreid = 1;
-@@ -5099,7 +5099,7 @@ look_sysfscpu(struct hwloc_topology *top
+@@ -5147,7 +5147,7 @@ look_sysfscpu(struct hwloc_topology *top
  	  if (siblingid == (unsigned) i)
  	    siblingid = hwloc_bitmap_next(coreset, i);
  	  siblingcoreid = (unsigned) -1;
@@ -207,7 +208,7 @@
  	  if (hwloc_read_path_as_int(str, &tmpint, data->root_fd) == 0)
  	    siblingcoreid = (unsigned) tmpint;
  	  threadwithcoreid = (siblingcoreid != mycoreid);
-@@ -5112,7 +5112,7 @@ look_sysfscpu(struct hwloc_topology *top
+@@ -5160,7 +5160,7 @@ look_sysfscpu(struct hwloc_topology *top
  
  	  if (!gotcoreid) {
  	    mycoreid = (unsigned) -1;
@@ -216,7 +217,7 @@
  	    if (hwloc_read_path_as_int(str, &tmpint, data->root_fd) == 0)
  	      mycoreid = (unsigned) tmpint;
  	  }
-@@ -5135,7 +5135,7 @@ look_sysfscpu(struct hwloc_topology *top
+@@ -5183,7 +5183,7 @@ look_sysfscpu(struct hwloc_topology *top
      if (!notfirstofcore /* don't look at the cluster unless we are the first of the core */
  	&& hwloc_filter_check_keep_object_type(topology, HWLOC_OBJ_GROUP)) {
        /* look at the cluster */
@@ -225,7 +226,7 @@
        clusterset = hwloc__alloc_read_path_as_cpumask(str, data->root_fd);
        if (clusterset) {
  	hwloc_bitmap_and(clusterset, clusterset, cpuset);
-@@ -5159,7 +5159,7 @@ look_sysfscpu(struct hwloc_topology *top
+@@ -5207,7 +5207,7 @@ look_sysfscpu(struct hwloc_topology *top
      if (!notfirstofcluster /* don't look at the die unless we are the first of the core */
  	&& hwloc_filter_check_keep_object_type(topology, HWLOC_OBJ_DIE)) {
        /* look at the die */
@@ -234,7 +235,7 @@
        dieset = hwloc__alloc_read_path_as_cpumask(str, data->root_fd);
        if (dieset) {
  	hwloc_bitmap_and(dieset, dieset, cpuset);
-@@ -5187,9 +5187,9 @@ look_sysfscpu(struct hwloc_topology *top
+@@ -5235,9 +5235,9 @@ look_sysfscpu(struct hwloc_topology *top
        /* look at the package */
        hwloc_bitmap_t packageset;
        if (old_filenames)
@@ -246,7 +247,7 @@
        packageset = hwloc__alloc_read_path_as_cpumask(str, data->root_fd);
        if (packageset) {
  	hwloc_bitmap_and(packageset, packageset, cpuset);
-@@ -5203,7 +5203,7 @@ look_sysfscpu(struct hwloc_topology *top
+@@ -5251,7 +5251,7 @@ look_sysfscpu(struct hwloc_topology *top
  	  struct hwloc_obj *package;
  	  unsigned mypackageid;
  	  mypackageid = (unsigned) -1;
@@ -255,7 +256,7 @@
  	  if (hwloc_read_path_as_int(str, &tmpint, data->root_fd) == 0)
  	    mypackageid = (unsigned) tmpint;
  
-@@ -5230,7 +5230,7 @@ look_sysfscpu(struct hwloc_topology *top
+@@ -5278,7 +5278,7 @@ look_sysfscpu(struct hwloc_topology *top
        struct hwloc_obj *cluster;
        unsigned myclusterid;
        myclusterid = (unsigned) -1;
@@ -264,7 +265,7 @@
        if (hwloc_read_path_as_int(str, &tmpint, data->root_fd) == 0)
  	myclusterid = (unsigned) tmpint;
  
-@@ -5248,7 +5248,7 @@ look_sysfscpu(struct hwloc_topology *top
+@@ -5296,7 +5296,7 @@ look_sysfscpu(struct hwloc_topology *top
        struct hwloc_obj *die;
        unsigned mydieid;
        mydieid = (unsigned) -1;
@@ -273,7 +274,7 @@
        if (hwloc_read_path_as_int(str, &tmpint, data->root_fd) == 0)
  	mydieid = (unsigned) tmpint;
  
-@@ -5263,7 +5263,7 @@ look_sysfscpu(struct hwloc_topology *top
+@@ -5311,7 +5311,7 @@ look_sysfscpu(struct hwloc_topology *top
  	&& hwloc_filter_check_keep_object_type(topology, HWLOC_OBJ_GROUP)) {
        /* look at the books */
        hwloc_bitmap_t bookset, drawerset;
@@ -282,7 +283,7 @@
        bookset = hwloc__alloc_read_path_as_cpumask(str, data->root_fd);
        if (bookset) {
  	hwloc_bitmap_and(bookset, bookset, cpuset);
-@@ -5271,7 +5271,7 @@ look_sysfscpu(struct hwloc_topology *top
+@@ -5319,7 +5319,7 @@ look_sysfscpu(struct hwloc_topology *top
  	  struct hwloc_obj *book;
  	  unsigned mybookid;
  	  mybookid = (unsigned) -1;
@@ -291,7 +292,7 @@
  	  if (hwloc_read_path_as_int(str, &tmpint, data->root_fd) == 0) {
  	    mybookid = (unsigned) tmpint;
  
-@@ -5288,7 +5288,7 @@ look_sysfscpu(struct hwloc_topology *top
+@@ -5336,7 +5336,7 @@ look_sysfscpu(struct hwloc_topology *top
          }
  	hwloc_bitmap_free(bookset);
  
@@ -300,7 +301,7 @@
  	drawerset = hwloc__alloc_read_path_as_cpumask(str, data->root_fd);
  	if (drawerset) {
  	  hwloc_bitmap_and(drawerset, drawerset, cpuset);
-@@ -5296,7 +5296,7 @@ look_sysfscpu(struct hwloc_topology *top
+@@ -5344,7 +5344,7 @@ look_sysfscpu(struct hwloc_topology *top
  	    struct hwloc_obj *drawer;
  	    unsigned mydrawerid;
  	    mydrawerid = (unsigned) -1;
@@ -309,7 +310,7 @@
  	    if (hwloc_read_path_as_int(str, &tmpint, data->root_fd) == 0) {
  	      mydrawerid = (unsigned) tmpint;
  
-@@ -5335,16 +5335,16 @@ look_sysfscpu(struct hwloc_topology *top
+@@ -5383,16 +5383,16 @@ look_sysfscpu(struct hwloc_topology *top
        char str2[20]; /* enough for a level number (one digit) or a type (Data/Instruction/Unified) */
        hwloc_bitmap_t cacheset;
  
@@ -329,7 +330,7 @@
  	  tmpset = hwloc__alloc_read_path_as_cpumask(str, data->root_fd);
  	  /* only use it if we actually got something */
  	  if (tmpset) {
-@@ -5365,14 +5365,14 @@ look_sysfscpu(struct hwloc_topology *top
+@@ -5413,14 +5413,14 @@ look_sysfscpu(struct hwloc_topology *top
  	  struct hwloc_obj *cache;
  
  	  /* get the cache level depth */
@@ -346,7 +347,7 @@
  	  if (hwloc_read_path_by_length(str, str2, sizeof(str2), data->root_fd) > 0) {
  	    if (!strncmp(str2, "Data", 4))
  	      ctype = HWLOC_OBJ_CACHE_DATA;
-@@ -5383,7 +5383,7 @@ look_sysfscpu(struct hwloc_topology *top
+@@ -5431,7 +5431,7 @@ look_sysfscpu(struct hwloc_topology *top
  	  }
  
            /* cache id */
@@ -355,7 +356,7 @@
            hwloc_read_path_as_uint(str, &id, data->root_fd);
  
  	  otype = hwloc_cache_type_by_depth_type(depth, ctype);
-@@ -5398,7 +5398,7 @@ look_sysfscpu(struct hwloc_topology *top
+@@ -5446,7 +5446,7 @@ look_sysfscpu(struct hwloc_topology *top
  
  	  /* get the cache size */
  	  kB = 0;
@@ -364,7 +365,7 @@
  	  hwloc_read_path_as_uint(str, &kB, data->root_fd);
  	  /* KNL reports L3 with size=0 and full cpuset in cpuid.
  	   * Let hwloc_linux_try_add_knl_mcdram_cache() detect it better.
-@@ -5410,7 +5410,7 @@ look_sysfscpu(struct hwloc_topology *top
+@@ -5458,7 +5458,7 @@ look_sysfscpu(struct hwloc_topology *top
  
  	  /* get the line size */
  	  linesize = 0;
@@ -373,7 +374,7 @@
  	  hwloc_read_path_as_uint(str, &linesize, data->root_fd);
  
  	  /* get the number of sets and lines per tag.
-@@ -5418,11 +5418,11 @@ look_sysfscpu(struct hwloc_topology *top
+@@ -5466,11 +5466,11 @@ look_sysfscpu(struct hwloc_topology *top
  	   * some archs (ia64, ppc) put 0 there when fully-associative, while others (x86) put something like -1 there.
  	   */
  	  sets = 0;
@@ -389,7 +390,7 @@
  	  /* first cpu in this cache, add the cache */
 --- a/hwloc/topology-rsmi.c
 +++ b/hwloc/topology-rsmi.c
-@@ -373,7 +373,7 @@ hwloc_rsmi_discover(struct hwloc_backend
+@@ -374,7 +374,7 @@ hwloc_rsmi_discover(struct hwloc_backend
            continue;
          if ((get_device_io_link_type(i, j, &type, &hops) == 0) &&
              (type == RSMI_IOLINK_TYPE_XGMI)) {
@@ -400,7 +401,7 @@
            got_xgmi_bws = 1;
 --- a/hwloc/topology-windows.c
 +++ b/hwloc/topology-windows.c
-@@ -1319,7 +1319,7 @@ hwloc_look_windows(struct hwloc_backend
+@@ -1304,7 +1304,7 @@ hwloc_look_windows(struct hwloc_backend
        hwloc_obj_add_info(topology->levels[0][0], "OSRelease", "Vista"); /* or "Server 2008" */
    } /* earlier versions are ignored */
  
@@ -411,7 +412,7 @@
  #if !defined(__CYGWIN__)
 --- a/hwloc/topology-xml.c
 +++ b/hwloc/topology-xml.c
-@@ -761,7 +761,7 @@ hwloc__xml_import_userdata(hwloc_topolog
+@@ -762,7 +762,7 @@ hwloc__xml_import_userdata(hwloc_topolog
        fakename = malloc(6 + 1 + (name ? strlen(name) : 4) + 1);
        if (!fakename)
  	return -1;
@@ -420,7 +421,7 @@
        topology->userdata_import_cb(topology, obj, fakename, buffer, length);
        free(fakename);
  
-@@ -2144,7 +2144,7 @@ hwloc_convert_from_v1dist_floats(hwloc_t
+@@ -2145,7 +2145,7 @@ hwloc_convert_from_v1dist_floats(hwloc_t
     * Not perfect since we may have multiple of them,
     * and some distances might disappear in case of restrict, etc.
     */
@@ -429,7 +430,7 @@
    hwloc_obj_add_info(hwloc_get_root_obj(topology), "xmlv1DistancesScale", scalestring);
  }
  
-@@ -2525,7 +2525,7 @@ hwloc__xml_export_object_contents (hwloc
+@@ -2566,7 +2566,7 @@ hwloc__xml_export_object_contents (hwloc
      state->new_prop(state, "type", hwloc_obj_type_string(obj->type));
  
    if (obj->os_index != HWLOC_UNKNOWN_INDEX) {
@@ -438,7 +439,7 @@
      state->new_prop(state, "os_index", tmp);
    }
  
-@@ -2605,7 +2605,7 @@ hwloc__xml_export_object_contents (hwloc
+@@ -2646,7 +2646,7 @@ hwloc__xml_export_object_contents (hwloc
    }
  
    if (!v1export) {
@@ -447,7 +448,7 @@
      state->new_prop(state, "gp_index", tmp);
    }
  
-@@ -2627,15 +2627,17 @@ hwloc__xml_export_object_contents (hwloc
+@@ -2668,15 +2668,17 @@ hwloc__xml_export_object_contents (hwloc
    switch (obj->type) {
    case HWLOC_OBJ_NUMANODE:
      if (obj->attr->numanode.local_memory) {
@@ -468,7 +469,7 @@
        childstate.new_prop(&childstate, "count", tmp);
        childstate.end_object(&childstate, "page_type");
      }
-@@ -2649,39 +2651,39 @@ hwloc__xml_export_object_contents (hwloc
+@@ -2690,39 +2692,39 @@ hwloc__xml_export_object_contents (hwloc
    case HWLOC_OBJ_L2ICACHE:
    case HWLOC_OBJ_L3ICACHE:
    case HWLOC_OBJ_MEMCACHE:
@@ -519,7 +520,7 @@
  	      (unsigned) obj->attr->bridge.downstream.pci.domain,
  	      (unsigned) obj->attr->bridge.downstream.pci.secondary_bus,
  	      (unsigned) obj->attr->bridge.downstream.pci.subordinate_bus);
-@@ -2691,23 +2693,23 @@ hwloc__xml_export_object_contents (hwloc
+@@ -2732,23 +2734,23 @@ hwloc__xml_export_object_contents (hwloc
        break;
      /* FALLTHRU */
    case HWLOC_OBJ_PCI_DEVICE:
@@ -547,7 +548,7 @@
      state->new_prop(state, "osdev_type", tmp);
      break;
    default:
-@@ -2804,11 +2806,11 @@ hwloc__xml_export_object_contents (hwloc
+@@ -2845,11 +2847,11 @@ hwloc__xml_export_object_contents (hwloc
        }
  
        state->new_child(state, &childstate, "distances");
@@ -562,7 +563,7 @@
        childstate.new_prop(&childstate, "latency_base", tmp);
        for(i=0; i<nbobjs; i++) {
          for(j=0; j<nbobjs; j++) {
-@@ -2816,7 +2818,7 @@ hwloc__xml_export_object_contents (hwloc
+@@ -2857,7 +2859,7 @@ hwloc__xml_export_object_contents (hwloc
  	  unsigned k = logical_to_v2array[i]*nbobjs+logical_to_v2array[j];
  	  struct hwloc__xml_export_state_s greatchildstate;
  	  childstate.new_child(&childstate, &greatchildstate, "latency");
@@ -571,7 +572,7 @@
  	  greatchildstate.new_prop(&greatchildstate, "value", tmp);
  	  greatchildstate.end_object(&greatchildstate, "latency");
  	}
-@@ -3026,9 +3028,9 @@ hwloc__xml_v1export_object (hwloc__xml_e
+@@ -3067,9 +3069,9 @@ hwloc__xml_v1export_object (hwloc__xml_e
      for(_j=0; \
  	_i+_j<(nr) && _j<maxperline; \
  	_j++) \
@@ -583,7 +584,7 @@
      _childstate.new_prop(&_childstate, "length", _tmp2); \
      _childstate.add_content(&_childstate, _tmp, _len); \
      _childstate.end_object(&_childstate, tagname); \
-@@ -3047,9 +3049,9 @@ hwloc__xml_v1export_object (hwloc__xml_e
+@@ -3088,9 +3090,9 @@ hwloc__xml_v1export_object (hwloc__xml_e
      for(_j=0; \
  	_i+_j<(nr) && _j<maxperline; \
  	_j++) \
@@ -595,7 +596,7 @@
      _childstate.new_prop(&_childstate, "length", _tmp2); \
      _childstate.add_content(&_childstate, _tmp, _len); \
      _childstate.end_object(&_childstate, tagname); \
-@@ -3070,9 +3072,9 @@ hwloc___xml_v2export_distances(hwloc__xm
+@@ -3111,9 +3113,9 @@ hwloc___xml_v2export_distances(hwloc__xm
      state.new_prop(&state, "type", hwloc_obj_type_string(dist->unique_type));
    }
  
@@ -607,7 +608,7 @@
    state.new_prop(&state, "kind", tmp);
    if (dist->name)
      state.new_prop(&state, "name", dist->name);
-@@ -3124,7 +3126,7 @@ hwloc__xml_v2export_support(hwloc__xml_e
+@@ -3165,7 +3167,7 @@ hwloc__xml_v2export_support(hwloc__xml_e
        parentstate->new_child(parentstate, &state, "support");   \
        state.new_prop(&state, "name", #_cat "." #_name);         \
        if (topology->support._cat->_name != 1) {                 \
@@ -616,7 +617,7 @@
          state.new_prop(&state, "value", tmp);                   \
        }                                                         \
        state.end_object(&state, "support");                      \
-@@ -3360,26 +3362,29 @@ hwloc__xml_export_diff(hwloc__xml_export
+@@ -3401,26 +3403,29 @@ hwloc__xml_export_diff(hwloc__xml_export
  
      parentstate->new_child(parentstate, &state, "diff");
  
@@ -653,7 +654,7 @@
  	state.new_prop(&state, "obj_attr_newvalue", tmp);
  	break;
        case HWLOC_TOPOLOGY_DIFF_OBJ_ATTR_NAME:
-@@ -3612,7 +3617,7 @@ hwloc__export_obj_userdata(hwloc__xml_ex
+@@ -3653,7 +3658,7 @@ hwloc__export_obj_userdata(hwloc__xml_ex
    parentstate->new_child(parentstate, &state, "userdata");
    if (name)
      state.new_prop(&state, "name", name);
@@ -664,7 +665,7 @@
      state.new_prop(&state, "encoding", "base64");
 --- a/include/hwloc/cuda.h
 +++ b/include/hwloc/cuda.h
-@@ -112,7 +112,7 @@ hwloc_cuda_get_device_cpuset(hwloc_topol
+@@ -113,7 +113,7 @@ hwloc_cuda_get_device_cpuset(hwloc_topol
      return -1;
    }
  
@@ -675,7 +676,7 @@
      hwloc_bitmap_copy(set, hwloc_topology_get_complete_cpuset(topology));
 --- a/include/hwloc/cudart.h
 +++ b/include/hwloc/cudart.h
-@@ -109,7 +109,7 @@ hwloc_cudart_get_device_cpuset(hwloc_top
+@@ -110,7 +110,7 @@ hwloc_cudart_get_device_cpuset(hwloc_top
      return -1;
    }
  
@@ -686,7 +687,7 @@
      hwloc_bitmap_copy(set, hwloc_topology_get_complete_cpuset(topology));
 --- a/include/hwloc/levelzero.h
 +++ b/include/hwloc/levelzero.h
-@@ -86,7 +86,7 @@ hwloc_levelzero_get_device_cpuset(hwloc_
+@@ -87,7 +87,7 @@ hwloc_levelzero_get_device_cpuset(hwloc_
      return -1;
    }
  
@@ -697,7 +698,7 @@
        || hwloc_bitmap_iszero(set))
 --- a/include/hwloc/nvml.h
 +++ b/include/hwloc/nvml.h
-@@ -77,7 +77,7 @@ hwloc_nvml_get_device_cpuset(hwloc_topol
+@@ -78,7 +78,7 @@ hwloc_nvml_get_device_cpuset(hwloc_topol
      return -1;
    }
  
@@ -708,7 +709,7 @@
      hwloc_bitmap_copy(set, hwloc_topology_get_complete_cpuset(topology));
 --- a/include/hwloc/opencl.h
 +++ b/include/hwloc/opencl.h
-@@ -173,7 +173,7 @@ hwloc_opencl_get_device_cpuset(hwloc_top
+@@ -174,7 +174,7 @@ hwloc_opencl_get_device_cpuset(hwloc_top
  		return 0;
  	}
  
@@ -719,7 +720,7 @@
  		hwloc_bitmap_copy(set, hwloc_topology_get_complete_cpuset(topology));
 --- a/include/hwloc/openfabrics-verbs.h
 +++ b/include/hwloc/openfabrics-verbs.h
-@@ -76,7 +76,7 @@ hwloc_ibv_get_device_cpuset(hwloc_topolo
+@@ -77,7 +77,7 @@ hwloc_ibv_get_device_cpuset(hwloc_topolo
      return -1;
    }
  
@@ -730,7 +731,7 @@
        || hwloc_bitmap_iszero(set))
 --- a/include/hwloc/rsmi.h
 +++ b/include/hwloc/rsmi.h
-@@ -85,7 +85,7 @@ hwloc_rsmi_get_device_cpuset(hwloc_topol
+@@ -86,7 +86,7 @@ hwloc_rsmi_get_device_cpuset(hwloc_topol
    bus = ((bdfid & 0xffff)>>8) & 0xff;
    device = ((bdfid & 0xff)>>3) & 0x1f;
  
@@ -739,7 +740,7 @@
    if (hwloc_linux_read_path_as_cpumask(path, set) < 0
        || hwloc_bitmap_iszero(set))
      hwloc_bitmap_copy(set, hwloc_topology_get_complete_cpuset(topology));
-@@ -169,7 +169,7 @@ hwloc_rsmi_get_device_osdev(hwloc_topolo
+@@ -170,7 +170,7 @@ hwloc_rsmi_get_device_osdev(hwloc_topolo
    if (RSMI_STATUS_SUCCESS != ret)
      uuid[0] = '\0';
    else
@@ -750,7 +751,7 @@
    while ((osdev = hwloc_get_next_osdev(topology, osdev)) != NULL) {
 --- a/hwloc/topology-x86.c
 +++ b/hwloc/topology-x86.c
-@@ -1808,7 +1808,7 @@ hwloc_x86_check_cpuiddump_input(const ch
+@@ -1835,7 +1835,7 @@ hwloc_x86_check_cpuiddump_input(const ch
    path = malloc(strlen(src_cpuiddump_path) + strlen("/hwloc-cpuid-info") + 1);
    if (!path)
      goto out_with_dir;

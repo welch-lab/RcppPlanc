@@ -1,6 +1,6 @@
 --- a/hwloc/distances.c
 +++ b/hwloc/distances.c
-@@ -792,8 +792,8 @@ hwloc_internal_distances_refresh_one(hwl
+@@ -802,8 +802,8 @@ hwloc_internal_distances_refresh_one(hwl
  	obj = hwloc_get_pu_obj_by_os_index(topology, (unsigned) indexes[i]);
        else if (unique_type == HWLOC_OBJ_NUMANODE)
  	obj = hwloc_get_numanode_obj_by_os_index(topology, (unsigned) indexes[i]);
@@ -13,7 +13,7 @@
      }
 --- a/hwloc/topology-linux.c
 +++ b/hwloc/topology-linux.c
-@@ -3075,9 +3075,9 @@ hwloc_linux_knl_parse_numa_distances(uns
+@@ -3077,9 +3077,9 @@ hwloc_linux_knl_parse_numa_distances(uns
        return -1;
      }
  
@@ -26,7 +26,7 @@
  
    hwloc_debug("Summary of KNL distance matrix:\n");
    for(k=0; k<summary->nb_values; k++)
-@@ -4889,7 +4889,7 @@ look_sysfscpukinds(struct hwloc_topology
+@@ -4937,7 +4937,7 @@ look_sysfscpukinds(struct hwloc_topology
      if (maxfreq && !basefreq)
        max_without_basefreq = 1;
      /* capacity */
@@ -37,7 +37,7 @@
      i++;
 --- a/hwloc/memattrs.c
 +++ b/hwloc/memattrs.c
-@@ -1733,7 +1733,7 @@ hwloc__guess_memory_tiers_types(hwloc_to
+@@ -1736,7 +1736,7 @@ hwloc__guess_memory_tiers_types(hwloc_to
      case HWLOC_MEMORY_TIER_DRAM:
      case HWLOC_MEMORY_TIER_HBM:
        /* not possible */
