@@ -1,3 +1,7 @@
+# RcppPlanc 2.0.14
+* Updated vendored dependencies and patches
+* Fixed cmake configure script framework location
+
 # RcppPlanc 2.0.13
 * Bumped HighFive to 3.0.0
 * Switched to CRAN-packaged HighFive in LinkingTo

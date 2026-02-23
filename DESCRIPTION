@@ -1,8 +1,8 @@
 Package: RcppPlanc
 Type: Package
 Title: Parallel Low-Rank Approximation with Nonnegativity Constraints
-Version: 2.0.13
-Date: 2025-07-14
+Version: 2.0.14
+Date: 2026-02-23
 Authors@R: c(
   person(given = 'Andrew', family = 'Robbins', email = 'robbiand@umich.edu', role = c('aut', 'cre'), comment = c(ORCID = "0009-0001-7961-7489")),
   person(given = 'Yichen', family = 'Wang', email = 'wayichen@umich.edu', role = c('aut')),
@@ -36,7 +36,7 @@ License: GPL (>= 2)
 URL: https://github.com/welch-lab/RcppPlanc/
 BugReports: https://github.com/welch-lab/RcppPlanc/issues/
 RoxygenNote: 7.3.2
-SystemRequirements: C++17, cmake >= 3.21.0, hdf5, git, patch, gnumake, hwloc, GNU make
+SystemRequirements: C++17, cmake >= 3.24.0, hdf5, git, patch, gnumake, hwloc, GNU make
 Config/testthat/edition: 3
 Depends:
     R (>= 3.5)
