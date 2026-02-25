@@ -1,3 +1,6 @@
+# RcppPlanc 2.0.15
+* Patched out new stderr calls in topology-xml-nolibxml.c for hwloc 2.13
+
 # RcppPlanc 2.0.14
 * Updated vendored dependencies and patches
 * Fixed cmake configure script framework location
