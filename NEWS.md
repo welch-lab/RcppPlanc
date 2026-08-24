@@ -1,3 +1,7 @@
+# RcppPlanc 2.0.16
+* Disabled udev linkage in hwloc
+* Fixed hwloc strchr calls for C23 \*QChar\* type compliance
+
 # RcppPlanc 2.0.15
 * Patched out new stderr calls in topology-xml-nolibxml.c for hwloc 2.13
 
