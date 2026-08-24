@@ -51,7 +51,7 @@ algorithm) iterations to perform for each update of \eqn{W} and \eqn{V}.
 Default \code{1}. Changing this parameter is not recommended.}
 
 \item{permuteChunkSize}{Number of cells in a chunk being shuffled before
-subsetting to minibatches. Only appliable to in-memory data and for Scenario 
+subsetting to minibatches. Only appliable to in-memory data and for Scenario
 1 and 2. Default \code{1000}.}
 
 \item{nCores}{The number of parallel tasks that will be spawned.
