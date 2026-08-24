@@ -70,3 +70,101 @@ https://undocs.org/A/RES/ES-11/1
 https://digitallibrary.un.org/record/3965290/files/A_RES_ES-11_1-EN.pdf
 https://digitallibrary.un.org/record/3965290/files/A_RES_ES-11_1-RU.pdf
 
+_______________________________________________________________________________
+
+libhwloc COPYING
+
+
+SPDX-License-Identifier: BSD-3-Clause
+
+Copyright © 2004-2006 The Trustees of Indiana University and Indiana University Research and Technology Corporation.  All rights reserved.
+Copyright © 2004-2005 The University of Tennessee and The University of Tennessee Research Foundation.  All rights reserved.
+Copyright © 2004-2005 High Performance Computing Center Stuttgart, University of Stuttgart.  All rights reserved.
+Copyright © 2004-2005 The Regents of the University of California. All rights reserved.
+Copyright © 2009      CNRS
+Copyright © 2009-2016 Inria.  All rights reserved.
+Copyright © 2009-2015 Université Bordeaux
+Copyright © 2009-2015 Cisco Systems, Inc.  All rights reserved.
+Copyright © 2009-2012 Oracle and/or its affiliates.  All rights reserved.
+Copyright © 2010      IBM
+Copyright © 2010      Jirka Hladky
+Copyright © 2012      Aleksej Saushev, The NetBSD Foundation
+Copyright © 2012      Blue Brain Project, EPFL. All rights reserved.
+Copyright © 2013-2014 University of Wisconsin-La Crosse. All rights reserved.
+Copyright © 2015      Research Organization for Information Science and Technology (RIST). All rights reserved.
+Copyright © 2015-2016 Intel, Inc.  All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+1. Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+3. The name of the author may not be used to endorse or promote products
+   derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+hwloc/base64.c is distributed under the ISC license.
+
+contrib/android/AndroidApp/lstopo/src/main/java/com/hwloc/lstopo/ZoomView/
+is distributed under the MIT license.
+
+hwloc Authors
+=============
+
+The following cumulative list contains the names of most individuals
+who have committed code to the hwloc repository
+(either directly or through a third party).
+
+Name                         Affiliation(s)
+---------------------------  --------------------
+Grzegorz Andrejczuk          Intel
+Cédric Augonnet              University of Bordeaux
+Guillaume Beauchamp          Inria
+Ahmad Boissetri Binzagr      Inria
+Cyril Bordage                Inria
+Nicholas Buroker             UWL
+Christopher M. Cantalupo     Intel
+Jérôme Clet-Ortega           University of Bordeaux
+Ludovic Courtès              Inria
+Clément Foyer                Inria
+Nathalie Furmento            CNRS
+Bryon Gloden
+Brice Goglin                 Inria
+Gilles Gouaillardet          RIST
+Valentin Hoyet               Inria
+Joshua Hursey                UWL
+Alexey Kardashevskiy         IBM
+Rob Latham                   ANL
+Douglas MacFarland           UWL
+Marc Marí                    BSC
+Jonathan L Peyton            Intel
+Piotr Luc                    Intel
+Antoine Rougier              intern from University of Bordeaux
+Jeff Squyres                 Cisco
+Samuel Thibault              University of Bordeaux
+Jean-Yves VET                DDN
+Benjamin Worpitz
+Jeff Zhao                    Zhaoxin
+
+Affiliaion abbreviations:
+-------------------------
+ANL = Argonne National Lab
+BSC = Barcelona Supercomputing Center
+Cisco = Cisco Systems, Inc.
+CNRS = Centre national de la recherche scientifique (France)
+UWL = University of Wisconsin-La Crosse
+

@@ -10,7 +10,8 @@ Authors@R: c(
   person(given = 'Ramakrishnan', family = 'Kannan', role = c('cph'), comment = c(ORCID = "0000-0002-5852-4806")),
   person("Conrad", "Sanderson", role = "cph", comment = c(ORCID = "0000-0002-0049-4501")),
   person("Blue Brain Project/EPFL", role = "cph", comment = "HighFive Headers"),
-  person("UT-Batelle", role = c('cph'), comment = "The original PLANC code"))
+  person("UT-Batelle", role = c('cph'), comment = "The original PLANC code"),
+  person("LibHwloc Contributors", role = c('cph'), comment = "See inst/COPYRIGHTS"))
 Description: 'Rcpp' bindings for 'PLANC', a highly parallel
              and extensible NMF/NTF  (Non-negative Matrix/Tensor Factorization) library.
              Wraps algorithms described in
@@ -35,10 +36,10 @@ LinkingTo: Rcpp, RcppArmadillo, RcppProgress, HighFive
 License: GPL (>= 2)
 URL: https://github.com/welch-lab/RcppPlanc/
 BugReports: https://github.com/welch-lab/RcppPlanc/issues/
-RoxygenNote: 7.3.2
 SystemRequirements: C++17, cmake >= 3.24.0, hdf5, git, patch, gnumake, hwloc, GNU make
 Config/testthat/edition: 3
 Depends:
     R (>= 3.5)
 LazyData: true
 VignetteBuilder: knitr
+Config/roxygen2/version: 8.1.0
