@@ -2,3 +2,4 @@
 01_remove_sprintf.patch
 02_adjust_windows_types.patch
 03_remove_abort.patch
+04_discarded_qualifiers.patch

@@ -1,0 +1,53 @@
+--- a/hwloc/base64.c
++++ b/hwloc/base64.c
+@@ -196,7 +196,7 @@ hwloc_decode_from_base64(char const *src
+ {
+ 	unsigned int tarindex, state;
+ 	int ch;
+-	char *pos;
++	const char *pos;
+ 
+ 	state = 0;
+ 	tarindex = 0;
+--- a/hwloc/memattrs.c
++++ b/hwloc/memattrs.c
+@@ -1793,7 +1793,7 @@ hwloc__force_memory_tiers(hwloc_topology
+   unsigned nr_tiers, i;
+   hwloc_bitmap_t nodeset = NULL;
+   char *env;
+-  const char *tmp;
++  char *tmp;
+ 
+   env = strdup(_env);
+   if (!env) {
+@@ -1834,7 +1834,7 @@ hwloc__force_memory_tiers(hwloc_topology
+     if (end)
+       *end = '\0';
+ 
+-    equal = strchr(tmp, '=');
++    equal = strrchr(tmp, '=');
+     if (!equal) {
+       // fprintf(stderr, "[hwloc/memtiers] missing `=' before end of forced tier description at `%s'\n", tmp);
+       goto out_with_tiers;
+--- a/hwloc/pci-common.c
++++ b/hwloc/pci-common.c
+@@ -116,7 +116,7 @@ hwloc_pci_forced_locality_parse_one(stru
+   unsigned domain, bus_first, bus_last, dummy;
+   hwloc_bitmap_t set;
+   hwloc_obj_t parent;
+-  char *tmp;
++  const char *tmp;
+ 
+   if (sscanf(string, "%x:%x-%x %x", &domain, &bus_first, &bus_last, &dummy) == 4) {
+     /* fine */
+--- a/hwloc/topology-synthetic.c
++++ b/hwloc/topology-synthetic.c
+@@ -523,7 +523,7 @@ hwloc_backend_synthetic_init(struct hwlo
+     if (*pos == '[') {
+       /* attached */
+       struct hwloc_synthetic_attached_s *attached, **pprev;
+-      char *attr;
++      const char *attr;
+ 
+       pos++;
+ 
