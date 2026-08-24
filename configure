@@ -47,8 +47,6 @@ $CMAKE -S ../planc \
   -DCMAKE_OSX_DEPLOYMENT_TARGET="11" \
   ${CMAKE_ARGS}
 
-echo "" >>  _deps/highfive-src/include/highfive/bits/H5Friends.hpp
-
 ${MAKE}
 $CMAKE --install .
 
