@@ -212,7 +212,7 @@ H5SpMat <- function(
 
 #' @export
 #' @rdname H5SpMat
-as.H5SpMat <- function(x, filename, dataPath, overwrite = FALSE) {
+as.H5SpMat <- function(x, filename, dataPath = "/", overwrite = FALSE) {
   if (isFALSE(overwrite) && file.exists(filename)) {
     filename <- normalizePath(filename)
     stop("File already exists at the given path: ", filename)
@@ -223,7 +223,7 @@ as.H5SpMat <- function(x, filename, dataPath, overwrite = FALSE) {
 #' @export
 #' @rdname H5SpMat
 #' @method as.H5SpMat matrix
-as.H5SpMat.matrix <- function(x, filename, dataPath = "", overwrite = FALSE) {
+as.H5SpMat.matrix <- function(x, filename, dataPath = "/", overwrite = FALSE) {
   x <- methods::as(x, "CsparseMatrix")
   as.H5SpMat.dgCMatrix(
     x,
@@ -239,7 +239,7 @@ as.H5SpMat.matrix <- function(x, filename, dataPath = "", overwrite = FALSE) {
 as.H5SpMat.dgCMatrix <- function(
   x,
   filename,
-  dataPath = "",
+  dataPath = "/",
   overwrite = FALSE
 ) {
   res <- .rcpp_spmat_to_h5spmat(x, filename, dataPath, overwrite)
@@ -252,7 +252,7 @@ as.H5SpMat.dgCMatrix <- function(
 as.H5SpMat.default <- function(
   x,
   filename,
-  dataPath = "",
+  dataPath = "/",
   overwrite = FALSE,
   ...
 ) {
@@ -268,8 +268,7 @@ as.H5SpMat.default <- function(
     x,
     filename = filename,
     dataPath = dataPath,
-    overwrite = overwrite,
-    ...
+    overwrite = overwrite
   )
 }
 

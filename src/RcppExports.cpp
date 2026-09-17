@@ -12,6 +12,35 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// RcppToH5Mat
+Rcpp::CharacterVector RcppToH5Mat(Rcpp::NumericMatrix x, Rcpp::String filename, Rcpp::String datapath, bool overwrite, Rcpp::Nullable<Rcpp::IntegerVector> chunk_size);
+RcppExport SEXP _RcppPlanc_RcppToH5Mat(SEXP xSEXP, SEXP filenameSEXP, SEXP datapathSEXP, SEXP overwriteSEXP, SEXP chunk_sizeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::String >::type filename(filenameSEXP);
+    Rcpp::traits::input_parameter< Rcpp::String >::type datapath(datapathSEXP);
+    Rcpp::traits::input_parameter< bool >::type overwrite(overwriteSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::IntegerVector> >::type chunk_size(chunk_sizeSEXP);
+    rcpp_result_gen = Rcpp::wrap(RcppToH5Mat(x, filename, datapath, overwrite, chunk_size));
+    return rcpp_result_gen;
+END_RCPP
+}
+// RcppToH5Spmat
+Rcpp::CharacterVector RcppToH5Spmat(const SEXP& x, Rcpp::String filename, Rcpp::String datapath, bool overwrite);
+RcppExport SEXP _RcppPlanc_RcppToH5Spmat(SEXP xSEXP, SEXP filenameSEXP, SEXP datapathSEXP, SEXP overwriteSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const SEXP& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::String >::type filename(filenameSEXP);
+    Rcpp::traits::input_parameter< Rcpp::String >::type datapath(datapathSEXP);
+    Rcpp::traits::input_parameter< bool >::type overwrite(overwriteSEXP);
+    rcpp_result_gen = Rcpp::wrap(RcppToH5Spmat(x, filename, datapath, overwrite));
+    return rcpp_result_gen;
+END_RCPP
+}
 // nmf
 Rcpp::List nmf(const SEXP& x, const arma::uword& k, const arma::uword& niter, const std::string& algo, const int& nCores, const Rcpp::Nullable<arma::mat>& Winit, const Rcpp::Nullable<arma::mat>& Hinit);
 RcppExport SEXP _RcppPlanc_nmf(SEXP xSEXP, SEXP kSEXP, SEXP niterSEXP, SEXP algoSEXP, SEXP nCoresSEXP, SEXP WinitSEXP, SEXP HinitSEXP) {
@@ -433,6 +462,8 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_RcppPlanc_RcppToH5Mat", (DL_FUNC) &_RcppPlanc_RcppToH5Mat, 5},
+    {"_RcppPlanc_RcppToH5Spmat", (DL_FUNC) &_RcppPlanc_RcppToH5Spmat, 4},
     {"_RcppPlanc_nmf", (DL_FUNC) &_RcppPlanc_nmf, 7},
     {"_RcppPlanc_symNMF", (DL_FUNC) &_RcppPlanc_symNMF, 7},
     {"_RcppPlanc_bppinmf_h5", (DL_FUNC) &_RcppPlanc_bppinmf_h5, 10},

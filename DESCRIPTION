@@ -1,8 +1,8 @@
 Package: RcppPlanc
 Type: Package
 Title: Parallel Low-Rank Approximation with Nonnegativity Constraints
-Version: 2.0.16
-Date: 2026-09-07
+Version: 2.0.16.9000
+Date: 2026-09-17
 Authors@R: c(
   person(given = 'Andrew', family = 'Robbins', email = 'robbiand@umich.edu', role = c('aut', 'cre'), comment = c(ORCID = "0009-0001-7961-7489")),
   person(given = 'Yichen', family = 'Wang', email = 'wayichen@umich.edu', role = c('aut')),
@@ -25,8 +25,7 @@ Encoding: UTF-8
 Imports:
     methods,
     Rcpp,
-    Matrix,
-    hdf5r.Extra
+    Matrix
 Suggests:
     knitr,
     withr,
@@ -43,3 +42,4 @@ Depends:
 LazyData: true
 VignetteBuilder: knitr
 Config/roxygen2/version: 8.1.0
+RoxygenNote: 7.3.3
